@@ -22,7 +22,7 @@ async function newPage(opts = {}) {
   const p = await ctx.newPage();
   p.errors = [];
   p.on("pageerror", (e) => p.errors.push(e.message));
-  p.on("console", (m) => m.type() === "error" && p.errors.push(m.text().slice(0, 200)));
+  p.on("console", (m) => m.type() === "error" && !/Failed to load resource: .*404/.test(m.text()) && p.errors.push(m.text().slice(0, 200)));
   return p;
 }
 const go = (p, u) => p.goto(B + u, { waitUntil: "networkidle", timeout: 120000 });
@@ -107,14 +107,14 @@ const tests = {
     for (const [label, key] of [["Meta+K", "Meta+k"], ["Ctrl+K", "Control+k"], ["/", "/"]]) {
       await p.locator("body").click({ position: { x: 5, y: 300 } });
       await p.keyboard.press(key);
-      await p.waitForTimeout(300);
+      await dlg.waitFor({ timeout: 3000 }).catch(() => {});
       check(`search: ${label} opens palette`, await dlg.isVisible());
       await p.keyboard.press("Escape");
       await p.waitForTimeout(300);
       check(`search: Esc closes (${label})`, !(await dlg.isVisible()));
     }
     const input = () => dlg.getByRole("combobox");
-    const open = async () => { await p.keyboard.press("Control+k"); await p.waitForTimeout(300); };
+    const open = async () => { await p.keyboard.press("Control+k"); await dlg.waitFor({ timeout: 3000 }).catch(() => {}); await p.waitForTimeout(150); };
     const query = async (q) => { await input().fill(q); await p.waitForTimeout(500); return dlg.getByRole("option").allInnerTexts(); };
     await open();
     let opts = await query("sao paulo");
@@ -316,7 +316,7 @@ const tests = {
     check("mobile: no horizontal overflow on /", ow <= 375, String(ow));
     const nav = p.locator("header nav").last();
     check("mobile: nav visible", await nav.isVisible());
-    for (const label of ["Explorar", "Acompanhando", "Dados", "Metodologia", "Painel"]) {
+    for (const label of ["Explorar", "Salvos", "Dados", "Método", "Painel"]) {
       const l = p.locator("header").getByRole("link", { name: label, exact: true }).filter({ visible: true });
       const c = await l.count();
       if (!c) { check(`mobile: nav link ${label} visible`, false); continue; }
@@ -405,24 +405,48 @@ const tests = {
     await p.getByRole("button", { name: "Município", exact: true }).first().click();
     await p.waitForTimeout(300);
     check("explorer: sort Município asc starts with A", /^A/.test(await firstName()), await firstName());
-    // pagination
+    // virtualised table (round 2): few DOM rows, scrolling reaches the last municipality
     const rows = () => p.locator("tbody tr").count();
-    check("explorer: first page 100 rows", (await rows()) === 100, String(await rows()));
-    await p.getByRole("button", { name: /Mostrar mais/ }).click();
-    await p.waitForTimeout(400);
-    check("explorer: Mostrar mais -> 300 rows", (await rows()) === 300, String(await rows()));
+    const nDom = await rows();
+    check("explorer: virtualised (< 120 DOM rows for 5.570)", nDom > 5 && nDom < 120, String(nDom));
+    check("explorer: aria-rowcount = 5.571", (await p.locator("table[aria-rowcount]").getAttribute("aria-rowcount")) === "5571");
+    await p.evaluate(() => { const t = document.querySelector("table[aria-rowcount]"); let el = t.parentElement; while (el && el.scrollHeight <= el.clientHeight) el = el.parentElement; el.scrollTop = el.scrollHeight; });
+    await p.waitForTimeout(600);
+    const lastName = await p.locator("tbody tr a").last().innerText();
+    check("explorer: scrolling to the end shows the last name (Z…)", /^Z/.test(lastName), lastName);
+    await p.evaluate(() => { const t = document.querySelector("table[aria-rowcount]"); let el = t.parentElement; while (el && el.scrollHeight <= el.clientHeight) el = el.parentElement; el.scrollTop = el.scrollHeight / 2; });
+    await p.waitForTimeout(600);
+    const midRows = await p.locator("tbody tr a").allInnerTexts();
+    check("explorer: middle of the list renders rows (no blank window)", midRows.length > 5, String(midRows.length));
+    // sort in URL
+    check("explorer: sort persisted in URL (ordem=)", /ordem=/.test(qs(p)), qs(p));
     // CSV export of a filtered slice
     await pick("UF", /RR/);
-    const [dl] = await Promise.all([p.waitForEvent("download", { timeout: 15000 }), p.getByRole("button", { name: "Exportar CSV" }).click()]);
+    await p.getByRole("button", { name: /Exportar CSV/ }).click();
+    const [dl] = await Promise.all([p.waitForEvent("download", { timeout: 15000 }), p.getByRole("menuitem", { name: /Série .* CSV padrão/ }).click()]);
     const file = path.join(SHOTS, "explorer-rr.csv");
     await dl.saveAs(file);
     const csv = fs.readFileSync(file, "utf8");
-    const lines = csv.replace(/^﻿/, "").trim().split("\n");
-    check("explorer: CSV filename", dl.suggestedFilename() === "radar-mde-explorar.csv", dl.suggestedFilename());
+    const lines = csv.replace(/^﻿/, "").replace(/\r/g, "").trim().split("\n");
+    check("explorer: CSV filename names the slice", /^radar-mde_.*RR.*\.csv$/.test(dl.suggestedFilename()), dl.suggestedFilename());
+    check("explorer: CSV header uses shared schema (envio, situacao_mde)", /envio/.test(lines[0]) && /situacao_mde/.test(lines[0]), lines[0]);
     check("explorer: CSV has BOM", csv.charCodeAt(0) === 0xfeff);
     check("explorer: CSV RR rows = 15 x 18 years", lines.length - 1 === 15 * 18, String(lines.length - 1));
     check("explorer: CSV no NaN/undefined", !/NaN|undefined|null/.test(csv));
     check("explorer: CSV every row is RR", lines.slice(1).every((l) => l.split(",")[2] === "RR"));
+    // same numbers as the /dados/csv/rr file for the shared columns
+    const srv = (await (await fetch(B + "/dados/csv/rr")).text()).replace(/^\ufeff/, "").replace(/\r/g, "").trim().split("\n");
+    const H = srv[0].split(","), h = lines[0].split(",");
+    const key = (cols, l) => { const c = l.split(","); return `${c[cols.indexOf("ibge")]}|${c[cols.indexOf("ano")]}`; };
+    const srvMap = new Map(srv.slice(1).map((l) => [key(H, l), l.split(",")]));
+    const shared = h.filter((c) => H.includes(c) && !["municipio", "regiao_intermediaria"].includes(c));
+    const diffs = [];
+    for (const l of lines.slice(1)) {
+      const c = l.split(","), sv = srvMap.get(key(h, l));
+      if (!sv) { diffs.push("missing " + key(h, l)); continue; }
+      for (const col of shared) if ((c[h.indexOf(col)] ?? "") !== (sv[H.indexOf(col)] ?? "")) diffs.push(`${key(h, l)} ${col}: ${c[h.indexOf(col)]} vs ${sv[H.indexOf(col)]}`);
+    }
+    check("explorer CSV == /dados/csv on shared columns", !diffs.length, `${diffs.length} diffs, e.g. ${diffs.slice(0, 3).join("; ")}`);
     const rawBrasilia = await (await fetch(B + "/dados/csv/df")).text();
     check("csv route: /dados/csv/df ok", /Bras/.test(rawBrasilia));
     // situation 'missing' / 'nd' counts in 2025
@@ -596,7 +620,7 @@ const tests = {
     await p.waitForTimeout(800);
     // click a UF shape on the national map
     const box = await p.evaluate(() => {
-      const svg = [...document.querySelectorAll("main svg[role=img]")].find((s) => s.querySelectorAll("path").length > 20);
+      const svg = [...document.querySelectorAll("main svg[role=img], main svg[role=group]")].find((s) => s.querySelectorAll("path").length > 20);
       let best = null;
       for (const el of svg.querySelectorAll("path")) { const b = el.getBoundingClientRect(); if (!best || b.width * b.height > best.width * best.height) best = b; }
       window.scrollTo(0, 0);
@@ -636,7 +660,7 @@ const tests = {
     const clip = await p.evaluate(() => navigator.clipboard.readText());
     check("city: Copiar texto copies template", clip.length > 200 && /Santo André/.test(clip), String(clip.length));
     // City map click on a neighbour
-    const cityShapes = p.locator("main svg[role=img] path");
+    const cityShapes = p.locator("main svg[role=img] path, main svg[role=group] path");
     const ns = await cityShapes.count();
     check("city: state map renders shapes", ns > 600, String(ns));
     // peers link
@@ -656,12 +680,240 @@ const tests = {
     await p.context().close();
   },
 
+  // ---------- round 2 ----------
+  async r2city() {
+    const p = await newPage();
+    const anoReq = [];
+    p.on("response", (r) => /\/ano\/\d+/.test(r.url()) && anoReq.push(`${r.status()} ${r.url().replace(B, "")}`));
+    await go(p, "/sp/santo-andre?ano=2019");
+    await p.waitForTimeout(800);
+    const main = p.locator("main");
+    check("r2 city: ?ano=2019 headline", /Em 2019/.test(await main.innerText()));
+    check("r2 city: year picker shows 2019", (await checkedYear(p)) === "2019", await checkedYear(p));
+    check("r2 city: state values for 2019 fetched from /ano/2019", anoReq.some((r) => /^200 .*\/ano\/2019/.test(r)), anoReq.join(", "));
+    await p.getByRole("radio", { name: "2015", exact: true }).click();
+    await p.waitForTimeout(800);
+    check("r2 city: click 2015 -> ?ano=2015 + headline", qs(p) === "?ano=2015" && /Em 2015/.test(await main.innerText()), qs(p));
+    const txt15 = await main.innerText();
+    check("r2 city: no NaN/undefined after year switch", !/\bNaN\b|\bundefined\b/.test(txt15));
+    await p.getByRole("button", { name: "Compartilhar" }).first().click();
+    await p.getByRole("menuitem", { name: "Copiar link" }).click();
+    await p.waitForTimeout(300);
+    const clip = await p.evaluate(() => navigator.clipboard.readText());
+    check("r2 city: share link keeps ?ano=2015", clip === B + "/sp/santo-andre?ano=2015", clip);
+    await p.reload({ waitUntil: "networkidle" });
+    await p.waitForTimeout(500);
+    check("r2 city: reload keeps 2015", (await checkedYear(p)) === "2015");
+    await p.getByRole("radio", { name: "2025", exact: true }).click();
+    await p.waitForTimeout(300);
+    check("r2 city: default year removes ?ano", qs(p) === "", qs(p));
+    // neighbour links carry the year
+    await go(p, "/sp/santo-andre?ano=2018");
+    await p.waitForTimeout(600);
+    const nb = await main.locator('a[href^="/sp/"]:not([aria-current])').evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+    check("r2 city: neighbour links carry ?ano=2018", nb.length > 0 && nb.every((h) => /\?ano=2018$/.test(h)), nb.slice(0, 3).join(" "));
+    // breadcrumbs carry the year?
+    const crumbs = await p.locator('nav[aria-label="Navegação territorial"] a').evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+    check("r2 city: breadcrumb links carry ?ano (informational)", true, crumbs.join(" "));
+    // municipalities that did not exist yet
+    await go(p, "/pa/mojui-dos-campos?ano=2010");
+    await p.waitForTimeout(800);
+    let t = await main.innerText();
+    check("r2 city(since 2013) @2010: says it did not exist yet, not 'não declarou'", /não existia/i.test(t) && !/Não declarou 2010|não declarou dados de MDE em 2010|Em 2010, aplicou/.test(t), (t.match(/[^\n]*(existia|declarou)[^\n]*/i) ?? [""])[0].slice(0, 160));
+    await go(p, "/mt/boa-esperanca-do-norte");
+    await p.waitForTimeout(800);
+    t = await main.innerText();
+    check("r2 city(Boa Esperança): no 'não declarou' list of 2008–2024", !/2008, 2009/.test(t));
+    const body = await main.locator("textarea").first().inputValue();
+    check("r2 city(Boa Esperança): letter does not claim compliance", !/declarou ter cumprido/.test(body), (body.match(/Contexto:[^\n]*/) ?? [""])[0].slice(0, 160));
+    const hl = await p.locator("main svg path[fill=none][stroke-width='2']").count();
+    check("r2 city(Boa Esperança): municipality highlighted on map", hl > 0, String(hl));
+    for (const y of ["2015", "2024"]) {
+      await go(p, `/mt/boa-esperanca-do-norte?ano=${y}`);
+      await p.waitForTimeout(800);
+      t = await main.innerText();
+      check(`r2 city(Boa Esperança) ?ano=${y}: no crash, says did not exist`, /não existia/i.test(t) && !p.errors.length, (t.match(/[^\n]*existia[^\n]*/i) ?? ["(no 'não existia')"])[0].slice(0, 140) + " " + p.errors.slice(0, 1));
+    }
+    // glossary popover
+    await go(p, "/sp/santo-andre");
+    const term = main.getByRole("button", { name: /^MDE$|MDE.*o que é|Mediana/i }).first();
+    if (await term.count()) {
+      await term.click();
+      await p.waitForTimeout(300);
+      const pop = p.getByRole("dialog");
+      check("r2 city: glossary popover opens", (await pop.count()) > 0 && /impostos|metade/.test(await pop.first().innerText()), (await pop.first().innerText().catch(() => "")).slice(0, 80));
+      await p.keyboard.press("Escape");
+      await p.waitForTimeout(200);
+      check("r2 city: glossary popover closes with Esc", (await p.getByRole("dialog").count()) === 0);
+    } else check("r2 city: glossary term button found", false);
+    // editable letters
+    const area = main.locator("textarea").filter({ visible: true }).first();
+    const orig = await area.inputValue();
+    await area.fill(orig.replace("[Seu nome]", "Maria QA"));
+    check("r2 letter: edit shows 'Desfazer edições'", await main.getByRole("button", { name: /Desfazer edições/ }).isVisible());
+    await p.getByRole("button", { name: /Copiar texto/ }).first().click();
+    await p.waitForTimeout(300);
+    check("r2 letter: copy uses edited text", /Maria QA/.test(await p.evaluate(() => navigator.clipboard.readText())));
+    const mail = await main.locator('a[href^="mailto:"]').filter({ visible: true }).first().getAttribute("href");
+    check("r2 letter: mailto contains edited text", decodeURIComponent(mail ?? "").includes("Maria QA"), `${(mail ?? "").length} chars`);
+    check("r2 letter: mailto URL under 2.000 chars (Outlook/IE limit)", (mail ?? "").length < 2000, String((mail ?? "").length));
+    await p.getByRole("radio", { name: "2019", exact: true }).click();
+    await p.waitForTimeout(400);
+    check("r2 letter: edits survive a year switch", /Maria QA/.test(await main.locator("textarea").filter({ visible: true }).first().inputValue()));
+    const tabs = main.getByRole("tab");
+    await tabs.nth(1).click();
+    await p.waitForTimeout(200);
+    await tabs.nth(0).click();
+    await p.waitForTimeout(200);
+    check("r2 letter: edits survive switching tabs", /Maria QA/.test(await main.locator("textarea").filter({ visible: true }).first().inputValue()));
+    await area.fill(orig.replace("[Seu nome]", "Maria QA"));
+    const undo = main.getByRole("button", { name: /Desfazer edições/ });
+    if (await undo.count()) {
+      await undo.click();
+      check("r2 letter: undo restores original", (await main.locator("textarea").filter({ visible: true }).first().inputValue()) === orig);
+    }
+    // print
+    await p.emulateMedia({ media: "print" });
+    const vis = await p.evaluate(() => {
+      const shown = (el) => !!el && getComputedStyle(el).display !== "none" && el.getBoundingClientRect().height > 0;
+      return { header: shown(document.querySelector("body > header, header")), footerNav: shown(document.querySelector("footer")), buttons: [...document.querySelectorAll("main button, main a[role=button], main [data-slot=button]")].filter(shown).map((b) => b.innerText.trim()).filter((n) => /Acompanh|Compartilhar|Copiar|WhatsApp|E-mail|Exportar|Baixar|Desfazer|Tentar/.test(n)).slice(0, 8), textarea: shown(document.querySelector("main textarea")) };
+    });
+    check("r2 print: header hidden", !vis.header, JSON.stringify(vis));
+    check("r2 print: no action buttons visible", vis.buttons.length === 0, vis.buttons.join(" | "));
+    await p.pdf({ path: path.join(SHOTS, "r2-print-city.pdf") }).catch(() => {});
+    await p.emulateMedia({ media: "screen" });
+    check("r2 city: no page errors", !p.errors.length, p.errors.slice(0, 3).join(" | "));
+    await p.context().close();
+  },
+
+  async r2watch() {
+    const p = await newPage();
+    const reqs = [];
+    p.on("request", (r) => /acompanhar\/dados|municipios\.json/.test(r.url()) && reqs.push(r.url().replace(B, "")));
+    await go(p, "/acompanhar");
+    await p.evaluate(() => localStorage.setItem("radar-mde:watch", JSON.stringify(["sp/santo-andre", "mt/boa-esperanca-do-norte", "pa/mojui-dos-campos", "xx/nope"])));
+    await p.reload({ waitUntil: "networkidle" });
+    await p.waitForTimeout(1200);
+    const t = await p.locator("main").innerText();
+    check("r2 watch: uses /acompanhar/dados (not the full dataset)", reqs.some((r) => /acompanhar\/dados\?.*m=/.test(r)) && !reqs.some((r) => /municipios\.json/.test(r)), reqs.join(" "));
+    check("r2 watch: lists 3 + 1 not found", /3 municípios/.test(t) && /não foi encontrado/.test(t), t.slice(0, 200).replace(/\n/g, " "));
+    check("r2 watch: no 'n/d' cells before installation for Boa Esperança", (t.match(/n\/d/g) ?? []).length <= 1 + 0, `n/d count ${(t.match(/n\/d/g) ?? []).length}`);
+    await p.screenshot({ path: path.join(SHOTS, "r2-acompanhar.png"), fullPage: true });
+    check("r2 watch: no page errors", !p.errors.length, p.errors.slice(0, 3).join(" | "));
+    await p.context().close();
+  },
+
+  async r2search() {
+    const p = await newPage();
+    await go(p, "/sobre");
+    const dlg = p.getByRole("dialog");
+    await p.keyboard.press("Control+k");
+    await dlg.waitFor({ timeout: 5000 });
+    const sel = async (q) => {
+      await dlg.getByRole("combobox").fill(q);
+      await p.waitForTimeout(500);
+      return (await dlg.locator("[role=option][aria-selected=true]").first().innerText().catch(() => "")).replace(/\n/g, " ");
+    };
+    const want = { bahia: /^Bahia/, acre: /^Acre/, para: /^Pará/, parana: /^Paraná/, norte: /Região Norte/, sul: /Região Sul/, brasil: /^Brasil/, "mato grosso": /^Mato Grosso(?! do Sul)/, ceara: /^Ceará/, "sao paulo": /^São Paulo/, "rio de janeiro": /^Rio de Janeiro/, "campinsa": /^Campinas/, "santo andre pb": /Santo André.*PB/, "bom jesus go": /Bom Jesus.*GO/, "sao paulo sp": /^São Paulo/ };
+    for (const [q, re] of Object.entries(want)) {
+      const s = await sel(q);
+      check(`r2 search: '${q}' top hit`, re.test(s), s);
+    }
+    await dlg.getByRole("combobox").fill("sao paulo sp");
+    await p.waitForTimeout(400);
+    const all = (await dlg.getByRole("option").allInnerTexts()).join(" | ");
+    check("r2 search: 'sao paulo sp' has no Espírito Santo do Pinhal / Boa Esperança do Sul noise", !/Pinhal|Esperança do Sul/.test(all), all.slice(0, 200).replace(/\n/g, " "));
+    await dlg.getByRole("combobox").fill("santo");
+    await p.waitForTimeout(400);
+    const more = dlg.getByRole("option", { name: /Ver todos|ver todos/ });
+    check("r2 search: 'ver todos os N resultados' offered", (await more.count()) > 0);
+    // Enter on state
+    await sel("bahia");
+    await p.keyboard.press("Enter");
+    await p.waitForURL(/\/ba$/, { timeout: 30000 }).catch(() => {});
+    check("r2 search: Enter on 'bahia' -> /ba", /\/ba$/.test(p.url()), p.url());
+    check("r2 search: no page errors", !p.errors.length, p.errors.slice(0, 3).join(" | "));
+    await p.context().close();
+  },
+
+  async r2explorer() {
+    const p = await newPage();
+    await go(p, "/explorar?uf=SP&ano=2021&situacao=abaixo&porte=p2&ordem=-populacao");
+    await p.getByText(/ de 5\.570 municípios/).waitFor({ timeout: 60000 });
+    await p.waitForTimeout(500);
+    const count = async () => Number((await p.getByText(/ de 5\.570 municípios/).innerText()).split(" de ")[0].replace(/\./g, ""));
+    const n1 = await count();
+    check("r2 explorer: deep link with uf+ano+situacao+porte+ordem applies", n1 > 0 && n1 < 645, `${n1} url=${qs(p)}`);
+    check("r2 explorer: ordem=-populacao kept in URL", /ordem=-populacao/.test(qs(p)), qs(p));
+    const firstPop = await p.locator("tbody tr td:nth-child(2)").first().innerText().catch(() => "");
+    await p.reload({ waitUntil: "networkidle" });
+    await p.getByText(/ de 5\.570 municípios/).waitFor({ timeout: 60000 });
+    await p.waitForTimeout(500);
+    check("r2 explorer: reload keeps the same view", (await count()) === n1 && (await p.locator("tbody tr td:nth-child(2)").first().innerText().catch(() => "")) === firstPop, `${await count()}`);
+    await go(p, "/explorar?situacao=xyz&porte=zz&ordem=foo&reinc=2&q=" + "a".repeat(200));
+    await p.getByText(/ de 5\.570 municípios/).waitFor({ timeout: 60000 });
+    check("r2 explorer: invalid params ignored, no crash", !p.errors.length, `${await count()} ${p.errors.slice(0, 1)}`);
+    await go(p, "/explorar?q=embu%20guacu");
+    await p.getByText(/ de 5\.570 municípios/).waitFor({ timeout: 60000 });
+    await p.waitForTimeout(400);
+    check("r2 explorer: ?q=embu guacu -> 1", (await count()) === 1, String(await count()));
+    // capital filter
+    await go(p, "/explorar?capital=1");
+    await p.getByText(/ de 5\.570 municípios/).waitFor({ timeout: 60000 });
+    await p.waitForTimeout(400);
+    check("r2 explorer: capital=1 -> 27", (await count()) === 27, String(await count()));
+    // explorer links to city keep ano
+    await go(p, "/explorar?ano=2019");
+    await p.getByText(/ de 5\.570 municípios/).waitFor({ timeout: 60000 });
+    await p.waitForTimeout(400);
+    const href = await p.locator("tbody tr a").first().getAttribute("href");
+    check("r2 explorer: city links keep ?ano=2019", /\?ano=2019$/.test(href ?? ""), href);
+    // mobile layout
+    await p.setViewportSize({ width: 375, height: 812 });
+    await p.waitForTimeout(300);
+    const w = await p.evaluate(() => document.documentElement.scrollWidth);
+    check("r2 explorer: no page-level horizontal overflow at 375", w <= 375, String(w));
+    check("r2 explorer: no page errors", !p.errors.length, p.errors.slice(0, 3).join(" | "));
+    await p.context().close();
+  },
+
+  async r2uf() {
+    const p = await newPage();
+    await go(p, "/sp?ano=2021");
+    await p.waitForTimeout(600);
+    const main = p.locator("main");
+    const search = main.getByRole("textbox").first();
+    await search.fill("santo");
+    await p.waitForTimeout(500);
+    check("r2 uf: table search reflected in URL", /q=santo/.test(qs(p)), qs(p));
+    await main.getByRole("button", { name: /^Município/ }).click();
+    await p.waitForTimeout(300);
+    const u1 = qs(p);
+    await p.reload({ waitUntil: "networkidle" });
+    await p.waitForTimeout(600);
+    check("r2 uf: filters/sort survive reload", (await main.getByRole("textbox").first().inputValue()) === "santo" && qs(p) === u1, `${u1} -> ${qs(p)}`);
+    const link = await main.locator('tbody a[href^="/sp/"]').first().getAttribute("href");
+    check("r2 uf: city link keeps ?ano=2021", /ano=2021/.test(link ?? ""), link);
+    check("r2 uf: no page errors", !p.errors.length, p.errors.slice(0, 3).join(" | "));
+    await p.context().close();
+  },
+
   async notfound() {
     const p = await newPage();
-    for (const u of ["/xx", "/sp/nao-existe", "/regiao/foo", "/SP", "/Sp/santo-andre", "/sp/santo-andre/extra", "/dados/csv/xx", "/regiao/Sul"]) {
+    for (const u of ["/xx", "/sp/nao-existe", "/regiao/foo", "/regiao", "/sp/santo-andre/extra", "/dados/csv/xx", "/sp/nao-existe/ano/2019"]) {
       const r = await go(p, u);
       const h1 = await p.locator("h1").first().innerText().catch(() => "");
       check(`404: ${u} -> HTTP 404`, r.status() === 404, `status ${r.status()}, h1="${h1}", title="${await p.title()}"`);
+      if (!/csv|ano/.test(u)) check(`404: ${u} title`, /Página não encontrada/.test(await p.title()), await p.title());
+    }
+    for (const [u, want] of [["/SP", "/sp"], ["/Sp/santo-andre", "/sp/santo-andre"], ["/regiao/Sul", "/regiao/sul"], ["/SP/Santo-Andre?ano=2019", "/sp/santo-andre?ano=2019"]]) {
+      const r = await go(p, u);
+      check(`redirect: ${u} -> ${want}`, r.status() === 200 && p.url() === B + want, `${r.status()} ${p.url()}`);
+    }
+    // canonical page must still be 200 afterwards (cache poisoning regression, ACA-17)
+    for (const u of ["/sp", "/sp/santo-andre", "/regiao/sul"]) {
+      const r = await fetch(B + u, { redirect: "manual" });
+      check(`redirect: canonical ${u} still 200 after uppercase hits`, r.status === 200, String(r.status));
     }
     await go(p, "/xx");
     await p.getByRole("button", { name: /Buscar município, estado ou região/ }).last().click();

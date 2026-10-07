@@ -228,3 +228,127 @@ The MG state government is missing for 9 of 18 years ("—") with no explanation
 | 2025 | 5.560 | 23 | 27,12% | 150,1 | 23 · R$ 150,1 mi · 27,12% · 732.269 hab ✓ |
 
 Top accumulated deficits ✓ (Porto Alegre 674,0; Aracaju 460,5; Volta Redonda 448,7; Cuiabá 267,1; Canoas 106,7 R$ mi). SP state 2021 R$ 573,0 mi ✓, Sul 2021 R$ 793,9 mi ✓ (= PR 153,4 + RS 446,3 + SC 194,2).
+
+---
+
+## Round 2: re-validation after commit ff4a309 (production build, http://localhost:3299)
+
+Evidence: `qa/reports/journalist/r2/` (scripts `a–g.mjs`, screenshots, page-text dumps, downloaded CSVs, OG PNGs). No console errors on any route tested. Bugs were reproduced at least twice.
+
+### Fact-check (year-specific counts)
+
+I recomputed from `web/src/data/cities.json`, skipping municipalities with `since > year`. All figures match the UI.
+
+| Year | n (existed) | Reported | Below 25% | Median | Shortfall | Of which atypical (`mde`/`base`) | UI |
+|---|---|---|---|---|---|---|---|
+| 2008 | 5.564 | 5.506 | 83 | 27,42% | R$ 636,5 mi | 13 mun. · R$ 19,4 mi | Explorer card "5.564 · todos os que existiam em 2008" ✓ |
+| 2021 | 5.569 | 5.567 | 1.090 | 25,79% | R$ 4,35 bi (+1 without base) | 102 mun. · R$ 1,28 bi | "1.090 · ao menos R$ 4,3 bi · dos quais R$ 1,3 bi de valores atípicos" ✓ |
+| 2025 | 5.570 | 5.560 | 23 | 27,12% | R$ 150,1 mi | 6 mun. · R$ 122,0 mi | "23 · R$ 150,1 mi · dos quais R$ 122 mi de valores atípicos" ✓ |
+
+Other checks, all ✓:
+- SP 2021: 118/645, R$ 573 mi.
+- Sudeste 2021: 326/1.667 = 19,6% (the same as Brasil by coincidence).
+- Porto Alegre "Déficit até 2021": R$ 1 bi (recomputed R$ 1.046,7 mi).
+- Capitals below 25% in 2021 (Explorer `capital=1&situacao=abaixo`): Cuiabá, Aracaju, Teresina, Porto Alegre, Fortaleza, Belo Horizonte. This matches Python.
+- Largest 2024→2025 drops (`ordem=variacao`): Araricá −24,9, Piaçabuçu −19,5, Magalhães Barata −17,0. This matches Python.
+
+### Status of round-1 findings
+
+| ID | Status | Evidence |
+|---|---|---|
+| JOR-01 city `?ano=` | **FIXED** | `/rs/porto-alegre?ano=2021`: "MDE em 2021 21,02%", verdict for 2021 with the EC 119 note, "Mostrando 2021. Voltar para 2025", year picker, "Déficit até 2021". "Copiar link" copies `…/rs/porto-alegre?ano=2021`. Reproduced 2/2. |
+| JOR-02 drill links keep year | **FIXED** (JOR-18 broke this for MG and RJ until the rebuild; now OK) | Map click on SP from `/?ano=2021` → `/sp?ano=2021` (2/2). UF table links `/rr?ano=2021`. Deficit links `/rs/porto-alegre?ano=2021`. |
+| JOR-03 Explorer permalink | **FIXED** | Filters and sort → `?ano=2021&situacao=abaixo&porte=p5&ordem=-faltou`. Reloading restores the identical rows (2/2). "Copiar link" button works. Invalid params are dropped. |
+| JOR-04 chart image / embed / citation | **PARTIAL** | Added: OG images (site and per city, 1200×630, good quality), footer "Dados extraídos em 07/10/2026 · versão 2026-10-07.586603bb · licença CC BY 4.0", "Versão e como citar" on /sobre, year-aware share link. Still missing: per-chart PNG/SVG download, embed iframe, "copiar citação" for a KPI. |
+| JOR-05 nominal R$ | **FIXED** | KPI sub-label "em 2025, valores declarados e nominais", deficit panel "(valores nominais)", city "R$ da época", /sobre "Valores monetários são nominais…". IPCA adjustment is on the roadmap only. |
+| JOR-06 KPI wording | **FIXED** | "Faltou aplicar (estimativa)". Info tooltip gives the formula, says "reais da época" and "tribunais de contas podem apurar valores diferentes", and links to the methodology. Headline: "faltaram cerca de R$ 150,1 mi para atingir o mínimo (estimativa)". |
+| JOR-07 capitals + YoY | **FIXED** | Explorer has a "Capitais" filter, a "vs 2020" Δ column (sortable, `ordem=variacao`), and `capital` / `delta_mde_pp` in the CSV. |
+| JOR-08 atypical flags | **FIXED** (the rule itself is a problem; see JOR-17) | Explorer rows show "(valor atípico, possível erro de declaração)". Totals show "dos quais R$ X de valores atípicos". CSV has an `atipico` column. |
+| JOR-09 small-n headline | **FIXED** | "A maior proporção está em Tocantins (4 de 139, 2,9%, entre estados com 30 ou mais municípios)". 2021: "Mato Grosso (66 de 141, 47%…); o maior número, em Minas Gerais (177)". |
+| JOR-10 EC 119 in Explorer | **FIXED** | 2020/2021 show "2021 foi ano de pandemia. A Emenda Constitucional 119/2022 livrou de punição…". CSV has a `pandemia_ec119` column. |
+| JOR-11 CSV | **FIXED** | One schema shared by Explorer and /dados (`envio`, `situacao_mde`, `capital`, `delta_mde_pp`, `pandemia_ec119`, `atipico`…). Export follows the table order (Porto Alegre first). Menu offers "Só 2021" or "Série" × "CSV padrão" or "Excel Brasil" (`;` separator, decimal comma, BOM). Descriptive file names, e.g. `radar-mde_2008-2025_abaixo_Mais-de-500-mil_excel.csv`. New `/dados/csv/regiao-sul`, `estados` and `*-excel` routes return 200; an unknown id returns 404. |
+| JOR-12 population year | **FIXED** | /sobre: "uma única estimativa… (exercício 2026)… usada em todos os anos. Totais… em anos antigos usam a população de hoje." The KPI card itself has no population year (acceptable). |
+| JOR-13 MG state-gov gaps | **FIXED** | Card: "— · sem dado do governo estadual neste ano". /sobre lists the MG, RO, AP and RS gaps. |
+| JOR-14 "2021 MDE" header | **FIXED** | Header now reads "MDE em 2021", followed by "vs 2020". |
+| JOR-15 formatting / wording | **PARTIAL** | Fixed: R$/aluno rounded (R$ 14.174), "aplicou"/"nenhum dos 497…", "Região imediata de Porto Alegre", "Juiz de Fora" (0 occurrences of "Juíz" in the CSV), leading ellipsis ("…, 2017, 2018…"), sentence and card rounding agree (19,6%). Remaining: delta wording still differs between levels. Home says "61 · vs 2024 (a menos que no ano anterior)"; state pages say "−1 vs 2024". |
+| JOR-16 deficit panel vs year | **FIXED** | Labelled "Maiores déficits acumulados até 2025… Não muda com o ano escolhido". The city page shows "Déficit até {ano}". |
+
+**Totals:** 14 FIXED, 2 PARTIAL (JOR-04, JOR-15), 0 NOT FIXED, 0 REGRESSED. JOR-08 is fixed as reported, but its rule has a new problem (JOR-17). There was one new production-only defect affecting year links, JOR-18. It is now fixed by the rebuild.
+
+### New findings (round 2)
+
+#### JOR-17: Fixed "MDE < 18% = possível erro de declaração" rule casts doubt on genuine, recurring under-spending, including most of the headline money
+- **Severity:** major. **Type:** data/content
+- **URLs:**
+  - http://localhost:3299/ (KPI "dos quais R$ 122 mi de valores atípicos")
+  - `/explorar?ano=2021&situacao=abaixo&porte=p5&ordem=-faltou`
+  - `/rs/porto-alegre` (action-kit LAI letter)
+- **Evidence:**
+  - In 2025, R$ 122,0 mi of the R$ 150,1 mi headline (81%) is labelled "atípico". Almost all of it is Volta Redonda: 16,63%, flag `mde`. Its own series is 16,30 / 12,88 / 12,39 / 13,78 / 25,17 / 16,63 for 2020–2025. That is a persistent pattern, not a typo, and it is #3 in the national accumulated-deficit ranking.
+  - In 2021, R$ 1,28 bi of R$ 4,35 bi is flagged. Cuiabá 16,24%, Joinville 16,85%, Contagem 16,59%, Campos 16,05% and Chapecó 15,31% all show "(valor atípico, possível erro de declaração)". Large cities going below 18% during the pandemic was a real, reported phenomenon.
+  - The Porto Alegre LAI template asks the city to confirm "o percentual… de 2019 e 2020 (17,20%; 15,28%)… pode conter erro de preenchimento" and adds "esse número depende de valores declarados atípicos e deve ser confirmado".
+- **Why it matters:** a reporter reading "dos quais R$ 122 mi de valores atípicos" will discount most of the story, and the city gets a ready-made "it was a filing error" defence. The rule is a fixed band (<18% or >45%) and doesn't consider the municipality's own history or the pandemic.
+- **Root cause:**
+  - `scripts/build_data.py` atypical rule (`atip: "mde"` when MDE < 18 or > 45).
+  - The label `ATIP_LABEL` in `web/src/lib/rows.ts`.
+  - The KPI note in `TerritoryDashboard.tsx` / `UfDashboard.tsx`.
+  - Template wording in `web/src/lib/templates.ts`.
+- **Fix:**
+  - (a) Keep "possível erro" for clear outliers only: MDE < 10% or > 60%, a value inconsistent with `mdeV/base`, or a one-year spike against the city's own ±2-year median, as is already done for `aluno`/`base`.
+  - (b) For 10–18%, use a neutral label: "muito abaixo do mínimo — confirme na fonte".
+  - (c) Drop "dos quais R$ X de valores atípicos" from headline KPIs, or count only `base` flags (the money is doubtful only when the base is).
+  - (d) In templates, ask for confirmation without suggesting a filing error when the value repeats across years.
+
+#### JOR-18: Production: `/mg` and `/rj` return a cached 308 with no `Location`; `?ano=` and every filter param are stripped
+- **Status update:** **FIXED by the coordinator's rebuild of :3299.** Re-test, 2/2: `/mg?ano=2021` and `/rj?ano=2021` return 200 and the browser shows 2021/2020/2024 correctly. `/MG` → `308 location: /mg`, and `/mg` stays 200 afterwards (no re-poisoning). Original report kept below for the record.
+- **Severity (when found):** major. **Type:** bug (production only; the dev server on :3210 is fine)
+- **URL:** http://localhost:3299/mg?ano=2021, http://localhost:3299/rj?ano=2021
+- **Steps:**
+  1. Run `curl -sI "http://localhost:3299/mg?ano=2021"`. Response: `HTTP/1.1 308 Permanent Redirect`, `x-nextjs-cache: HIT`, no `location` header, body `<html id="__next_error__">`.
+  2. In a browser, the client router lands on `/mg` (query dropped) and shows 2025.
+- **Expected vs actual:** expected 200 and 2021. Actual: the year is lost for all ?ano values tried (2020, 2021, 2024), reproduced 4/4. The 25 other UFs return 200 (`/ba?ano=2021` and `/sp?ano=2020` work). `/MG` returns the same Location-less cached 308. `/SP` correctly returns `308 location: /sp`.
+- **Consequences:**
+  - Every year link into Minas Gerais and Rio de Janeiro (the two states with the most municipalities below 25% in 2021) from the map, ranking and Explorer opens on 2025.
+  - Crawlers see a 308 without a target for two state pages.
+- **Suspected root cause:** the uppercase canonicalisation `permanentRedirect()` inside the statically generated `web/src/app/[uf]/page.tsx`. A request for `/MG` or `/RJ`, probably from another QA agent, was rendered as a redirect and stored in the ISR/full-route cache under the same key as `/mg`. The cache key is case-insensitive here, likely because of macOS filesystem or cache-path normalisation. Build artefacts `.next-prod/server/app/mg.html` are fine (200), so the poisoning happened at runtime.
+- **Fix:**
+  - Move case normalisation out of the cached page into `next.config.ts` `redirects()` or middleware, which runs before the cache.
+  - Or set `dynamicParams = false`, so `/MG` is a 404 or is redirected at the edge.
+  - Add a regression check: `curl -I /MG` then `curl -I /mg` must return 200.
+  - I did not request other uppercase UFs, to avoid poisoning more pages on the shared server.
+
+#### JOR-19: Shared year links preview the latest year
+- **Severity:** minor. **Type:** UX/SEO
+- **URL:** `/rs/porto-alegre?ano=2021`
+- **Actual:** the share link correctly carries `?ano=2021`, but `og:description` reads "Em 2025, aplicou 25,69%… cumpriu, mas no limite". The OG image headline is "25,69% · No limite em 2025". A post about Porto Alegre's 2021 shortfall (21,02%, R$ 175,6 mi) unfurls with a "cumpriu" card. The bar chart in the image does show the red 2018–2021 bars.
+- **Root cause:** `web/src/app/[uf]/[slug]/opengraph-image.tsx` and `generateMetadata` are static per city.
+- **Fix:** Use year-specific share paths, e.g. `/rs/porto-alegre/2021` (statically generable) with their own metadata and OG image. Or make the OG image route accept `?ano` and have ShareButton point to an `/s/...` URL with year-aware metadata.
+
+#### JOR-20: Absolute URLs default to `http://localhost:3210` in the production build
+- **Severity:** minor. **Type:** bug/config
+- **URL:** http://localhost:3299/sitemap.xml, `/robots.txt`, `og:url`/`og:image` meta
+- **Actual:**
+  - All 5.605 `<loc>` entries, the sitemap line in robots.txt and the OG URLs point to `http://localhost:3210` while served from :3299.
+  - robots.txt has `Host: http://localhost:3210`. `Host` is non-standard and should be a bare hostname.
+- **Root cause:** `web/src/lib/site.ts` falls back to `http://localhost:3210` when `NEXT_PUBLIC_SITE_URL` is unset.
+- **Fix:** Fail the production build when `NEXT_PUBLIC_SITE_URL` is missing (or warn loudly), or derive the origin from the request (`headers()`) for robots and sitemap. Drop the `Host:` line.
+
+#### JOR-21: Explorer count line ignores municipalities that didn't exist yet; invalid `?ano` lingers in the URL
+- **Severity:** polish. **Type:** UI
+- **URL:** `/explorar?ano=2008`, `/explorar?ano=1999`
+- **Actual:**
+  - In 2008 the summary card says "Municípios 5.564 · todos os que existiam em 2008", but the count line says "5.570 de 5.570 municípios", and the table lists Mojuí dos Campos etc. as "Não existia".
+  - `?ano=1999` falls back to 2025 but stays in the address bar (other invalid params are removed).
+- **Fix:** Count line "5.564 municípios em 2008 (+6 criados depois)", or hide not-yet-existing rows by default. Remove an invalid `ano` with `replaceState`.
+
+#### JOR-22: Explorer "Faltou aplicar" card lacks the atypical-share line shown on home and state pages
+- **Severity:** polish. **Type:** content
+- **URL:** `/explorar?ano=2021`
+- **Actual:** "R$ 4,3 bi+ · 1 de 1090 sem receita declarada para estimar". Home and state pages add "dos quais R$ 1,3 bi de valores atípicos". The same figure is described differently on different pages. Align these after resolving JOR-17.
+
+### Round-2 recommendations (persona)
+
+1. Keep a regression check for JOR-18 (`curl -I /MG` then `/mg` must return 200), now fixed.
+2. Rework the atypical rule (JOR-17) so it flags filing errors, not the newsworthy cases themselves.
+3. Finish the newsroom kit (JOR-04): per-chart PNG/CSV download, "copiar citação" (value + year + scope + source + data version + permalink), embed. Add year-specific OG cards (JOR-19).
+4. Set `NEXT_PUBLIC_SITE_URL` as a build requirement (JOR-20).

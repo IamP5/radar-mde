@@ -228,3 +228,105 @@ The problems that remain sit in four areas: the data colors (contrast and colorb
 - `clipping.mjs`: content clipped by overflow, horizontal scroll regions, ellipsis without a title.
 - `cvd.mjs`: deuteranopia, protanopia, and achromatopsia captures. `contrast.mjs`: palette contrast math.
 - `modes.mjs`: 200% and 400% zoom, text-only zoom, forced colors, reduced motion, print.
+
+---
+
+## Round 2 · re-validation (commit ff4a309, production build `:3299`)
+
+- **Date:** 2026-10-07. Evidence for this round is in `qa/reports/a11y-visual/r2/` (`shots/`, `sec/`, `*.txt` logs, `results.json`). I opened and checked every screenshot cited below.
+- **Re-runs on `:3299`:**
+  - The full regression (`BASE=http://localhost:3299 node reports/a11y-visual/a11y-regression.mjs`) returns **0 axe violations** on all 9 routes in light and dark, and **0 horizontal overflow** at all 8 widths in both themes. Log: `r2/regression.txt`.
+  - The script now also checks that **the first Tab on each page lands on the skip link**. This new check **fails on all 9 routes** (A11Y-17 below). Log: `r2/regression-quick.txt`.
+- **`:3299` rebuild:** the server was rebuilt during this round. One `/explorar` run hit connection-refused, and `/sp/santo-andre` showed 6 "obscured" hits on the first pass. I re-ran both after the rebuild, and the results below come from the post-rebuild runs.
+
+### Status of round-1 findings
+
+| ID | Sev | Status | Evidence / note |
+|---|---|---|---|
+| A11Y-01 critical pill contrast | minor | **FIXED** | axe light: 0 nodes. `--critical-ink` is `#c0262d` |
+| A11Y-02 focus hidden under sticky bars | major | **FIXED** | Shift+Tab sweep: 0 obscured on `/`, `/sp`, `/sp/santo-andre`, `/regiao/sudeste`. The 2 hits on `/explorar` are artefacts (skip link and body). `r2/shifttab.txt` |
+| A11Y-03 map bins (contrast, CVD) | major | **PARTIAL** | State map is fixed: 0% is near-white and the red ramp is separable even in achromatopsia (`r2/shots/cvd-home-map-grid.png`). On municipal maps the "contorno escuro" for below-25% is about 1px and disappears in grayscale. In normal vision you have to look for the 2 Sudeste cities (`r2/shots/cvd-sudeste-zoom.png`). → A11Y-18 |
+| A11Y-04 region lines colour-only | major | **FIXED** (one nit) | Dash patterns plus a direct label block (`r2/sec/home-light-1440-05.png`). Distinguishable under deuteranopia, protanopia and achromatopsia (`r2/shots/cvd-home-evol-grid.png`). Nit: Nordeste (dotted) and Sul (dot-dash) are close in grayscale. |
+| A11Y-05 forced-colors | major | **FIXED** (one nit) | Swatches stay visible. Selected year, segmented controls and tabs get a Highlight outline (`r2/shots/forced-map_.png`). Nit: the "Posição" percentile track and fill vanish, leaving only the marker ring (`r2/shots/forced_sp_santo-andre.png`). |
+| A11Y-06 sticky stack at 400% zoom | major | **FIXED** | At 320×256 and 640×400 the header and sub-bar become static, so sticky coverage is 0% (`r2/shots/zoom-320x256-_.png`) |
+| A11Y-07 maps keyboard / table alternative | major | **FIXED** (state level) | State map is a `role=group` with 27 focusable shapes ("Rondônia: 0 de 52 … MDE mediana 27,14%"); focus shows the tooltip with "Enter para abrir". `aria-describedby` points to the ranking table. Every map now has a "Os mesmos números em tabela" link. Municipal maps stay `role=img` with a table link, which is acceptable. |
+| A11Y-08 live updates | minor | **FIXED** | `role=status` "Exibindo 2025: 23 de 5.560…" on territory pages; the palette count "76 resultados, mostrando 8" is live |
+| A11Y-09 h1 "Santo AndréSP" | minor | **FIXED** | Accessible name is "Santo André (São Paulo)" |
+| A11Y-10 19× "SIOPE" links | minor | **FIXED** | "Dados brutos de 2025 no SIOPE (JSON, abre em nova aba)" |
+| A11Y-11 skip-link target | minor | **FIXED** | `main tabindex=-1`; focus moves to `MAIN#conteudo` and the next Tab reaches the breadcrumb. **But** the skip link itself is now skipped (A11Y-17) |
+| A11Y-12 UF sort buttons 19px | minor | **FIXED** | Sort buttons no longer appear in the small-target list |
+| A11Y-13 captions / ellipsis without text | minor | **PARTIAL** | Captions were added on `/`, `/sp` and `/sp/santo-andre`. Still missing on `/dados` (2 tables) and `/sobre` (2 tables). Explorer at 375px truncates names ("Chapada da Nati…") with no `title` |
+| A11Y-14 EmptyState `role=status` | minor | **FIXED** | No status role on the empty `/acompanhar` |
+| A11Y-15 text-only zoom (px fonts) | minor | **NOT FIXED → REGRESSED** | px font sizes remain, and with 200% root text the city page header now collapses (→ VIS-12) |
+| A11Y-16 50% focus ring | minor | **FIXED** | Settled ring is `rgb(0,112,243)` 2px. It still animates in from the text color for about 150ms, which is harmless |
+| VIS-01 ranking table mobile / desktop cut | major | **FIXED** | Sticky name column, "% abaixo" second, all columns fit at 1280 and 1440, R$/aluno is rounded (`r2/shots/v-home-ranking-375.png`, `-1280.png`) |
+| VIS-02 explorer legend clipped | minor | **FIXED** | Wraps to 2 lines at 375px (`r2/shots/explorar-scrolled-light-375.png`) |
+| VIS-03 delta pill wraps | minor | **FIXED** | "+0,1 ponto" stays on one line at 320 and 375 |
+| VIS-04 scroll lists cut rows | minor | **FIXED** | `fade-b` on the déficits and vizinhos lists |
+| VIS-05 empty space under histogram | polish | **NOT FIXED** | `r2/sec/home-light-1440-07.png`: chart about 200px tall in a 470px panel; same on `/sp` |
+| VIS-06 spark not at bottom | polish | **FIXED** | Sparks are flush at the bottom. KPI cards are now tall with a large empty middle when one card has 4 sub-lines (`r2/sec/home-light-1440-00top.png`) |
+| VIS-07 clipped scrollers | polish | **FIXED** | Nav labels are shortened on mobile ("Salvos", "Método") and the year picker has `fade-x` |
+| VIS-08 nested tiles / empty-state order | polish | **PARTIAL** | Empty state fixed (icon, then title; `r2/shots/acompanhar-empty.png`). The "Por região" bordered tiles inside a Panel are unchanged |
+| VIS-09 dark map nd / steps | polish | **FIXED** | New dark bins; "Sem dados" `#232323` is visible |
+| VIS-10 print | polish | **FIXED** (one nit) | Light theme even when the site is dark. No header, nav or buttons. A URL and date line prints. Panels aren't split (`r2/shots/print-*-pages.png`: 7, 7 and 8 pages). Nit: money in "Ano a ano" wraps ("R$ 643,8 / mi", `r2/shots/p7-7.png`); add `whitespace-nowrap` to numeric cells in print |
+| VIS-11 city highlight on map | polish | **PARTIAL** | Outline is thicker and white in dark mode, but still no pin or label (`r2/shots/d1280-santo-map.png`) |
+
+### New findings (round 2)
+
+#### A11Y-17 · major · REGRESSION · WCAG 2.4.1 Bypass Blocks / 2.4.3 Focus Order: first Tab skips the skip link, logo and active nav item
+- **Where:** every route, dev and prod, desktop widths ≥ md.
+- **Steps:** load `/` and press Tab once.
+- **Expected:** focus lands on "Pular para o conteúdo".
+- **Actual:** focus lands on the nav item *after* the current section:
+  - `/` → "Explorar"
+  - `/dados` → "Metodologia"
+  - `/sobre` → "Buscar"
+  
+  The skip link, the logo and the active nav link are never reached going forward. No focus event fires on load. What moved is the browser's sequential-focus starting point. The new regression check fails on 9 of 9 routes.
+- **Root cause:** `web/src/components/kit/nav.tsx` (useEffect, about line 37): `el.querySelector("[aria-current=page]")?.scrollIntoView({block:"nearest",inline:"nearest"})`. In Chromium, `scrollIntoView` moves the sequential focus navigation starting point to that element. It runs for the visible desktop nav even when nothing needs to scroll.
+- **Fix:** scroll the nav container instead of the element, and only on the mobile nav:
+  ```ts
+  const a = el.querySelector<HTMLElement>("[aria-current=page]");
+  if (a && el.scrollWidth > el.clientWidth) el.scrollLeft = a.offsetLeft - (el.clientWidth - a.offsetWidth) / 2;
+  ```
+  This is the same approach `YearPicker` uses.
+
+#### VIS-12 · major · REGRESSION · City page header squeezes the title column when there are 4 actions
+- **Where:** `/sp/santo-andre`.
+  - **768px (iPad portrait):** the title wraps "Santo / André", the summary runs about 5 words per line in a 180px column, and the right half of the band is empty above the buttons (`r2/shots/v-santo-768-top.png`).
+  - **1024px:** the summary column is about 420px.
+  - **200% default font size (A11Y-15):** the column is 90px wide and the text runs one word per line (`r2/shots/textzoom-santo-tall.png`).
+- **Root cause:** `web/src/components/kit/page-header.tsx:19`. The actions wrapper is `shrink-0` inside `md:flex-row`, and the city page now passes 4 actions ("O que posso fazer?", Acompanhar, Compartilhar, SIOPE).
+- **Fix:** change the wrapper to `flex min-w-0 flex-wrap items-center gap-2 md:max-w-[50%] md:justify-end`, give the title block `md:flex-1 md:min-w-[22rem]`, or switch to `lg:flex-row` so actions go below the title under 1024px.
+
+#### A11Y-18 · minor · Below-minimum mark on municipal maps is not perceivable
+- **Where:** `/regiao/*`, `/sp`, `/sp/santo-andre`, and the "Municípios" map mode.
+- **Actual:** the 1px dark outline on 3–6px shapes next to dark `bin-5` neighbours can't be seen in grayscale. `bin-1` and `bin-5` have similar luminance, which the contract itself notes (`r2/shots/cvd-sudeste-zoom.png`). In normal vision you still have to hunt for them.
+- **Fix:** in `Choropleth.tsx` (below-bin overlay):
+  - Draw below-25% shapes last, with a 2px `var(--background)` halo under a 1.5px `var(--critical-ink)` stroke.
+  - Add a centroid marker (`<circle r=3>`) when the shape's bbox is under 8px.
+  - Or render them with the hatch pattern.
+
+#### A11Y-19 · minor · White text on dark-mode `bin-4` tiles is 4.42:1
+- **Where:** `/acompanhar` (watchlist year tiles) in dark mode. Values 26–30% render as white 11–12px text on `#2a78d6`. axe did not catch it because the watchlist is empty during the regression run.
+- **Fix:** use black text on `bin-4` in dark (`#000` on `#2a78d6` is 4.75:1), or darken dark `--bin-4` to `#2468bd`. Also seed `radar-mde:watch` in the regression run so axe covers the filled watchlist.
+
+#### A11Y-20 · minor · WCAG 2.5.8: tiny targets introduced or kept
+- **"≠" divergence marker:** in the `/sp` table it is a 9×16px focusable span. Give it `p-1 -m-1` so it reaches 24×24.
+- **Home state map on mobile:** each state shape is a tap target, and DF is 5×3px, AL/SE about 10px. Equivalent links exist in "Todos os estados", so the 2.5.8 equivalent-control exception applies. Consider `tabIndex=-1` on shapes smaller than 8px and rely on the grid.
+- **Glossary term buttons:** 16–20px tall. They pass as inline targets inside sentences, but "MDE em 2025" in the KPI label is not a sentence; add `py-0.5`.
+
+#### VIS-13 · polish · Smaller visual notes on the redesigned surfaces
+- **Home search hero (1280/1440):** "Baixar CSV" and "Explorar municípios" are bottom-aligned with the description, while the new search field sits below them. The actions float mid-band (`r2/sec/home-light-1440-00top.png`). Align the actions with the search row, or move them under the field.
+- **Palette "Ver todos":** it expands to "203 resultados, mostrando 100" with no way to reach 101–203 and no bottom fade on the scrolling list (`r2/shots/palette-vertodos-light-1280.png`). Add "Mostrar mais" or a link to `/explorar?q=…`.
+- **Explorer at 375px:** the "vs 2024" column is cut at the card edge with no edge fade, and its values ("−19,5") have no unit (`r2/shots/explorar-scrolled-light-375.png`). Add `fade-x` and "p.p.".
+- **Footer at 375px:** the version token "2026-10-07.586603bb" breaks mid-token, and the theme switcher pill stretches the full width (`r2/shots/watch-light-375.png`). Use `whitespace-nowrap` on the mono token and `w-fit` on the switcher.
+- **Watchlist at 768px dark:** the year columns run past the card edge with no fade or sticky hint (`r2/shots/watch-dark-768.png`). The 375px card layout is good.
+- **City breadcrumb:** "Brasil" is indented about 6px from the h1 left edge because of the pill padding (`r2/sec/santo-light-1440-00top.png`). Use `-ml-1.5` on the first crumb.
+
+### Verified OK this round (new surfaces)
+- **KPI rename:** "Faltou aplicar (estimativa)" has an info popover with the formula, the caveat and a methodology link. The popover is reachable by keyboard and labelled "Como o valor que faltou aplicar é calculado".
+- **Region chart:** dash patterns plus a direct label block. Brasil is ink and dashed, as intended.
+- **UF table:** sticky first column and right fade. The recurrence filter ("Qualquer histórico") renders cleanly in dark mode.
+- **City page:** the sticky year bar is static at short heights. Glossary terms are `button[aria-haspopup=dialog]`; Enter opens and Escape returns focus to the term. The action kit is a real `tablist` with selected state, visible in forced colors.
+- **Explorer:** the virtualized table keeps the sort header and status pills. The CSV menu has the "CSV padrão" and "Excel Brasil" groups and no overflow at 1280 or 375. The mobile palette has a visible "Fechar".

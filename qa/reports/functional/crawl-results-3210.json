@@ -6231,276 +6231,6 @@
       "note": ""
     },
     {
-      "href": "/explorar?uf=MT",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/poxoreu",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/guaranta-do-norte",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/pontes-e-lacerda",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/varzea-grande",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/jaciara",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/gloria-d-oeste",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/jangada",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/feliz-natal",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/alta-floresta",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/acorizal",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/nova-xavantina",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/sorriso",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/vila-bela-da-santissima-trindade",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/vila-rica",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/luciara",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/sao-jose-dos-quatro-marcos",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/nova-guarita",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/chapada-dos-guimaraes",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/dom-aquino",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/rondolandia",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/juina",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/canarana",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/castanheira",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/paranatinga",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/sao-jose-do-rio-claro",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/guiratinga",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/carlinda",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/alto-paraguai",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/porto-estrela",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/brasnorte",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/alto-garcas",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/nova-santa-helena",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/salto-do-ceu",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/agua-boa",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/santa-carmem",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/denise",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/rondonopolis",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/porto-esperidiao",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/cotriguacu",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/figueiropolis-d-oeste",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/rio-branco",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/campo-verde",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/cocalinho",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/curvelandia",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
       "href": "/explorar?uf=PA",
       "status": 200,
       "ok": true,
@@ -6784,6 +6514,276 @@
     },
     {
       "href": "/pa/tome-acu",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/explorar?uf=MT",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/poxoreu",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/guaranta-do-norte",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/pontes-e-lacerda",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/varzea-grande",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/jaciara",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/gloria-d-oeste",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/jangada",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/feliz-natal",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/alta-floresta",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/acorizal",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/nova-xavantina",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/sorriso",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/vila-bela-da-santissima-trindade",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/vila-rica",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/luciara",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/sao-jose-dos-quatro-marcos",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/nova-guarita",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/chapada-dos-guimaraes",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/dom-aquino",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/rondolandia",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/juina",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/canarana",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/castanheira",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/paranatinga",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/sao-jose-do-rio-claro",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/guiratinga",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/carlinda",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/alto-paraguai",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/porto-estrela",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/brasnorte",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/alto-garcas",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/nova-santa-helena",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/salto-do-ceu",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/agua-boa",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/santa-carmem",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/denise",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/rondonopolis",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/porto-esperidiao",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/cotriguacu",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/figueiropolis-d-oeste",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/rio-branco",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/campo-verde",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/cocalinho",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/curvelandia",
       "status": 200,
       "ok": true,
       "note": ""
@@ -8595,6 +8595,90 @@
       "note": ""
     },
     {
+      "href": "/explorar?uf=RR",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rr/pacaraima",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rr/sao-joao-da-baliza",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rr/uiramuta",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rr/caroebe",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rr/boa-vista",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rr/canta",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rr/normandia",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rr/bonfim",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rr/sao-luiz-do-anaua",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rr/rorainopolis",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rr/caracarai",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rr/iracema",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rr/amajari",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
       "href": "/explorar?uf=RO",
       "status": 200,
       "ok": true,
@@ -8901,85 +8985,283 @@
       "note": ""
     },
     {
-      "href": "/explorar?uf=RR",
+      "href": "/explorar?uf=RS",
       "status": 200,
       "ok": true,
       "note": ""
     },
     {
-      "href": "/rr/pacaraima",
+      "href": "/rs/barao",
       "status": 200,
       "ok": true,
       "note": ""
     },
     {
-      "href": "/rr/sao-joao-da-baliza",
+      "href": "/rs/jaquirana",
       "status": 200,
       "ok": true,
       "note": ""
     },
     {
-      "href": "/rr/uiramuta",
+      "href": "/rs/sao-jose-do-norte",
       "status": 200,
       "ok": true,
       "note": ""
     },
     {
-      "href": "/rr/caroebe",
+      "href": "/rs/encantado",
       "status": 200,
       "ok": true,
       "note": ""
     },
     {
-      "href": "/rr/boa-vista",
+      "href": "/rs/uniao-da-serra",
       "status": 200,
       "ok": true,
       "note": ""
     },
     {
-      "href": "/rr/canta",
+      "href": "/rs/boa-vista-das-missoes",
       "status": 200,
       "ok": true,
       "note": ""
     },
     {
-      "href": "/rr/normandia",
+      "href": "/rs/caxias-do-sul",
       "status": 200,
       "ok": true,
       "note": ""
     },
     {
-      "href": "/rr/bonfim",
+      "href": "/rs/alegria",
       "status": 200,
       "ok": true,
       "note": ""
     },
     {
-      "href": "/rr/sao-luiz-do-anaua",
+      "href": "/rs/dona-francisca",
       "status": 200,
       "ok": true,
       "note": ""
     },
     {
-      "href": "/rr/rorainopolis",
+      "href": "/rs/vacaria",
       "status": 200,
       "ok": true,
       "note": ""
     },
     {
-      "href": "/rr/caracarai",
+      "href": "/rs/xangri-la",
       "status": 200,
       "ok": true,
       "note": ""
     },
     {
-      "href": "/rr/iracema",
+      "href": "/rs/tramandai",
       "status": 200,
       "ok": true,
       "note": ""
     },
     {
-      "href": "/rr/amajari",
+      "href": "/rs/faxinal-do-soturno",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/nova-santa-rita",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/cruzeiro-do-sul",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/chiapetta",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/gravatai",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/estrela",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/piratini",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/vila-langaro",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/vista-alegre-do-prata",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/pirapo",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/arroio-do-tigre",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/charrua",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/novo-tiradentes",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/esmeralda",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/boqueirao-do-leao",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/parobe",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/sao-martinho",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/rio-pardo",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/toropi",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/arroio-do-meio",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/arroio-dos-ratos",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/dom-pedro-de-alcantara",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/panambi",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/charqueadas",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/ubiretama",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/alvorada",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/marau",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/progresso",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/sao-jorge",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/pantano-grande",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/vista-gaucha",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/mato-queimado",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/santo-augusto",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/rs/serio",
       "status": 200,
       "ok": true,
       "note": ""
@@ -9286,288 +9568,6 @@
     },
     {
       "href": "/sc/sao-joao-do-oeste",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/explorar?uf=RS",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/barao",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/jaquirana",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/sao-jose-do-norte",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/encantado",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/uniao-da-serra",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/boa-vista-das-missoes",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/caxias-do-sul",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/alegria",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/dona-francisca",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/vacaria",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/xangri-la",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/tramandai",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/faxinal-do-soturno",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/nova-santa-rita",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/cruzeiro-do-sul",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/chiapetta",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/gravatai",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/estrela",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/piratini",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/vila-langaro",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/vista-alegre-do-prata",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/pirapo",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/arroio-do-tigre",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/charrua",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/novo-tiradentes",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/esmeralda",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/boqueirao-do-leao",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/parobe",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/sao-martinho",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/rio-pardo",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/toropi",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/arroio-do-meio",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/arroio-dos-ratos",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/dom-pedro-de-alcantara",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/panambi",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/charqueadas",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/ubiretama",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/alvorada",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/marau",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/progresso",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/sao-jorge",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/pantano-grande",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/vista-gaucha",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/mato-queimado",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/santo-augusto",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rs/serio",
       "status": 200,
       "ok": true,
       "note": ""
@@ -10791,66 +10791,6 @@
       "note": ""
     },
     {
-      "href": "/pe/aracoiaba",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pe/recife",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pe/abreu-e-lima",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pe/igarassu",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pe/jaboatao-dos-guararapes",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pe/camaragibe",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pe/moreno",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pe/paulista",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pe/itapissuma",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pe/ipojuca",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
       "href": "/pb/pedras-de-fogo",
       "status": 200,
       "ok": true,
@@ -10930,6 +10870,66 @@
     },
     {
       "href": "/pb/caldas-brandao",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pe/aracoiaba",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pe/recife",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pe/abreu-e-lima",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pe/igarassu",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pe/jaboatao-dos-guararapes",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pe/camaragibe",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pe/moreno",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pe/paulista",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pe/itapissuma",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pe/ipojuca",
       "status": 200,
       "ok": true,
       "note": ""
@@ -11325,150 +11325,6 @@
       "note": ""
     },
     {
-      "href": "/pr/curitiba",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pr/itaperucu",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pr/campina-grande-do-sul",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pr/doutor-ulysses",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pr/tunas-do-parana",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pr/cerro-azul",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pr/agudos-do-sul",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pr/rio-negro",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pr/fazenda-rio-grande",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pr/balsa-nova",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pr/quitandinha",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pr/sao-jose-dos-pinhais",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pr/pinhais",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pr/colombo",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pr/mandirituba",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pr/contenda",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pr/campo-magro",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pr/tijucas-do-sul",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pr/campo-largo",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pr/adrianopolis",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pr/campo-do-tenente",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pr/araucaria",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pr/pien",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pr/piraquara",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
       "href": "/sp/vargem-grande-paulista",
       "status": 200,
       "ok": true,
@@ -11637,6 +11493,150 @@
       "note": ""
     },
     {
+      "href": "/pr/curitiba",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pr/itaperucu",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pr/campina-grande-do-sul",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pr/doutor-ulysses",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pr/tunas-do-parana",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pr/cerro-azul",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pr/agudos-do-sul",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pr/rio-negro",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pr/fazenda-rio-grande",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pr/balsa-nova",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pr/quitandinha",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pr/sao-jose-dos-pinhais",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pr/pinhais",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pr/colombo",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pr/mandirituba",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pr/contenda",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pr/campo-magro",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pr/tijucas-do-sul",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pr/campo-largo",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pr/adrianopolis",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pr/campo-do-tenente",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pr/araucaria",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pr/pien",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pr/piraquara",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
       "href": "/sc/angelina",
       "status": 200,
       "ok": true,
@@ -11710,6 +11710,54 @@
     },
     {
       "href": "/sc/sao-pedro-de-alcantara",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/ms/nova-alvorada-do-sul",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/ms/camapua",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/ms/terenos",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/ms/jaraguari",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/ms/campo-grande",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/ms/dois-irmaos-do-buriti",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/ms/bandeirantes",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/ms/ribas-do-rio-pardo",
       "status": 200,
       "ok": true,
       "note": ""
@@ -11806,54 +11854,6 @@
     },
     {
       "href": "/rs/capivari-do-sul",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/ms/nova-alvorada-do-sul",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/ms/camapua",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/ms/terenos",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/ms/jaraguari",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/ms/campo-grande",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/ms/dois-irmaos-do-buriti",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/ms/bandeirantes",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/ms/ribas-do-rio-pardo",
       "status": 200,
       "ok": true,
       "note": ""
@@ -12075,6 +12075,12 @@
       "note": ""
     },
     {
+      "href": "/am/labrea",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
       "href": "/am/anama",
       "status": 200,
       "ok": true,
@@ -12082,12 +12088,6 @@
     },
     {
       "href": "/am/caapiranga",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/am/labrea",
       "status": 200,
       "ok": true,
       "note": ""
@@ -12309,6 +12309,18 @@
       "note": ""
     },
     {
+      "href": "/es/mucurici",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/es/pinheiros",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
       "href": "/es/presidente-kennedy",
       "status": 200,
       "ok": true,
@@ -12340,18 +12352,6 @@
     },
     {
       "href": "/es/muqui",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/es/mucurici",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/es/pinheiros",
       "status": 200,
       "ok": true,
       "note": ""
@@ -12591,6 +12591,108 @@
       "note": ""
     },
     {
+      "href": "/mg/merces",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mg/guarani",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mg/guidoval",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mg/guiricema",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mg/tabuleiro",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mg/silveirania",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mg/divinesia",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mg/senador-firmino",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mg/bras-pires",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mg/tocantins",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mg/rio-pomba",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mg/rodeiro",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mg/pirauba",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mg/uba",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mg/sao-geraldo",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mg/dores-do-turvo",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mg/visconde-do-rio-branco",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
       "href": "/mg/sao-joao-da-ponte",
       "status": 200,
       "ok": true,
@@ -12777,114 +12879,6 @@
       "note": ""
     },
     {
-      "href": "/mg/merces",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mg/guarani",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mg/guidoval",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mg/guiricema",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mg/tabuleiro",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mg/silveirania",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mg/divinesia",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mg/senador-firmino",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mg/bras-pires",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mg/tocantins",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mg/rio-pomba",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mg/rodeiro",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mg/pirauba",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mg/uba",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mg/sao-geraldo",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mg/dores-do-turvo",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mg/visconde-do-rio-branco",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/ms/paraiso-das-aguas",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
       "href": "/ms/caracol",
       "status": 200,
       "ok": true,
@@ -12904,6 +12898,12 @@
     },
     {
       "href": "/ms/nioaque",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/ms/paraiso-das-aguas",
       "status": 200,
       "ok": true,
       "note": ""
@@ -13251,42 +13251,6 @@
       "note": ""
     },
     {
-      "href": "/pe/limoeiro",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pe/feira-nova",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pe/joao-alfredo",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pe/bom-jardim",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pe/orobo",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/pe/salgadinho",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
       "href": "/pe/serra-talhada",
       "status": 200,
       "ok": true,
@@ -13342,6 +13306,42 @@
     },
     {
       "href": "/pe/floresta",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pe/limoeiro",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pe/feira-nova",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pe/joao-alfredo",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pe/bom-jardim",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pe/orobo",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/pe/salgadinho",
       "status": 200,
       "ok": true,
       "note": ""
@@ -13983,54 +13983,6 @@
       "note": ""
     },
     {
-      "href": "/mt/lucas-do-rio-verde",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/itanhanga",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/nova-mutum",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/santa-rita-do-trivelato",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/nova-ubirata",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/vera",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/tapurah",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/mt/ipiranga-do-norte",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
       "href": "/sp/hortolandia",
       "status": 200,
       "ok": true,
@@ -14122,6 +14074,54 @@
     },
     {
       "href": "/sp/cosmopolis",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/lucas-do-rio-verde",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/itanhanga",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/nova-mutum",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/santa-rita-do-trivelato",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/nova-ubirata",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/vera",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/tapurah",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
+      "href": "/mt/ipiranga-do-norte",
       "status": 200,
       "ok": true,
       "note": ""
@@ -14607,6 +14607,12 @@
       "note": ""
     },
     {
+      "href": "/rn/rafael-fernandes",
+      "status": 200,
+      "ok": true,
+      "note": ""
+    },
+    {
       "href": "/rn/lajes",
       "status": 200,
       "ok": true,
@@ -14698,12 +14704,6 @@
     },
     {
       "href": "/rn/alto-do-rodrigues",
-      "status": 200,
-      "ok": true,
-      "note": ""
-    },
-    {
-      "href": "/rn/rafael-fernandes",
       "status": 200,
       "ok": true,
       "note": ""

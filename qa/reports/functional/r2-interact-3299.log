@@ -26,9 +26,9 @@ PASS  year: city page honours ?ano=2019 (shows 2019 as focus year)  — Em 2019,
 PASS  year: no page errors
 
 == search
-FAIL  search: Meta+K opens palette
+PASS  search: Meta+K opens palette
 PASS  search: Esc closes (Meta+K)
-FAIL  search: Ctrl+K opens palette
+PASS  search: Ctrl+K opens palette
 PASS  search: Esc closes (Ctrl+K)
 PASS  search: / opens palette
 PASS  search: Esc closes (/)
@@ -67,7 +67,7 @@ PASS  search: Enter navigates to Santo André SP  — http://localhost:3299/sp/s
 PASS  search: recents show Santo André
 PASS  search: '/' typed inside palette input stays in input
 PASS  search: '/' inside explorer input does not open palette
-FAIL  search: corrupt recents do not crash
+PASS  search: corrupt recents do not crash
 PASS  search: Enter on 'bahia' opens /ba  — http://localhost:3299/ba
 PASS  search: Distrito Federal -> /df/brasilia  — http://localhost:3299/df/brasilia
 PASS  search: no page errors
@@ -83,7 +83,8 @@ PASS  watch: removal persists after reload
 PASS  watch: legacy bare slug maps to SP + missing item footer  — Acompanhando Os municípios que você salvou, com o percentual aplicado em MDE em cada ano. A lista fica guardada só neste navegador. 1 município Percentual aplicado em MDE por ano, 2008–2025. Em vermelho, abaixo do mínimo de 25%. Adicionar Municípios acompanhados e percentual aplicado em MDE por ano 
 PASS  watch: corrupt storage shows empty state, no crash
 PASS  watch: non-string entries do not crash
-FAIL  watch: threw  — locator.click: Timeout 30000ms exceeded. @248
+PASS  watch: other tab add reflects in /acompanhar (storage event)
+PASS  watch: no page errors
 
 == share
 PASS  share: copies city URL  — http://localhost:3299/pa/pau-d-arco
@@ -91,7 +92,7 @@ PASS  share: button shows 'Link copiado'
 PASS  share: label resets
 PASS  share: WhatsApp opens wa.me with text  — https://api.whatsapp.com/send/?text=Pau+D%27Arco+%28PA%29%3A+Em+2025%2C+aplicou+32%2C87%25+da+receita+de+impostos+em+educa%C3%A7%C3%A3o+%E2%
 PASS  share: WhatsApp text contains city URL
-PASS  share: link from ?ano page (informational)  — http://localhost:3299/sp/santo-andre
+PASS  share: link from ?ano page (informational)  — http://localhost:3299/sp/santo-andre?ano=2015
 PASS  share: button on / (informational)  — absent
 PASS  share: button on /sp (informational)  — absent
 PASS  share: button on /regiao/sul (informational)  — absent
@@ -110,9 +111,9 @@ PASS  theme: next-themes inline script present (no flash)
 PASS  mobile: no horizontal overflow on /  — 375
 PASS  mobile: nav visible
 PASS  mobile: nav -> Explorar (/explorar) no overflow  — 375
-FAIL  mobile: nav link Acompanhando visible
+PASS  mobile: nav -> Salvos (/acompanhar) no overflow  — 375
 PASS  mobile: nav -> Dados (/dados) no overflow  — 375
-FAIL  mobile: nav link Metodologia visible
+PASS  mobile: nav -> Método (/sobre) no overflow  — 375
 PASS  mobile: nav -> Painel (/) no overflow  — 375
 PASS  mobile: /sp no horizontal overflow  — 375
 PASS  mobile: /sp/santo-andre no horizontal overflow  — 375
@@ -125,7 +126,7 @@ PASS  mobile: /df/brasilia no horizontal overflow  — 375
 PASS  mobile: /xx no horizontal overflow  — 375
 PASS  mobile: search opens by tap
 PASS  mobile: tap result navigates  — http://localhost:3299/pe/recife
-FAIL  mobile: no page errors  — Failed to load resource: the server responded with a status of 404 (Not Found)
+PASS  mobile: no page errors
 
 == explorer
 PASS  explorer: loads 5.570
@@ -145,8 +146,24 @@ PASS  explorer: name filter 'embu guacu' matches >= 1  — 1
 PASS  explorer: sort População desc -> São Paulo first  — São Paulo
 PASS  explorer: sort População asc -> smallest first  — Serra da Saudade
 PASS  explorer: sort Município asc starts with A  — Abadia de Goiás
-FAIL  explorer: first page 100 rows  — 21
-FAIL  explorer: threw  — locator.click: Timeout 30000ms exceeded. @411
+PASS  explorer: virtualised (< 120 DOM rows for 5.570)  — 21
+PASS  explorer: aria-rowcount = 5.571
+PASS  explorer: scrolling to the end shows the last name (Z…)  — Zortéa
+PASS  explorer: middle of the list renders rows (no blank window)  — 28
+PASS  explorer: sort persisted in URL (ordem=)  — ?ano=2021&ordem=nome
+PASS  explorer: CSV filename names the slice  — radar-mde_RR_2008-2025.csv
+PASS  explorer: CSV header uses shared schema (envio, situacao_mde)  — ibge,municipio,uf,regiao,regiao_intermediaria,capital,populacao,ano,envio,situacao_mde,mde_pct,delta_mde_pp,faltou_rs,fundeb_pessoal_pct,fundeb_minimo_pct,por_aluno_rs,pandemia_ec119,atipico
+PASS  explorer: CSV has BOM
+PASS  explorer: CSV RR rows = 15 x 18 years  — 270
+PASS  explorer: CSV no NaN/undefined
+PASS  explorer: CSV every row is RR
+PASS  explorer CSV == /dados/csv on shared columns  — 0 diffs, e.g. 
+PASS  csv route: /dados/csv/df ok
+PASS  explorer: 'Não declarou' 2025 > 0  — 10
+PASS  explorer: invalid params ignored
+PASS  explorer: conflicting regiao=sul&uf=SP -> Sul only  — 1191 url=?regiao=sul
+PASS  explorer: lowercase uf=sp accepted  — 645
+PASS  explorer: no page errors
 
 == uftable
 PASS  uf: shows 'Mostrando 50 de 645'  — Mostrando 50 de 645
@@ -184,40 +201,139 @@ PASS  region: ?ano=2020 deep-link
 PASS  region: DF link goes to /df/brasilia with ano  — /df/brasilia?ano=2020
 
 == crumbs
-FAIL  crumbs: threw  — locator.click: Timeout 30000ms exceeded. @555
+PASS  crumbs: region sibling menu navigates  — http://localhost:3299/regiao/nordeste
+PASS  crumbs: state menu lists 4 Sudeste UFs  — Minas GeraisMG|Espírito SantoES|Rio de JaneiroRJ|São PauloSP
+PASS  crumbs: state menu navigates to /mg  — http://localhost:3299/mg
+PASS  crumbs: city picker lists 645
+PASS  crumbs: city picker 'santa barbara d'oeste' finds Santa Bárbara d'Oeste  — Santa Bárbara d'Oeste
+PASS  crumbs: city picker 'santa barbara d oeste' finds Santa Bárbara d'Oeste  — Santa Bárbara d'Oeste
+PASS  crumbs: city picker 'santa bárbara d’oeste' finds Santa Bárbara d'Oeste  — Santa Bárbara d'Oeste
+PASS  crumbs: city picker '3548' (IBGE digits) does not list unrelated cities  — 0 options e.g. 
+PASS  crumbs: city picker Enter navigates  — http://localhost:3299/sp/campinas
+PASS  crumbs: DF has no city picker  — Brasil / Centro-Oeste / Distrito Federal / Brasília
+PASS  crumbs: no page errors
 
 == clicks
-FAIL  clicks: threw  — page.evaluate: TypeError: Cannot read properties of undefined (reading 'querySelectorAll') @598
+PASS  map: click on UF shape navigates  — http://localhost:3299/am?ano=2015
+PASS  map: navigation from map keeps ?ano=2015  — http://localhost:3299/am?ano=2015
+PASS  uf: clicking a year bar changes year  — 2011 (35 bars)
+PASS  city: template tab 0 '1. Pedir dados
+Pedir informações' has body  — 2297
+PASS  city: template tab 1 '2. Conselho
+Avisar o conselho do Fundeb' has body  — 1910
+PASS  city: template tab 2 '3. Câmara
+Pedir a um vereador' has body  — 2272
+PASS  city: template tab 3 '4. Fiscalização
+Comunicar ao Tribunal de Contas ou ao MP' has body  — 1680
+PASS  city: Copiar texto copies template  — 1680
+PASS  city: state map renders shapes  — 646
+PASS  city: neighbour link navigates  — /sp/itapecerica-da-serra -> http://localhost:3299/sp/itapecerica-da-serra
+PASS  city(no data): LAI template does not claim compliance  — Contexto: Não há registro de envio, pelo Município, dos dados de aplicação em Manutenção e Desenvolvimento do Ensino (MDE) ao Sistema de Informações sobre Orçam
+PASS  city(no data): does not flag 'não declarou' for years before installation (2008–2024)
+FAIL  city(no data): map highlights the municipality (geometry exists)  — highlight elements: 0
+PASS  clicks: no page errors
+
+== r2city
+PASS  r2 city: ?ano=2019 headline
+PASS  r2 city: year picker shows 2019  — 2019
+PASS  r2 city: state values for 2019 fetched from /ano/2019  — 200 /sp/santo-andre/ano/2019
+PASS  r2 city: click 2015 -> ?ano=2015 + headline  — ?ano=2015
+PASS  r2 city: no NaN/undefined after year switch
+PASS  r2 city: share link keeps ?ano=2015  — http://localhost:3299/sp/santo-andre?ano=2015
+PASS  r2 city: reload keeps 2015
+PASS  r2 city: default year removes ?ano
+PASS  r2 city: neighbour links carry ?ano=2018  — /sp/embu-das-artes?ano=2018 /sp/pirapora-do-bom-jesus?ano=2018 /sp/sao-paulo?ano=2018
+PASS  r2 city: breadcrumb links carry ?ano (informational)  — /?ano=2018 /regiao/sudeste?ano=2018 /sp?ano=2018
+PASS  r2 city(since 2013) @2010: says it did not exist yet, not 'não declarou'  — Não existia em 2010
+PASS  r2 city(Boa Esperança): no 'não declarou' list of 2008–2024
+PASS  r2 city(Boa Esperança): letter does not claim compliance  — Contexto: Não há registro de envio, pelo Município, dos dados de aplicação em Manutenção e Desenvolvimento do Ensino (MDE) ao Sistema de Informações sobre Orçam
+FAIL  r2 city(Boa Esperança): municipality highlighted on map  — 0
+PASS  r2 city(Boa Esperança) ?ano=2015: no crash, says did not exist  — Não existia em 2015 
+PASS  r2 city(Boa Esperança) ?ano=2024: no crash, says did not exist  — Não existia em 2024 
+PASS  r2 city: glossary popover opens  — MDE
+
+Manutenção e Desenvolvimento do Ensino: o dinheiro de impostos que a prefei
+PASS  r2 city: glossary popover closes with Esc
+PASS  r2 letter: edit shows 'Desfazer edições'
+PASS  r2 letter: copy uses edited text
+PASS  r2 letter: mailto contains edited text  — 3979 chars
+FAIL  r2 letter: mailto URL under 2.000 chars (Outlook/IE limit)  — 3979
+PASS  r2 letter: edits survive a year switch
+FAIL  r2 letter: edits survive switching tabs
+PASS  r2 letter: undo restores original
+PASS  r2 print: header hidden  — {"header":false,"footerNav":true,"buttons":[],"textarea":false}
+PASS  r2 print: no action buttons visible
+PASS  r2 city: no page errors
+
+== r2watch
+PASS  r2 watch: uses /acompanhar/dados (not the full dataset)  — /acompanhar/dados?m=sp%2Fsanto-andre&m=mt%2Fboa-esperanca-do-norte&m=pa%2Fmojui-dos-campos&m=xx%2Fnope&v=2026-10-07.586603bb /acompanhar/dados?m=xx%2Fnope&v=2026-10-07.586603bb
+PASS  r2 watch: lists 3 + 1 not found  — Acompanhando Os municípios que você salvou, com o percentual aplicado em MDE em cada ano. A lista fica guardada só neste navegador. 3 municípios Percentual aplicado em MDE por ano, 2008–2025. Em verme
+PASS  r2 watch: no 'n/d' cells before installation for Boa Esperança  — n/d count 1
+PASS  r2 watch: no page errors
+
+== r2search
+PASS  r2 search: 'bahia' top hit  — BahiaEstado · Região Nordeste BA
+PASS  r2 search: 'acre' top hit  — AcreEstado · Região Norte AC
+PASS  r2 search: 'para' top hit  — ParáEstado · Região Norte PA
+PASS  r2 search: 'parana' top hit  — ParanáEstado · Região Sul PR
+PASS  r2 search: 'norte' top hit  — Região Norte7 estados
+PASS  r2 search: 'sul' top hit  — Região Sul3 estados
+PASS  r2 search: 'brasil' top hit  — BrasilPaís · 27 UFs
+PASS  r2 search: 'mato grosso' top hit  — Mato GrossoEstado · Região Centro-Oeste MT
+PASS  r2 search: 'ceara' top hit  — CearáEstado · Região Nordeste CE
+PASS  r2 search: 'sao paulo' top hit  — São PauloEstado · Região Sudeste SP
+PASS  r2 search: 'rio de janeiro' top hit  — Rio de JaneiroEstado · Região Sudeste RJ
+PASS  r2 search: 'campinsa' top hit  — CampinasSudeste SP 1.187.974 hab.
+PASS  r2 search: 'santo andre pb' top hit  — Santo AndréNordeste PB 2.708 hab.
+PASS  r2 search: 'bom jesus go' top hit  — Bom Jesus de GoiásCentro-Oeste GO 24.925 hab.
+PASS  r2 search: 'sao paulo sp' top hit  — São PauloSudeste SP 11.904.961 hab.
+PASS  r2 search: 'sao paulo sp' has no Espírito Santo do Pinhal / Boa Esperança do Sul noise  — São PauloSudeste SP 11.904.961 hab.
+PASS  r2 search: 'ver todos os N resultados' offered
+PASS  r2 search: Enter on 'bahia' -> /ba  — http://localhost:3299/ba
+PASS  r2 search: no page errors
+
+== r2explorer
+PASS  r2 explorer: deep link with uf+ano+situacao+porte+ordem applies  — 37 url=?uf=SP&ano=2021&situacao=abaixo&porte=p2
+PASS  r2 explorer: reload keeps the same view  — 37
+PASS  r2 explorer: invalid params ignored, no crash  — 0 
+PASS  r2 explorer: ?q=embu guacu -> 1  — 1
+PASS  r2 explorer: capital=1 -> 27  — 27
+FAIL  r2 explorer: city links keep ?ano=2019  — /pa/aurora-do-para
+PASS  r2 explorer: no page-level horizontal overflow at 375  — 375
+PASS  r2 explorer: no page errors
+
+== r2uf
+PASS  r2 uf: table search reflected in URL  — ?ano=2021&q=santo
+PASS  r2 uf: filters/sort survive reload  — ?ano=2021&q=santo&ordem=name-asc -> ?ano=2021&q=santo&ordem=name-asc
+PASS  r2 uf: city link keeps ?ano=2021  — /sp/espirito-santo-do-pinhal?ano=2021
+PASS  r2 uf: no page errors
 
 == notfound
 PASS  404: /xx -> HTTP 404  — status 404, h1="Página não encontrada", title="Página não encontrada · Radar MDE"
+PASS  404: /xx title  — Página não encontrada · Radar MDE
 PASS  404: /sp/nao-existe -> HTTP 404  — status 404, h1="Página não encontrada", title="Página não encontrada · Radar MDE"
+PASS  404: /sp/nao-existe title  — Página não encontrada · Radar MDE
 PASS  404: /regiao/foo -> HTTP 404  — status 404, h1="Página não encontrada", title="Página não encontrada · Radar MDE"
-FAIL  404: /SP -> HTTP 404  — status 200, h1="São Paulo", title="São Paulo · Radar MDE"
-FAIL  404: /Sp/santo-andre -> HTTP 404  — status 308, h1="Santo André
-(São Paulo)
-SP", title="Santo André (SP) · Radar MDE"
+PASS  404: /regiao/foo title  — Página não encontrada · Radar MDE
+PASS  404: /regiao -> HTTP 404  — status 404, h1="Página não encontrada", title="Página não encontrada · Radar MDE"
+PASS  404: /regiao title  — Página não encontrada · Radar MDE
 PASS  404: /sp/santo-andre/extra -> HTTP 404  — status 404, h1="Página não encontrada", title="Página não encontrada · Radar MDE"
+PASS  404: /sp/santo-andre/extra title  — Página não encontrada · Radar MDE
 PASS  404: /dados/csv/xx -> HTTP 404  — status 404, h1="", title=""
-FAIL  404: /regiao/Sul -> HTTP 404  — status 200, h1="Região Sul", title="Região Sul · Radar MDE"
-FAIL  404: search CTA opens palette
+PASS  404: /sp/nao-existe/ano/2019 -> HTTP 404  — status 404, h1="", title=""
+PASS  redirect: /SP -> /sp  — 200 http://localhost:3299/sp
+PASS  redirect: /Sp/santo-andre -> /sp/santo-andre  — 200 http://localhost:3299/sp/santo-andre
+PASS  redirect: /regiao/Sul -> /regiao/sul  — 200 http://localhost:3299/regiao/sul
+PASS  redirect: /SP/Santo-Andre?ano=2019 -> /sp/santo-andre?ano=2019  — 200 http://localhost:3299/sp/santo-andre?ano=2019
+PASS  redirect: canonical /sp still 200 after uppercase hits  — 200
+PASS  redirect: canonical /sp/santo-andre still 200 after uppercase hits  — 200
+PASS  redirect: canonical /regiao/sul still 200 after uppercase hits  — 200
+PASS  404: search CTA opens palette
 
-143/158 checks passed
-FAIL  search: Meta+K opens palette
-FAIL  search: Ctrl+K opens palette
-FAIL  search: corrupt recents do not crash
-FAIL  watch: threw  — locator.click: Timeout 30000ms exceeded. @248
-FAIL  mobile: nav link Acompanhando visible
-FAIL  mobile: nav link Metodologia visible
-FAIL  mobile: no page errors  — Failed to load resource: the server responded with a status of 404 (Not Found)
-FAIL  explorer: first page 100 rows  — 21
-FAIL  explorer: threw  — locator.click: Timeout 30000ms exceeded. @411
-FAIL  crumbs: threw  — locator.click: Timeout 30000ms exceeded. @555
-FAIL  clicks: threw  — page.evaluate: TypeError: Cannot read properties of undefined (reading 'querySelectorAll') @598
-FAIL  404: /SP -> HTTP 404  — status 200, h1="São Paulo", title="São Paulo · Radar MDE"
-FAIL  404: /Sp/santo-andre -> HTTP 404  — status 308, h1="Santo André
-(São Paulo)
-SP", title="Santo André (SP) · Radar MDE"
-FAIL  404: /regiao/Sul -> HTTP 404  — status 200, h1="Região Sul", title="Região Sul · Radar MDE"
-FAIL  404: search CTA opens palette
+267/272 checks passed
+FAIL  city(no data): map highlights the municipality (geometry exists)  — highlight elements: 0
+FAIL  r2 city(Boa Esperança): municipality highlighted on map  — 0
+FAIL  r2 letter: mailto URL under 2.000 chars (Outlook/IE limit)  — 3979
+FAIL  r2 letter: edits survive switching tabs
+FAIL  r2 explorer: city links keep ?ano=2019  — /pa/aurora-do-para
 RESULT: FAIL

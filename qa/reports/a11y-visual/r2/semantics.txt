@@ -176,21 +176,64 @@
 }
 
 ===== /sp/santo-andre {
- "title": "Página não encontrada · Radar MDE",
+ "title": "Santo André (SP) · Radar MDE",
  "lang": "pt-BR",
- "hs": [],
+ "hs": [
+  "1 Santo André (São Paulo)SP",
+  "2 % da receita de impostos aplicado em educação (MDE",
+  "2 Posição em 2025",
+  "2 Onde fica · 2025",
+  "2 Vizinhos",
+  "2 Sinais de alerta",
+  "2 Santo André entre os 640 municípios de São Paulo",
+  "2 O que você pode fazer",
+  "2 % do Fundeb pago aos profissionais da educação",
+  "2 Investimento por aluno (R$/ano)",
+  "2 Comparação com a pesquisa",
+  "2 Ano a ano"
+ ],
  "lm": [
   "header",
   "nav \"Principal\"",
   "nav \"Principal\"",
   "main",
+  "nav \"Navegação territorial\"",
+  "section \"Indicadores de 2025\"",
+  "header",
+  "header",
+  "header",
+  "header",
+  "header",
+  "header",
+  "header",
+  "header",
+  "header",
+  "header",
+  "footer",
+  "header",
+  "footer",
   "footer"
  ],
- "svgs": [],
- "live": [],
+ "svgs": [
+  "- hidden=true label=\"\" w=771 paths=6 focusable=12",
+  "img hidden=false label=\"Mapa dos municípios de São Paulo com o município destacado\" w=688 paths=646 focusable=0",
+  "- hidden=true label=\"\" w=688 paths=19 focusable=12",
+  "- hidden=true label=\"\" w=562 paths=3 focusable=12",
+  "- hidden=true label=\"\" w=562 paths=2 focusable=12"
+ ],
+ "live": [
+  " live=polite \"Em 2025, aplicou 25,09% da receita de impostos em \"",
+  "status live=polite \"\"",
+  "status live=polite \"\"",
+  " live=polite \"Gráficos e tabela mostram a série completa.\"",
+  "status live=polite \"Você pode editar o texto aqui: troque [Seu nome] e\""
+ ],
  "unnamed": [],
- "tables": [],
- "titleAttrOnly": 0
+ "tables": [
+  "caption=true rows=12 th=6",
+  "caption=true rows=19 th=29"
+ ],
+ "titleAttrOnly": 17
 }
 
 ===== /explorar {

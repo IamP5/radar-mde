@@ -37,6 +37,14 @@ for (const theme of THEMES) {
   await ctx.close();
 }
 
+console.log('\n== first Tab lands on skip link ==');
+{ const ctx = await ctxFor('light'); const page = await ctx.newPage();
+  for (const r of ROUTES) { await page.goto(BASE + r, { waitUntil: 'domcontentloaded', timeout: 120000 }); await settle(page);
+    await page.keyboard.press('Tab');
+    const t = await page.evaluate(() => document.activeElement?.getAttribute('href') === '#conteudo' ? 'ok' : `FAIL focused "${(document.activeElement?.textContent || '').trim().slice(0, 30)}"`);
+    if (t !== 'ok') fail++; console.log(`${r.padEnd(20)} ${t}`); }
+  await ctx.close(); }
+
 console.log('\n== horizontal overflow / small targets ==');
 for (const theme of THEMES) {
   for (const w of VIEWPORTS) {

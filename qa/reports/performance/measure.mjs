@@ -156,7 +156,7 @@ async function interact(browser) {
     const { ctx, page, cdp } = await newCtx(browser);
     const t = Date.now();
     await page.goto(BASE + "/explorar", { waitUntil: "load", timeout: 180000 });
-    await page.waitForSelector("table tbody tr:nth-child(50)", { timeout: 180000 }).catch(() => {});
+    await page.waitForFunction(() => document.querySelectorAll("table tbody tr").length >= 10 && !/Carregando munic/.test(document.body.innerText), null, { timeout: 180000 }).catch(() => {});
     const ready = Date.now() - t;
     const rows0 = await page.locator("table tbody tr").count();
     const m = await page.evaluate(() => ({ n: window.__perf.longtasks.length, e: window.__perf.events.length }));
@@ -210,7 +210,7 @@ async function interact(browser) {
 async function robust(browser) {
   const out = {};
   // failed data fetches: abort /data/* and /geo/*
-  for (const [route, pattern] of [["/", "**/data/*.json"], ["/", "**/geo/**"], ["/explorar", "**/data/*.json"], ["/acompanhar", "**/acompanhar/dados*"], ["/sp/santo-andre", "**/geo/**"], ["/sp/santo-andre", "**/data/*.json"]]) {
+  for (const [route, pattern] of [["/", /\/data\/[^/]+\.json/], ["/", /\/geo\//], ["/explorar", /\/data\/[^/]+\.json/], ["/acompanhar", /\/acompanhar\/dados/], ["/sp/santo-andre", /\/geo\//], ["/sp/santo-andre", /\/data\/[^/]+\.json/], ["/sp/santo-andre", /\/ano\/\d{4}/]]) {
     const { ctx, page } = await newCtx(browser, { throttle: false });
     const errs = [];
     page.on("pageerror", (e) => errs.push(e.message));
@@ -218,10 +218,11 @@ async function robust(browser) {
     if (route === "/acompanhar") await page.addInitScript(() => { try { localStorage.setItem("radar-mde:watch", JSON.stringify(["sp/santo-andre","mg/belo-horizonte"])); } catch {} });
     await page.goto(BASE + route, { waitUntil: "networkidle" });
     if (route === "/") await page.getByRole("radio", { name: "Municípios" }).first().click().catch(() => {});
+    if (String(pattern).includes("ano")) await page.getByRole("button", { name: "Ano anterior" }).first().click().catch(() => {});
     await page.waitForTimeout(2500);
     const txt = await page.locator("main").innerText();
     const flags = ["Não foi possível", "Tentar novamente", "erro", "Carregando", "Falha"].filter((f) => txt.toLowerCase().includes(f.toLowerCase()));
-    const name = `fail${route.replace(/\//g, "_")}_${pattern.includes("geo") ? "geo" : "data"}.png`;
+    const name = `fail${route.replace(/\//g, "_")}_${String(pattern).replace(/[^a-z]/g, "")}.png`;
     await page.screenshot({ path: path.join(OUT, name), fullPage: false });
     out[`${route} abort ${pattern}`] = { flags, pageErrors: errs.slice(0, 3), shot: name };
     await ctx.close();

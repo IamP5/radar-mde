@@ -3,3 +3,11 @@ zoom 640x400 /sp {"sw":640,"vw":640,"stickyBottom":0,"vh":400} sticky covers 0%
 zoom 640x400 /sp/santo-andre {"sw":640,"vw":640,"stickyBottom":0,"vh":400} sticky covers 0%
 zoom 640x400 /explorar {"sw":640,"vw":640,"stickyBottom":37,"vh":400} sticky covers 9%
 zoom 320x256 / {"sw":320,"vw":320,"stickyBottom":0,"vh":256} sticky covers 0%
+zoom 320x256 /sp {"sw":320,"vw":320,"stickyBottom":0,"vh":256} sticky covers 0%
+zoom 320x256 /sp/santo-andre {"sw":320,"vw":320,"stickyBottom":0,"vh":256} sticky covers 0%
+zoom 320x256 /explorar {"sw":320,"vw":320,"stickyBottom":56,"vh":256} sticky covers 22%
+text-zoom 200% / {"sw":1280,"clipped":["Exibindo 2025: 23 de 5.560 mun","(a menos que no ano anterior)","(a menos que no ano anterior)","(a menos que no ano anterior)","(a menos que no ano anterior)","(a menos que no ano anterior)","% de municípios abaixo de 25% ","Distribuição do percentual apl"],"nClipped":9}
+text-zoom 200% /sp/santo-andre {"sw":1280,"clipped":["(São Paulo)","SP","Santo André por ano, com linha","abaixo","abaixo","acima","Distribuição do MDE em São Pau","(abre em nova aba)"],"nClipped":13}
+reduced-motion {"anim":0,"smooth":"auto"}
+print / {"header":"static","stickySub":"static,static,static,static,static,static,static,static,static,static,static,static,static,static,static,static,static,static,static,static,static,static,static,static,static,static,static,static,static,static","printRules":1}
+print /sp/santo-andre {"header":"static","stickySub":"static,static","printRules":1}

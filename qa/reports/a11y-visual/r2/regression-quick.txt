@@ -1,0 +1,88 @@
+== axe (wcag2a, wcag2aa, wcag21aa, wcag22aa) ==
+light /                    rules=0 nodes=0 
+light /regiao/sudeste      rules=0 nodes=0 
+light /sp                  rules=0 nodes=0 
+light /sp/santo-andre      rules=0 nodes=0 
+light /explorar            rules=0 nodes=0 
+light /acompanhar          rules=0 nodes=0 
+light /dados               rules=0 nodes=0 
+light /sobre               rules=0 nodes=0 
+light /rota-inexistente    rules=0 nodes=0 
+dark  /                    rules=0 nodes=0 
+dark  /regiao/sudeste      rules=0 nodes=0 
+dark  /sp                  rules=0 nodes=0 
+dark  /sp/santo-andre      rules=0 nodes=0 
+dark  /explorar            rules=0 nodes=0 
+dark  /acompanhar          rules=0 nodes=0 
+dark  /dados               rules=0 nodes=0 
+dark  /sobre               rules=0 nodes=0 
+dark  /rota-inexistente    rules=0 nodes=0 
+
+== first Tab lands on skip link ==
+/                    FAIL focused "Explorar"
+/regiao/sudeste      FAIL focused "Explorar"
+/sp                  FAIL focused "Explorar"
+/sp/santo-andre      FAIL focused "Explorar"
+/explorar            FAIL focused "AcompanhandoSalvos"
+/acompanhar          FAIL focused "Dados"
+/dados               FAIL focused "MetodologiaMétodo"
+/sobre               FAIL focused "Buscar município…⌘K"
+/rota-inexistente    FAIL focused "Explorar"
+
+== horizontal overflow / small targets ==
+light  320 /                    ok  smallTargets=47
+light  320 /regiao/sudeste      ok  smallTargets=6
+light  320 /sp                  ok  smallTargets=61
+light  320 /sp/santo-andre      ok  smallTargets=17
+light  320 /explorar            ok  smallTargets=27
+light  320 /acompanhar          ok  smallTargets=2
+light  320 /dados               ok  smallTargets=14
+light  320 /sobre               ok  smallTargets=2
+light  320 /rota-inexistente    ok  smallTargets=2
+light  768 /                    ok  smallTargets=37
+light  768 /regiao/sudeste      ok  smallTargets=6
+light  768 /sp                  ok  smallTargets=62
+light  768 /sp/santo-andre      ok  smallTargets=17
+light  768 /explorar            ok  smallTargets=27
+light  768 /acompanhar          ok  smallTargets=2
+light  768 /dados               ok  smallTargets=14
+light  768 /sobre               ok  smallTargets=2
+light  768 /rota-inexistente    ok  smallTargets=2
+light 1440 /                    ok  smallTargets=37
+light 1440 /regiao/sudeste      ok  smallTargets=6
+light 1440 /sp                  ok  smallTargets=62
+light 1440 /sp/santo-andre      ok  smallTargets=17
+light 1440 /explorar            ok  smallTargets=27
+light 1440 /acompanhar          ok  smallTargets=2
+light 1440 /dados               ok  smallTargets=14
+light 1440 /sobre               ok  smallTargets=3
+light 1440 /rota-inexistente    ok  smallTargets=2
+dark   320 /                    ok  smallTargets=47
+dark   320 /regiao/sudeste      ok  smallTargets=6
+dark   320 /sp                  ok  smallTargets=61
+dark   320 /sp/santo-andre      ok  smallTargets=17
+dark   320 /explorar            ok  smallTargets=27
+dark   320 /acompanhar          ok  smallTargets=2
+dark   320 /dados               ok  smallTargets=14
+dark   320 /sobre               ok  smallTargets=2
+dark   320 /rota-inexistente    ok  smallTargets=2
+dark   768 /                    ok  smallTargets=37
+dark   768 /regiao/sudeste      ok  smallTargets=6
+dark   768 /sp                  ok  smallTargets=62
+dark   768 /sp/santo-andre      ok  smallTargets=17
+dark   768 /explorar            ok  smallTargets=27
+dark   768 /acompanhar          ok  smallTargets=2
+dark   768 /dados               ok  smallTargets=14
+dark   768 /sobre               ok  smallTargets=2
+dark   768 /rota-inexistente    ok  smallTargets=2
+dark  1440 /                    ok  smallTargets=37
+dark  1440 /regiao/sudeste      ok  smallTargets=6
+dark  1440 /sp                  ok  smallTargets=62
+dark  1440 /sp/santo-andre      ok  smallTargets=17
+dark  1440 /explorar            ok  smallTargets=27
+dark  1440 /acompanhar          ok  smallTargets=2
+dark  1440 /dados               ok  smallTargets=14
+dark  1440 /sobre               ok  smallTargets=3
+dark  1440 /rota-inexistente    ok  smallTargets=2
+
+failing checks: 9  (details: /Users/tuba/Dev/projects/radar-mde/qa/reports/a11y-visual/results.json)

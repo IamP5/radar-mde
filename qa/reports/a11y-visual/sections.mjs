@@ -6,7 +6,7 @@ const dir=new URL('./'+(process.env.SECDIR||'sec')+'/',import.meta.url).pathname
 const b = await chromium.launch();
 for (const c of combos){ const [theme,w]=c.split(':');
  const ctx=await b.newContext({viewport:{width:+w,height:900},colorScheme:theme,reducedMotion:'reduce',deviceScaleFactor:+w<500?2:1});
- await ctx.addInitScript(t=>localStorage.setItem('theme',t),theme); const p=await ctx.newPage();
+ await ctx.addInitScript(t=>{localStorage.setItem('theme',t); if(!localStorage.getItem('radar-mde:watch')) localStorage.setItem('radar-mde:watch',JSON.stringify(['sp/santo-andre','sp/sao-paulo','rj/volta-redonda']));},theme); const p=await ctx.newPage();
  for (const [n,r] of Object.entries(ROUTES)){ if(only&&!only.includes(n))continue;
   await p.goto(BASE+r,{waitUntil:'networkidle',timeout:120000}); await p.waitForTimeout(600);
   await p.screenshot({path:`${dir}${n}-${theme}-${w}-00top.png`});

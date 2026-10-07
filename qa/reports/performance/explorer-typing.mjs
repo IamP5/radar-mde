@@ -12,7 +12,7 @@ await p.addInitScript(() => {
   new PerformanceObserver((l) => l.getEntries().forEach((e) => window.__lt.push(Math.round(e.duration)))).observe({ type: "longtask" });
 });
 await p.goto(BASE + "/explorar", { waitUntil: "networkidle" });
-await p.waitForSelector("table tbody tr:nth-child(50)");
+await p.waitForFunction(() => document.querySelectorAll("table tbody tr").length >= 10 && !/Carregando munic/.test(document.body.innerText));
 await cdp.send("Emulation.setCPUThrottlingRate", { rate: 4 });
 const reset = () => p.evaluate(() => { window.__ev = []; window.__lt = []; });
 const read = () => p.evaluate(() => ({ maxEvent: Math.max(0, ...window.__ev.map((e) => e[1])), events: window.__ev.length, longtasks: window.__lt }));
@@ -24,7 +24,7 @@ console.log("typing", JSON.stringify(await read()), "rows", await p.locator("tab
 await box.fill("");
 await p.waitForTimeout(1000);
 await reset();
-await p.locator("table thead button").nth(1).click({ timeout: 30000 });
+const sb = p.locator("table thead button:visible, [aria-label*=Ordenar]:visible").first(); if (await sb.count()) await sb.click({ timeout: 30000 }); else console.log("no visible sort control on mobile");
 await p.waitForTimeout(1500);
 console.log("sort", JSON.stringify(await read()));
 await b.close();

@@ -198,3 +198,123 @@ This is a variant of FUN-02 on the default selection: the highlight is always on
 - Theme persistence across reload and navigation, with no hydration warnings.
 - Explorer facet counts, sort with nulls last, pagination, filtered CSV, and ignoring invalid or conflicting `regiao`/`uf` params.
 - No console errors, hydration or key warnings, or failed requests on 140 pages. All 396 sampled internal links return 200.
+
+---
+
+## Round 2: re-validation after ff4a309 (prod :3299 and dev :3210)
+
+**Runs** (logs in `qa/reports/functional/`):
+
+| Check | Prod (:3299, build rebuilt after the ACA-17 proxy fix) | Dev (:3210) |
+|---|---|---|
+| `crawl.mjs --links all` (140 pages; **all 2,154** internal links; 9 404 probes; 7 case redirects × 2 hits; 9 SEO/data endpoints) | **PASS**, log `r2-crawl-3299.log` | **PASS**, log `r2-crawl-3210.log` |
+| `interact.mjs` (272 checks) | **267/272** | 266/272 |
+| `csvcheck.mjs` (11 CSV ids) | **PASS** | **PASS** |
+
+On prod, all 5 interact failures are open issues: FUN-03 (counted twice), FUN-19, FUN-20 and FUN-21. Dev has the same 5 plus the dev-only console errors in FUN-25. A later re-run of `r2explorer` added an `ordem` check, which passes.
+
+**Script changes:**
+
+`crawl.mjs`:
+- `--base` writes `crawl-results-<port>.json`.
+- The case variants `/SP`, `/Rj`, `/regiao/Sul`, `/Sp/santo-andre`, `/sp/Santo-Andre` and `/SP/santo-andre` now expect a **308 with exactly one Location** to the lowercase URL, on both the first and the second hit. Previously they were expected to return 404.
+- New 404 probes: `/regiao`, `/dados/csv/regiao-foo`, `/<uf>/<slug>/ano/1999`, an unknown city's `/ano/2019`.
+- New asset probes: robots, sitemap, manifest, icon, OG images, `/data/indice.json`, `/acompanhar/dados`, `/ano/2019`.
+
+`interact.mjs`:
+- The palette is now lazy-loaded, so the tests wait for the dialog (up to 3 s) instead of a fixed 300 ms.
+- Mobile nav labels are now Salvos/Método.
+- Pagination checks were replaced by virtualisation checks: under 120 DOM rows, `aria-rowcount`, scrolling to the end reaches "Zortéa", and the middle of the list is not blank.
+- The Explorer CSV is now taken from the "Série … CSV padrão" menu item. It is checked for the slice filename, the shared header, and equality with `/dados/csv/rr` on the shared columns.
+- 404 tests: the case variants now expect a redirect, not a 404, and the canonical pages must still return 200 afterwards.
+- Console 404s for intentional 404 visits are ignored.
+- New groups: `r2city`, `r2watch`, `r2search`, `r2explorer`, `r2uf`.
+
+`csvcheck.mjs`:
+- Rewritten for the CONTRACT §6 schema: `envio` and `situacao_mde` vocabulary, no `situacao` column, empty `faltou_rs` when the shortfall is unknown.
+- Excel variants are parsed with `;` and decimal commas; region and `estados` files are included.
+- BOM detection now reads raw bytes, because `fetch().text()` strips the BOM.
+
+### Status of round-1 findings
+
+| ID | Status | Evidence |
+|---|---|---|
+| FUN-01 soft 404 | **FIXED** | Prod and dev, first hit: `/xx`, `/regiao`, `/sp/nao-existe`, `/regiao/foo`, `/sp/santo-andre/extra` return **404** with title "Página não encontrada · Radar MDE". Case variants return a single 308 with the query string preserved (`/SP/Santo-Andre?ano=2019` → `/sp/santo-andre?ano=2019`), and the canonical pages stay 200 afterwards (the FUN-18 check). |
+| FUN-02 search ranks cities over states | **FIXED** | Top hits are now the territory for bahia, acre, para, parana, norte, sul, brasil, mato grosso and ceara; Enter on "bahia" opens `/ba`. Typo tolerance works ("campinsa" → Campinas), and so does UF parsing ("bom jesus go", "santo andre pb"). |
+| FUN-03 Boa Esperança do Norte | **PARTIAL** | Fixed: no "não declarou" for 2008–2024 ("Não existia em 2015/2024"); the letter says "Não há registro de envio…"; `/acompanhar` shows one n/d; CSVs carry only the 2025 row. **Still open:** `web/public/geo/uf/MT.topo.json` has 141 geometries and no 5101837, so the municipality is never highlighted on its map (`city(no data)` and `r2 city(Boa Esperança)` checks). |
+| FUN-04 city page ignores `?ano` | **FIXED** | `/sp/santo-andre?ano=2019` shows "Em 2019…" and the picker shows 2019. Values come from `/sp/santo-andre/ano/2019` (200). Clicking 2015 updates the URL, the change survives reload, and the default year removes `?ano`. Share copies `…?ano=2015`. Neighbour and breadcrumb links carry `?ano`. |
+| FUN-05 punctuation-insensitive filters | **FIXED** | Explorer (`?q=embu guacu` → 1), UF table and breadcrumb picker all match "santa barbara d oeste" and the curly apostrophe. |
+| FUN-06 map clicks drop `?ano` | **FIXED** | `/?ano=2015` → map click → `/am?ano=2015`. The Explorer still drops it: see FUN-19. |
+| FUN-07 Explorer URL state | **FIXED** | `q`, `regiao`, `uf`, `porte`, `situacao`, `reinc`, `capital`, `ordem` and `ano` are all written to the URL and restored on reload (deep link → 37 rows, same after reload). Invalid values are ignored. The UF table also persists `q` and `ordem` (GOV-06). |
+| FUN-08 region CSV = whole country | **FIXED** | `/regiao/sul` links to `/dados/csv/regiao-sul` (21,423 rows = 1,191 municipalities). |
+| FUN-09 `faltou_rs=0` when unknown | **FIXED** | 0 such rows in all 11 files. Barra do Choça 2021 now has an empty value. |
+| FUN-10 two CSV schemas | **FIXED** | Shared vocabulary. The Explorer series CSV for RR matches `/dados/csv/rr` cell-for-cell on the 15 shared columns (0 diffs). |
+| FUN-11 "sao paulo sp" noise | **FIXED** | No Pinhal / Esperança do Sul results. |
+| FUN-12 picker matches IBGE digits | **FIXED** | "3548" → 0 options. |
+| FUN-13 no favicon/robots/sitemap | **FIXED** | `/favicon.ico` → 307 to `/icon.svg`; `robots.txt`, `sitemap.xml` (5,605 URLs, no redirecting URLs), `manifest.webmanifest`, `apple-icon` and OG images all return 200. See FUN-22 for the URL host they contain. |
+| FUN-14 Enter after typing a state | **FIXED** | Covered by FUN-02. |
+| FUN-15 mobile nav clipped | **FIXED** | Labels are now Painel / Explorar / Salvos / Dados / Método and all fit at 375 px (`shots/r2-mobile-header.png`). |
+| FUN-16 "em Bahia" | **FIXED** | Now "Distribuição do MDE na Bahia". |
+| FUN-17 DF crumb self-link | **FIXED** | On `/df/brasilia` the crumb links are only `/` and `/regiao/centro-oeste`. |
+
+Also verified with no regressions found:
+- Watchlist now loads `/acompanhar/dados?m=…&v=…` instead of `/data/municipios.json`.
+- `/data/*.json` and `/dados/csv/*` are br/gzip-compressed with an `ETag`. `If-None-Match` returns **304**, and `?v=<version>` responses are `immutable`.
+- Explorer virtualisation renders 21 DOM rows for 5,570 and scrolls to the end.
+- Glossary popover opens and closes with Esc.
+- Print media hides the header and every action button.
+- The year endpoint returns 404 for unknown years or cities.
+- Lazy palette: ⌘K, Ctrl+K, `/`, and corrupt recents all work. The first open takes about 340 ms while the chunk loads. A shortcut pressed *before hydration* is ignored, which was also true in round 1.
+
+### New findings (round 2)
+
+### FUN-18 · blocker → **FIXED during the round** · Caching · One uppercase URL poisoned the canonical page in production
+- **URL:** first build on :3299
+- **What happened:** a single `GET /Ap/oiapoque` was served STALE from the shared prerender entry and triggered a background revalidation with the uppercase params. The page's `permanentRedirect()` result was then stored for `/ap/oiapoque`.
+- **Effect:** every later visitor of the lowercase page got **308 with no Location** (`s-maxage=31536000`) and saw "Página não encontrada". Reproduced on `/ro/cacoal`, `/rj`, `/mg` and `/sp/santo-andre`. First hits also sent duplicated `Location` headers.
+- **Fix that landed:** `web/src/proxy.ts` lowercases the path before routing, and the page-level redirects were removed.
+- **Re-verification on the rebuilt :3299:** `/Ap/oiapoque`, `/ro/Cacoal`, `/Rj`, `/Mg`, `/SP`, `/Sp/santo-andre`, `/regiao/Sul` and `/XX` each return a single 308 with one Location on repeated hits. Every canonical page still returns 200 with x-nextjs-cache HIT afterwards. This is now a permanent check in `crawl.mjs` and in `interact.mjs` (`notfound`).
+
+### FUN-19 · minor · URL state · Explorer city links drop `?ano`
+- **URL:** `/explorar?ano=2019` → first row links to `/pa/aurora-do-para`
+- **Expected:** `…?ano=2019`, like the UF table, maps, neighbours and breadcrumbs. TRIAGE asks that every drill link keep the year.
+- **Root cause:** `web/src/components/Explorer.tsx:820` uses `href={cityPath(r.uf, r.slug)}`.
+- **Fix:** Use `withYear(cityPath(r.uf, r.slug), year, initialYear)`.
+
+### FUN-20 · minor · Action kit · Edits to a letter are lost when switching template tabs
+- **URL:** `/sp/santo-andre`
+- **Steps:** Edit the first letter (e.g. replace "[Seu nome]"), click another tab, then come back.
+- **Expected:** The text keeps your edits.
+- **Actual:** The edits are lost. The original text returns silently and "Desfazer edições" disappears. Edits *do* survive a year switch.
+- **Root cause:** `web/src/components/ActionKit.tsx` keeps the text in `Letter`'s local `useState(t.body)`, and Base UI `TabsContent` unmounts inactive panels.
+- **Fix:** Add `keepMounted` on `TabsContent`, or lift the per-template text into `ActionKit` state, keyed by `t.id`.
+
+### FUN-21 · minor · Action kit · The "E-mail" button builds a ~4,000-character `mailto:` URL
+- **URL:** `/sp/santo-andre`, first template: the href is 3,979 chars.
+- **Problem:** Outlook and Windows mail handlers and several webmail handlers cap `mailto:` URLs at about 2,000 characters. The body arrives truncated, or the link does nothing.
+- **Root cause:** `ActionKit.tsx:64` URL-encodes the whole body.
+- **Fix:** Copy the text to the clipboard on click and open `mailto:?subject=…&body=<short note: "cole o texto copiado aqui">`. Alternatively, only fall back to the full body when it is under about 1,800 chars.
+
+### FUN-22 · minor · SEO/config · The production build advertises `http://localhost:3210` in every absolute URL
+- **URL:** :3299 `/robots.txt` (`Host: http://localhost:3210`, `Sitemap: http://localhost:3210/sitemap.xml`), all 5,605 sitemap `<loc>` entries, and `og:image` (`http://localhost:3210/opengraph-image?…`).
+- **Root cause:** `web/src/lib/site.ts:2` silently falls back to `http://localhost:3210` when `NEXT_PUBLIC_SITE_URL` is unset at build time. A deploy that forgets the env var ships a broken sitemap and broken OG cards.
+- **Fix:**
+  - In production, fall back to `VERCEL_PROJECT_PRODUCTION_URL`/`VERCEL_URL`, or throw at build time when it is unset.
+  - Drop the non-standard `Host:` line, which expects a bare host anyway.
+  - Reconsider `Disallow: /data/`: crawlers that render JS can't fetch the data the maps and tables load client-side.
+
+### FUN-23 · polish · Routing · `/dados/csv/SP` now 404s (it returned 200 in round 1)
+- The proxy matcher excludes `dados/csv/`, and the route only accepts lowercase ids. `/Dados/CSV/sp` is redirected, but `/dados/csv/SP` is not.
+- **Fix:** Lowercase the id in `app/dados/csv/[uf]/route.ts`, or let the proxy handle `dados/csv/` paths (only `geo/` needs to be excluded).
+
+### FUN-24 · polish · Endpoints · Loose validation on new per-city routes
+- `/sp/nao-existe/opengraph-image` returns **200** with a generic "Município / Sem dados declarados" card (`shots/r2-og-nao-existe.png`); it should return 404.
+- `/sp/santo-andre/ano/02019` and `/ano/2019.0` are accepted as aliases of `/ano/2019`, creating duplicate cache entries. Accept only `^\d{4}$`.
+- `/acompanhar/dados` issues an extra request for unknown ids alone (`?m=xx/nope`) after the main fetch. Skip ids that already came back missing.
+- **Root cause:** `web/src/app/[uf]/[slug]/opengraph-image.tsx` and `web/src/app/[uf]/[slug]/ano/[ano]/route.ts`. For the extra request, the watchlist fetch logic in `Watchlist.tsx`.
+
+### FUN-25 · polish (dev only) · Console · Errors on the 404 page and after client navigations in `next dev`
+- On `/xx`: "Encountered a script tag while rendering React component…" (the next-themes inline script re-rendered by the not-found boundary).
+- Once during the mobile run: "Failed to execute 'measure' on 'Performance': 'Page [Prerender]' cannot have a negative time stamp".
+- Neither appears on the prod build.
+- **Fix:** For the first, pass `scriptProps={{ type: "application/json" }}`-style mitigation, or upgrade next-themes. The second is a Next dev-overlay issue; track it upstream.

@@ -23,17 +23,15 @@ select after esc button[combobox] "Região intermediária (IBGE)" inDialog=false
 popover open focus: a[menuitem] "Minas GeraisMG" inDialog=false
 after 40 tabs: a[] "Lorena" inDialog=false
 after esc: a[] "Lorena" inDialog=false
-node:internal/modules/run_main:107
-    triggerUncaughtException(
-    ^
-
-locator.focus: Timeout 30000ms exceeded.
-Call log:
-  - waiting for getByRole('button', { name: 'Compartilhar' })
-
-    at /Users/tuba/Dev/projects/radar-mde/qa/reports/a11y-visual/dialogs.mjs:36:64 {
-  log: [ "  - waiting for getByRole('button', { name: 'Compartilhar' })" ],
-  name: 'TimeoutError'
-}
-
-Node.js v24.20.0
+share menu: div[menuitem] "Copiar link" inDialog=false 1
+after esc: button[] "Compartilhar" inDialog=false
+watch pressed: [
+  '<button type="button" tabindex="0" data-slot="button" aria-pressed="true" title="Deixar de acompanhar (salvo só neste navegador)" class="group/button inline-flex shrink-0 items-center justify-center r'
+] button[] "Acompanhando" inDialog=false
+live [
+  'Em 2025, aplicou 25,09% da receita de impostos em educação —',
+  'Salvo em Acompanhar (só neste navegador).',
+  '',
+  'Gráficos e tabela mostram a série completa.',
+  'Você pode editar o texto aqui: troque [Seu nome] e [Contato]'
+]

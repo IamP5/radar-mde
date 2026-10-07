@@ -139,3 +139,60 @@ Date: 2026-10-07. No console errors or page errors on any route visited (/, /sob
 5. **Make year selection work all the way down to the municipality** (ACA-03), with a year picker on the city page. Add a comparison view (2–5 municipalities or states on one MDE/Fundeb/per-student chart, with export). This is the most common research task and currently means opening tabs side by side.
 
 Artifacts: scripts `tour.mjs`, `map.mjs`, `charts.mjs`, `explorar.mjs`, `ano.mjs`, `ano2.mjs`, `misc.mjs`, `dados.mjs` and all screenshots in `qa/reports/academic/`.
+
+## Round 2: re-validation (commit ff4a309, production build on :3299)
+
+Method: same journeys on the production build at :3299. Scripts and screenshots are in `qa/reports/academic/r2/` (`tour.mjs`, `ano.mjs`, `checks.mjs`). I downloaded and parsed `/dados/csv/{brasil,sp-excel,estados,regiao-sul}` and the Explorar export. axe (wcag2a/aa) reports no violations on /sobre, /dados, /explorar, /sp/adamantina and /pa/mojui-dos-campos?ano=2010. No console or page errors.
+
+### Status of round-1 findings
+
+| ID | Status | Evidence |
+|----|--------|----------|
+| ACA-01 not-yet-existing municipalities | **FIXED** | Mojuí dos Campos ?ano=2010 shows the "Não existia em 2010" badge, "Sem posição em 2010: o município ainda não existia", and its table stops at 2013 with "instalado em 2013" (`r2/ano_pa_mojui-dos-campos_ano_2010.png`). In the CSV, `nao_declarou` falls from 626 to 584 rows. Rows per year: 5.564 (2008–12), 5.569 (2013–24), 5.570 (2025). /sobre lists the 6 municipalities. |
+| ACA-02 no-data municipality | **FIXED** | Boa Esperança do Norte: neighbours list (Sorriso…, "1 sem dado neste ano"). The map explains the municipality is missing from the IBGE mesh. The template now says there is no record of filing and makes no compliance claim. |
+| ACA-03 `?ano=` on município | **FIXED** | /sp/santo-andre?ano=2014 shows "MDE em 2014 20,53%", "Posição em 2014 (643º de 644)", "Onde fica · 2014", the year picker, and "Voltar para 2025". Clicking 2014 updates the URL. Invalid `?ano=1999`/`abc` falls back to 2025 (`r2/ano_sp_santo-andre_ano_2014.png`). |
+| ACA-04 atypical values | **PARTIAL** | Data flags exist: mde 263, aluno 135, base 26. Adamantina 2021/23/24 and União da Serra 2023 get ⚠ in the table; Piaçabuçu, Cametá and Cabo Frio get "mde"; Explorar shows ⚠. Gaps: (a) the per-student **chart** has no marker on flagged points (`r2/chart_adamantina_aluno.png`). (b) Adamantina's "Sinais de alerta" leaves out its 3 atypical per-student years; Mojuí lists its MDE one. (c) 298 year-over-year per-student jumps of more than 2,5× are still unflagged, e.g. Rio Branco/AC 2022→2023 R$ 12.679 → R$ 34.493 and Corumbiara/RO R$ 18.472 → R$ 52.701. The rule compares to the municipality's median relative to the national median, so a one-off doubling inside the band passes. (d) The CONTRACT ("±2 neighbouring years") and /sobre / build_data ("relative to national median, own median") describe different rules. Align them. |
+| ACA-05 nominal R$ | **PARTIAL** | /sobre now has "Valores monetários são nominais…" with an IPCA magnitude of about 2,6× for 2008–2025; I checked that figure against the yearly IPCA and it is right. Tables, KPIs and the dictionary say "R$ da época". No deflated view exists yet; it is on the roadmap. Saldo devedor and the cumulative rankings still sum nominal values. |
+| ACA-06 `faltou_rs` 0 vs missing | **FIXED** | All 584 nd rows have empty `faltou_rs`. Barra do Choça 2021 is empty in both /dados and Explorar exports. |
+| ACA-07 estimated "aplicado" | **FIXED** | "≈ R$ 239 mi aplicados (estimado)" on the KPI and ≈ in the table before 2020. CSV has `aplicado_estimado` (66.249 rows =1 before 2020, 516 after) and `base_origem`. |
+| ACA-08 CSV schemas | **FIXED** | One vocabulary (`envio`, `situacao_mde`, `atipico`, `pandemia_ec119`, `educacao_pct_despesa_total`, `mde_pct_siconfi`…). The Explorar export uses a subset of the same column names. New `estados`, `regiao-*` and `-excel` variants. A new issue in the Explorar export is ACA-19. |
+| ACA-09 population year | **PARTIAL** (documented) | /sobre and /dados now state "exercício 2026, a mesma para todos os anos". Population is still not yearly. |
+| ACA-10 /sobre accuracy | **PARTIAL** | Fixed: SIOPE indicator table (1.1, 1.2, 1.4, 2.8, 4.9, 8.1, 8.2), the health sentence (325 SP municipalities, irregular), the per-student denominator, and 2.8 marked "só no CSV". Not fixed: municipality pages outside SP (e.g. /ce/fortaleza) still render an all-"—" **Saúde** column. |
+| ACA-11 citation/licence/version | **PARTIAL** | Version `2026-10-07.586603bb`, extraction date, CC BY 4.0, and ABNT and BibTeX blocks are added. However, both references contain the literal placeholder **"[endereço do Radar MDE]"** and "Acesso em: dd mmm. aaaa." (ACA-18). |
+| ACA-12 axis label clipping | **FIXED** | "125 mil" and "100 mil" fit on one line (`r2/chart_adamantina_aluno.png`). |
+| ACA-13 Excel-BR / BOM | **FIXED** | `-excel` variant uses `;` and decimal commas (`25,68`). /dados gives R (`readr`), Stata and pandas (`utf-8-sig`) snippets. |
+| ACA-14 EC 119 context | **FIXED** | Explorar 2021 banner "2021 foi ano de pandemia…" (`r2/explorar_2021.png`). The city MDE chart has a grey "EC 119" band. The 2020 alert says whether the gap was compensated by 2023. |
+| ACA-15 badge contrast | **FIXED** | axe is clean on the city pages tested. |
+| ACA-16 small text | **FIXED** | "Região imediata de São Paulo". No "R$ x,5" medians on the home page. Fundeb >100% is explained in the chart description and KPI. |
+| ACA-17 (found in round 2, see below) | **FIXED** (re-verified after rebuild) | After the coordinator's fix (case handling in `proxy.ts`, clean rebuild): `/AC/Xapuri`, `/ac/Xapuri`, `/MG` and `/SP/Santo-Andre` return 308 **with a Location** to the lowercase URL. Afterwards `/sp/santo-andre`, `/mg`, `/rj`, `/ac/xapuri`, `/ac/feijo`, `/rr/caroebe` and `/rr/uiramuta` all return 200 (checked twice). In the browser, `/SP/Santo-Andre` lands on the right page (200), and `?ano=2014` renders 2014. |
+
+Totals: **12 FIXED** (ACA-01, 02, 03, 06, 07, 08, 12, 13, 14, 15, 16, 17), **5 PARTIAL** (ACA-04, 05, 09, 10, 11), 0 NOT FIXED, 0 REGRESSED.
+
+### New findings (round 2)
+
+#### ACA-17 · blocker (local/self-hosted) · bug — Case-variant URLs poisoned the route cache and blanked canonical pages (**FIXED during round 2**)
+- **URL:** :3299 `/sp/santo-andre`, `/mg` (also `/rj`, `/ac/xapuri`, `/ac/feijo`, `/rr/caroebe`, `/rr/uiramuta`)
+- **Steps (before fix):** Request `/AC/Xapuri` or `/MG` once. Then GET `/ac/xapuri` or `/mg`, immediately or after the in-memory cache is evicted or the server restarts.
+- **Expected:** The canonical page stays 200.
+- **Actual:** The canonical URL answers **308 with no Location header**, and the body is a `__next_error__` shell containing `NEXT_REDIRECT;replace;/sp/santo-andre;308`. In the browser it showed a blank page titled "Página não encontrada" (`r2/santo-andre-308.png`). This affected the thesis's own city page.
+- **Root cause:** The pages called `permanentRedirect()` for case variants (`app/[uf]/[slug]/page.tsx:95`, `app/[uf]/page.tsx:36`, `app/regiao/[slug]/page.tsx:37`). The 308 render was then persisted to `.next-prod/server/route-cache/APP_PAGE/<hash>/$/AC/Xapuri.meta`. macOS APFS is case-insensitive, so that is the same file as `ac/xapuri.meta`; found entries included `SP.meta`, `mg.meta`, `rj.meta`, `sp/santo-andre.meta` and `ac/xapuri.meta`, all with status 308.
+- **Fix applied by coordinator:** Case normalisation now happens in `web/src/proxy.ts` and the page-level redirects are removed. **Re-verified FIXED** (see table). Suggested regression test: request `/MG` then `/mg` after a restart and expect 200.
+
+#### ACA-18 · minor · content — The citation contains a placeholder URL and access date
+- **URL:** /dados → "Como citar"
+- **Actual:** ABNT reads "Disponível em: [endereço do Radar MDE]/dados. Acesso em: dd mmm. aaaa."; BibTeX reads `howpublished = {\url{[endereço do Radar MDE]/dados}}`. Meanwhile canonical/OG/sitemap fall back to `http://localhost:3210` (`lib/site.ts`), so the two fallbacks also differ.
+- **Root cause:** `web/src/app/dados/page.tsx:22` uses its own `NEXT_PUBLIC_SITE_URL ?? "[endereço do Radar MDE]"` instead of `SITE_URL` from `lib/site.ts`.
+- **Fix:** Import `SITE_URL` from `lib/site.ts`. Fill "Acesso em" with today's date formatted in pt-BR (client-side), or leave it out of the copyable block. Fail the production build, or warn, when `NEXT_PUBLIC_SITE_URL` is unset, so canonical/OG don't ship as localhost (currently `og:url`/`canonical` = `http://localhost:3210/...` on the :3299 build).
+
+#### ACA-19 · minor · data — Explorar treats Boa Esperança do Norte as existing in 2008–2024
+- **URL:** /explorar?ano=2021 → "Exportar CSV" → "Só 2021 · CSV padrão"
+- **Actual:** The export has 5.570 rows, including `5101837,Boa Esperança do Norte,…,2021,,sem_dado,…`. The counter shows "5.570 de 5.570 municípios", while the KPI tile beside it says "5.569 todos os que existiam em 2021". /dados correctly omits the row.
+- **Fix:** In `components/Explorer.tsx`, filter rows with `!existedIn(r, year)` out of the table, counter and export for the selected year. For the full-series export, skip years before `since`, matching `cityCsvRecords`.
+
+#### ACA-20 · polish · UI — The OG image bar chart does not start at zero
+- **URL:** `/sp/adamantina/opengraph-image` (`r2/og_adamantina.png`)
+- **Actual:** The bars start from a non-zero floor, so 31,89% looks about 1,4× as tall as 25,68% when the real ratio is 1,24×. That exaggerates differences in a share card.
+- **Fix:** Start bars at 0% (with the 25% dashed line), or draw a line or dots instead of bars when using a truncated range.
+
+#### ACA-21 · polish · UI — Atypical values are not shown on the city charts or counted in alerts
+(Detail of ACA-04 partial, logged so it can be tracked.) Flagged per-student points (Adamantina 2021, 2023, 2024) look the same as normal points on "Investimento por aluno", and "Sinais de alerta" leaves them out. **Fix:** In `TrendChart`, draw a hollow ⚠ dot with a tooltip "valor atípico — possível erro de declaração" for any year whose `atip` includes the metric. Add an alert line "Valor por aluno atípico em …" in `page.tsx`.

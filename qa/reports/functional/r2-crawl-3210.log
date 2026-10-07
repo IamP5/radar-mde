@@ -1,7 +1,7 @@
   (tricky slug not in dataset, skipped: pe/fernando-de-noronha )
-Crawling 140 pages (103 cities) on http://localhost:3299 ...
+Crawling 140 pages (103 cities) on http://localhost:3210 ...
 Checking 2154 of 2154 unique internal links ...
 
-Pages: 140  404-probes: 9  links checked: 2154  time: 49s
+Pages: 140  404-probes: 9  links checked: 2154  time: 203s
 
 RESULT: PASS

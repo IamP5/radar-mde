@@ -394,3 +394,5 @@ I re-read all 4 letters for each of these cities: Uberlândia, Feira de Santana,
 3. Make audit screening complete: an export of the filtered UF table plus an Excel option on the UF page (GOV-21), MDE + Fundeb combinable filters, and a recurrence window and consecutive-year count, also in Explorer (GOV-10).
 4. Polish the print: chart sizing and page breaks, or a compact 2-page "ficha" (GOV-22).
 5. Fix the legal details: cite the Fundeb law of the right period in the TCE letter (GOV-24), and add a human-readable source link next to the JSON link (GOV-18).
+
+_Note (after the :3299 rebuild for the uppercase-URL cache fix):_ none of my round-2 routes had returned 404, a blank page or a 308. After the rebuild I re-checked `/mg/uberlandia`, `/ba/feira-de-santana`, `/sp`, `/ma`, `/pa`, `/mg`, `/rj`, `/sp/santo-andre`, `/rj/cabo-frio`, `/sp/franca`, `/explorar?uf=SP&ano=2021` and `/dados/csv/ma-excel`: all return 200. I re-ran `r2_fresh.mjs`; it reproduces GOV-20 (`editPersists2: false`) and GOV-23 (`aria-prohibited-attr`), with no console errors. The statuses above are unchanged.

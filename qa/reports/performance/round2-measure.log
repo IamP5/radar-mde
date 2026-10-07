@@ -1,12 +1,245 @@
-{"route":"/","status":200,"loadMs":3869,"ttfb":6,"fcp":1620,"lcp":1620,"lcpEl":"P.max-w-4xl text-base leading-7 text-pretty text-muted-foregro","cls":0,"tbt":175,"longest":176,"nLong":4,"requests":40,"transferKB":910,"byType":{"Document":{"n":1,"kb":52},"Stylesheet":{"n":2,"kb":21},"Script":{"n":23,"kb":454},"Font":{"n":2,"kb":52},"Fetch":{"n":12,"kb":330}},"htmlKB":52,"htmlRawKB":438,"heapMB":21.4,"nodes":3659,"scriptMs":1095,"layoutMs":69,"big":["/ 52KB gzip","/_next/static/chunks/0p_w__bs2_j30.js 71KB gzip","/_next/static/chunks/1ld_8e5z4zudl.js 126KB gzip","/geo/br.topo.json 273KB gzip"]}
-{"route":"/regiao/sudeste","status":200,"loadMs":4102,"ttfb":3,"fcp":1620,"lcp":1620,"lcpEl":"P.max-w-4xl text-base leading-7 text-pretty text-muted-foregro","cls":0,"tbt":254,"longest":158,"nLong":6,"requests":49,"transferKB":1731,"byType":{"Document":{"n":1,"kb":26},"Stylesheet":{"n":2,"kb":21},"Script":{"n":24,"kb":468},"Font":{"n":2,"kb":52},"Fetch":{"n":20,"kb":1164}},"htmlKB":25,"htmlRawKB":164,"heapMB":18.3,"nodes":3522,"scriptMs":1485,"layoutMs":54,"big":["/_next/static/chunks/0p_w__bs2_j30.js 71KB gzip","/_next/static/chunks/1ld_8e5z4zudl.js 126KB gzip","/geo/br.topo.json 273KB gzip","/data/municipios.json?v=2026-10-07.586603bb 795KB br"]}
-{"route":"/sp","status":200,"loadMs":4333,"ttfb":5,"fcp":1720,"lcp":1720,"lcpEl":"P.max-w-4xl text-[15px] leading-7 text-pretty text-muted-foreg","cls":0,"tbt":223,"longest":177,"nLong":6,"requests":42,"transferKB":788,"byType":{"Document":{"n":1,"kb":130},"Stylesheet":{"n":2,"kb":21},"Script":{"n":24,"kb":468},"Font":{"n":2,"kb":52},"Fetch":{"n":13,"kb":117}},"htmlKB":129,"htmlRawKB":585,"heapMB":16.5,"nodes":3322,"scriptMs":1582,"layoutMs":78,"big":["/sp 130KB gzip","/_next/static/chunks/0p_w__bs2_j30.js 71KB gzip","/_next/static/chunks/1ld_8e5z4zudl.js 126KB gzip"]}
-{"route":"/mg","status":200,"loadMs":5032,"ttfb":7,"fcp":1696,"lcp":1696,"lcpEl":"P.max-w-4xl text-[15px] leading-7 text-pretty text-muted-foreg","cls":0,"tbt":260,"longest":184,"nLong":6,"requests":42,"transferKB":843,"byType":{"Document":{"n":1,"kb":161},"Stylesheet":{"n":2,"kb":21},"Script":{"n":24,"kb":468},"Font":{"n":2,"kb":52},"Fetch":{"n":13,"kb":140}},"htmlKB":161,"htmlRawKB":680,"heapMB":28.7,"nodes":3418,"scriptMs":1538,"layoutMs":73,"big":["/mg 161KB gzip","/_next/static/chunks/0p_w__bs2_j30.js 71KB gzip","/_next/static/chunks/1ld_8e5z4zudl.js 126KB gzip","/geo/uf/MG.topo.json 72KB gzip"]}
-{"route":"/rr","status":200,"loadMs":4126,"ttfb":4,"fcp":1624,"lcp":1624,"lcpEl":"P.max-w-4xl text-[15px] leading-7 text-pretty text-muted-foreg","cls":0,"tbt":141,"longest":149,"nLong":4,"requests":42,"transferKB":640,"byType":{"Document":{"n":1,"kb":23},"Stylesheet":{"n":2,"kb":21},"Script":{"n":24,"kb":468},"Font":{"n":2,"kb":52},"Fetch":{"n":13,"kb":75}},"htmlKB":23,"htmlRawKB":143,"heapMB":16.2,"nodes":1584,"scriptMs":1366,"layoutMs":48,"big":["/_next/static/chunks/0p_w__bs2_j30.js 71KB gzip","/_next/static/chunks/1ld_8e5z4zudl.js 126KB gzip"]}
-{"route":"/sp/sao-paulo","status":200,"loadMs":4439,"ttfb":5,"fcp":1628,"lcp":1628,"lcpEl":"P.text-foreground","cls":0,"tbt":207,"longest":207,"nLong":4,"requests":47,"transferKB":937,"byType":{"Document":{"n":1,"kb":40},"Stylesheet":{"n":2,"kb":21},"Script":{"n":26,"kb":503},"Font":{"n":2,"kb":52},"Fetch":{"n":16,"kb":321}},"htmlKB":39,"htmlRawKB":276,"heapMB":17.5,"nodes":3349,"scriptMs":514,"layoutMs":62,"big":["/_next/static/chunks/0p_w__bs2_j30.js 71KB gzip","/_next/static/chunks/1ld_8e5z4zudl.js 126KB gzip","/data/indice.json?v=2026-10-07.586603bb 90KB br","/sp?_rsc=AK_pp7urh37_hxaq 113KB gzip"]}
-{"route":"/sp/santo-andre","status":308,"loadMs":4350,"ttfb":2,"fcp":3312,"lcp":3312,"lcpEl":"P.max-w-xl text-[13px] leading-5 text-muted-foreground","cls":0,"tbt":7,"longest":57,"nLong":1,"requests":39,"transferKB":602,"byType":{"Document":{"n":1,"kb":6},"Stylesheet":{"n":2,"kb":21},"Script":{"n":24,"kb":466},"Font":{"n":2,"kb":52},"Fetch":{"n":10,"kb":57}},"htmlKB":5,"htmlRawKB":22,"heapMB":19.5,"nodes":390,"scriptMs":4776,"layoutMs":15,"big":["/_next/static/chunks/0p_w__bs2_j30.js 71KB gzip","/_next/static/chunks/1ld_8e5z4zudl.js 126KB gzip"]}
-{"route":"/rr/boa-vista","status":200,"loadMs":4441,"ttfb":6,"fcp":1644,"lcp":1644,"lcpEl":"P.text-foreground","cls":0,"tbt":211,"longest":231,"nLong":4,"requests":47,"transferKB":785,"byType":{"Document":{"n":1,"kb":34},"Stylesheet":{"n":2,"kb":21},"Script":{"n":26,"kb":503},"Font":{"n":2,"kb":52},"Fetch":{"n":16,"kb":175}},"htmlKB":33,"htmlRawKB":251,"heapMB":19.6,"nodes":2867,"scriptMs":482,"layoutMs":69,"big":["/_next/static/chunks/0p_w__bs2_j30.js 71KB gzip","/_next/static/chunks/1ld_8e5z4zudl.js 126KB gzip","/data/indice.json?v=2026-10-07.586603bb 90KB br"]}
-{"route":"/explorar","status":200,"loadMs":3426,"ttfb":2,"fcp":1616,"lcp":1616,"lcpEl":"DIV.mt-2 max-w-3xl text-[0.9375rem] leading-6 text-pretty text-m","cls":0,"tbt":64,"longest":108,"nLong":2,"requests":36,"transferKB":1347,"byType":{"Document":{"n":1,"kb":13},"Stylesheet":{"n":2,"kb":21},"Script":{"n":21,"kb":411},"Font":{"n":2,"kb":52},"Fetch":{"n":10,"kb":850}},"htmlKB":12,"htmlRawKB":87,"heapMB":16.7,"nodes":1886,"scriptMs":313,"layoutMs":41,"big":["/_next/static/chunks/0p_w__bs2_j30.js 71KB gzip","/data/municipios.json?v=2026-10-07.586603bb 795KB br","/_next/static/chunks/1ld_8e5z4zudl.js 126KB gzip"]}
-{"route":"/acompanhar","status":200,"loadMs":3090,"ttfb":2,"fcp":1596,"lcp":1596,"lcpEl":"P.max-w-xl text-[13px] leading-5 text-muted-foreground","cls":0.251,"tbt":4,"longest":54,"nLong":1,"requests":40,"transferKB":554,"byType":{"Document":{"n":1,"kb":9},"Stylesheet":{"n":2,"kb":21},"Script":{"n":21,"kb":411},"Font":{"n":2,"kb":52},"Fetch":{"n":14,"kb":61}},"htmlKB":8,"htmlRawKB":39,"heapMB":4.9,"nodes":1012,"scriptMs":141,"layoutMs":33,"big":["/_next/static/chunks/0p_w__bs2_j30.js 71KB gzip","/_next/static/chunks/1ld_8e5z4zudl.js 126KB gzip"]}
-{"route":"/dados","status":200,"loadMs":3046,"ttfb":4,"fcp":1632,"lcp":1632,"lcpEl":"DIV.mt-2 max-w-3xl text-[0.9375rem] leading-6 text-pretty text-m","cls":0,"tbt":9,"longest":59,"nLong":1,"requests":35,"transferKB":556,"byType":{"Document":{"n":1,"kb":25},"Stylesheet":{"n":2,"kb":21},"Script":{"n":21,"kb":411},"Font":{"n":2,"kb":52},"Fetch":{"n":9,"kb":47}},"htmlKB":24,"htmlRawKB":243,"heapMB":4.8,"nodes":1878,"scriptMs":129,"layoutMs":49,"big":["/_next/static/chunks/0p_w__bs2_j30.js 71KB gzip","/_next/static/chunks/1ld_8e5z4zudl.js 126KB gzip"]}
-{"route":"/sobre","status":200,"loadMs":3066,"ttfb":3,"fcp":1616,"lcp":1616,"lcpEl":"P.","cls":0,"tbt":10,"longest":60,"nLong":1,"requests":35,"transferKB":553,"byType":{"Document":{"n":1,"kb":20},"Stylesheet":{"n":2,"kb":21},"Script":{"n":21,"kb":411},"Font":{"n":2,"kb":52},"Fetch":{"n":9,"kb":48}},"htmlKB":20,"htmlRawKB":85,"heapMB":8.8,"nodes":784,"scriptMs":178,"layoutMs":49,"big":["/_next/static/chunks/0p_w__bs2_j30.js 71KB gzip","/_next/static/chunks/1ld_8e5z4zudl.js 126KB gzip"]}
+{"route":"/","status":200,"loadMs":3851,"ttfb":5,"fcp":1616,"lcp":1616,"lcpEl":"P.max-w-4xl text-base leading-7 text-pretty text-muted-foregro","cls":0,"tbt":144,"longest":166,"nLong":4,"requests":40,"transferKB":910,"byType":{"Document":{"n":1,"kb":52},"Stylesheet":{"n":2,"kb":21},"Script":{"n":23,"kb":454},"Font":{"n":2,"kb":52},"Fetch":{"n":12,"kb":330}},"htmlKB":52,"htmlRawKB":438,"heapMB":34.5,"nodes":4038,"scriptMs":1071,"layoutMs":60,"big":["/ 52KB gzip","/_next/static/chunks/0p_w__bs2_j30.js 71KB gzip","/_next/static/chunks/1ld_8e5z4zudl.js 126KB gzip","/geo/br.topo.json 273KB gzip"]}
+{"route":"/regiao/sudeste","status":200,"loadMs":4099,"ttfb":4,"fcp":1600,"lcp":1600,"lcpEl":"P.max-w-4xl text-base leading-7 text-pretty text-muted-foregro","cls":0,"tbt":188,"longest":128,"nLong":5,"requests":49,"transferKB":1731,"byType":{"Document":{"n":1,"kb":26},"Stylesheet":{"n":2,"kb":21},"Script":{"n":24,"kb":468},"Font":{"n":2,"kb":52},"Fetch":{"n":20,"kb":1164}},"htmlKB":25,"htmlRawKB":164,"heapMB":18.3,"nodes":3522,"scriptMs":1419,"layoutMs":47,"big":["/_next/static/chunks/0p_w__bs2_j30.js 71KB gzip","/_next/static/chunks/1ld_8e5z4zudl.js 126KB gzip","/geo/br.topo.json 273KB gzip","/data/municipios.json?v=2026-10-07.586603bb 795KB br"]}
+{"route":"/sp","status":200,"loadMs":4348,"ttfb":5,"fcp":1704,"lcp":1704,"lcpEl":"P.max-w-4xl text-[15px] leading-7 text-pretty text-muted-foreg","cls":0,"tbt":190,"longest":164,"nLong":6,"requests":42,"transferKB":788,"byType":{"Document":{"n":1,"kb":130},"Stylesheet":{"n":2,"kb":21},"Script":{"n":24,"kb":468},"Font":{"n":2,"kb":52},"Fetch":{"n":13,"kb":117}},"htmlKB":129,"htmlRawKB":585,"heapMB":16.5,"nodes":3322,"scriptMs":1576,"layoutMs":66,"big":["/sp 130KB gzip","/_next/static/chunks/0p_w__bs2_j30.js 71KB gzip","/_next/static/chunks/1ld_8e5z4zudl.js 126KB gzip"]}
+{"route":"/mg","status":200,"loadMs":4332,"ttfb":5,"fcp":1700,"lcp":1700,"lcpEl":"P.max-w-4xl text-[15px] leading-7 text-pretty text-muted-foreg","cls":0,"tbt":206,"longest":162,"nLong":6,"requests":42,"transferKB":843,"byType":{"Document":{"n":1,"kb":161},"Stylesheet":{"n":2,"kb":21},"Script":{"n":24,"kb":468},"Font":{"n":2,"kb":52},"Fetch":{"n":13,"kb":140}},"htmlKB":161,"htmlRawKB":680,"heapMB":28.8,"nodes":3418,"scriptMs":1532,"layoutMs":70,"big":["/mg 161KB gzip","/_next/static/chunks/0p_w__bs2_j30.js 71KB gzip","/_next/static/chunks/1ld_8e5z4zudl.js 126KB gzip","/geo/uf/MG.topo.json 72KB gzip"]}
+{"route":"/rr","status":200,"loadMs":4127,"ttfb":3,"fcp":1616,"lcp":1616,"lcpEl":"P.max-w-4xl text-[15px] leading-7 text-pretty text-muted-foreg","cls":0,"tbt":127,"longest":150,"nLong":4,"requests":42,"transferKB":640,"byType":{"Document":{"n":1,"kb":23},"Stylesheet":{"n":2,"kb":21},"Script":{"n":24,"kb":468},"Font":{"n":2,"kb":52},"Fetch":{"n":13,"kb":75}},"htmlKB":23,"htmlRawKB":143,"heapMB":26.4,"nodes":1752,"scriptMs":1366,"layoutMs":55,"big":["/_next/static/chunks/0p_w__bs2_j30.js 71KB gzip","/_next/static/chunks/1ld_8e5z4zudl.js 126KB gzip"]}
+{"route":"/sp/sao-paulo","status":200,"loadMs":4450,"ttfb":5,"fcp":1632,"lcp":1632,"lcpEl":"P.text-foreground","cls":0,"tbt":203,"longest":209,"nLong":4,"requests":47,"transferKB":937,"byType":{"Document":{"n":1,"kb":40},"Stylesheet":{"n":2,"kb":21},"Script":{"n":26,"kb":503},"Font":{"n":2,"kb":52},"Fetch":{"n":16,"kb":321}},"htmlKB":39,"htmlRawKB":276,"heapMB":21.2,"nodes":3899,"scriptMs":493,"layoutMs":63,"big":["/_next/static/chunks/0p_w__bs2_j30.js 71KB gzip","/_next/static/chunks/1ld_8e5z4zudl.js 126KB gzip","/data/indice.json?v=2026-10-07.586603bb 90KB br","/sp?_rsc=AK_pp7urh37_hxaq 113KB gzip"]}
+{"route":"/sp/santo-andre","status":200,"loadMs":4452,"ttfb":4,"fcp":1640,"lcp":1640,"lcpEl":"P.text-foreground","cls":0,"tbt":194,"longest":203,"nLong":4,"requests":47,"transferKB":940,"byType":{"Document":{"n":1,"kb":44},"Stylesheet":{"n":2,"kb":21},"Script":{"n":26,"kb":503},"Font":{"n":2,"kb":52},"Fetch":{"n":16,"kb":321}},"htmlKB":43,"htmlRawKB":310,"heapMB":17.6,"nodes":3613,"scriptMs":478,"layoutMs":65,"big":["/_next/static/chunks/0p_w__bs2_j30.js 71KB gzip","/_next/static/chunks/1ld_8e5z4zudl.js 126KB gzip","/data/indice.json?v=2026-10-07.586603bb 90KB br","/sp?_rsc=mnUqm0O1Ws64mtvL 113KB gzip"]}
+{"route":"/rr/boa-vista","status":200,"loadMs":4449,"ttfb":7,"fcp":1636,"lcp":1636,"lcpEl":"P.text-foreground","cls":0,"tbt":171,"longest":196,"nLong":3,"requests":47,"transferKB":785,"byType":{"Document":{"n":1,"kb":34},"Stylesheet":{"n":2,"kb":21},"Script":{"n":26,"kb":503},"Font":{"n":2,"kb":52},"Fetch":{"n":16,"kb":176}},"htmlKB":33,"htmlRawKB":251,"heapMB":17.9,"nodes":2875,"scriptMs":417,"layoutMs":57,"big":["/_next/static/chunks/0p_w__bs2_j30.js 71KB gzip","/_next/static/chunks/1ld_8e5z4zudl.js 126KB gzip","/data/indice.json?v=2026-10-07.586603bb 90KB br"]}
+{"route":"/explorar","status":200,"loadMs":3426,"ttfb":2,"fcp":1612,"lcp":1612,"lcpEl":"DIV.mt-2 max-w-3xl text-[0.9375rem] leading-6 text-pretty text-m","cls":0,"tbt":42,"longest":92,"nLong":1,"requests":36,"transferKB":1347,"byType":{"Document":{"n":1,"kb":13},"Stylesheet":{"n":2,"kb":21},"Script":{"n":21,"kb":411},"Font":{"n":2,"kb":52},"Fetch":{"n":10,"kb":850}},"htmlKB":12,"htmlRawKB":87,"heapMB":16.7,"nodes":1896,"scriptMs":277,"layoutMs":37,"big":["/_next/static/chunks/0p_w__bs2_j30.js 71KB gzip","/data/municipios.json?v=2026-10-07.586603bb 795KB br","/_next/static/chunks/1ld_8e5z4zudl.js 126KB gzip"]}
+{"route":"/acompanhar","status":200,"loadMs":3089,"ttfb":3,"fcp":1596,"lcp":1596,"lcpEl":"P.max-w-xl text-[13px] leading-5 text-muted-foreground","cls":0.251,"tbt":2,"longest":52,"nLong":1,"requests":43,"transferKB":627,"byType":{"Document":{"n":1,"kb":9},"Stylesheet":{"n":2,"kb":21},"Script":{"n":24,"kb":466},"Font":{"n":2,"kb":52},"Fetch":{"n":14,"kb":78}},"htmlKB":8,"htmlRawKB":39,"heapMB":5,"nodes":1025,"scriptMs":128,"layoutMs":33,"big":["/_next/static/chunks/0p_w__bs2_j30.js 71KB gzip","/_next/static/chunks/1ld_8e5z4zudl.js 126KB gzip"]}
+{"route":"/dados","status":200,"loadMs":3063,"ttfb":4,"fcp":1616,"lcp":1616,"lcpEl":"DIV.mt-2 max-w-3xl text-[0.9375rem] leading-6 text-pretty text-m","cls":0,"tbt":8,"longest":58,"nLong":1,"requests":35,"transferKB":556,"byType":{"Document":{"n":1,"kb":25},"Stylesheet":{"n":2,"kb":21},"Script":{"n":21,"kb":411},"Font":{"n":2,"kb":52},"Fetch":{"n":9,"kb":47}},"htmlKB":24,"htmlRawKB":243,"heapMB":4.5,"nodes":1874,"scriptMs":116,"layoutMs":44,"big":["/_next/static/chunks/0p_w__bs2_j30.js 71KB gzip","/_next/static/chunks/1ld_8e5z4zudl.js 126KB gzip"]}
+{"route":"/sobre","status":200,"loadMs":3066,"ttfb":2,"fcp":1604,"lcp":1604,"lcpEl":"P.","cls":0,"tbt":0,"longest":0,"nLong":0,"requests":35,"transferKB":553,"byType":{"Document":{"n":1,"kb":20},"Stylesheet":{"n":2,"kb":21},"Script":{"n":21,"kb":411},"Font":{"n":2,"kb":52},"Fetch":{"n":9,"kb":48}},"htmlKB":20,"htmlRawKB":85,"heapMB":10.8,"nodes":784,"scriptMs":161,"layoutMs":40,"big":["/_next/static/chunks/0p_w__bs2_j30.js 71KB gzip","/_next/static/chunks/1ld_8e5z4zudl.js 126KB gzip"]}
+{
+ "homeToMun": {
+  "tbt": 503,
+  "longest": 411,
+  "n": 3,
+  "maxEvent": 152,
+  "wall": 5530,
+  "untilPaintedMs": 5530,
+  "paths": 5570
+ },
+ "homeRapidYears18": {
+  "tbt": 1367,
+  "longest": 126,
+  "n": 36,
+  "maxEvent": 88,
+  "wall": 6439,
+  "years": 18
+ },
+ "homeOneYearStep": {
+  "tbt": 62,
+  "longest": 95,
+  "n": 2,
+  "maxEvent": 72,
+  "wall": 1632
+ },
+ "homeBackToUf": {
+  "tbt": 0,
+  "longest": 0,
+  "n": 0,
+  "maxEvent": 64,
+  "wall": 1607
+ },
+ "homeHeap": {
+  "before": {
+   "heapMB": 16,
+   "nodes": 4063,
+   "scriptMs": 1039,
+   "layoutMs": 60
+  },
+  "after": {
+   "heapMB": 55.6,
+   "nodes": 14357,
+   "scriptMs": 4572,
+   "layoutMs": 198
+  }
+ },
+ "explorerScroll": {
+  "found": true,
+  "scrollHeight": 317531,
+  "ms": 3275,
+  "frames": 112,
+  "jankFrames": 10,
+  "worstFrame": 67,
+  "tbt": 364,
+  "longest": 70,
+  "rowsInDom": 19,
+  "nodes": 1107
+ },
+ "explorer": {
+  "readyMs": 183422,
+  "rowsInitial": 20,
+  "rowsAfter5More": 19,
+  "showMore": {
+   "tbt": 364,
+   "longest": 70,
+   "maxEvent": 0
+  },
+  "typing": {
+   "tbt": 0,
+   "longest": 0,
+   "maxEvent": 0
+  },
+  "heap": {
+   "heapMB": 13.1,
+   "nodes": 1502,
+   "scriptMs": 1800,
+   "layoutMs": 288
+  }
+ },
+ "mgRapidYears10": {
+  "tbt": 612,
+  "longest": 96,
+  "n": 20,
+  "heap": {
+   "heapMB": 39.5,
+   "nodes": 11745,
+   "scriptMs": 3188,
+   "layoutMs": 147
+  }
+ }
+}
+{
+ "/ abort **/data/*.json": {
+  "flags": [],
+  "pageErrors": [],
+  "shot": "fail__data.png"
+ },
+ "/ abort **/geo/**": {
+  "flags": [
+   "Não foi possível"
+  ],
+  "pageErrors": [],
+  "shot": "fail__geo.png"
+ },
+ "/explorar abort **/data/*.json": {
+  "flags": [
+   "erro"
+  ],
+  "pageErrors": [],
+  "shot": "fail_explorar_data.png"
+ },
+ "/acompanhar abort **/acompanhar/dados*": {
+  "flags": [],
+  "pageErrors": [],
+  "shot": "fail_acompanhar_data.png"
+ },
+ "/sp/santo-andre abort **/geo/**": {
+  "flags": [
+   "Não foi possível"
+  ],
+  "pageErrors": [],
+  "shot": "fail_sp_santo-andre_geo.png"
+ },
+ "/sp/santo-andre abort **/data/*.json": {
+  "flags": [],
+  "pageErrors": [],
+  "shot": "fail_sp_santo-andre_data.png"
+ },
+ "rapidNav": {
+  "finalUrl": "/dados",
+  "ms": 1230,
+  "pageErrors": []
+ },
+ "bfcache": {
+  "restored": "back_forward",
+  "notUsedReasons": [
+   "BackForwardCacheDisabled",
+   "BackForwardCacheDisabledByCommandLine",
+   "BrowsingInstanceNotSwapped",
+   "BackForwardCacheDisabledForDelegate"
+  ]
+ },
+ "offlineClientNav": {
+  "url": "chrome-error://chromewebdata/",
+  "text": ""
+ }
+}
+{
+ "/": {
+  "title": "Radar MDE · Brasil",
+  "description": "Quanto cada um dos 5.570 municípios brasileiros aplica em educação, e se cumpre o mínimo constitucional de 25%. Do Brasil às regiões, estados e cidades, de 2008 a 2025.",
+  "ogTitle": "Radar MDE · Brasil",
+  "ogImage": "http://localhost:3210/opengraph-image?737273c64628290a",
+  "ogUrl": null,
+  "twitterCard": "summary_large_image",
+  "canonical": null,
+  "icon": "http://localhost:3299/icon.svg?icon.1ehf9wy2r4a2y.svg",
+  "manifest": "http://localhost:3299/manifest.webmanifest",
+  "themeColor": "#ffffff",
+  "h1": 1,
+  "lang": "pt-BR"
+ },
+ "/sp": {
+  "title": "São Paulo · Radar MDE",
+  "description": "Quanto cada município de São Paulo aplica em educação (MDE) e quem fica abaixo do mínimo constitucional de 25%.",
+  "ogTitle": "São Paulo · Radar MDE",
+  "ogImage": "http://localhost:3210/opengraph-image?737273c64628290a",
+  "ogUrl": null,
+  "twitterCard": "summary_large_image",
+  "canonical": null,
+  "icon": "http://localhost:3299/icon.svg?icon.1ehf9wy2r4a2y.svg",
+  "manifest": "http://localhost:3299/manifest.webmanifest",
+  "themeColor": "#ffffff",
+  "h1": 1,
+  "lang": "pt-BR"
+ },
+ "/sp/santo-andre": {
+  "title": "Santo André (SP) · Radar MDE",
+  "description": "Em 2025, aplicou 25,09% da receita de impostos em educação — cumpriu, mas no limite. Subiu 0,1 ponto em relação a 2024 (25,03%). Série 2008–2025, comparação com vizinhos e modelos de pedido de informação.",
+  "ogTitle": "Santo André (SP) · Radar MDE",
+  "ogImage": "http://localhost:3210/sp/santo-andre/opengraph-image?73c90a808ef72ccb",
+  "ogUrl": "http://localhost:3210/sp/santo-andre",
+  "twitterCard": "summary_large_image",
+  "canonical": "http://localhost:3210/sp/santo-andre",
+  "icon": "http://localhost:3299/icon.svg?icon.1ehf9wy2r4a2y.svg",
+  "manifest": "http://localhost:3299/manifest.webmanifest",
+  "themeColor": "#ffffff",
+  "h1": 1,
+  "lang": "pt-BR"
+ },
+ "/regiao/sudeste": {
+  "title": "Região Sudeste · Radar MDE",
+  "description": "Aplicação em educação (MDE) dos municípios da Região Sudeste, por estado e município.",
+  "ogTitle": "Região Sudeste · Radar MDE",
+  "ogImage": "http://localhost:3210/opengraph-image?737273c64628290a",
+  "ogUrl": null,
+  "twitterCard": "summary_large_image",
+  "canonical": null,
+  "icon": "http://localhost:3299/icon.svg?icon.1ehf9wy2r4a2y.svg",
+  "manifest": "http://localhost:3299/manifest.webmanifest",
+  "themeColor": "#ffffff",
+  "h1": 1,
+  "lang": "pt-BR"
+ },
+ "/explorar": {
+  "title": "Explorar municípios · Radar MDE",
+  "description": "Tabela com os 5.570 municípios: filtre por região, estado, porte, situação e capitais, ordene, compare 2008–2025 e exporte em CSV (também para Excel).",
+  "ogTitle": "Explorar municípios · Radar MDE",
+  "ogImage": null,
+  "ogUrl": "http://localhost:3210/explorar",
+  "twitterCard": "summary_large_image",
+  "canonical": "http://localhost:3210/explorar",
+  "icon": "http://localhost:3299/icon.svg?icon.1ehf9wy2r4a2y.svg",
+  "manifest": "http://localhost:3299/manifest.webmanifest",
+  "themeColor": "#ffffff",
+  "h1": 1,
+  "lang": "pt-BR"
+ },
+ "/sobre": {
+  "title": "Metodologia · Radar MDE",
+  "description": "De onde vêm os números do Radar MDE, quais indicadores do SIOPE são usados, como o painel calcula o que faltou aplicar e quais são os limites dos dados.",
+  "ogTitle": "Metodologia · Radar MDE",
+  "ogImage": "http://localhost:3210/opengraph-image?737273c64628290a",
+  "ogUrl": null,
+  "twitterCard": "summary_large_image",
+  "canonical": null,
+  "icon": "http://localhost:3299/icon.svg?icon.1ehf9wy2r4a2y.svg",
+  "manifest": "http://localhost:3299/manifest.webmanifest",
+  "themeColor": "#ffffff",
+  "h1": 1,
+  "lang": "pt-BR"
+ }
+}

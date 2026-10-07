@@ -1,0 +1,106 @@
+home light 1440 1 
+home light 1440 2 Mapa · Brasil
+home light 1440 3 Mapa · Brasil
+home light 1440 4 Por região
+home light 1440 5 Evolução 2008–2025
+home light 1440 6 Todos os estados
+home light 1440 7 Distribuição dos municípios · 2025
+home light 1440 8 Distribuição dos municípios · 2025
+home light 1440 9 Maiores déficits acumulados até 2025
+home light 1440 10 Ranking dos estados · 2025
+sudeste light 1440 1 
+sudeste light 1440 2 Mapa · Região Sudeste
+sudeste light 1440 3 Mapa · Região Sudeste
+sudeste light 1440 4 Estados da região
+sudeste light 1440 5 Evolução 2008–2025
+sudeste light 1440 6 Distribuição dos municípios · 2025
+sudeste light 1440 7 Distribuição dos municípios · 2025
+sudeste light 1440 8 Maiores déficits acumulados até 2025
+sudeste light 1440 9 Ranking dos estados · 2025
+sp light 1440 1 
+sp light 1440 2 Mapa de 2025
+sp light 1440 3 Mapa de 2025
+sp light 1440 4 Municípios abaixo dos 25%, por ano
+sp light 1440 5 Distribuição em 2025
+sp light 1440 6 São Paulo frente à região e ao país
+sp light 1440 7 São Paulo frente à região e ao país
+sp light 1440 8 Maiores déficits acumulados até 2025
+sp light 1440 9 Todos os municípios
+santo light 1440 1 
+santo light 1440 2 % da receita de impostos aplicado em educação (MDE
+santo light 1440 3 % da receita de impostos aplicado em educação (MDE
+santo light 1440 4 Posição em 2025
+santo light 1440 5 Onde fica · 2025
+santo light 1440 6 Onde fica · 2025
+santo light 1440 7 Vizinhos
+santo light 1440 8 Sinais de alerta
+santo light 1440 9 Sinais de alerta
+santo light 1440 10 Santo André entre os 640 municípios de São Paulo
+santo light 1440 11 O que você pode fazer
+santo light 1440 12 % do Fundeb pago aos profissionais da educação
+santo light 1440 13 % do Fundeb pago aos profissionais da educação
+santo light 1440 14 Investimento por aluno (R$/ano)
+santo light 1440 15 Comparação com a pesquisa
+santo light 1440 16 Ano a ano
+explorar light 1440 1 Municípios
+acompanhar light 1440 1 3 municípios
+dados light 1440 1 Norte
+dados light 1440 2 Nordeste
+dados light 1440 3 Centro-Oeste
+dados light 1440 4 Sudeste
+dados light 1440 5 Sul
+dados light 1440 6 
+dados light 1440 7 
+home light 375 1 
+home light 375 2 Mapa · Brasil
+home light 375 3 Mapa · Brasil
+home light 375 4 Por região
+home light 375 5 Evolução 2008–2025
+home light 375 6 Todos os estados
+home light 375 7 Distribuição dos municípios · 2025
+home light 375 8 Distribuição dos municípios · 2025
+home light 375 9 Maiores déficits acumulados até 2025
+home light 375 10 Ranking dos estados · 2025
+sudeste light 375 1 
+sudeste light 375 2 Mapa · Região Sudeste
+sudeste light 375 3 Mapa · Região Sudeste
+sudeste light 375 4 Estados da região
+sudeste light 375 5 Evolução 2008–2025
+sudeste light 375 6 Distribuição dos municípios · 2025
+sudeste light 375 7 Distribuição dos municípios · 2025
+sudeste light 375 8 Maiores déficits acumulados até 2025
+sudeste light 375 9 Ranking dos estados · 2025
+sp light 375 1 
+sp light 375 2 Mapa de 2025
+sp light 375 3 Mapa de 2025
+sp light 375 4 Municípios abaixo dos 25%, por ano
+sp light 375 5 Distribuição em 2025
+sp light 375 6 São Paulo frente à região e ao país
+sp light 375 7 São Paulo frente à região e ao país
+sp light 375 8 Maiores déficits acumulados até 2025
+sp light 375 9 Todos os municípios
+santo light 375 1 
+santo light 375 2 % da receita de impostos aplicado em educação (MDE
+santo light 375 3 % da receita de impostos aplicado em educação (MDE
+santo light 375 4 Posição em 2025
+santo light 375 5 Onde fica · 2025
+santo light 375 6 Onde fica · 2025
+santo light 375 7 Vizinhos
+santo light 375 8 Sinais de alerta
+santo light 375 9 Sinais de alerta
+santo light 375 10 Santo André entre os 640 municípios de São Paulo
+santo light 375 11 O que você pode fazer
+santo light 375 12 % do Fundeb pago aos profissionais da educação
+santo light 375 13 % do Fundeb pago aos profissionais da educação
+santo light 375 14 Investimento por aluno (R$/ano)
+santo light 375 15 Comparação com a pesquisa
+santo light 375 16 Ano a ano
+explorar light 375 1 Municípios
+acompanhar light 375 1 3 municípios
+dados light 375 1 Norte
+dados light 375 2 Nordeste
+dados light 375 3 Centro-Oeste
+dados light 375 4 Sudeste
+dados light 375 5 Sul
+dados light 375 6 
+dados light 375 7 
