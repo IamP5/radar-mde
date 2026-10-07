@@ -1,0 +1,6 @@
+.DS_Store
+# downloaded raw data (re-fetch with scripts/fetch_br.py) and logs
+/data/raw/
+/data/*.log
+/data/priority.json
+__pycache__/

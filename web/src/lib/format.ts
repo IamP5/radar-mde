@@ -1,0 +1,108 @@
+/** Rules, formatting and per-record helpers shared by server and client code. */
+
+export const MDE_MIN = 25;
+/** EC 119/2022: shortfalls in 2020–2021 (pandemic) are not punishable if compensated by 2023. */
+export const PANDEMIC_YEARS = new Set<number>([2020, 2021]);
+/** Fundeb share that must pay education professionals: 60% (magistério) until 2020, 70% from 2021. */
+export const funMin = (year: number) => (year >= 2021 ? 70 : 60);
+/** Max % of Fundeb revenue that may be left for the next year: 5% (Lei 11.494/2007), 10% from 2021 (Lei 14.113/2020). */
+export const fundebLeftMax = (year: number) => (year >= 2021 ? 10 : 5);
+
+export type YearRecord = {
+  /** "ok" = report delivered, "nd" = nothing declared to SIOPE/SICONFI */
+  s: "ok" | "nd";
+  /** % of tax revenue applied in MDE (Manutenção e Desenvolvimento do Ensino) */
+  mde?: number;
+  /** R$ applied in MDE */
+  mdeV?: number;
+  /** R$ tax revenue base (impostos + transferências) */
+  base?: number;
+  /** % of Fundeb spent on education professionals' pay */
+  fun?: number;
+  funMin?: number;
+  /** % applied in health (ASPS, min 15%) — São Paulo only, from SICONFI */
+  sau?: number;
+  /** which system the figures came from */
+  src?: "siope" | "siconfi";
+  /** Treasury (SICONFI) MDE % when it disagrees with SIOPE by ≥ 1 p.p. (São Paulo only) */
+  alt?: number;
+  /** % of Fundeb revenue left unspent in the year */
+  funLeft?: number;
+  /** % of all municipal spending that went to education */
+  eduShare?: number;
+  /** R$ invested per enrolled student (SIOPE indicator 4.9) */
+  perAluno?: number;
+};
+
+export type Status = "below" | "edge" | "ok" | "nodata" | "notdelivered";
+
+export function mdeStatus(r: YearRecord | undefined): Status {
+  if (!r) return "nodata";
+  if (r.s === "nd") return "notdelivered";
+  if (r.mde == null) return "nodata";
+  if (r.mde < MDE_MIN) return "below";
+  if (r.mde < MDE_MIN + 1) return "edge";
+  return "ok";
+}
+
+export const STATUS_LABEL: Record<Status, string> = {
+  below: "Abaixo do mínimo",
+  edge: "No limite (25–26%)",
+  ok: "Cumpriu",
+  nodata: "Sem dados",
+  notdelivered: "Não declarou",
+};
+
+/** Values far from the usual 25–40% band are often filing errors; flag them instead of asserting. */
+export const isAtypical = (v: number | null | undefined) => v != null && (v < 18 || v > 45);
+
+/** Shortfall in R$ for one year (0 when the minimum was met). */
+export function shortfall(r: YearRecord | undefined): number {
+  if (!r || r.mde == null || r.base == null) return 0;
+  return Math.max(0, ((MDE_MIN - r.mde) / 100) * r.base);
+}
+
+export const brl = (v: number) =>
+  v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
+
+export function brlShort(v: number) {
+  const a = Math.abs(v);
+  if (a >= 1e9) return `R$ ${(v / 1e9).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} bi`;
+  if (a >= 1e6) return `R$ ${(v / 1e6).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} mi`;
+  if (a >= 1e3) return `R$ ${(v / 1e3).toLocaleString("pt-BR", { maximumFractionDigits: 0 })} mil`;
+  return brl(v);
+}
+
+export const pct = (v: number | null | undefined, digits = 2) =>
+  v == null ? "—" : `${v.toLocaleString("pt-BR", { minimumFractionDigits: digits, maximumFractionDigits: digits })}%`;
+
+export const int = (v: number) => v.toLocaleString("pt-BR");
+
+/** Share as "12%" / "0,4%" — keeps one decimal only when it matters. */
+export const share = (part: number, whole: number) => {
+  if (!whole) return "—";
+  const v = (part / whole) * 100;
+  return `${v.toLocaleString("pt-BR", { maximumFractionDigits: v > 0 && v < 10 ? 1 : 0 })}%`;
+};
+
+export const norm = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+
+export const POP_BANDS = [
+  { key: "p1", label: "Até 5 mil", test: (p: number) => p <= 5000 },
+  { key: "p2", label: "5 a 20 mil", test: (p: number) => p > 5000 && p <= 20000 },
+  { key: "p3", label: "20 a 100 mil", test: (p: number) => p > 20000 && p <= 100000 },
+  { key: "p4", label: "100 a 500 mil", test: (p: number) => p > 100000 && p <= 500000 },
+  { key: "p5", label: "Mais de 500 mil", test: (p: number) => p > 500000 },
+] as const;
+export const popBand = (p: number) => POP_BANDS.find((b) => b.test(p))!;
+
+export const siopeUrl = (ibge: number, uf: string, year: number) => {
+  const base =
+    "https://www.fnde.gov.br/olinda-ide/servico/DADOS_ABERTOS_SIOPE/versao/v1/odata/Indicadores_Siope(Ano_Consulta=@Ano_Consulta,Num_Peri=@Num_Peri,Sig_UF=@Sig_UF)";
+  const q = `?@Ano_Consulta=${year}&@Num_Peri=${year < 2017 ? 1 : 6}&@Sig_UF='${uf}'&$format=json`;
+  // Brasília is filed as the Distrito Federal's own ("Estadual") declaration
+  return uf === "DF" ? `${base}${q}` : `${base}${q}&$filter=COD_MUNI%20eq%20${Math.floor(ibge / 10)}`;
+};
+
+export const siconfiUrl = (ibge: number, year: number) =>
+  `https://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo?an_exercicio=${year}&nr_periodo=6&co_tipo_demonstrativo=RREO&no_anexo=RREO-Anexo%2014&id_ente=${ibge}`;
