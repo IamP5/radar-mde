@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -15,6 +15,7 @@ const SECTIONS = ["/explorar", "/acompanhar", "/dados", "/sobre"];
  */
 export function NavLinks() {
   const path = usePathname();
+  const router = useRouter();
   const ref = useRef<HTMLElement>(null);
   const [edges, setEdges] = useState({ left: false, right: false });
   // Every territory page (Brasil, região, UF, município) lives under "Painel"
@@ -32,8 +33,10 @@ export function NavLinks() {
     el.addEventListener("scroll", update, { passive: true });
     const ro = new ResizeObserver(update);
     ro.observe(el);
-    // keep the current section in view
-    el.querySelector<HTMLElement>("[aria-current=page]")?.scrollIntoView({ block: "nearest", inline: "nearest" });
+    // Keep the current section in view by scrolling the container itself. Never scrollIntoView(): in Chromium it
+    // moves the sequential-focus starting point, so the first Tab would skip the skip link (A11Y-17).
+    const a = el.querySelector<HTMLElement>("[aria-current=page]");
+    if (a && el.scrollWidth > el.clientWidth) el.scrollLeft = a.offsetLeft - el.offsetLeft - (el.clientWidth - a.offsetWidth) / 2;
     return () => {
       el.removeEventListener("scroll", update);
       ro.disconnect();
@@ -59,6 +62,11 @@ export function NavLinks() {
         <Link
           key={n.href}
           href={n.href}
+          // No viewport prefetch: on phones it pulled every section (and the charts bundle) on each page view
+          // (PERF-05). Prefetch on intent instead.
+          prefetch={false}
+          onPointerEnter={() => router.prefetch(n.href)}
+          onTouchStart={() => router.prefetch(n.href)}
           aria-current={active(n.href) ? "page" : undefined}
           className={cn(
             "inline-flex min-h-9 shrink-0 items-center rounded-md px-2.5 text-sm transition-colors duration-150 hover:bg-accent hover:text-foreground md:min-h-8",

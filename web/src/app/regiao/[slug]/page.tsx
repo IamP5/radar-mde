@@ -24,7 +24,11 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps<"/regiao/[slug]">): Promise<Metadata> {
   const r = getRegionBySlug((await params).slug);
   return r
-    ? { title: `Região ${r.name}`, description: `Aplicação em educação (MDE) dos municípios da Região ${r.name}, por estado e município.` }
+    ? {
+        title: `Região ${r.name}`,
+        description: `Aplicação em educação (MDE) dos municípios da Região ${r.name}, por estado e município.`,
+        alternates: { canonical: regionPath(r.key) },
+      }
     : { title: "Página não encontrada" };
 }
 
@@ -89,6 +93,7 @@ export default async function Page({ params }: PageProps<"/regiao/[slug]">) {
         parent={brStats()}
         ufs={ufSummaries(r.ufs)}
         deficits={topDeficits(scope, 25)}
+        deficitsReal={topDeficits(scope, 25, { real: true })}
         hist={YEARS.map((_, i) => histCounts(rows.map((x) => x.mde[i])))}
       />
     </>

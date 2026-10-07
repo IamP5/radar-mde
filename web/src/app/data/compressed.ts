@@ -24,7 +24,10 @@ export function compressed(req: Request, key: string, build: () => string | null
   const etag = `"${DATA_VERSION}"`;
   const versioned = new URL(req.url).searchParams.get("v") === DATA_VERSION;
   const headers: Record<string, string> = {
-    "cache-control": versioned ? "public, max-age=31536000, immutable" : "public, max-age=300, stale-while-revalidate=86400",
+    // s-maxage lets the CDN (Vercel) cache and serve its own compressed copy instead of invoking the function (CDN-01)
+    "cache-control": versioned
+      ? "public, max-age=31536000, s-maxage=31536000, immutable"
+      : "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400",
     etag,
     vary: "Accept-Encoding",
     ...extra,

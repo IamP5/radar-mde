@@ -7,7 +7,10 @@ import { NextResponse, type NextRequest } from "next/server";
  */
 export function proxy(request: NextRequest) {
   const url = request.nextUrl.clone();
-  url.pathname = url.pathname.toLowerCase();
+  const lowercasePath = url.pathname.toLowerCase();
+  // Matchers may run case-insensitively on the hosting platform.
+  if (url.pathname === lowercasePath) return NextResponse.next();
+  url.pathname = lowercasePath;
   return NextResponse.redirect(url, 308);
 }
 

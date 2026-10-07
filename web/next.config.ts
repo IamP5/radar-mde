@@ -15,6 +15,15 @@ const nextConfig: NextConfig = {
       { source: "/favicon.ico", destination: "/icon.svg", permanent: false },
     ];
   },
+  // Map geometry is static but not content-hashed: cache a day, then revalidate in the background (PERF-08, CIT-20)
+  async headers() {
+    return [
+      {
+        source: "/geo/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=86400, s-maxage=604800, stale-while-revalidate=2592000" }],
+      },
+    ];
+  },
   partialPrefetching: true,
   turbopack: {
     rules: {

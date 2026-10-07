@@ -93,3 +93,5 @@ export function histCounts(values: (number | null | undefined)[]): number[] {
   for (const v of values) if (v != null) counts[v < HIST_LO ? 0 : v >= HIST_HI ? HIST_NB - 1 : Math.floor(v) - HIST_LO + 1]++;
   return counts;
 }
+/** "< 15%", "15–16%", …, "≥ 45%" for histogram bucket `i`. */
+export const histLabel = (i: number) => (i === 0 ? `< ${HIST_LO}%` : i === HIST_NB - 1 ? `≥ ${HIST_HI}%` : `${i + HIST_LO - 1}–${i + HIST_LO}%`);

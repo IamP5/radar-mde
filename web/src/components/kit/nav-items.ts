@@ -2,7 +2,7 @@
 export const NAV = [
   { href: "/", label: "Painel", short: "Painel" },
   { href: "/explorar", label: "Explorar", short: "Explorar" },
-  { href: "/acompanhar", label: "Acompanhando", short: "Salvos" },
+  { href: "/acompanhar", label: "Salvos", short: "Salvos" },
   { href: "/dados", label: "Dados", short: "Dados" },
   { href: "/sobre", label: "Metodologia", short: "Método" },
 ];

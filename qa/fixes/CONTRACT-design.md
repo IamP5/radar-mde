@@ -9,7 +9,7 @@ All tokens live in `web/src/app/globals.css`; Tailwind utilities exist for each 
 | `--bin-zero` (`bg-bin-zero`) | `#f4f3f0` | `#1c1c1a` | "0% / nenhum" step of share maps (SHARE_BINS s0). Draw with a hairline stroke (`var(--axis)`) on maps. |
 
 ## Changed values (names unchanged)
-- `--bin-1..5`, `--bin-nd`: light `#b42727 #e27371 #d1cfc8 #5598e7 #1c5cab`, nd `#ebebeb`; dark `#e66767 #ad4543 #383835 #2a78d6 #6da7ec`, nd `#232323`.
+- `--bin-1..5`, `--bin-nd`: light `#b42727 #e27371 #d1cfc8 #5598e7 #1c5cab`, nd `#ebebeb`; dark `#e66767 #ad4543 #383835 #2468bd #6da7ec`, nd `#232323`.
   Neighbours ≥ 1.9:1 apart (light) / ≥ 1.75:1 (dark); light steps ≥ 1.56:1 vs card. bin-1 and bin-5 still have similar
   luminance (diverging scale): below-minimum classes need the redundant mark (outline/hatch) — W3 `isBelowBin`.
   Text on fills: bin-1/bin-5 → white (light) / black (dark); bin-2/3/4 → ink (light); bin-2/bin-4 → white (dark). Contrast ≥ 4.4:1.
@@ -28,6 +28,8 @@ All tokens live in `web/src/app/globals.css`; Tailwind utilities exist for each 
   and `svg[role=img]` keep their colors (`forced-color-adjust: none`); selected `[role=radio][aria-checked=true]`,
   `[role=tab][aria-selected=true]`, `[aria-pressed=true]`, `[role=option][aria-selected=true]` get a `Highlight` outline.
   If a swatch uses a class (`bg-bin-1`) instead of inline style, add `data-swatch` or `forced-color-adjust-none`.
+  Wave 2: class-colored meters/rank bars: put `data-track` on the gray track (gets a CanvasText outline) and `data-bar`
+  on the fill (painted `Highlight`), e.g. the city "Posição" percentile bar (A11Y-05).
 - Utilities: `fade-b` (bottom fade for in-card scroll lists, VIS-04), `fade-x` (edge fade for horizontal scrollers like
   YearPicker / mobile nav, VIS-07).
 - `outline-ring/50` was removed from the `*` base rule; focus is the single `:focus-visible` 2px brand outline.
@@ -48,3 +50,49 @@ All tokens live in `web/src/app/globals.css`; Tailwind utilities exist for each 
 - `Panel` `action` slot can now shrink/wrap (`min-w-0 max-w-full flex-wrap`), so a wide legend in `action` wraps
   instead of overflowing (VIS-02).
 - `Stat`/`DeltaPill`: delta pill never wraps; spark sits flush at the bottom; critical tone uses `critical-ink`.
+
+## Wave 2 · `ChartActions` (JOR-04) — `@/components/kit/chart-actions`
+Export menu for a chart or map, placed in the Panel `action` slot. It is a ghost icon button (32px, download icon,
+`aria-label="Exportar: <title>"`, hidden in print). The menu has:
+- **Imagem PNG** (2×) and **Imagem SVG (editável)**: the chart's own `<svg>` with a title and a source footer
+  ("Fonte: FNDE/SIOPE. Radar MDE · Brasil — <SITE_URL + path + query>") drawn in. Every computed style is inlined, so
+  `var(--series-n)`, classes and the current theme resolve, and the background is the panel color. HTML legends
+  outside the svg are not included, so put anything essential in `title` or `note`.
+- **Dados em CSV** / **Dados em CSV (Excel Brasil)**: from `csv` (uses `toCsv`, BOM, `;` and decimal comma for Excel).
+  The CSV items are hidden when `csv` is omitted.
+- **Copiar citação**: `Radar MDE (<ano atual>). <title>. <SITE_URL><path>?<query>. Fonte: <source>. Acesso em dd/mm/aaaa.`
+  (also exported as `citation(title, source?)`). A sr-only `role=status` announces "Citação copiada" / "PNG baixado".
+
+```tsx
+import { ChartActions } from "@/components/kit/chart-actions";
+
+<Panel
+  title="% da receita aplicado em educação (MDE)"
+  action={
+    <ChartActions
+      title={`% da receita de impostos aplicado em MDE — ${c.name} (${c.uf}), 2008–2025`}
+      filename={[slug, "mde"]}                       // → radar-mde_santo-andre_mde.png / .svg / .csv
+      csv={{ columns: ["ano", "mde_pct", "mediana_uf_pct"], rows: years.map((y, i) => ({ ano: y, mde_pct: v[i], mediana_uf_pct: m[i] })) }}
+      note="Valores declarados ao SIOPE; R$ nominais."   // optional extra footer line
+      // svgSelector=".recharts-surface"               // optional: which svg in the Panel (default: largest non-icon svg)
+      // getSvg={() => ref.current?.querySelector("svg") ?? null}  // optional explicit lookup
+      // source="FNDE/SIOPE e Tesouro/SICONFI"         // default "FNDE/SIOPE"
+    />
+  }
+>
+  <TrendChart … />
+</Panel>
+```
+- The svg is found inside the closest `<section>` (the Panel) around the button. With two charts in one Panel, pass
+  `svgSelector` or `getSvg`.
+- Rows are `Record<string, string | number | null>`. Use CSV column names from `lib/csv.ts` (`ano`, `mde_pct`,
+  `fundeb_pessoal_pct`, `por_aluno_rs`, `faltou_rs`, …) when they fit, so the vocabulary matches `/dados`.
+- Maps (Choropleth) work too: patterns and hatches live inside the svg's `<defs>` and are exported.
+
+## Wave 2 · other changes
+- `PageHeader`: title and actions sit side by side only from `lg` (1024px), and the actions wrap (max 50% width). Below
+  `lg` the actions go under the title (VIS-12).
+- Print: whole panels may now split across pages. Charts, maps, KPI cards (`div.rounded-xl.border`) and table rows don't
+  split, and a Panel header stays with its body. Numeric table cells (`text-right` / `tnum`) never wrap (GOV-22, VIS-10).
+- Dark `--bin-4` is now `#2468bd` (white text 5.5:1, A11Y-19).
+- `Segmented` and `StatusBadge` use `min-h-*` and rem sizes so they grow with text zoom (A11Y-15).

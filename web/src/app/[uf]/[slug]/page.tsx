@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import ActionKit from "@/components/ActionKit";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import TrendChart from "@/components/TrendChart";
+import { ChartActions } from "@/components/kit/chart-actions";
 import WatchButton from "@/components/WatchButton";
 import { PageBody, PageHeader } from "@/components/kit/page-header";
 import { EmptyState, Panel } from "@/components/kit/panel";
@@ -21,12 +22,13 @@ import {
   brl,
   brlShort,
   citiesOf,
+  cityHasHealth,
+  IPCA_BASE,
   deficitTrail,
   existedIn,
   fundebLeftMax,
   funMin,
   getCity,
-  isAtypical,
   latestYear,
   mdeStatus,
   pct,
@@ -151,8 +153,8 @@ function cityYearData(c: City): CityYearData {
           ? "none"
           : status;
     const mde = r?.mde ?? null;
+    // out-of-pattern flags come from the data build (own-history outliers / implausible values only)
     const atip = [...(r?.atip ?? [])];
-    if (isAtypical(mde) && !atip.includes("mde")) atip.push("mde");
     return {
       y,
       st,
@@ -164,11 +166,13 @@ function cityYearData(c: City): CityYearData {
       mdeVEst: r?.mdeVEst === 1,
       src: r?.src ?? null,
       atip,
+      impl: r?.atipImpl === 1,
       medUf: ufS[i]?.median ?? null,
       medBr: brS[i]?.median ?? null,
       rUf: mde != null && !single ? rankOf(mde, sorted(`uf:${c.uf}`, () => state, y)) : null,
       rBr: mde != null ? rankOf(mde, sorted("br", allCities, y)) : null,
       carry: Math.round(trail[i].carry),
+      carryReal: Math.round(trail[i].carryReal ?? trail[i].carry),
     };
   });
   const d: CityYearData = {
@@ -186,6 +190,7 @@ function cityYearData(c: City): CityYearData {
     points,
     stopped: f.stopped,
     firstBase: YEARS.find((y) => c.years[y]?.base != null) ?? null,
+    shaky: f.shakyYears,
     peers:
       single || !c.imediata
         ? []
@@ -212,7 +217,8 @@ function CityContent({ c }: { c: City }) {
   const d = cityYearData(c);
   const f = cityFacts(c);
   const single = d.single;
-  const trail = deficitTrail(c).filter(({ year }) => existedIn(c, year));
+  const trailAll = deficitTrail(c);
+  const trail = trailAll.filter(({ year }) => existedIn(c, year));
   const hasAny = f.reported.length > 0;
   const ufMed = d.points.map((p) => p.medUf);
   const brMed = d.points.map((p) => p.medBr);
@@ -240,17 +246,23 @@ function CityContent({ c }: { c: City }) {
   if (f.carry > 0)
     flags.push(
       <>
-        <Term k="deficit">Déficit</Term> estimado ainda não compensado: {brlShort(f.carry)} (R$ da época
-        {f.carryShaky ? "; depende de valores atípicos, confirme na fonte" : ""}).
+        <Term k="deficit">Déficit</Term> estimado ainda não compensado: {brlShort(f.carry)} em R$ da época, ou{" "}
+        {brlShort(trailAll[trailAll.length - 1].carryReal)} em R$ de {IPCA_BASE} corrigidos pelo IPCA
+        {f.carryShaky ? `. A estimativa depende de valores fora do padrão em ${listYears(f.shakyYears)}: confirme na fonte` : ""}.
       </>,
     );
   if (f.funBelow.length) flags.push(<>Pagou aos profissionais menos que o mínimo do <Term k="fundeb">Fundeb</Term> {emAnos(f.funBelow.map((x) => x.year))}.</>);
   if (f.funLeft.length) flags.push(<>Deixou mais Fundeb sem usar do que a lei permite (5% até 2020, 10% depois) {emAnos(f.funLeft.map((x) => x.year))}.</>);
   if (f.diverge.length) flags.push(<>Percentual informado ao Tesouro diverge do <Term k="siope">SIOPE</Term> {emAnos(f.diverge)}: os relatórios oficiais não batem.</>);
   if (f.notDelivered.length) flags.push(<><Term k="nd">Não declarou</Term> dados de MDE {emAnos(f.notDelivered)}.</>);
-  if (f.atypMde.length) flags.push(<>Percentual de MDE atípico (possível erro de declaração) {emAnos(f.atypMde)}.</>);
+  if (f.atypMde.length) flags.push(<>Percentual de MDE fora do padrão do próprio município {emAnos(f.atypMde)}: confirme na fonte.</>);
+  if (f.atypAluno.length) flags.push(<>Valor por aluno fora do padrão do próprio município {emAnos(f.atypAluno)}: confirme na fonte.</>);
   if (f.edge.length >= 3) flags.push(<>Ficou “no limite” (25–26%) em {f.edge.length} anos: aplica o mínimo, quase nada além.</>);
 
+  const who = `${c.name} (${c.uf})`;
+  const span = `${YEARS[0]}–${YEARS[YEARS.length - 1]}`;
+  // health (ASPS) only exists for some municipalities (SICONFI, mostly SP): hide the column when it's all empty
+  const hasSau = cityHasHealth(c);
   const hasStaticCallouts = f.diverge.length > 0 || f.notDelivered.length > 0;
   const hasAtip = d.points.some((p) => p.atip.length > 0);
 
@@ -267,7 +279,7 @@ function CityContent({ c }: { c: City }) {
               {c.capital && !single ? ", capital" : ""})
             </span>
             <span aria-hidden className="ml-2.5 inline-flex translate-y-[-3px] items-center gap-1.5 align-middle tracking-normal">
-              <Badge variant="outline" className="font-mono text-[11px] text-muted-foreground">
+              <Badge variant="outline" className="font-mono text-[0.6875rem] text-muted-foreground">
                 {c.uf}
               </Badge>
               {c.capital && <Badge variant="secondary">Capital</Badge>}
@@ -286,7 +298,7 @@ function CityContent({ c }: { c: City }) {
           </>
         }
       >
-        <ul aria-label="Sobre o município" className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-muted-foreground">
+        <ul aria-label="Sobre o município" className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.8125rem] text-muted-foreground">
           <Meta>{c.pop.toLocaleString("pt-BR")} hab.</Meta>
           <Meta>{single ? `Região ${regionName}` : `${ufName}, Região ${regionName}`}</Meta>
           {c.imediata && !single && (
@@ -344,11 +356,30 @@ function CityContent({ c }: { c: City }) {
                     <Term k="ec119">EC 119/2022</Term> (2020–2021).
                   </>
                 }
+                action={
+                  <ChartActions
+                    title={`% da receita de impostos aplicado em MDE — ${who}, ${span}`}
+                    filename={[c.uf.toLowerCase(), c.slug, "mde"]}
+                    note={`Linha tracejada: mínimo de 25%. Medianas: ${single ? "" : `${c.uf} e `}Brasil.`}
+                    csv={{
+                      columns: ["ano", "mde_pct", "fora_do_padrao", ...(single ? [] : ["mediana_uf_pct"]), "mediana_brasil_pct", "minimo_pct"],
+                      rows: YEARS.map((y, i) => ({
+                        ano: y,
+                        mde_pct: c.years[y]?.mde ?? null,
+                        fora_do_padrao: f.atypMde.includes(y) ? 1 : 0,
+                        ...(single ? {} : { mediana_uf_pct: ufMed[i] }),
+                        mediana_brasil_pct: brMed[i],
+                        minimo_pct: MDE_MIN,
+                      })),
+                    }}
+                  />
+                }
               >
                 <TrendChart
                   points={YEARS.map((y) => ({ year: y, value: c.years[y]?.mde ?? null, min: MDE_MIN }))}
                   label={c.name}
                   thresholdLabel="mínimo 25%"
+                  flagged={f.atypMde}
                   height={260}
                   band={{ from: 2020, to: 2021, label: "EC 119" }}
                   refs={[
@@ -399,7 +430,7 @@ function CityContent({ c }: { c: City }) {
             <>
               Dados só mudam algo quando chegam a quem fiscaliza. Escolha o que quer fazer: o texto já vem preenchido com os números de {c.name}. Revise,
               coloque seu nome e envie: um pedido pelo <Term k="esic">e-SIC</Term>, um aviso ao <Term k="cacs">CACS-Fundeb</Term>, um requerimento na Câmara ou
-              uma comunicação ao <Term k="tc">Tribunal de Contas</Term>. Qualquer pessoa tem direito a essas informações.
+              uma comunicação ao <span className="whitespace-nowrap"><Term k="tc">Tribunal de Contas</Term>.</span> Qualquer pessoa tem direito a essas informações.
             </>
           }
           divided
@@ -418,11 +449,36 @@ function CityContent({ c }: { c: City }) {
                   </>
                 }
                 description="Mínimo de 60% (magistério) até 2020; 70% (profissionais) desde 2021. Pode passar de 100% quando a prefeitura usa saldo de anos anteriores."
+                action={
+                  <ChartActions
+                    title={`% do Fundeb pago aos profissionais da educação — ${who}, ${span}`}
+                    filename={[c.uf.toLowerCase(), c.slug, "fundeb"]}
+                    note="Mínimo legal: 60% até 2020; 70% desde 2021."
+                    csv={{
+                      columns: ["ano", "fundeb_profissionais_pct", "minimo_pct"],
+                      rows: YEARS.map((y) => ({ ano: y, fundeb_profissionais_pct: c.years[y]?.fun ?? null, minimo_pct: funMin(y) })),
+                    }}
+                  />
+                }
               >
                 <TrendChart points={YEARS.map((y) => ({ year: y, value: c.years[y]?.fun ?? null, min: funMin(y) }))} label="Fundeb" thresholdLabel="mínimo legal" />
               </Panel>
-              <Panel title="Investimento por aluno (R$/ano)" description="Valores nominais (R$ da época) declarados ao SIOPE, sem correção pela inflação.">
-                <TrendChart points={YEARS.map((y) => ({ year: y, value: c.years[y]?.perAluno ?? null }))} label="Por aluno" unit="R$" />
+              <Panel
+                title="Investimento por aluno (R$/ano)"
+                description="Valores nominais (R$ da época) declarados ao SIOPE, sem correção pela inflação."
+                action={
+                  <ChartActions
+                    title={`Investimento por aluno (R$/ano, nominal) — ${who}, ${span}`}
+                    filename={[c.uf.toLowerCase(), c.slug, "por-aluno"]}
+                    note="Valores nominais, sem correção pela inflação."
+                    csv={{
+                      columns: ["ano", "por_aluno_rs", "fora_do_padrao"],
+                      rows: YEARS.map((y) => ({ ano: y, por_aluno_rs: c.years[y]?.perAluno ?? null, fora_do_padrao: f.atypAluno.includes(y) ? 1 : 0 })),
+                    }}
+                  />
+                }
+              >
+                <TrendChart points={YEARS.map((y) => ({ year: y, value: c.years[y]?.perAluno ?? null }))} label="Por aluno" unit="R$" flagged={f.atypAluno} />
               </Panel>
             </section>
 
@@ -447,7 +503,7 @@ function CityContent({ c }: { c: City }) {
                 <table className="w-full text-sm whitespace-nowrap tnum">
                   <caption className="sr-only">Indicadores de {c.name} por ano, do mais recente ao mais antigo</caption>
                   <TableHeader>
-                    <TableRow className="hover:bg-transparent [&>th]:h-10 [&>th]:px-3 [&>th]:text-right [&>th]:text-[13px] [&>th]:font-medium [&>th]:text-muted-foreground">
+                    <TableRow className="hover:bg-transparent [&>th]:h-10 [&>th]:px-3 [&>th]:text-right [&>th]:text-[0.8125rem] [&>th]:font-medium [&>th]:text-muted-foreground">
                       <TableHead scope="col" className="pl-4! text-left! sm:pl-5!">Ano</TableHead>
                       <TableHead scope="col">MDE</TableHead>
                       <TableHead scope="col">Aplicado</TableHead>
@@ -457,14 +513,14 @@ function CityContent({ c }: { c: City }) {
                       <TableHead scope="col">Fundeb salários</TableHead>
                       <TableHead scope="col">Fundeb não usado</TableHead>
                       <TableHead scope="col">Por aluno</TableHead>
-                      <TableHead scope="col">Saúde</TableHead>
+                      {hasSau && <TableHead scope="col">Saúde</TableHead>}
                       <TableHead scope="col" className="pr-4! text-left! sm:pr-5!">Fonte</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {[...trail].reverse().map(({ year, rec, shortfall, carry }) => {
                       const st = mdeStatus(rec);
-                      const atipMde = isAtypical(rec?.mde) || !!rec?.atip?.includes("mde");
+                      const atipMde = !!rec?.atip?.includes("mde");
                       const atipAluno = !!rec?.atip?.includes("aluno");
                       const shaky = !!rec?.atip?.includes("base");
                       return (
@@ -479,7 +535,7 @@ function CityContent({ c }: { c: City }) {
                           </TableHead>
                           <TableCell className={st === "below" ? "font-medium text-critical-ink" : undefined}>
                             <span className="inline-flex items-center gap-1.5">
-                              {atipMde && <Warn label="Valor atípico: possível erro de declaração, confira na fonte" />}
+                              {atipMde && <Warn label="Valor fora do padrão do município: confira na fonte" />}
                               {st === "notdelivered" ? <span className="text-critical-ink">não declarou</span> : pct(rec?.mde)}
                             </span>
                             {rec?.alt != null && (
@@ -510,11 +566,11 @@ function CityContent({ c }: { c: City }) {
                           <TableCell className={rec?.funLeft != null && rec.funLeft > fundebLeftMax(year) ? "text-critical-ink" : undefined}>{pct(rec?.funLeft)}</TableCell>
                           <TableCell>
                             <span className="inline-flex items-center gap-1.5">
-                              {atipAluno && <Warn label="Valor por aluno atípico: possível erro nas matrículas declaradas" />}
+                              {atipAluno && <Warn label="Valor por aluno fora do padrão do município: confira na fonte" />}
                               {rec?.perAluno ? brl(rec.perAluno) : <Dash />}
                             </span>
                           </TableCell>
-                          <TableCell>{pct(rec?.sau)}</TableCell>
+                          {hasSau && <TableCell>{pct(rec?.sau)}</TableCell>}
                           <TableCell className="pr-4! text-left sm:pr-5!">
                             {rec?.src === "siope" ? (
                               <SourceLink href={siopeUrl(c.id, c.uf, year)} label={`Dados brutos de ${year} no SIOPE (JSON, abre em nova aba)`}>
@@ -552,7 +608,7 @@ function Meta({ children }: { children: ReactNode }) {
 
 function Callout({ title, children, icon }: { title: string; children: ReactNode; icon?: ReactNode }) {
   return (
-    <div className="flex gap-2.5 rounded-lg border bg-muted/50 px-3.5 py-3 text-[13px] leading-5 text-muted-foreground">
+    <div className="flex gap-2.5 rounded-lg border bg-muted/50 px-3.5 py-3 text-[0.8125rem] leading-5 text-muted-foreground">
       <span className="mt-0.5 shrink-0 [&_svg]:size-4">{icon ?? <Info aria-hidden />}</span>
       <div>
         <div className="font-medium text-foreground">{title}</div>
@@ -628,7 +684,7 @@ function ThesisComparison({ c }: { c: City }) {
           tone={carryTce > 0 || carryDecl > 0 ? "bad" : undefined}
         />
       </div>
-      <p className="max-w-4xl px-4 py-4 text-[13px] leading-6 text-muted-foreground sm:px-5">
+      <p className="max-w-4xl px-4 py-4 text-[0.8125rem] leading-6 text-muted-foreground sm:px-5">
         A tese encontrou aplicação abaixo de 25% em {tceBelow.join(", ")}, sem compensação posterior suficiente. O painel mostra o que o município{" "}
         <em>declarou</em> ao SIOPE. Quando o declarado é maior, em geral o Tribunal não aceitou parte dos gastos como educação; quando é menor, a
         apuração final do TCE considerou valores diferentes dos enviados ao SIOPE. Nos {both.length} anos comparáveis, as duas fontes concordam sobre
@@ -647,7 +703,7 @@ function ThesisComparison({ c }: { c: City }) {
         <table className="w-full text-sm whitespace-nowrap tnum">
           <caption className="sr-only">MDE apurado pelo TCE-SP na tese e declarado ao SIOPE, por ano</caption>
           <TableHeader>
-            <TableRow className="hover:bg-transparent [&>th]:h-10 [&>th]:px-3 [&>th]:text-right [&>th]:text-[13px] [&>th]:font-medium [&>th]:text-muted-foreground">
+            <TableRow className="hover:bg-transparent [&>th]:h-10 [&>th]:px-3 [&>th]:text-right [&>th]:text-[0.8125rem] [&>th]:font-medium [&>th]:text-muted-foreground">
               <TableHead scope="col" className="pl-4! text-left! sm:pl-5!">Ano</TableHead>
               <TableHead scope="col">MDE apurado pelo TCE (tese)</TableHead>
               <TableHead scope="col">MDE declarado (SIOPE)</TableHead>
@@ -694,8 +750,8 @@ function ThesisComparison({ c }: { c: City }) {
 function Mini({ label, value, sub, tone }: { label: string; value: string; sub?: string; tone?: "bad" }) {
   return (
     <div className="px-4 py-3.5 sm:px-5">
-      <div className="text-[13px] text-muted-foreground">{label}</div>
-      <div className={cn("mt-1 text-[17px] font-semibold tracking-[-0.02em] tnum", tone === "bad" && "text-critical-ink")}>{value}</div>
+      <div className="text-[0.8125rem] text-muted-foreground">{label}</div>
+      <div className={cn("mt-1 text-[1.0625rem] font-semibold tracking-[-0.02em] tnum", tone === "bad" && "text-critical-ink")}>{value}</div>
       {sub && <div className="mt-0.5 text-xs text-muted-foreground">{sub}</div>}
     </div>
   );

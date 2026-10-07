@@ -24,7 +24,11 @@ export async function generateMetadata({ params }: PageProps<"/[uf]">): Promise<
   const { uf: raw } = await params;
   const u = raw === raw.toLowerCase() ? getUf(raw) : undefined;
   return u
-    ? { title: u.name, description: `Quanto cada município ${ofUf(u.uf)} aplica em educação (MDE) e quem fica abaixo do mínimo constitucional de 25%.` }
+    ? {
+        title: u.name,
+        description: `Quanto cada município ${ofUf(u.uf)} aplica em educação (MDE) e quem fica abaixo do mínimo constitucional de 25%.`,
+        alternates: { canonical: `/${u.uf.toLowerCase()}` },
+      }
     : { title: "Página não encontrada" };
 }
 
@@ -72,6 +76,7 @@ export default async function Page({ params }: PageProps<"/[uf]">) {
         brStats={brStats()}
         gov={{ mde: YEARS.map((y) => gov?.years[y]?.mde ?? null), fun: YEARS.map((y) => gov?.years[y]?.fun ?? null) }}
         deficits={topDeficits({ level: "uf", uf: u.uf }, 20)}
+        deficitsReal={topDeficits({ level: "uf", uf: u.uf }, 20, { real: true })}
       />
     </>
   );

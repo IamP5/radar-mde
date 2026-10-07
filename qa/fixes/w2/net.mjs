@@ -1,0 +1,10 @@
+import { chromium } from "playwright";
+const b = await chromium.launch(); const p = await b.newPage(); const r = [];
+p.on("request", (q) => r.push(q.url()));
+await p.goto("http://localhost:3210/sp/santo-andre", { waitUntil: "networkidle" });
+console.log("indice on load:", r.some((u) => u.includes("indice.json")), "uf prefetch:", r.filter((u) => /\/sp\?_rsc|\/regiao\/sudeste\?_rsc/.test(u)).length);
+await p.locator("svg path").nth(50).hover().catch(()=>{}); await p.waitForTimeout(800);
+const box = await p.getByRole("heading", { name: /Onde fica/ }).boundingBox();
+await p.mouse.move(box.x + 200, box.y + 250); await p.waitForTimeout(1200);
+console.log("indice after hover:", r.some((u) => u.includes("indice.json")));
+await b.close();

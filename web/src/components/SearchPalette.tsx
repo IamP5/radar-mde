@@ -6,14 +6,26 @@
  * the initial bundle of every page. Keyboard shortcuts work immediately because the listeners live here.
  */
 import { Search } from "lucide-react";
-import dynamic from "next/dynamic";
-import { useCallback, useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore, type ComponentType, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
 
-const SearchPaletteDialog = dynamic(() => import("./SearchPaletteDialog"), { ssr: false });
+type DialogProps = { open: boolean; onOpenChange: (v: boolean) => void };
+type DialogModule = typeof import("./SearchPaletteDialog");
+
+/**
+ * Loaded by hand instead of next/dynamic: a lazy/Suspense boundary is revealed with React's ~300 ms throttle, which
+ * made the first ⌘K feel slow (PAL-01). Here the dialog renders only once the module is in memory.
+ */
+let modulePromise: Promise<DialogModule> | null = null;
+const loadDialog = () =>
+  (modulePromise ??= import("./SearchPaletteDialog").catch((e: unknown) => {
+    modulePromise = null;
+    throw e;
+  }));
+/** Intent (hover, focus, touch, ⌘/Ctrl down): fetch the dialog code and warm the municipality index. */
 const preload = () => {
-  void import("./SearchPaletteDialog");
+  loadDialog().then((m) => m.warmIndex(), () => {});
 };
 
 /* ---------- platform hint + external open ---------- */
@@ -48,14 +60,36 @@ export default function SearchPalette() {
   const [open, setOpen] = useState(false);
   // bumped on every open: remounts the dialog so query, selection and "recentes" start fresh
   const [session, setSession] = useState(0);
+  const [Dialog, setDialog] = useState<ComponentType<DialogProps> | null>(null);
+
+  const ensureDialog = useCallback(() => {
+    loadDialog().then(
+      (m) => setDialog(() => m.default),
+      () => {},
+    );
+  }, []);
+
+  // The dialog chunk is small and almost always used: fetch it when the browser is idle (code only, no data)
+  useEffect(() => {
+    const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number; cancelIdleCallback?: (id: number) => void };
+    if (w.requestIdleCallback) {
+      const id = w.requestIdleCallback(ensureDialog, { timeout: 4000 });
+      return () => w.cancelIdleCallback?.(id);
+    }
+    const t = setTimeout(ensureDialog, 2500);
+    return () => clearTimeout(t);
+  }, [ensureDialog]);
 
   const openPalette = useCallback(() => {
+    ensureDialog();
+    preload();
     setSession((s) => s + 1);
     setOpen(true);
-  }, []);
+  }, [ensureDialog]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Meta" || e.key === "Control") preload();
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
         if (open) setOpen(false);
@@ -89,7 +123,7 @@ export default function SearchPalette() {
         <span className="hidden flex-1 truncate text-left sm:inline md:hidden lg:inline">Buscar município…</span>
         <Kbd className="hidden h-5 border bg-background font-mono text-[11px] sm:inline-flex md:hidden lg:inline-flex">{isMac ? "⌘K" : "Ctrl K"}</Kbd>
       </button>
-      {session > 0 && <SearchPaletteDialog key={session} open={open} onOpenChange={setOpen} />}
+      {session > 0 && Dialog && <Dialog key={session} open={open} onOpenChange={setOpen} />}
     </>
   );
 }

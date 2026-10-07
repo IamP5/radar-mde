@@ -99,3 +99,57 @@ Routes (`/dados/csv/[id]`):
   `inter` is unchanged.
 - Both routes now respond compressed (gzip/br by `Accept-Encoding`, memoised) with `ETag`;
   `loadAllRows()`/`loadIndex()` request `?v=<version>`, which is served `immutable` for a year.
+
+---
+
+# Wave 2 additions (W1) — all additive
+
+## 8. Atypical rule rewrite (JOR-17, ACA-04)
+Flags remain `atip?: ("mde"|"aluno"|"base")[]` on year records and the `Row.atip` bitmask, but the **rules changed**:
+- `mde`: physically implausible (< 5% or > 60%), **or** a one-year outlier against the municipality's own history:
+  |value − median of the ±2 neighbouring years| ≥ 10 p.p. **and** value < 15% or > 40%.
+  Persistent low application (Volta Redonda 12–17%, Cuiabá 2021 16%) is **not** flagged anymore.
+- `aluno`: per-student < 0,4× or > 2,5× the municipality's own typical level (relative to the national median of each
+  year), **or** a year-over-year jump > 2,5× (or drop below 0,4×) that is not a return to the level of two years
+  before, **or** > 8× the national median of the year.
+- `base`: revenue base < 0,4× or > 2,5× the median of the ±2 neighbouring years (unchanged).
+- New record field `atipImpl?: 1` = at least one flag is physically implausible (MDE < 5% or > 60%, per-student > 8×
+  the national median). New `Row.atip` bit **8** = implausible. Helper `isImplausible(r: Row, yi)`.
+- Wording (Decision): `ATIP_LABEL[code]` is now neutral ("Valor fora do padrão … — confirme na fonte").
+  Only when implausible use `ATIP_IMPL_LABEL` ("possível erro de declaração"). Helper
+  `atipNote(codes: AtipCode[], impl?: boolean): string` gives the right sentence. Never say "erro" otherwise.
+- `Stats.belowAtip/shortfallAtip` still exist (now with the new rule) — per Decision, don't show them on headline KPI cards
+  (tooltips/popovers ok).
+
+## 9. topDeficits / deficitTrail (GOV-12, IPCA)
+- `Deficit` gains `atipYears: number[]` (years in `below` whose record is flagged `mde` or `base`) and
+  `carryReal: number` (same balance computed in R$ of `IPCA_BASE`).
+- `deficitTrail(c)` items gain `carryReal` and `shortfallReal` (R$ of `IPCA_BASE`).
+- `topDeficits(scope, limit, { real?: boolean })` — `real: true` ranks by `carryReal`.
+
+## 10. IPCA (ACA-05/JOR-05)
+- Source: IBGE SIDRA table 1737, variable 2266 (IPCA número-índice), fetched by `scripts/fetch_br.py ipca`
+  into `data/raw/br/ipca_1737.json`. Deflator = **annual average index** of the latest data year ÷ annual average of year y.
+- `meta.ipca = { base: 2025, factor: { "2008": 2.6…, …, "2025": 1 }, source, fetched }` and the same object in the
+  client-safe `@/data/version.json` (`ipca`).
+- Helpers in `@/lib/rows` (client-safe, re-exported by `@/lib/data`): `IPCA_BASE: number`, `ipcaFactor(year): number | null`,
+  `toReal(v: number | null | undefined, year): number | null` (R$ of IPCA_BASE). Suggested label:
+  "R$ de {IPCA_BASE}, corrigidos pelo IPCA".
+- CSV new columns: `ipca_fator`, `mde_aplicado_rs_real`, `receita_impostos_rs_real`, `faltou_rs_real`, `por_aluno_rs_real`.
+
+## 11. Health availability (ACA-10)
+- `HEALTH_UFS: string[]` (client-safe, `@/lib/rows`; currently `["SP"]`), `ufHasHealth(uf)`, and in `@/lib/data`
+  `cityHasHealth(c: City)` (true if any year has `sau`). Hide the Saúde column when false.
+
+## 12. Explorer CSV with finance columns (GOV-09)
+- New route `/data/financas.json?v=<DATA_VERSION>` (compressed, ~immutable) — fetched **only on export**.
+- `loadFinance(): Promise<Finance>` in `@/lib/rows`; `Finance = { years: number[]; get(id): FinanceRow | undefined }`.
+- `rowCsvRecord(r, yi, years, fin?)` — when `fin` is passed, also fills `mde_aplicado_rs`, `aplicado_estimado`,
+  `receita_impostos_rs`, `fundeb_nao_usado_pct`, `fundeb_nao_usado_max_pct` and the `_real` columns.
+  Use `ROW_CSV_COLUMNS_FIN` as header in that case (`ROW_CSV_COLUMNS` unchanged).
+- New CSV column `atipico_grau` = "" | `confirmar` | `implausivel` (all exports).
+
+## 13. Misc
+- `/dados/csv/<id>` is case-insensitive (`/dados/csv/SP` works) (FUN-23).
+- `/data/*.json` and CSV responses now send `s-maxage` (versioned: `public, max-age=31536000, s-maxage=31536000, immutable`;
+  others: `public, max-age=300, s-maxage=3600, stale-while-revalidate=86400`) (CDN-01).

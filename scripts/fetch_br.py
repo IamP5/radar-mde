@@ -3,6 +3,7 @@
   python3 scripts/fetch_br.py ref            IBGE municipalities + SICONFI entes (population) + IBGE meshes
   python3 scripts/fetch_br.py indicadores    SIOPE indicators, one file per UF-year (2008–2025)
   python3 scripts/fetch_br.py receita [UF..] SIOPE revenue lines for the art. 212 base, per UF-year (2008–2020)
+  python3 scripts/fetch_br.py ipca           IPCA monthly index (IBGE SIDRA table 1737, variable 2266), for deflators
 
 Every step skips files that already exist, so it can be re-run after a failure.
 Environment: THREADS (default 6), YEARS (comma list, overrides the default range).
@@ -145,6 +146,20 @@ def receita(ufs):
     run(receita_one, jobs)
 
 
+# ---------------------------------------------------------------- IPCA (inflation)
+SIDRA = "https://apisidra.ibge.gov.br/values"
+
+
+def ipca():
+    """IPCA número-índice (dez/1993 = 100), every month, Brasil: SIDRA table 1737, variable 2266.
+    Always re-downloaded (it is small and grows every month)."""
+    rows = get(f"{SIDRA}/t/1737/n1/all/v/2266/p/all?formato=json")
+    out = {r["D3C"]: float(r["V"]) for r in rows[1:] if r.get("V") not in (None, "", "...", "-")}
+    save(os.path.join(RAW, "ipca_1737.json"), {"source": "IBGE/SIDRA, tabela 1737, variável 2266 (IPCA - número-índice, dez/1993=100)",
+                                                "fetched": time.strftime("%Y-%m-%d"), "index": out})
+    print("ipca months", len(out), "last", max(out))
+
+
 def run(fn, jobs):
     t0 = time.time()
     with ThreadPoolExecutor(THREADS) as ex:
@@ -167,3 +182,5 @@ if __name__ == "__main__":
         indicadores()
     elif cmd == "receita":
         receita(sys.argv[2:] or UFS)
+    elif cmd == "ipca":
+        ipca()

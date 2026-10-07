@@ -3,7 +3,7 @@
 import { geoMercator, geoPath } from "d3-geo";
 import type { Feature, FeatureCollection, Geometry, MultiLineString } from "geojson";
 import { useRouter } from "next/navigation";
-import { memo, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { memo, useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
 import { feature, mesh } from "topojson-client";
 import type { GeometryCollection, Topology } from "topojson-specification";
 import { NO_DATA_COLOR, type Bin } from "@/lib/bins";
@@ -48,7 +48,63 @@ function loadTopo(src: string) {
   return p;
 }
 
-type Shape = { id: number; d: string };
+/** A projected shape: path, centroid and on-screen size (max bbox side, viewBox units ≈ CSS px). */
+type Shape = { id: number; d: string; cx: number; cy: number; size: number };
+type Geom = { shapes: Shape[]; borders: string | null; outline: string | null; html: string };
+
+/**
+ * Projection is the expensive part of the first municipal render (5,570 shapes): results are cached per
+ * topology/layer/scope/height, and `prewarmMap()` can compute them on user intent before the layer is shown.
+ */
+const geomCache = new Map<string, Geom>();
+function project(topo: Topology, src: string, layer: "mun" | "uf", ufKey: string, height: number, ufBorders: boolean): Geom {
+  const key = [src, layer, ufKey, height, ufBorders].join("|");
+  const hit = geomCache.get(key);
+  if (hit) return hit;
+  const codes = ufKey ? new Set(ufKey.split(",").map(Number)) : null;
+  const ufOf = (id: number) => (id >= 100 ? Math.floor(id / 100000) : id);
+  const obj = topo.objects[layer] as GeometryCollection<{ id: number }>;
+  const fc = feature(topo, obj) as FeatureCollection<Geometry, { id: number }>;
+  const feats = codes ? fc.features.filter((f) => codes.has(ufOf(f.properties.id))) : fc.features;
+  const sel: FeatureCollection<Geometry, { id: number }> = { type: "FeatureCollection", features: feats };
+  const proj = geoMercator().fitSize([W, height], sel);
+  const path = geoPath(proj);
+  const shapes: Shape[] = feats.map((f) => {
+    const [[x0, y0], [x1, y1]] = path.bounds(f as Feature);
+    const [cx, cy] = path.centroid(f as Feature);
+    return { id: f.properties.id, d: path(f as Feature) ?? "", cx, cy, size: Math.max(x1 - x0, y1 - y0) };
+  });
+  let borders: string | null = null;
+  let outline: string | null = null;
+  if (ufBorders && topo.objects.uf) {
+    const ufObj = topo.objects.uf as GeometryCollection<{ id: number }>;
+    const keep = (g: { properties?: object }) => !codes || codes.has((g.properties as { id: number }).id);
+    borders = path(mesh(topo, ufObj, (a, b) => a !== b && keep(a) && keep(b)) as MultiLineString);
+    outline = codes
+      ? path(mesh(topo, ufObj, (a, b) => (a === b ? keep(a) : keep(a) !== keep(b))) as MultiLineString)
+      : path(mesh(topo, ufObj, (a, b) => a === b) as MultiLineString);
+  }
+  // the shapes are injected as one markup string: building 5,570 React elements is most of the first-render cost
+  const keyboard = shapes.length <= KEYBOARD_MAX;
+  const html = shapes
+    .map((sh) => `<path data-id="${sh.id}" d="${sh.d}" fill="var(--bin-nd)" stroke="var(--background)" stroke-linejoin="round"${keyboard ? ' tabindex="0" role="link"' : ""}></path>`)
+    .join("");
+  const g = { shapes, borders, outline, html };
+  geomCache.set(key, g);
+  return g;
+}
+
+/** Fetch and project a map ahead of time (on hover/focus of the control that will show it). */
+export function prewarmMap(src: string, layer: "mun" | "uf", ufCodes: number[] | undefined, height: number, ufBorders: boolean) {
+  const idle = (cb: () => void) => ("requestIdleCallback" in window ? window.requestIdleCallback(cb, { timeout: 1500 }) : setTimeout(cb, 50));
+  loadTopo(src)
+    .then((t) => idle(() => project(t, src, layer, ufCodes?.join(",") ?? "", height, ufBorders)))
+    .catch(() => {});
+}
+
+const KEYBOARD_MAX = 40;
+/** Shapes smaller than this (≈ px) get a centroid dot when marked, and a larger invisible hit area on small maps. */
+const TINY = 8;
 
 export default function Choropleth({
   src, layer, ufCodes, fill, hatched, outlined, label, describedBy, tooltip, href, highlight, ufBorders, ariaLabel, height = 560,
@@ -73,51 +129,53 @@ export default function Choropleth({
   }, [src]);
 
   const ufKey = ufCodes?.join(",") ?? "";
-  const geom = useMemo(() => {
-    if (!topo) return null;
-    const codes = ufKey ? new Set(ufKey.split(",").map(Number)) : null;
-    const ufOf = (id: number) => (id >= 100 ? Math.floor(id / 100000) : id);
-    const obj = topo.objects[layer] as GeometryCollection<{ id: number }>;
-    const fc = feature(topo, obj) as FeatureCollection<Geometry, { id: number }>;
-    const feats = codes ? fc.features.filter((f) => codes.has(ufOf(f.properties.id))) : fc.features;
-    const sel: FeatureCollection<Geometry, { id: number }> = { type: "FeatureCollection", features: feats };
-    const proj = geoMercator().fitSize([W, height], sel);
-    const path = geoPath(proj);
-    const shapes: Shape[] = feats.map((f) => ({ id: f.properties.id, d: path(f as Feature) ?? "" }));
-    let borders: string | null = null;
-    let outline: string | null = null;
-    if (ufBorders && topo.objects.uf) {
-      const ufObj = topo.objects.uf as GeometryCollection<{ id: number }>;
-      const keep = (g: { properties?: object }) => !codes || codes.has((g.properties as { id: number }).id);
-      borders = path(mesh(topo, ufObj, (a, b) => a !== b && keep(a) && keep(b)) as MultiLineString);
-      outline = codes
-        ? path(mesh(topo, ufObj, (a, b) => (a === b ? keep(a) : keep(a) !== keep(b))) as MultiLineString)
-        : path(mesh(topo, ufObj, (a, b) => a === b) as MultiLineString);
-    }
-    return { shapes, borders, outline };
-  }, [topo, layer, ufKey, height, ufBorders]);
+  const geom = useMemo(() => (topo ? project(topo, src, layer, ufKey, height, !!ufBorders) : null), [topo, src, layer, ufKey, height, ufBorders]);
 
   const hoverShape = hover && geom ? geom.shapes.find((s) => s.id === hover.id) : null;
   const hiShape = highlight != null && geom ? geom.shapes.find((s) => s.id === highlight) : null;
   const dense = (geom?.shapes.length ?? 0) > 1500;
-  const keyboard = !!label && !!href && (geom?.shapes.length ?? 99) <= 40;
+  const keyboard = !!label && !!href && (geom?.shapes.length ?? 99) <= KEYBOARD_MAX;
+  // A11Y-18: below-minimum shapes are redrawn on top with a background halo + critical stroke, and tiny ones get a
+  // dot, so the mark survives grayscale/CVD and isn't lost among 3px municipalities.
+  const marked = useMemo(() => (geom && outlined ? geom.shapes.filter((sh) => outlined(sh.id)) : []), [geom, outlined]);
+  // built as one markup string: in 2020–21 hundreds of municipalities are marked and this redraws on every year step
+  const markedHtml = useMemo(() => {
+    if (!marked.length) return "";
+    const halo = marked.map((sh) => `<path d="${sh.d}" fill="none" stroke="var(--background)" stroke-width="${dense ? 2 : 3}" stroke-linejoin="round"></path>`);
+    const line = marked.map((sh) => `<path d="${sh.d}" fill="none" stroke="var(--critical-ink)" stroke-width="${dense ? 0.9 : 1.4}" stroke-linejoin="round"></path>`);
+    const dots = marked
+      .filter((sh) => sh.size < TINY)
+      .map((sh) => `<circle cx="${sh.cx.toFixed(1)}" cy="${sh.cy.toFixed(1)}" r="${dense ? 2.6 : 3.5}" fill="var(--critical-ink)" stroke="var(--background)" stroke-width="1.2"></circle>`);
+    return halo.join("") + line.join("") + dots.join("");
+  }, [marked, dense]);
+  // written after paint (like the fills) so the DOM swap doesn't land inside Recharts' commit-time measurements
+  const markRef = useRef<SVGGElement>(null);
+  useEffect(() => {
+    if (markRef.current) markRef.current.innerHTML = markedHtml;
+  }, [markedHtml, geom]);
+  const tiny = useMemo(() => (geom && geom.shapes.length <= KEYBOARD_MAX && href ? geom.shapes.filter((sh) => sh.size < TINY) : []), [geom, href]);
 
   // Colours, outlines and labels are written straight onto the stable <path> nodes: a year or metric change
   // touches thousands of attributes instead of re-rendering thousands of React elements (PERF-03).
-  useLayoutEffect(() => {
+  // Passive effect (after paint), not layout effect: dirtying 5,570 nodes before Recharts' own commit-time
+  // getTotalLength() calls forced a full style recalc per call (~400 ms per year step at 4× CPU).
+  useEffect(() => {
     const el = g.current;
     if (!el || !geom) return;
     const base = dense ? 0.12 : 0.6;
     for (const node of Array.from(el.children)) {
       const id = Number(node.getAttribute("data-id"));
-      const out = outlined?.(id) ?? false;
       node.setAttribute("fill", hatched?.(id) ? `url(#${hatchId})` : fill(id));
-      node.setAttribute("stroke", out ? "var(--foreground)" : layer === "uf" ? "color-mix(in oklab, var(--foreground) 28%, var(--background))" : "var(--background)");
-      node.setAttribute("stroke-width", String(out ? (dense ? 0.55 : 1.1) : base));
+      node.setAttribute("stroke", layer === "uf" ? "color-mix(in oklab, var(--foreground) 28%, var(--background))" : "var(--background)");
+      node.setAttribute("stroke-width", String(base));
       if (keyboard) node.setAttribute("aria-label", label!(id));
-      else node.removeAttribute("aria-label");
+      else {
+        node.removeAttribute("aria-label");
+        node.removeAttribute("tabindex");
+        node.removeAttribute("role");
+      }
     }
-  }, [geom, fill, hatched, outlined, label, keyboard, dense, layer, hatchId]);
+  }, [geom, fill, hatched, label, keyboard, dense, layer, hatchId]);
 
   const showAt = (target: Element, id: number) => {
     const box = wrap.current!.getBoundingClientRect();
@@ -186,9 +244,14 @@ export default function Choropleth({
             {failed ? "Não foi possível carregar o mapa." : "Carregando mapa…"}
           </text>
         )}
-        {geom && <Shapes ref={g} shapes={geom.shapes} clickable={!!href} keyboard={keyboard} />}
+        {geom && <Shapes ref={g} html={geom.html} clickable={!!href} keyboard={keyboard} />}
         {geom?.borders && <path d={geom.borders} fill="none" stroke="var(--foreground)" strokeWidth={0.6} strokeOpacity={0.35} strokeLinejoin="round" pointerEvents="none" />}
         {geom?.outline && <path d={geom.outline} fill="none" stroke="var(--foreground)" strokeWidth={0.7} strokeOpacity={0.4} strokeLinejoin="round" pointerEvents="none" />}
+        {geom && <g ref={markRef} pointerEvents="none" data-marked="" />}
+        {/* A11Y-20: tiny states (DF, SE, AL…) get a 16px tap target */}
+        {tiny.map((sh) => (
+          <circle key={`t${sh.id}`} data-id={sh.id} cx={sh.cx} cy={sh.cy} r={8} fill="transparent" className="cursor-pointer" />
+        ))}
         {hiShape && <path d={hiShape.d} fill="none" stroke="var(--foreground)" strokeWidth={2} strokeLinejoin="round" pointerEvents="none" />}
         {hoverShape && <path d={hoverShape.d} fill="none" stroke="var(--foreground)" strokeWidth={keyboard ? 2 : 1.5} strokeLinejoin="round" pointerEvents="none" />}
       </svg>
@@ -211,19 +274,13 @@ export default function Choropleth({
 }
 
 /**
- * Paths are memoised on geometry only: fills/strokes/labels are set imperatively by the parent, so neither
- * hover state nor a year change re-renders thousands of shapes.
+ * Paths come from one cached markup string (see `project`): fills/strokes/labels are set imperatively by the
+ * parent, so neither hover state nor a year change re-renders thousands of shapes.
  */
 const Shapes = memo(function Shapes({
-  ref, shapes, clickable, keyboard,
-}: { ref: React.Ref<SVGGElement>; shapes: Shape[]; clickable: boolean; keyboard: boolean }) {
-  return (
-    <g ref={ref} className={cn(clickable && "cursor-pointer", keyboard && "[&>path]:outline-none")}>
-      {shapes.map((s) => (
-        <path key={s.id} data-id={s.id} d={s.d} strokeLinejoin="round" tabIndex={keyboard ? 0 : undefined} role={keyboard ? "link" : undefined} />
-      ))}
-    </g>
-  );
+  ref, html, clickable, keyboard,
+}: { ref: React.Ref<SVGGElement>; html: string; clickable: boolean; keyboard: boolean }) {
+  return <g ref={ref} className={cn(clickable && "cursor-pointer", keyboard && "[&>path]:outline-none")} dangerouslySetInnerHTML={{ __html: html }} />;
 });
 
 const Swatch = ({ color, bordered, outlined }: { color: string; bordered?: boolean; outlined?: boolean }) => (
@@ -232,7 +289,7 @@ const Swatch = ({ color, bordered, outlined }: { color: string; bordered?: boole
     className={cn(
       "inline-block size-2.5 shrink-0 rounded-[3px] forced-color-adjust-none",
       bordered && "shadow-[inset_0_0_0_1px_var(--axis)]",
-      outlined && "shadow-[inset_0_0_0_1.5px_var(--foreground)]",
+      outlined && "shadow-[inset_0_0_0_1.5px_var(--critical-ink),inset_0_0_0_2.5px_var(--background)]",
     )}
     style={{ background: color }}
   />

@@ -1,20 +1,23 @@
 "use client";
 
-import { ArrowDownRight, ArrowUpRight, Minus } from "lucide-react";
+import { DeficitPanel } from "./DeficitPanel";
 import Link from "next/link";
-import { useCallback, useDeferredValue, useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
+import { useCallback, useDeferredValue, useEffect, useId, useMemo, useRef, useState } from "react";
 import Histogram from "@/components/Histogram";
 import MultiLine, { type Series } from "@/components/MultiLine";
 import { PageBody } from "@/components/kit/page-header";
 import { Panel } from "@/components/kit/panel";
 import { Segmented } from "@/components/kit/segmented";
-import { Stat, type Tone } from "@/components/kit/stat";
+import { Stat } from "@/components/kit/stat";
 import { StatusDot } from "@/components/kit/status";
 import YearPicker, { useYear, withYear } from "@/components/YearPicker";
 import { cn } from "@/lib/utils";
 import { PANDEMIC_YEARS, brlShort, funMin, int, pct, share } from "@/lib/format";
-import { UFS, cityPath, getRegion, regionPath, ufPath, type RegionKey } from "@/lib/geo";
+import { UFS, getRegion, regionPath, ufPath, type RegionKey } from "@/lib/geo";
+import { ChartActions } from "@/components/kit/chart-actions";
+import { histLabel } from "@/lib/bins";
 import { InfoTip, ShortfallInfo } from "./InfoTip";
+import { delta, fmtPct0, fmtPp, relChange } from "./delta";
 import { alignRows, belowShare, loadAllRows, shortfallKnown, shortfallLabel, type Deficit, type RegionSummary, type Row, type Stats, type UfSummary } from "@/lib/rows";
 import TerritoryMap from "./TerritoryMap";
 import UfMultiples from "./UfMultiples";
@@ -30,17 +33,18 @@ type Props = {
   ufs: UfSummary[];
   regions?: RegionSummary[];
   deficits: Deficit[];
+  /** same ranking by the IPCA-corrected balance */
+  deficitsReal: Deficit[];
   /** MDE % histogram counts per year (`histCounts`), binned on the server */
   hist: number[][];
 };
 
 /** States with fewer reporting municipalities than this aren't named as "the highest share" (small-n noise). */
 const MIN_N = 30;
-/** "…, 2021, 2022, 2023, 2025": the most recent years, ellipsis in front when older ones are omitted. */
-const lastYears = (ys: number[]) => `${ys.length > 4 ? "…, " : ""}${ys.slice(-4).join(", ")}`;
 
 /** Dash per region so the lines differ without colour too (grayscale, colour-blindness, print). */
-const REGION_DASH: Record<RegionKey, string | undefined> = { SE: undefined, NE: "1 3.5", N: "10 4", CO: "10 3 2 3", S: "3 2" };
+// solid · dots · medium dash · dash-dot · long dash: distinct in grayscale (A11Y-04)
+const REGION_DASH: Record<RegionKey, string | undefined> = { SE: undefined, NE: "1 3.5", N: "5 3", CO: "10 3 2 3", S: "18 4" };
 
 const REGION_COLOR: Record<RegionKey, string> = {
   N: "var(--series-3)",
@@ -97,27 +101,7 @@ function Spark({ values, index, color }: { values: (number | null)[]; index: num
   );
 }
 
-/** Delta pill content: arrow + magnitude, tone by whether "up" is good or bad for this metric. */
-function delta(d: number | null, fmt: (abs: number) => string, upIs: "bad" | "good", vs: number | undefined): { node?: ReactNode; tone: Tone } {
-  if (d == null || vs == null || !Number.isFinite(d)) return { tone: "neutral" };
-  const Icon = d > 0 ? ArrowUpRight : d < 0 ? ArrowDownRight : Minus;
-  const tone: Tone = d === 0 ? "neutral" : (d > 0) === (upIs === "bad") ? "bad" : "good";
-  return {
-    tone,
-    node: (
-      <span title={`vs ${vs}`} className="inline-flex items-center gap-0.5">
-        <Icon aria-hidden className="size-3" />
-        {d === 0 ? `= ${vs}` : fmt(Math.abs(d))}
-        {d !== 0 && <span className="font-normal"> vs {vs}</span>}
-        <span className="sr-only"> ({d > 0 ? "a mais" : "a menos"} que no ano anterior)</span>
-      </span>
-    ),
-  };
-}
-
-const relChange = (a: number | null | undefined, b: number | null | undefined) => (a == null || b == null || b === 0 ? null : ((a - b) / b) * 100);
-
-export default function TerritoryDashboard({ region, years, initialYear, stats, parent, ufs, regions, deficits, hist }: Props) {
+export default function TerritoryDashboard({ region, years, initialYear, stats, parent, ufs, regions, deficits, deficitsReal, hist }: Props) {
   const [yearNow, setYear] = useYear(years, initialYear);
   // the picker answers at once; the dashboard (charts, map, tables) follows as a low-priority render (INP)
   const year = useDeferredValue(yearNow);
@@ -167,10 +151,10 @@ export default function TerritoryDashboard({ region, years, initialYear, stats, 
   const trendSeries = trend === "short" && !regions ? series.slice(0, 1) : trend === "short" ? series.filter((x) => x.key !== "BR") : series;
 
   const pv = years[yi - 1];
-  const dBelow = delta(prev ? s.below - prev.below : null, int, "bad", pv);
-  const dShort = delta(prev ? relChange(shortfallKnown(s), shortfallKnown(prev)) : null, (v) => `${v.toLocaleString("pt-BR", { maximumFractionDigits: 0 })}%`, "bad", pv);
-  const dPop = delta(prev ? relChange(s.popBelow, prev.popBelow) : null, (v) => `${v.toLocaleString("pt-BR", { maximumFractionDigits: 0 })}%`, "bad", pv);
-  const dMedian = delta(prev && s.median != null && prev.median != null ? Math.round((s.median - prev.median) * 10) / 10 : null, (v) => `${v.toLocaleString("pt-BR", { maximumFractionDigits: 1 })} p.p.`, "good", pv);
+  const dBelow = delta(prev ? s.below - prev.below : null, int, "bad", pv, !!prev && s.below < prev.below && s.nd > prev.nd);
+  const dShort = delta(prev ? relChange(shortfallKnown(s), shortfallKnown(prev)) : null, fmtPct0, "bad", pv);
+  const dPop = delta(prev ? relChange(s.popBelow, prev.popBelow) : null, fmtPct0, "bad", pv);
+  const dMedian = delta(prev && s.median != null && prev.median != null ? Math.round((s.median - prev.median) * 10) / 10 : null, fmtPp, "good", pv);
   const dFun = delta(prev ? s.funBelow - prev.funBelow : null, int, "bad", pv);
   const ctx = (f: (x: Stats) => string) => (parent ? `Brasil: ${f(parent[yi])}` : undefined);
   const red = "var(--critical)";
@@ -190,7 +174,6 @@ export default function TerritoryDashboard({ region, years, initialYear, stats, 
     const qs = q.toString();
     return `/explorar${qs ? `?${qs}` : ""}`;
   })();
-  const lastYear = years[years.length - 1];
   const scopeOf = region ? `da região ${getRegion(region).name}` : "brasileiros";
 
   const ufLink = (u: UfSummary) => (
@@ -285,16 +268,11 @@ export default function TerritoryDashboard({ region, years, initialYear, stats, 
             label={
               <span className="inline-flex items-center gap-1">
                 Faltou aplicar (estimativa)
-                <ShortfallInfo />
+                <ShortfallInfo atypical={s.shortfallAtip > 0 ? brlShort(s.shortfallAtip) : null} />
               </span>
             }
             value={short.value}
-            sub={
-              <>
-                {short.note ?? `em ${year}, valores declarados e nominais`}
-                {s.shortfallAtip > 0 && <span className="block">dos quais {brlShort(s.shortfallAtip)} de valores atípicos</span>}
-              </>
-            }
+            sub={short.note ?? `em ${year}, valores declarados e nominais`}
             tone={s.shortfall ? "bad" : "neutral"}
             delta={dShort.node}
             deltaTone={dShort.tone}
@@ -343,7 +321,27 @@ export default function TerritoryDashboard({ region, years, initialYear, stats, 
             className="lg:col-span-3"
             title={`Mapa · ${scopeLabel}`}
             description={`Toque ou passe o mouse para ver os números; toque de novo ou clique para abrir ${region ? "o estado ou o município" : "o estado"}.`}
-            action={<span className="rounded-md border px-1.5 py-0.5 font-mono text-xs text-muted-foreground">{year}</span>}
+            action={
+              <span className="flex items-center gap-2">
+                <span className="rounded-md border px-1.5 py-0.5 font-mono text-xs text-muted-foreground">{year}</span>
+                <ChartActions
+                  title={`Mapa · ${scopeLabel} · ${year}`}
+                  filename={[region ? getRegion(region).slug : "brasil", "mapa", year]}
+                  svgSelector="svg[aria-describedby], svg[role=img], svg[role=group]"
+                  csv={{
+                    columns: ["uf", "estado", "ano", "municipios_abaixo_25", "municipios_declararam", "abaixo_pct", "mde_mediana_pct", "governo_estadual_mde_pct", "nao_declararam"],
+                    rows: ufs.map((u) => {
+                      const st = u.stats[yi];
+                      const sh = belowShare(st);
+                      return {
+                        uf: u.uf, estado: u.name, ano: year, municipios_abaixo_25: st.below, municipios_declararam: st.reported,
+                        abaixo_pct: sh == null ? null : Math.round(sh * 100) / 100, mde_mediana_pct: st.median, governo_estadual_mde_pct: u.gov[yi], nao_declararam: st.nd,
+                      };
+                    }),
+                  }}
+                />
+              </span>
+            }
           >
             <TerritoryMap
               ufs={ufs}
@@ -381,6 +379,18 @@ export default function TerritoryDashboard({ region, years, initialYear, stats, 
         <Panel
           divided
           title={`Evolução ${years[0]}–${years[years.length - 1]}`}
+          action={
+            <ChartActions
+              title={`${t.label}, ${scopeLabel}, ${years[0]}–${years[years.length - 1]}`}
+              filename={[region ? getRegion(region).slug : "brasil", "evolucao", trend]}
+              svgSelector=".recharts-surface"
+              note={trend === "short" ? "Estimativa, valores nominais" : undefined}
+              csv={{
+                columns: ["ano", ...trendSeries.map((x) => x.label)],
+                rows: years.map((y, i) => ({ ano: y, ...Object.fromEntries(trendSeries.map((x) => [x.label, x.values[i] == null ? null : Math.round(x.values[i]! * 100) / 100])) })),
+              }}
+            />
+          }
           description="Toque ou clique num ano do gráfico para atualizar o painel. 2020–2021: anos da pandemia (EC 119/2022)."
         >
           <div
@@ -440,38 +450,22 @@ export default function TerritoryDashboard({ region, years, initialYear, stats, 
         )}
 
         <section className="grid gap-6 lg:grid-cols-3">
-          <Panel className="lg:col-span-2" title={`Distribuição dos municípios · ${year}`} description="Quantos municípios aplicaram cada percentual da receita de impostos em MDE.">
-            <Histogram counts={hist[yi]} ariaLabel={`Distribuição do percentual aplicado em MDE, ${scopeLabel}, ${year}`} />
-          </Panel>
           <Panel
-            divided
-            title={`Maiores déficits acumulados até ${lastYear}`}
-            description={`Saldo estimado que faltou para 25% de ${years[0]} a ${lastYear}, descontado o que foi aplicado a mais depois (valores nominais). Não muda com o ano escolhido.`}
+            className="lg:col-span-2"
+            title={`Distribuição dos municípios · ${year}`}
+            description="Quantos municípios aplicaram cada percentual da receita de impostos em MDE."
+            action={
+              <ChartActions
+                title={`Distribuição do % aplicado em MDE, ${scopeLabel}, ${year}`}
+                filename={[region ? getRegion(region).slug : "brasil", "distribuicao", year]}
+                svgSelector=".recharts-surface"
+                csv={{ columns: ["faixa_mde", "municipios"], rows: hist[yi].map((n, i) => ({ faixa_mde: histLabel(i), municipios: n })) }}
+              />
+            }
           >
-            {deficits.length === 0 ? (
-              <p className="px-4 py-6 text-[13px] text-muted-foreground sm:px-5">Nenhum déficit acumulado.</p>
-            ) : (
-              <ol className="scroll-thin fade-b max-h-[23rem] divide-y overflow-y-auto pb-6">
-                {deficits.map((d, i) => (
-                  <li key={d.id}>
-                    <Link href={withYear(cityPath(d.uf, d.slug), year, initialYear)} className="flex items-center gap-3 px-4 py-2.5 transition-colors duration-150 hover:bg-accent/60 sm:px-5">
-                      <span className="w-5 shrink-0 text-right font-mono text-xs text-muted-foreground tnum">{i + 1}</span>
-                      <span className="min-w-0 flex-1">
-                        <span className="flex min-w-0 items-center gap-1.5">
-                          <span className="truncate text-sm font-medium">{d.name}</span>
-                          <span className="shrink-0 rounded border px-1 font-mono text-[11px] leading-4 text-muted-foreground">{d.uf}</span>
-                        </span>
-                        <span className="block truncate text-xs text-muted-foreground tnum" title={d.below.join(", ")}>
-                          {d.below.length} {d.below.length === 1 ? "ano" : "anos"} abaixo: {lastYears(d.below)}
-                        </span>
-                      </span>
-                      <span className="shrink-0 text-sm font-semibold text-critical tnum">{brlShort(d.carry)}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ol>
-            )}
+            <Histogram counts={hist[yi]} height={360} ariaLabel={`Distribuição do percentual aplicado em MDE, ${scopeLabel}, ${year}`} />
           </Panel>
+          <DeficitPanel nominal={deficits} real={deficitsReal} years={years} year={year} initialYear={initialYear} />
         </section>
 
         <Panel

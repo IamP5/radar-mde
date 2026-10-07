@@ -23,7 +23,7 @@ export function InfoTip({ label, children }: { label: string; children: ReactNod
 }
 
 /** The R$ shortfall KPI, explained the same way on every territory dashboard (JOR-06). */
-export function ShortfallInfo() {
+export function ShortfallInfo({ atypical }: { atypical?: string | null } = {}) {
   return (
     <InfoTip label="Como o valor que faltou aplicar é calculado">
       <p>
@@ -34,6 +34,11 @@ export function ShortfallInfo() {
         Usa os valores que as próprias prefeituras declararam ao SIOPE, em reais da época (sem correção pela inflação). Os tribunais de contas
         podem apurar valores diferentes.
       </p>
+      {atypical && (
+        <p className="text-muted-foreground">
+          Desse total, {atypical} vêm de valores fora do padrão do próprio município (confirme na fonte).
+        </p>
+      )}
       <Link href="/sobre#calculos" className="font-medium text-brand-ink underline-offset-2 hover:underline">
         Ver a metodologia
       </Link>

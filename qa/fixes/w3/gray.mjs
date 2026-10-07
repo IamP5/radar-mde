@@ -1,0 +1,15 @@
+import { chromium } from "playwright";
+const [path, sel, name, theme = "light"] = process.argv.slice(2);
+const browser = await chromium.launch();
+const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 }, colorScheme: theme });
+await ctx.addInitScript((t) => localStorage.setItem("theme", t), theme);
+const page = await ctx.newPage();
+await page.goto("http://localhost:3210" + path, { waitUntil: "networkidle" });
+await page.waitForTimeout(1500);
+const el = page.locator(sel).first();
+await el.scrollIntoViewIfNeeded();
+await el.screenshot({ path: `fixes/w3/shots/${name}.png` });
+await page.addStyleTag({ content: "html{filter:grayscale(1)}" });
+await page.waitForTimeout(300);
+await el.screenshot({ path: `fixes/w3/shots/${name}-gray.png` });
+await browser.close();

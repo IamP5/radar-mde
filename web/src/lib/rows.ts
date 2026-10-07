@@ -8,22 +8,54 @@ import { MDE_MIN, brlShort, funMin, type YearRecord } from "./format";
 /** Data version (build date + content hash), also used to version the /data/*.json URLs. */
 export const DATA_VERSION: string = version.v;
 
+// ---- IPCA (IBGE SIDRA 1737): factor that turns R$ of a year into R$ of IPCA_BASE (annual average index)
+/** Year whose reais the corrected values are expressed in (latest published year). */
+export const IPCA_BASE: number = version.ipca.base;
+const IPCA_FACTOR: Record<string, number> = version.ipca.factor;
+export const ipcaFactor = (year: number): number | null => IPCA_FACTOR[year] ?? null;
+/** R$ of `year` → R$ of IPCA_BASE (null when the value or the factor is missing). */
+export function toReal(v: number | null | undefined, year: number): number | null {
+  const f = ipcaFactor(year);
+  return v == null || f == null ? null : v * f;
+}
+export const IPCA_LABEL = `R$ de ${IPCA_BASE}, corrigidos pelo IPCA`;
+
+/** UFs with any health (% saúde, SICONFI) value; hide Saúde columns elsewhere. */
+export const HEALTH_UFS: string[] = version.healthUfs;
+export const ufHasHealth = (uf: string) => HEALTH_UFS.includes(uf.toUpperCase());
+
 /**
- * Atypical-value flags set by scripts/build_data.py (values are kept, never dropped):
- * mde = % outside 18–45; aluno = per-student far from the municipality's own level; base = revenue base jump.
+ * Atypical-value flags set by scripts/build_data.py (values are kept, never dropped). They mark values outside the
+ * municipality's own pattern, not low application as such:
+ * mde = < 5% or > 60%, or a one-year outlier (≥ 10 p.p. from the ±2 neighbouring years and < 15% or > 40%);
+ * aluno = per-student far from the municipality's own level, or a one-year jump of more than 2,5×;
+ * base = revenue base 2,5× above/below the neighbouring years.
+ * `atipImpl` / bit 8 = physically implausible (MDE < 5% or > 60%, per-student > 8× the national median).
  */
 export type AtipCode = "mde" | "aluno" | "base";
 export const ATIP_BITS: Record<AtipCode, number> = { mde: 1, aluno: 2, base: 4 };
+/** Row.atip bit set when a flag of the year is physically implausible. */
+export const ATIP_IMPL_BIT = 8;
+/** Neutral wording (Decision JOR-17): never suggest a filing error unless implausible. */
 export const ATIP_LABEL: Record<AtipCode, string> = {
-  mde: "MDE fora da faixa usual (abaixo de 18% ou acima de 45%) — possível erro de declaração",
-  aluno: "Valor por aluno muito diferente dos outros anos do município — possível erro no número de matrículas declarado",
-  base: "Receita de impostos muito diferente dos anos vizinhos — o valor em R$ que faltou pode estar errado",
+  mde: "Percentual em MDE fora do padrão do próprio município — confirme na fonte",
+  aluno: "Valor por aluno fora do padrão do próprio município (depende das matrículas declaradas) — confirme na fonte",
+  base: "Receita de impostos muito diferente dos anos vizinhos — o valor em R$ que faltou pode não ser confiável; confirme na fonte",
 };
+export const ATIP_IMPL_LABEL = "Valor fisicamente improvável — possível erro de declaração";
+/** One sentence for a set of flags. */
+export function atipNote(codes: AtipCode[], impl?: boolean): string {
+  if (!codes.length) return "";
+  if (impl) return ATIP_IMPL_LABEL;
+  return codes.length === 1 ? ATIP_LABEL[codes[0]] : "Valores fora do padrão do próprio município — confirme na fonte";
+}
 
 /** One year of a municipality or state government as stored in cities.json / states.json. */
 export type CityYear = YearRecord & {
   /** atypical-value flags (see AtipCode) */
   atip?: AtipCode[];
+  /** 1 when a flag is physically implausible (possible filing error) */
+  atipImpl?: 1;
   /** 1 when mdeV (R$ applied) is the Radar's estimate base × % instead of a declared value (SIOPE 8.2 exists from 2020) */
   mdeVEst?: 1;
   /** how `base` was obtained; omitted = SIOPE indicator 8.1 (÷ 25%) */
@@ -64,6 +96,8 @@ export function atipOf(r: Row, yi: number): AtipCode[] {
 }
 /** Whether a row/year carries a given flag (or any flag when `code` is omitted). */
 export const isAtip = (r: Row, yi: number, code?: AtipCode) => ((r.atip?.[yi] ?? 0) & (code ? ATIP_BITS[code] : 7)) !== 0;
+/** Whether the year's flag is physically implausible (only then say "possível erro de declaração"). */
+export const isImplausible = (r: Row, yi: number) => ((r.atip?.[yi] ?? 0) & ATIP_IMPL_BIT) !== 0;
 /** MDE change vs the previous published year, in p.p. (null when either year is missing). */
 export function deltaPp(r: Row, yi: number): number | null {
   const a = r.mde[yi], b = yi > 0 ? r.mde[yi - 1] : null;
@@ -252,4 +286,42 @@ export function loadAllRows() {
 // ---- territory summaries computed on the server and handed to client dashboards
 export type UfSummary = { uf: string; name: string; region: "N" | "NE" | "SE" | "S" | "CO"; stats: Stats[]; gov: (number | null)[] };
 export type RegionSummary = { key: "N" | "NE" | "SE" | "S" | "CO"; slug: string; name: string; ufs: string[]; stats: Stats[] };
-export type Deficit = { id: number; name: string; uf: string; slug: string; pop: number; below: number[]; carry: number };
+export type Deficit = {
+  id: number; name: string; uf: string; slug: string; pop: number; below: number[]; carry: number;
+  /** same balance in R$ of IPCA_BASE */
+  carryReal: number;
+  /** years in `below` whose record is flagged atypical (MDE % or revenue base) */
+  atipYears: number[];
+};
+
+// ---- finance columns for exports (GOV-09): fetched only when exporting
+export type FinanceRow = {
+  base: (number | null)[];
+  mdeV: (number | null)[];
+  /** 1 = mdeV estimated by the Radar */
+  est: (0 | 1)[];
+  funLeft: (number | null)[];
+};
+export type Finance = { years: number[]; get: (id: number) => FinanceRow | undefined };
+type FinanceFile = { years: number[]; rows: [number, (number | null)[], (number | null)[], number, (number | null)[]][] };
+
+let financePromise: Promise<Finance> | null = null;
+/** Client: revenue base, R$ applied and Fundeb left per municipality and year (/data/financas.json). */
+export function loadFinance(): Promise<Finance> {
+  financePromise ??= fetch(`/data/financas.json?v=${DATA_VERSION}`)
+    .then((r) => {
+      if (!r.ok) throw new Error(String(r.status));
+      return r.json() as Promise<FinanceFile>;
+    })
+    .then((f) => {
+      const m = new Map<number, FinanceRow>();
+      for (const [id, base, mdeV, est, funLeft] of f.rows)
+        m.set(id, { base, mdeV, funLeft, est: f.years.map((_, i) => ((est >> i) & 1) as 0 | 1) });
+      return { years: f.years, get: (id: number) => m.get(id) };
+    })
+    .catch((e) => {
+      financePromise = null;
+      throw e;
+    });
+  return financePromise;
+}

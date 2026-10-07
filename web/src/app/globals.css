@@ -154,7 +154,7 @@
   --bin-1: #e66767;
   --bin-2: #ad4543;
   --bin-3: #383835;
-  --bin-4: #2a78d6;
+  --bin-4: #2468bd; /* white text 5.5:1 (A11Y-19) */
   --bin-5: #6da7ec;
   --bin-nd: #232323;
   --bin-zero: #1c1c1a;
@@ -388,6 +388,14 @@ svg :focus:not(:focus-visible) {
   svg[role="img"] {
     forced-color-adjust: none;
   }
+  /* class-colored tracks and fills (rank bars, meters): mark them data-track / data-bar */
+  [data-bar] {
+    forced-color-adjust: none;
+    background: Highlight !important;
+  }
+  [data-track] {
+    outline: 1px solid CanvasText;
+  }
   [role="radio"][aria-checked="true"],
   [role="tab"][aria-selected="true"],
   [role="option"][aria-selected="true"],
@@ -482,8 +490,11 @@ svg :focus:not(:focus-visible) {
     padding-inline: 0 !important;
   }
 
-  /* cards: never split a chart, KPI, map or short card across pages (long tables/lists may break between rows) */
-  section:not(:has(table, li:nth-child(10))),
+  /*
+   * Breaks: panels may split (a whole-panel "avoid" leaves half-empty pages), but never inside a chart, map, KPI card
+   * or table row, and a panel header always stays with what follows it.
+   */
+  div.rounded-xl.border,
   [data-slot="card"],
   figure,
   .recharts-wrapper,
@@ -495,16 +506,20 @@ svg :focus:not(:focus-visible) {
   h3 {
     break-after: avoid;
   }
+  section > header {
+    break-after: avoid;
+  }
 
   /* charts redraw to the page width (Recharts renders at the screen width) */
+  /* scale the screen-sized svg into its box (viewBox, "meet"): never taller than the container, so axes and the
+     legend below never overlap or clip (GOV-22) */
   .recharts-responsive-container > div,
   .recharts-wrapper {
     width: 100% !important;
-    height: auto !important;
   }
   .recharts-wrapper > .recharts-surface {
     width: 100%;
-    height: auto;
+    height: 100%;
   }
 
   /* tables: no inner scroll, every column visible, header repeats on each page */
@@ -526,6 +541,10 @@ svg :focus:not(:focus-visible) {
   td {
     padding-inline: 0.375rem !important;
     white-space: normal !important;
+  }
+  /* in data tables (4+ columns) numbers and money never wrap ("R$ 643,8 mi"); names and prose cells still can */
+  tr:has(> td:nth-child(4)) > td:not(:first-child):not(:has(p, ul, div)) {
+    white-space: nowrap !important;
   }
   thead {
     display: table-header-group;

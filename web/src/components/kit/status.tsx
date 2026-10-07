@@ -26,7 +26,7 @@ export function StatusDot({ kind, className }: { kind: StatusKind; className?: s
 /** Tinted pill: color-100 background, color-900 text, with the dot. */
 export function StatusBadge({ kind, children, className, dot = true }: { kind: StatusKind; children: ReactNode; className?: string; dot?: boolean }) {
   return (
-    <span className={cn("inline-flex h-5 items-center gap-1.5 rounded-full px-2 text-xs font-medium whitespace-nowrap", TINT[kind], className)}>
+    <span className={cn("inline-flex min-h-5 items-center gap-1.5 rounded-full px-2 text-xs font-medium whitespace-nowrap", TINT[kind], className)}>
       {dot && <StatusDot kind={kind} />}
       {children}
     </span>

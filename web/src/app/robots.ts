@@ -6,10 +6,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      // raw JSON used by the client; the CSVs under /dados stay crawlable
-      disallow: ["/data/"],
+      // /data/*.json stays crawlable: JS-rendering crawlers need it to see the maps and tables (FUN-22)
     },
     sitemap: `${SITE_URL}/sitemap.xml`,
-    host: SITE_URL,
   };
 }

@@ -2,7 +2,7 @@
 
 import { Eye, RotateCcw, Table2, X } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { EmptyState, Panel } from "@/components/kit/panel";
 import { StatusBadge, type StatusKind } from "@/components/kit/status";
 import { SearchButton } from "@/components/SearchPalette";
@@ -12,7 +12,7 @@ import { TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/compon
 import { binColor } from "@/lib/bins";
 import { MDE_MIN, int } from "@/lib/format";
 import { cityPath } from "@/lib/geo";
-import { DATA_VERSION, existedIn, loadAllRows, timesBelow, unpackRows, type Row, type RowsFile } from "@/lib/rows";
+import { DATA_VERSION, atipNote, existedIn, isAtip, isImplausible, loadAllRows, timesBelow, unpackRows, type Row, type RowsFile } from "@/lib/rows";
 import { cn } from "@/lib/utils";
 import { useWatchlist } from "@/lib/watchlist";
 
@@ -52,13 +52,19 @@ async function loadWatched(ids: string[]): Promise<Data> {
 }
 
 /** One coloured cell per year with the % (n/d when not declared, blank before the municipality existed). */
-function YearCell({ v, nd, na, year, className }: { v: number | null; nd: boolean; na: boolean; year: number; className?: string }) {
+function YearCell({
+  v, nd, na, atip, year, className,
+}: { v: number | null; nd: boolean; na: boolean; /** atypical-value note (atipNote) */ atip?: string; year: number; className?: string }) {
   const c = binColor(v);
+  const label = `${year}: ${na ? "município ainda não existia" : v == null ? (nd ? "não declarou" : "sem dados") : v.toFixed(2).replace(".", ",") + "%"}${atip ? ` — ${atip}` : ""}`;
   return (
     <span
-      title={`${year}: ${na ? "município ainda não existia" : v == null ? (nd ? "não declarou" : "sem dados") : v.toFixed(2).replace(".", ",") + "%"}`}
+      title={label}
+      aria-label={label}
       className={cn(
-        "inline-flex h-7 items-center justify-center rounded-[5px] text-[11px] tnum",
+        "relative inline-flex h-7 items-center justify-center rounded-[5px] text-[11px] tnum",
+        // CIT-22: atypical value — dashed outline plus a corner mark, like the city page's ⚠
+        atip && "outline-2 outline-offset-1 outline-dashed outline-warning after:absolute after:-top-1 after:-right-1 after:size-2 after:rounded-full after:bg-warning",
         v != null && v < MDE_MIN && "font-semibold",
         nd && "border border-dashed border-critical text-critical-ink",
         v == null && !nd && "text-muted-foreground",
@@ -73,16 +79,47 @@ function YearCell({ v, nd, na, year, className }: { v: number | null; nd: boolea
   );
 }
 
+/** Horizontal scroller whose cut edge fades out while there is more to scroll (VIS-13). */
+function EdgeFadeScroller({ className, children }: { className?: string; children: ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [edges, setEdges] = useState({ right: false });
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const update = () => {
+      const right = el.scrollLeft + el.clientWidth < el.scrollWidth - 1;
+      setEdges((e) => (e.right === right ? e : { right }));
+    };
+    update();
+    el.addEventListener("scroll", update, { passive: true });
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => {
+      el.removeEventListener("scroll", update);
+      ro.disconnect();
+    };
+  }, []);
+  // only the right edge fades: the name column is sticky on the left
+  const mask = edges.right ? "[mask-image:linear-gradient(to_right,#000_calc(100%-2.5rem),transparent)]" : "";
+  return (
+    <div ref={ref} className={cn(className, mask)}>
+      {children}
+    </div>
+  );
+}
+
 export default function Watchlist() {
-  const [list, toggle] = useWatchlist();
+  const [list, toggle, ready] = useWatchlist();
+  // ids already requested that the server didn't know: don't ask again for them alone (FUN-24)
+  const [unknown, setUnknown] = useState<ReadonlySet<string>>(() => new Set());
   const [data, setData] = useState<Data | null>(null);
   const [failed, setFailed] = useState(false);
   const [attempt, setAttempt] = useState(0);
   // Saved items whose rows aren't loaded yet: removing one needs no new request, adding one fetches just that one
   const missingKeys = useMemo(() => {
     const have = new Set(data?.rows.map((r) => `${r.uf.toLowerCase()}/${r.slug}`));
-    return list.filter((k) => !have.has(k)).join(",");
-  }, [list, data]);
+    return list.filter((k) => !have.has(k) && !unknown.has(k)).join(",");
+  }, [list, data, unknown]);
 
   useEffect(() => {
     if (!missingKeys) return;
@@ -90,6 +127,9 @@ export default function Watchlist() {
     loadWatched(missingKeys.split(","))
       .then((d) => {
         if (!live) return;
+        const got = new Set(d.rows.map((r) => `${r.uf.toLowerCase()}/${r.slug}`));
+        const asked = missingKeys.split(",").filter((k) => !got.has(k));
+        if (asked.length) setUnknown((u) => new Set([...u, ...asked]));
         setData((prev) => (prev ? { years: prev.years, rows: [...prev.rows, ...d.rows.filter((r) => !prev.rows.some((p) => p.id === r.id))] } : d));
       })
       .catch(() => live && setFailed(true));
@@ -98,10 +138,21 @@ export default function Watchlist() {
     };
   }, [missingKeys, attempt]);
 
+  // Until the browser's list is read, reserve the space of a loaded list instead of flashing the empty state
+  if (!ready)
+    return (
+      <div className="overflow-hidden rounded-xl border bg-card" aria-busy="true">
+        <div className="border-b px-5 py-4">
+          <Skeleton className="h-4 w-40" />
+          <Skeleton className="mt-2 h-3 w-64" />
+        </div>
+      </div>
+    );
+
   if (!list.length)
     return (
       <EmptyState
-        title="Nenhum município acompanhado"
+        title="Nenhum município salvo"
         className="bg-card py-16"
         icon={
           <span className="mx-auto flex size-10 items-center justify-center rounded-full border bg-background">
@@ -110,7 +161,7 @@ export default function Watchlist() {
         }
       >
         <p>
-          Abra a página de um município e toque em <span className="font-medium text-foreground">Acompanhar</span>. Ele aparece aqui com a
+          Abra a página de um município e toque em <span className="font-medium text-foreground">Salvar</span>. Ele aparece aqui com a
           série completa, ano a ano. Volte aqui quando sair um novo ano de dados.
         </p>
         <div className="mt-5 flex flex-wrap justify-center gap-2">
@@ -156,7 +207,6 @@ export default function Watchlist() {
   const byKey = new Map(rows.map((r) => [`${r.uf.toLowerCase()}/${r.slug}`, r]));
   const items = list.map((k) => byKey.get(k)).filter((r): r is Row => !!r);
   const missing = list.length - items.length;
-  const half = Math.ceil(years.length / 2);
 
   return (
     <Panel
@@ -167,7 +217,7 @@ export default function Watchlist() {
       footer={missing > 0 ? `${missing} ${missing === 1 ? "item salvo não foi encontrado" : "itens salvos não foram encontrados"} na base atual.` : undefined}
     >
       {/* Phones: one card per municipality, the whole series visible in two rows (CIT-14) */}
-      <ul className="divide-y sm:hidden">
+      <ul className="divide-y lg:hidden">
         {items.map((r) => {
           const key = `${r.uf.toLowerCase()}/${r.slug}`;
           const s = status(r, last, years[last]);
@@ -195,16 +245,16 @@ export default function Watchlist() {
                   variant="ghost"
                   size="icon"
                   onClick={() => toggle(key)}
-                  aria-label={`Deixar de acompanhar ${r.name}`}
+                  aria-label={`Remover ${r.name} dos salvos`}
                   className="-mt-1 -mr-2 text-muted-foreground hover:text-critical"
                 >
                   <X />
                 </Button>
               </div>
-              <div className="mt-3 grid gap-1" style={{ gridTemplateColumns: `repeat(${half}, minmax(0, 1fr))` }}>
+              <div className="mt-3 grid grid-cols-9 gap-1 md:grid-cols-18">
                 {years.map((y, i) => (
                   <div key={y} className="flex flex-col items-stretch gap-0.5">
-                    <YearCell v={r.mde[i]} nd={r.nd[i]} na={!existedIn(r, y)} year={y} className="h-7 text-[10px]" />
+                    <YearCell v={r.mde[i]} nd={r.nd[i]} na={!existedIn(r, y)} atip={isAtip(r, i, "mde") ? atipNote(["mde"], isImplausible(r, i)) : undefined} year={y} className="h-7 text-[10px]" />
                     <span className="text-center font-mono text-[10px] text-muted-foreground">’{String(y).slice(2)}</span>
                   </div>
                 ))}
@@ -214,9 +264,9 @@ export default function Watchlist() {
         })}
       </ul>
 
-      <div className="scroll-thin relative overflow-x-auto max-sm:hidden">
+      <EdgeFadeScroller className="scroll-thin relative overflow-x-auto max-lg:hidden">
         <table className="w-full text-sm tnum">
-          <caption className="sr-only">Municípios acompanhados e percentual aplicado em MDE por ano</caption>
+          <caption className="sr-only">Municípios salvos e percentual aplicado em MDE por ano</caption>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
               <TableHead scope="col" className={cn(head, "sticky left-0 z-10 bg-card pl-4 text-left sm:pl-5")}>Município</TableHead>
@@ -255,7 +305,7 @@ export default function Watchlist() {
                   <TableCell className={cn("px-2 text-right", t ? "font-medium text-critical-ink" : "text-muted-foreground")}>{t}</TableCell>
                   {years.map((y, i) => (
                     <TableCell key={y} className="px-0.5 py-1.5 text-center">
-                      <YearCell v={r.mde[i]} nd={r.nd[i]} na={!existedIn(r, y)} year={y} className="w-10" />
+                      <YearCell v={r.mde[i]} nd={r.nd[i]} na={!existedIn(r, y)} atip={isAtip(r, i, "mde") ? atipNote(["mde"], isImplausible(r, i)) : undefined} year={y} className="w-10" />
                     </TableCell>
                   ))}
                   <TableCell className="pr-3 pl-2 text-right sm:pr-4">
@@ -263,8 +313,8 @@ export default function Watchlist() {
                       variant="ghost"
                       size="icon-sm"
                       onClick={() => toggle(key)}
-                      aria-label={`Deixar de acompanhar ${r.name}`}
-                      title="Deixar de acompanhar"
+                      aria-label={`Remover ${r.name} dos salvos`}
+                      title="Remover dos salvos"
                       className="text-muted-foreground hover:text-critical"
                     >
                       <X />
@@ -275,7 +325,7 @@ export default function Watchlist() {
             })}
           </TableBody>
         </table>
-      </div>
+      </EdgeFadeScroller>
     </Panel>
   );
 }

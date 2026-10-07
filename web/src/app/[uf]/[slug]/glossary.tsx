@@ -64,14 +64,14 @@ export function Term({ k, children, className }: { k: GlossaryKey; children?: Re
     <Popover>
       <PopoverTrigger
         className={cn(
-          "cursor-help rounded-sm underline decoration-current/40 decoration-dotted underline-offset-[3px] outline-none hover:decoration-current focus-visible:ring-2 focus-visible:ring-ring/60 print:no-underline",
+          "-my-0.5 cursor-help rounded-sm py-0.5 underline decoration-current/40 decoration-dotted underline-offset-[3px] outline-none hover:decoration-current focus-visible:ring-2 focus-visible:ring-ring/60 print:no-underline",
           className,
         )}
         aria-label={`${typeof children === "string" ? children : g.term}: o que é?`}
       >
         {children ?? g.term}
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-[min(20rem,calc(100vw-2rem))] gap-1 text-[13px] leading-5">
+      <PopoverContent align="start" className="w-[min(20rem,calc(100vw-2rem))] gap-1 text-[0.8125rem] leading-5">
         <div className="font-medium text-foreground">{g.term}</div>
         <p className="text-muted-foreground">{g.text}</p>
       </PopoverContent>

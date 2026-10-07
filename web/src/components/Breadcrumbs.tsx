@@ -29,7 +29,7 @@ export default function Breadcrumbs({ region, uf, city }: Props) {
   return (
     <nav aria-label="Navegação territorial" className="min-w-0" onPointerEnter={refresh} onFocusCapture={refresh}>
       <ol className="flex min-w-0 flex-wrap items-center gap-x-0.5 gap-y-1 text-sm text-muted-foreground">
-        <li className="flex items-center">
+        <li className="-ml-1.5 flex items-center">
           <Crumb href={y("/")} label="Brasil" current={!reg} />
         </li>
         {reg && (
@@ -66,7 +66,7 @@ export default function Breadcrumbs({ region, uf, city }: Props) {
 function Level({ children }: { children: React.ReactNode }) {
   return (
     <li className="flex min-w-0 items-center">
-      <span aria-hidden className="mx-1 text-[15px] text-muted-foreground/40 select-none">/</span>
+      <span aria-hidden className="mx-1 text-[0.9375rem] text-muted-foreground/40 select-none">/</span>
       {children}
     </li>
   );
@@ -81,7 +81,7 @@ function Crumb({ href, label, current }: { href?: string; label: string; current
     );
   if (!href) return <span className="truncate rounded-md px-1.5 py-0.5">{label}</span>;
   return (
-    <Link href={href} className="inline-flex min-h-6 items-center truncate rounded-md px-1.5 py-0.5 transition-colors duration-150 hover:bg-accent hover:text-foreground">
+    <Link href={href} prefetch={false} className="inline-flex min-h-6 items-center truncate rounded-md px-1.5 py-0.5 transition-colors duration-150 hover:bg-accent hover:text-foreground">
       {label}
     </Link>
   );
@@ -120,11 +120,11 @@ function SiblingMenu({ label, heading, items }: { label: string; heading: string
           {items.map((it) => (
             <DropdownMenuItem
               key={it.key}
-              render={<Link href={it.href} aria-current={it.on ? "page" : undefined} />}
+              render={<Link href={it.href} prefetch={false} aria-current={it.on ? "page" : undefined} />}
               className={cn("py-1.5", it.on ? "font-medium text-foreground" : "text-muted-foreground")}
             >
               <span className="flex-1 truncate">{it.label}</span>
-              {it.hint && <span className="font-mono text-[11px] text-muted-foreground">{it.hint}</span>}
+              {it.hint && <span className="font-mono text-[0.6875rem] text-muted-foreground">{it.hint}</span>}
               <Check className={cn("size-3.5", it.on ? "opacity-100" : "opacity-0")} />
             </DropdownMenuItem>
           ))}
@@ -169,12 +169,12 @@ function CityPicker({ uf, current, query }: { uf: string; current: string; query
           <CommandInput placeholder={`Buscar em ${name}…`} aria-label={`Buscar município em ${name}`} />
           <CommandList className="scroll-thin">
             {!list ? (
-              <div className="py-6 text-center text-[13px] text-muted-foreground" role="status">
+              <div className="py-6 text-center text-[0.8125rem] text-muted-foreground" role="status">
                 {failed ? "Não foi possível carregar a lista." : "Carregando municípios…"}
               </div>
             ) : (
               <>
-                <CommandEmpty className="text-[13px] text-muted-foreground">Nenhum município encontrado.</CommandEmpty>
+                <CommandEmpty className="text-[0.8125rem] text-muted-foreground">Nenhum município encontrado.</CommandEmpty>
                 <CommandGroup heading={`${list.length.toLocaleString("pt-BR")} municípios`}>
                   {list.map((c) => (
                     <CommandItem

@@ -3,7 +3,7 @@ import { PageBody, PageHeader } from "@/components/kit/page-header";
 import Watchlist from "@/components/Watchlist";
 
 export const metadata: Metadata = {
-  title: "Acompanhando",
+  title: "Municípios salvos",
   description: "Os municípios que você salvou neste navegador, com o percentual aplicado em educação ano a ano.",
   alternates: { canonical: "/acompanhar" },
   // personal list kept in this browser: nothing to index
@@ -14,11 +14,14 @@ export default function Page() {
   return (
     <>
       <PageHeader
-        title="Acompanhando"
+        title="Municípios salvos"
         description="Os municípios que você salvou, com o percentual aplicado em MDE em cada ano. A lista fica guardada só neste navegador."
       />
       <PageBody>
-        <Watchlist />
+        {/* reserved height: the list is only known after hydration (CLS-01) */}
+        <div className="min-h-[60vh]">
+          <Watchlist />
+        </div>
       </PageBody>
     </>
   );

@@ -50,10 +50,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             </a>
             <header className="sticky top-0 z-40 border-b bg-(--header-bg) backdrop-blur-md backdrop-saturate-150">
               <div className="mx-auto flex h-14 max-w-7xl items-center gap-3 px-4 sm:gap-5 sm:px-6">
-                <Link href="/" className="flex shrink-0 items-center gap-2 rounded-md text-[15px] font-semibold tracking-[-0.02em]">
+                <Link href="/" className="flex shrink-0 items-center gap-2 rounded-md text-[0.9375rem] font-semibold tracking-[-0.02em]">
                   <Logo className="size-6 text-foreground" />
                   <span>Radar MDE</span>
-                  <span className="hidden rounded-full border px-1.5 py-px font-mono text-[11px] font-normal text-muted-foreground sm:inline">BR</span>
+                  <span className="hidden rounded-full border px-1.5 py-px font-mono text-[0.6875rem] font-normal text-muted-foreground sm:inline">BR</span>
                 </Link>
                 <div className="hidden min-w-0 md:block">
                   <NavLinks />
@@ -76,7 +76,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                   <Link href="/" className="flex items-center gap-2 text-sm font-semibold">
                     <Logo className="size-5 text-foreground" /> Radar MDE · Brasil
                   </Link>
-                  <p className="max-w-xl text-[13px] leading-5 text-muted-foreground">
+                  <p className="max-w-xl text-[0.8125rem] leading-5 text-muted-foreground">
                     Dados: FNDE/SIOPE (indicadores e receitas declarados pelos municípios e estados, 2008 em diante), Tesouro
                     Nacional/SICONFI (RREO, Anexo 14, municípios de SP) e IBGE (territórios, malhas e população). Inspirado em Silva,
                     A. Z. (2021), <em>O financiamento da Educação Básica no Brasil contemporâneo</em>, UNINOVE. Ferramenta
@@ -84,14 +84,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                   </p>
                   <p className="text-xs leading-5 text-muted-foreground">
                     Dados extraídos em <time dateTime={META.extracted}>{dateBR(META.extracted)}</time> · versão{" "}
-                    <span className="font-mono">{META.version}</span> · licença{" "}
+                    <span className="font-mono whitespace-nowrap">{META.version}</span> · licença{" "}
                     <a href={META.licenseUrl} rel="license noopener" target="_blank" className="underline-offset-2 hover:text-foreground hover:underline">
                       {META.license}
                     </a>
                   </p>
                 </div>
                 <div className="flex flex-col justify-between gap-6 md:items-end">
-                  <ul className="flex flex-wrap gap-x-5 gap-y-2 text-[13px] text-muted-foreground">
+                  <ul className="flex flex-wrap gap-x-5 gap-y-2 text-[0.8125rem] text-muted-foreground">
                     {NAV.map((n) => (
                       <li key={n.href}>
                         <Link href={n.href} prefetch={false} className="inline-flex min-h-6 items-center transition-colors hover:text-foreground">
@@ -100,7 +100,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                       </li>
                     ))}
                   </ul>
-                  <ThemeSwitcher />
+                  <ThemeSwitcher className="w-fit self-start md:self-end" />
                 </div>
               </div>
             </footer>

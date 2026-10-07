@@ -8,11 +8,14 @@ import path from "node:path";
 import meta from "@/data/meta.json";
 import { MDE_MIN, shortfall } from "./format";
 import { REGIONS, UFS, getRegion, type RegionKey, type Scope, scopeUfs } from "./geo";
-import { ATIP_BITS, aggregate, type CityYear, type Deficit, type RegionSummary, type Row, type Stats, type UfSummary } from "./rows";
+import { ATIP_BITS, ATIP_IMPL_BIT, aggregate, toReal, type CityYear, type Deficit, type RegionSummary, type Row, type Stats, type UfSummary } from "./rows";
 
 export * from "./format";
-export type { AtipCode, CityYear, Deficit, RegionSummary, Row, Stats, UfSummary } from "./rows";
-export { ATIP_LABEL, DATA_VERSION, atipOf, deltaPp, existedIn, isAtip } from "./rows";
+export type { AtipCode, CityYear, Deficit, Finance, FinanceRow, RegionSummary, Row, Stats, UfSummary } from "./rows";
+export {
+  ATIP_IMPL_LABEL, ATIP_LABEL, DATA_VERSION, HEALTH_UFS, IPCA_BASE, IPCA_LABEL, atipNote, atipOf, deltaPp, existedIn,
+  ipcaFactor, isAtip, isImplausible, toReal, ufHasHealth,
+} from "./rows";
 
 /** Years with (near) complete national coverage. */
 export const YEARS: number[] = meta.years;
@@ -37,7 +40,14 @@ export const META = {
   coverage: meta.coverage as Record<string, number>,
   /** IBGE code → installation year, for municipalities created after 2008 */
   installed: meta.installed as Record<string, number>,
+  /** IPCA deflators (see CONTRACT §10) */
+  ipca: meta.ipca as { base: number; factor: Record<string, number>; source: string; fetched: string; method: string },
+  /** UFs with health data and how many municipalities have any value */
+  health: meta.health as { ufs: string[]; cities: Record<string, number> },
 };
+
+/** Whether a municipality has any health (% saúde) value: hide the Saúde column when false. */
+export const cityHasHealth = (c: City) => Object.values(c.years).some((r) => r?.sau != null);
 
 /** "07/10/2026" from an ISO date. */
 export const dateBR = (iso: string) => new Date(iso + "T12:00:00").toLocaleDateString("pt-BR");
@@ -107,7 +117,10 @@ export function toRow(c: City): Row {
   if (YEARS.some((y) => c.years[y]?.alt != null)) row.alt = YEARS.map((y) => c.years[y]?.alt ?? null);
   if (c.capital) row.capital = true;
   if (c.since) row.since = c.since;
-  const atip = YEARS.map((y) => (c.years[y]?.atip ?? []).reduce((m, k) => m | ATIP_BITS[k], 0));
+  const atip = YEARS.map((y) => {
+    const r = c.years[y];
+    return (r?.atip ?? []).reduce((m, k) => m | ATIP_BITS[k], r?.atipImpl ? ATIP_IMPL_BIT : 0);
+  });
   if (atip.some(Boolean)) row.atip = atip;
   return row;
 }
@@ -152,13 +165,20 @@ export const regionSummaries = (): RegionSummary[] =>
  * Running uncompensated deficit: each year's shortfall adds to the balance and
  * each year's surplus above 25% pays it down (never below zero). Mirrors the
  * compensation reasoning used in Silva (2021) for Santo André.
+ * `carry`/`shortfall` are nominal; `carryReal`/`shortfallReal` are in R$ of IPCA_BASE (each year deflated first).
  */
 export function deficitTrail(c: City) {
   let carry = 0;
+  let carryReal = 0;
   return YEARS.map((y) => {
     const r = c.years[y];
-    if (r?.mde != null && r.base != null) carry = Math.max(0, carry + ((MDE_MIN - r.mde) / 100) * r.base);
-    return { year: y, carry, shortfall: shortfall(r), rec: r };
+    if (r?.mde != null && r.base != null) {
+      const d = ((MDE_MIN - r.mde) / 100) * r.base;
+      carry = Math.max(0, carry + d);
+      carryReal = Math.max(0, carryReal + (toReal(d, y) ?? d));
+    }
+    const sh = shortfall(r);
+    return { year: y, carry, carryReal, shortfall: sh, shortfallReal: toReal(sh, y) ?? sh, rec: r };
   });
 }
 
@@ -177,14 +197,21 @@ export function defaultYear(): number {
   return YEARS[YEARS.length - 1];
 }
 
-/** Biggest uncompensated deficits in a scope. */
-export function topDeficits(s: Scope, limit = 12): Deficit[] {
+/** Biggest uncompensated deficits in a scope (nominal, or `real: true` for R$ of IPCA_BASE). */
+export function topDeficits(s: Scope, limit = 12, opts: { real?: boolean } = {}): Deficit[] {
+  const key = opts.real ? "carryReal" : "carry";
   return citiesIn(s)
-    .map((c) => ({ c, below: yearsBelow(c), carry: deficitTrail(c).at(-1)!.carry }))
-    .filter((x) => x.carry > 0)
-    .sort((a, b) => b.carry - a.carry)
+    .map((c) => {
+      const last = deficitTrail(c).at(-1)!;
+      return { c, below: yearsBelow(c), carry: last.carry, carryReal: last.carryReal };
+    })
+    .filter((x) => x[key] > 0)
+    .sort((a, b) => b[key] - a[key])
     .slice(0, limit)
-    .map(({ c, below, carry }) => ({ id: c.id, name: c.name, uf: c.uf, slug: c.slug, pop: c.pop, below, carry }));
+    .map(({ c, below, carry, carryReal }) => ({
+      id: c.id, name: c.name, uf: c.uf, slug: c.slug, pop: c.pop, below, carry, carryReal,
+      atipYears: below.filter((y) => c.years[y]?.atip?.some((k) => k === "mde" || k === "base")),
+    }));
 }
 
 /** Rank (1 = highest MDE %) of a municipality among those reporting in the same year. */

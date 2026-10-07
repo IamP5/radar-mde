@@ -18,10 +18,10 @@ import { StatusBadge } from "@/components/kit/status";
 import { Button } from "@/components/ui/button";
 import { MDE_MIN, brl, brlShort, pct, siconfiUrl, siopeUrl } from "@/lib/format";
 import { cityPath } from "@/lib/geo";
-import { ATIP_LABEL } from "@/lib/rows";
+import { ATIP_IMPL_LABEL, ATIP_LABEL, IPCA_BASE } from "@/lib/rows";
 import { cn } from "@/lib/utils";
 import { Term } from "./glossary";
-import { type CityYearData, type Rank, type YearPoint, prevPoint, pts, summary } from "./verdict";
+import { type CityYearData, type Rank, type YearPoint, comparison, listYears, pts, summary } from "./verdict";
 
 type Ctx = {
   d: CityYearData;
@@ -90,7 +90,7 @@ export function HeaderStatus({ belowCount }: { belowCount: number }) {
           </StatusBadge>
         ))}
         {belowCount > 0 && (
-          <span className="text-[13px] text-muted-foreground">
+          <span className="text-[0.8125rem] text-muted-foreground">
             Abaixo dos 25% em <span className="font-medium text-critical-ink">{plural(belowCount, "ano", "anos")}</span> desde {d.points.find((x) => x.mde != null)?.y}
           </span>
         )}
@@ -132,13 +132,13 @@ export function YearBar() {
     <div className="sticky top-(--header-h) z-30 border-b bg-(--header-bg) backdrop-blur-md backdrop-saturate-150 print:hidden">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-4 gap-y-1.5 px-4 py-2 sm:px-6">
         <YearPicker years={d.years} year={year} onChange={setYear} className="max-w-full" />
-        <p className={cn("text-[13px] text-muted-foreground", year === d.initial && "hidden sm:block")} aria-live="polite">
+        <p className={cn("text-[0.8125rem] text-muted-foreground", year === d.initial && "hidden sm:block")} aria-live="polite">
           {year === d.initial ? (
             "Gráficos e tabela mostram a série completa."
           ) : (
             <>
               Mostrando {year}.{" "}
-              <button type="button" onClick={() => setYear(d.initial)} className="font-medium text-brand-ink hover:underline">
+              <button type="button" onClick={() => setYear(d.initial)} className="inline-flex min-h-6 items-center font-medium text-brand-ink hover:underline">
                 Voltar para {d.initial}
               </button>
             </>
@@ -153,9 +153,12 @@ export function YearBar() {
 
 export function YearKpis() {
   const { d, p } = useCity();
-  const prev = prevPoint(d, p.y);
+  const cmp = comparison(d, p);
+  const prev = cmp?.base;
   const dv = p.mde != null && prev ? p.mde - prev.mde! : null;
   const y = p.y;
+  // deficit up to the selected year resting on an out-of-pattern % or revenue base (GOV-25)
+  const shaky = p.carry > 0 ? d.shaky.filter((s) => s <= y) : [];
   const noValue = p.st === "nd" ? "não declarou" : p.st === "na" ? "o município ainda não existia" : "sem dados";
   return (
     <section aria-label={`Indicadores de ${y}`} className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -173,7 +176,9 @@ export function YearKpis() {
           p.mde == null ? (
             <span className={p.st === "nd" ? "text-critical-ink" : undefined}>{noValue}</span>
           ) : prev ? (
-            `${pct(prev.mde)} em ${prev.y} · mínimo ${MDE_MIN}%`
+            `${pct(prev.mde)} em ${prev.y}${cmp?.skipped ? ` (${cmp.skipped.y} fora do padrão)` : ""} · mínimo ${MDE_MIN}%`
+          ) : p.atip.includes("mde") ? (
+            "fora do padrão do município — confirme na fonte"
           ) : (
             `mínimo ${MDE_MIN}% da receita de impostos`
           )
@@ -198,11 +203,11 @@ export function YearKpis() {
       />
       <Stat
         label={`Por aluno em ${y}`}
-        icon={p.atip.includes("aluno") ? <TriangleAlert aria-label="Valor atípico" className="size-3.5 text-warning" /> : undefined}
+        icon={p.atip.includes("aluno") ? <TriangleAlert role="img" aria-label="Valor fora do padrão" className="size-3.5 text-warning" /> : undefined}
         value={p.aluno ? brl(p.aluno) : "—"}
         sub={
           p.atip.includes("aluno")
-            ? "valor atípico: possível erro nas matrículas declaradas"
+            ? "valor fora do padrão do município — confirme na fonte"
             : p.mdeV
               ? `${p.mdeVEst ? "≈ " : ""}${brlShort(p.mdeV)} aplicados${p.mdeVEst ? " (estimado)" : ""} · R$ da época`
               : "por ano, educação básica · R$ da época"
@@ -216,13 +221,16 @@ export function YearKpis() {
         }
         value={d.firstBase == null || d.firstBase > y ? "—" : p.carry > 0 ? brlShort(p.carry) : "R$ 0"}
         tone={p.carry > 0 ? "bad" : "neutral"}
+        icon={shaky.length ? <TriangleAlert role="img" aria-label="Estimativa depende de valor fora do padrão" className="size-3.5 text-warning" /> : undefined}
         sub={
-          d.firstBase == null
+          shaky.length
+            ? `estimativa que depende de valor fora do padrão em ${listYears(shaky)} — confirme na fonte`
+            : d.firstBase == null
             ? "sem receita declarada para estimar"
             : d.firstBase > y
               ? `estimativa disponível a partir de ${d.firstBase}`
               : p.carry > 0
-                ? `estimativa não compensada desde ${d.firstBase}, R$ da época`
+                ? `estimativa desde ${d.firstBase}, R$ da época · ${brlShort(p.carryReal)} corrigidos pelo IPCA (R$ de ${IPCA_BASE})`
                 : "nada a compensar pela estimativa"
         }
       />
@@ -234,13 +242,13 @@ export function AtypicalCallout() {
   const { p } = useCity();
   if (!p.atip.length) return null;
   return (
-    <div className="flex gap-2.5 rounded-lg border bg-muted/50 px-3.5 py-3 text-[13px] leading-5 text-muted-foreground">
+    <div className="flex gap-2.5 rounded-lg border bg-muted/50 px-3.5 py-3 text-[0.8125rem] leading-5 text-muted-foreground">
       <TriangleAlert aria-hidden className="mt-0.5 size-4 shrink-0 text-warning" />
       <div>
-        <div className="font-medium text-foreground">Valor atípico em {p.y}</div>
+        <div className="font-medium text-foreground">Valor fora do padrão em {p.y}</div>
         <ul className="mt-0.5 space-y-0.5">
           {p.atip.map((k) => (
-            <li key={k}>{ATIP_LABEL[k]}.</li>
+            <li key={k}>{(k === "mde" && p.impl ? ATIP_IMPL_LABEL : ATIP_LABEL[k]).replace(/\.$/, "")}.</li>
           ))}
         </ul>
         <div className="mt-1">Confira na fonte (coluna “Fonte” da tabela ano a ano) e, se for o caso, peça esclarecimento à prefeitura com os modelos abaixo.</div>
@@ -263,7 +271,7 @@ export function RankPanel() {
         <div className="space-y-5 pt-1">
           {p.rUf && !d.single && <RankBlock scope={`Entre os municípios ${d.ofUf}`} r={p.rUf} name={d.name} />}
           {p.rBr && <RankBlock scope="Entre os municípios do Brasil" r={p.rBr} name={d.name} />}
-          <dl className="divide-y rounded-lg border text-[13px]">
+          <dl className="divide-y rounded-lg border text-[0.8125rem]">
             {!d.single && p.medUf != null && <Compare label={`Mediana ${d.uf}`} value={p.medUf} diff={p.mde - p.medUf} />}
             {p.medBr != null && <Compare label="Mediana Brasil" value={p.medBr} diff={p.mde - p.medBr} />}
             <Compare label="Mínimo legal" value={MDE_MIN} diff={p.mde - MDE_MIN} />
@@ -284,17 +292,18 @@ function RankBlock({ scope, r, name }: { scope: string; r: Rank; name: string })
   const f = r.of > 1 ? r.less / (r.of - 1) : 1;
   return (
     <div>
-      <div className="text-[13px] text-muted-foreground">
+      <div className="text-[0.8125rem] text-muted-foreground">
         {scope} com dados ({r.of.toLocaleString("pt-BR")})
       </div>
-      <p className="mt-1 text-[15px] leading-6 text-pretty">
+      <p className="mt-1 text-[0.9375rem] leading-6 text-pretty">
         <strong className="font-semibold tnum">{plural(r.less, "aplicou", "aplicaram")}</strong> menos e{" "}
         <strong className="font-semibold tnum">{plural(more, "aplicou", "aplicaram")}</strong> mais que {name}
         {same > 0 && `; ${plural(same, "aplicou", "aplicaram")} o mesmo`}.
       </p>
-      <div className="relative mt-2.5 h-1.5 rounded-full bg-muted" aria-hidden>
-        <div className="absolute inset-y-0 left-0 rounded-full bg-brand/30" style={{ width: `${f * 100}%` }} />
-        <div className="absolute top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-card bg-brand" style={{ left: `${f * 100}%` }} />
+      {/* forced colors: keep track (outline), fill (Highlight) and marker visible (A11Y-05) */}
+      <div className="relative mt-2.5 h-1.5 rounded-full bg-muted forced-colors:outline forced-colors:outline-1 forced-colors:outline-[CanvasText]" aria-hidden>
+        <div className="absolute inset-y-0 left-0 rounded-full bg-brand/30 forced-colors:bg-[Highlight] forced-colors:forced-color-adjust-none" style={{ width: `${f * 100}%` }} />
+        <div className="absolute top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-card bg-brand forced-colors:border-[Canvas] forced-colors:bg-[CanvasText] forced-colors:forced-color-adjust-none" style={{ left: `${f * 100}%` }} />
       </div>
       <div className="mt-1.5 flex justify-between text-xs text-muted-foreground" aria-hidden>
         <span>aplicou menos</span>
@@ -414,7 +423,7 @@ export function PeersPanel({ imediata }: { imediata: string | null }) {
             </li>
           );
         })}
-        {peers.length === 0 && <li className="px-2.5 py-6 text-center text-[13px] text-muted-foreground">Sem dados de vizinhos em {year}.</li>}
+        {peers.length === 0 && <li className="px-2.5 py-6 text-center text-[0.8125rem] text-muted-foreground">Sem dados de vizinhos em {year}.</li>}
       </ol>
     </Panel>
   );

@@ -19,14 +19,20 @@ import { cn } from "@/lib/utils";
 /* ---------- index ---------- */
 
 let indexPromise: Promise<SearchCity[]> | null = null;
+let indexCache: SearchCity[] | null = null;
 function loadIndex(): Promise<SearchCity[]> {
   indexPromise ??= loadCityIndex()
-    .then((rows) => rows.map(toSearchCity))
+    .then((rows) => (indexCache = rows.map(toSearchCity)))
     .catch((e: unknown) => {
       indexPromise = null; // allow retry
       throw e;
     });
   return indexPromise;
+}
+
+/** Start downloading the municipality index before the dialog opens (on intent). */
+export function warmIndex() {
+  loadIndex().catch(() => {});
 }
 
 type IndexState = { status: "loading" | "error" } | { status: "ready"; cities: SearchCity[] };
@@ -96,7 +102,7 @@ function Row({ o, onSelect, recent }: { o: Option; onSelect: (o: Option) => void
 }
 
 const LIMIT = 8;
-const LIMIT_ALL = 100;
+const LIMIT_ALL = 400;
 const MORE_ID = "more:all";
 
 /** Consecutive runs of the same kind (territories vs municipalities), each rendered as its own group. */
@@ -117,7 +123,8 @@ export default function SearchPaletteDialog({ open, onOpenChange }: { open: bool
   const [value, setValue] = useState("");
   const [expanded, setExpanded] = useState(false);
   const [recent] = useState<Option[]>(readRecent);
-  const [index, setIndex] = useState<IndexState>({ status: "loading" });
+  // warm index (preloaded on intent): results are available on the very first render
+  const [index, setIndex] = useState<IndexState>(() => (indexCache ? { status: "ready", cities: indexCache } : { status: "loading" }));
   const inputRef = useRef<HTMLInputElement>(null);
 
   const load = useCallback(() => {
@@ -252,7 +259,24 @@ export default function SearchPaletteDialog({ open, onOpenChange }: { open: bool
                 {hidden > 0 && (
                   <p className="px-3 pt-1 pb-2 text-[13px] text-muted-foreground">
                     {expanded ? `Mostrando ${int(result.items.length)} de ${int(result.total)}. ` : `+${int(hidden)} ${hidden === 1 ? "resultado" : "resultados"}. `}
-                    Para achar mais rápido, digite também o estado, como “{query.trim()} pi”.
+                    Para achar mais rápido, digite também o estado, como “{query.trim()} pi”
+                    {expanded && (
+                      <>
+                        , ou{" "}
+                        <a
+                          href={`/explorar?q=${encodeURIComponent(query.trim())}`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            onOpenChange(false);
+                            router.push(`/explorar?q=${encodeURIComponent(query.trim())}`);
+                          }}
+                          className="font-medium text-brand-ink underline underline-offset-2"
+                        >
+                          veja todos na tabela do Explorar
+                        </a>
+                      </>
+                    )}
+                    .
                   </p>
                 )}
               </>

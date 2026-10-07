@@ -32,8 +32,8 @@ console.log("h1 accessible:", await p.locator("h1").evaluate(e => e.innerText));
 // touch watch
 const t = await b.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
 const tp = await t.newPage(); await tp.goto(base + "/sp/santo-andre", { waitUntil: "networkidle" });
-await tp.getByRole("button", { name: /Acompanhar/ }).tap(); await tp.waitForTimeout(300);
-console.log("watch icon after tap:", await tp.getByRole("button", { name: /Acompanhando/ }).locator("svg").getAttribute("class"));
+await tp.getByRole("button", { name: /^Salvar/ }).tap(); await tp.waitForTimeout(300);
+console.log("watch icon after tap:", await tp.getByRole("button", { name: /^Salvo/ }).locator("svg").getAttribute("class"));
 await tp.locator(".recharts-surface").first().tap({ position: { x: 150, y: 80 } }); await tp.waitForTimeout(200);
 console.log("focused outline:", await tp.evaluate(() => { const a = document.activeElement; return a?.tagName + " " + getComputedStyle(a).outlineStyle; }));
 console.log("errors:", errs);

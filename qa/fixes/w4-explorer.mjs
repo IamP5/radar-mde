@@ -12,8 +12,8 @@ await page.goto(`${BASE}/explorar?ano=2021&uf=SP`, { waitUntil: "networkidle" })
 await page.waitForSelector("tbody tr[aria-rowindex]");
 // Situação = Abaixo de 25%
 await page.getByRole("combobox", { name: /Situação em 2021/ }).click();
-await page.getByRole("option", { name: /Abaixo de 25%/ }).click();
-await page.getByRole("button", { name: /Reincidentes/ }).click();
+await page.getByRole("option", { name: /^Abaixo de 25% \d/ }).click();
+await page.getByRole("combobox", { name: /Reincidência/ }).click(); await page.getByRole("option", { name: /^2\+ anos abaixo de 25%/ }).click();
 await page.getByRole("button", { name: /Faltou/ }).click(); // sort by Faltou desc
 await page.fill("input[aria-label='Buscar município pelo nome']", "santa barbara d’oeste");
 await page.waitForTimeout(500);

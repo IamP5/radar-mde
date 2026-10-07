@@ -5,10 +5,10 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useWatchlist } from "@/lib/watchlist";
 
-/** `id` is "uf/slug". Saved in this browser only (see /acompanhar). */
+/** `id` is "uf/slug". Saved in this browser only (see /acompanhar, "Municípios salvos"). */
 export default function WatchButton({ id }: { id: string }) {
   const [list, toggle] = useWatchlist();
-  // hover preview ("deixar de acompanhar") only for a real mouse: on touch, pointerenter fires on tap and never leaves
+  // hover preview ("remover") only for a real mouse: on touch, pointerenter fires on tap and never leaves
   const [hover, setHover] = useState(false);
   const [note, setNote] = useState("");
   const on = list.includes(id);
@@ -24,12 +24,12 @@ export default function WatchButton({ id }: { id: string }) {
         onClick={() => {
           toggle(id);
           setHover(false);
-          setNote(on ? "Removido da sua lista de acompanhamento." : "Salvo em Acompanhar (só neste navegador).");
+          setNote(on ? "Removido dos municípios salvos." : "Salvo em Municípios salvos (só neste navegador).");
         }}
         onPointerEnter={(e) => e.pointerType === "mouse" && setHover(true)}
         onPointerLeave={() => setHover(false)}
         aria-pressed={on}
-        title={on ? "Deixar de acompanhar (salvo só neste navegador)" : "Acompanhar este município (salvo só neste navegador)"}
+        title={on ? "Remover dos salvos (salvo só neste navegador)" : "Salvar este município para ver depois (só neste navegador)"}
         className={on ? "text-foreground print:hidden" : "print:hidden"}
       >
         {on && hover ? (
@@ -37,7 +37,7 @@ export default function WatchButton({ id }: { id: string }) {
         ) : (
           <Star className={on ? "fill-warning text-warning" : "text-muted-foreground"} />
         )}
-        {on ? "Acompanhando" : "Acompanhar"}
+        {on ? (hover ? "Remover" : "Salvo") : "Salvar"}
       </Button>
       <span className="sr-only" role="status" aria-live="polite">
         {note}

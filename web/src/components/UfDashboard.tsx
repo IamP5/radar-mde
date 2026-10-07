@@ -1,5 +1,6 @@
 "use client";
 
+import { DeficitPanel } from "./territory/DeficitPanel";
 import { ArrowDown, ArrowRight, ArrowUp, ChevronsUpDown, Info, Search, TriangleAlert, X } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useDeferredValue, useEffect, useMemo, useState, type ReactNode } from "react";
@@ -17,13 +18,16 @@ import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { BINS, METRICS, binColor, colorOf, funBins, isBelowBin, quintileBins, type Bin, type MetricKey } from "@/lib/bins";
-import { MDE_MIN, PANDEMIC_YEARS, POP_BANDS, brlShort, funMin, int, isAtypical, normKey, pct, share } from "@/lib/format";
+import { ChartActions } from "@/components/kit/chart-actions";
+import { BINS, METRICS, binColor, colorOf, funBins, histCounts, histLabel, isBelowBin, quintileBins, type Bin, type MetricKey } from "@/lib/bins";
+import { MDE_MIN, PANDEMIC_YEARS, POP_BANDS, brlShort, funMin, int, normKey, pct, share } from "@/lib/format";
 import { cityPath, getRegion, getUf, ofUf, type RegionKey } from "@/lib/geo";
-import { belowShare, isAtip, shortfallLabel, timesBelow, type Deficit, type Row, type Stats } from "@/lib/rows";
+import { atipNote, atipOf, belowShare, isAtip, isImplausible, shortfallKnown, shortfallLabel, timesBelow, type Deficit, type Row, type Stats } from "@/lib/rows";
 import { cn } from "@/lib/utils";
 import { fromColumns, type Columns } from "./territory/pack";
 import { ShortfallInfo } from "./territory/InfoTip";
+import { delta, fmtPct0, fmtPp, relChange } from "./territory/delta";
+import { UfTableExport } from "./territory/UfTableExport";
 
 type Props = {
   uf: string;
@@ -37,23 +41,38 @@ type Props = {
   /** state government's own MDE % and Fundeb % per year */
   gov: { mde: (number | null)[]; fun: (number | null)[] };
   deficits: Deficit[];
+  /** same ranking by the IPCA-corrected balance */
+  deficitsReal: Deficit[];
 };
 
 type SortKey = "name" | "pop" | "mde" | "fun" | "short" | "reinc" | "aluno";
-type StatusFilter = "all" | "below" | "edge" | "ok" | "nd" | "nodata" | "fun" | "div";
-type ReincFilter = "all" | "2" | "2x" | "3" | "5";
-const STATUSES: StatusFilter[] = ["all", "below", "edge", "ok", "nd", "nodata", "fun", "div"];
-const REINCS: Record<ReincFilter, string> = {
-  all: "Qualquer histórico",
-  "2": "2+ anos abaixo de 25%",
-  "2x": "2+ anos fora de 2020–21",
-  "3": "3+ anos abaixo de 25%",
-  "5": "5+ anos abaixo de 25%",
+type StatusFilter = "all" | "below" | "edge" | "ok" | "nd" | "nodata" | "fun" | "both" | "div";
+type ReincFilter = "all" | "2" | "2x" | "3" | "5" | "u5" | "s2" | "s3";
+const STATUSES: StatusFilter[] = ["all", "below", "edge", "ok", "nd", "nodata", "fun", "both", "div"];
+/** Recurrence screens (GOV-10): total count, outside the pandemic years, within a recent window, or in a row. */
+const REINC: Record<ReincFilter, { label: string; min: number; col: string }> = {
+  all: { label: "Qualquer histórico", min: 0, col: "Anos < 25%" },
+  "2": { label: "2+ anos abaixo de 25%", min: 2, col: "Anos < 25%" },
+  "3": { label: "3+ anos abaixo de 25%", min: 3, col: "Anos < 25%" },
+  "5": { label: "5+ anos abaixo de 25%", min: 5, col: "Anos < 25%" },
+  "2x": { label: "2+ anos fora de 2020–21", min: 2, col: "Anos < 25% (fora 2020–21)" },
+  u5: { label: "2+ nos últimos 5 anos", min: 2, col: "Abaixo nos últimos 5" },
+  s2: { label: "2+ anos seguidos", min: 2, col: "Anos seguidos < 25%" },
+  s3: { label: "3+ anos seguidos", min: 3, col: "Anos seguidos < 25%" },
+};
+const REINCS = Object.fromEntries(Object.entries(REINC).map(([k, v]) => [k, v.label])) as Record<ReincFilter, string>;
+/** Longest run of consecutive years below 25% up to index `upTo`. */
+const longestRun = (r: Row, upTo: number) => {
+  let best = 0, cur = 0;
+  for (let i = 0; i <= upTo; i++) {
+    const v = r.mde[i];
+    cur = v != null && v < MDE_MIN ? cur + 1 : 0;
+    best = Math.max(best, cur);
+  }
+  return best;
 };
 const SORTS: SortKey[] = ["name", "pop", "mde", "fun", "short", "reinc", "aluno"];
 const belowKeys = (b: Bin) => /^(b1|b2|f1|f2)$/.test(b.key);
-/** "…, 2021, 2022, 2023, 2025": the most recent years, ellipsis in front when older ones are omitted. */
-const lastYears = (ys: number[]) => `${ys.length > 4 ? "…, " : ""}${ys.slice(-4).join(", ")}`;
 /** Years below 25%, optionally ignoring the pandemic years covered by EC 119/2022. */
 const yearsBelowOf = (r: Row, skipPandemic: boolean, years: number[]) =>
   r.mde.reduce<number>((n, v, i) => n + (v != null && v < MDE_MIN && !(skipPandemic && PANDEMIC_YEARS.has(years[i])) ? 1 : 0), 0);
@@ -72,7 +91,7 @@ function rowStatus(r: Row, yi: number, year: number): { kind: StatusKind; label:
   return { kind: "ok", label: "Cumpre" };
 }
 
-export default function UfDashboard({ uf, years, initialYear, rows: packed, stats, regionStats, brStats, gov, deficits }: Props) {
+export default function UfDashboard({ uf, years, initialYear, rows: packed, stats, regionStats, brStats, gov, deficits, deficitsReal }: Props) {
   const rows = useMemo(() => fromColumns(packed), [packed]);
   const [yearNow, setYear] = useYear(years, initialYear);
   // the picker answers at once; the dashboard (charts, map, tables) follows as a low-priority render (INP)
@@ -126,6 +145,12 @@ export default function UfDashboard({ uf, years, initialYear, rows: packed, stat
   const byId = useMemo(() => new Map(rows.map((r) => [r.id, r])), [rows]);
   const reinc = useMemo(() => new Map(rows.map((r) => [r.id, timesBelow(r)])), [rows]);
   const reincX = useMemo(() => new Map(rows.map((r) => [r.id, yearsBelowOf(r, true, years)])), [rows, years]);
+  // windowed / consecutive counts end at the selected year ("nos últimos 5 anos até 2021")
+  const recCount = useMemo(() => {
+    if (rec === "u5") return new Map(rows.map((r) => [r.id, r.mde.slice(Math.max(0, yi - 4), yi + 1).filter((v) => v != null && v < MDE_MIN).length]));
+    if (rec === "s2" || rec === "s3") return new Map(rows.map((r) => [r.id, longestRun(r, yi)]));
+    return rec === "2x" ? reincX : reinc;
+  }, [rec, rows, yi, reinc, reincX]);
 
   const perYear = useMemo(() => stats.map((st, i) => ({ year: years[i], below: st.below, reported: st.reported, nd: st.nd })), [stats, years]);
 
@@ -147,10 +172,7 @@ export default function UfDashboard({ uf, years, initialYear, rows: packed, stat
     const b = POP_BANDS.find((x) => x.key === band);
     const out = rows.filter((r) => {
       if (nq && !normKey(r.name).includes(nq)) return false;
-      if (rec !== "all") {
-        const n = rec === "2x" ? reincX.get(r.id) ?? 0 : reinc.get(r.id) ?? 0;
-        if (n < (rec === "2x" ? 2 : Number(rec))) return false;
-      }
+      if (rec !== "all" && (recCount.get(r.id) ?? 0) < REINC[rec].min) return false;
       if (inter !== "all" && r.inter !== inter) return false;
       if (b && !b.test(r.pop)) return false;
       const v = r.mde[yi];
@@ -161,6 +183,7 @@ export default function UfDashboard({ uf, years, initialYear, rows: packed, stat
         case "nd": return r.nd[yi];
         case "nodata": return v == null && !r.nd[yi];
         case "fun": return r.fun[yi] != null && r.fun[yi]! < funMin(year);
+        case "both": return v != null && v < MDE_MIN && r.fun[yi] != null && r.fun[yi]! < funMin(year);
         case "div": return r.alt?.[yi] != null;
       }
       return true;
@@ -172,7 +195,7 @@ export default function UfDashboard({ uf, years, initialYear, rows: packed, stat
         case "mde": return r.mde[yi];
         case "fun": return r.fun[yi];
         case "short": return r.short[yi];
-        case "reinc": return reinc.get(r.id) ?? 0;
+        case "reinc": return recCount.get(r.id) ?? 0;
         case "aluno": return r.aluno[yi];
       }
     };
@@ -183,7 +206,7 @@ export default function UfDashboard({ uf, years, initialYear, rows: packed, stat
       if (vb == null) return -1;
       return (va < vb ? -1 : va > vb ? 1 : 0) * sort.dir;
     });
-  }, [rows, q, inter, band, status, rec, sort, yi, year, reinc, reincX]);
+  }, [rows, q, inter, band, status, rec, sort, yi, year, recCount]);
 
   const filtering = q !== "" || inter !== "all" || band !== "all" || status !== "all" || rec !== "all";
   const reset = () => { setQ(""); setInter("all"); setBand("all"); setStatus("all"); setRec("all"); setLimit(PAGE); };
@@ -209,7 +232,11 @@ export default function UfDashboard({ uf, years, initialYear, rows: packed, stat
     );
   };
 
-  const dBelow = prev ? s.below - prev.below : null;
+  const pv = years[yi - 1];
+  // fewer below is only "good" when it isn't because more municipalities stopped declaring (GOV-11)
+  const dBelow = delta(prev ? s.below - prev.below : null, int, "bad", pv, !!prev && s.below < prev.below && s.nd > prev.nd);
+  const dShort = delta(prev ? relChange(shortfallKnown(s), shortfallKnown(prev)) : null, fmtPct0, "bad", pv);
+  const dMedian = delta(prev && s.median != null && prev.median != null ? Math.round((s.median - prev.median) * 10) / 10 : null, fmtPp, "good", pv);
   const govV = gov.mde[yi];
   const dist = rows.map((r) => r.mde[yi]).filter((v): v is number => v != null);
   const biggest = rows.reduce((a, b) => (b.pop > a.pop ? b : a), rows[0]);
@@ -293,28 +320,31 @@ export default function UfDashboard({ uf, years, initialYear, rows: packed, stat
               </>
             }
             tone={s.below ? "bad" : "neutral"}
-            delta={dBelow != null ? (dBelow === 0 ? `= ${years[yi - 1]}` : `${dBelow > 0 ? "+" : "−"}${Math.abs(dBelow)} vs ${years[yi - 1]}`) : undefined}
-            // fewer below is only "good" when it isn't because more municipalities stopped declaring (GOV-11)
-            deltaTone={dBelow == null || dBelow === 0 ? "neutral" : dBelow > 0 ? "bad" : prev && s.nd > prev.nd ? "neutral" : "good"}
+            delta={dBelow.node}
+            deltaTone={dBelow.tone}
             context={`${region.name}: ${pct1(belowShare(regionStats[yi]))} · Brasil: ${pct1(belowShare(brStats[yi]))}`}
           />
           <Stat
             label={
               <span className="inline-flex items-center gap-1">
                 Faltou aplicar (estimativa)
-                <ShortfallInfo />
+                <ShortfallInfo atypical={s.shortfallAtip > 0 ? brlShort(s.shortfallAtip) : null} />
               </span>
             }
             value={shortfallLabel(s).value}
-            sub={
-              <>
-                {shortfallLabel(s).note ?? `em ${year}, valores declarados e nominais`}
-                {s.shortfallAtip > 0 && <span className="block">dos quais {brlShort(s.shortfallAtip)} de valores atípicos</span>}
-              </>
-            }
+            sub={shortfallLabel(s).note ?? `em ${year}, valores declarados e nominais`}
             tone={s.shortfall ? "bad" : "neutral"}
+            delta={dShort.node}
+            deltaTone={dShort.tone}
           />
-          <Stat label="Mediana aplicada" value={pct(s.median)} sub={`metade entre ${pct(s.p25, 1)} e ${pct(s.p75, 1)}`} context={`Brasil: ${pct(brStats[yi].median)}`} />
+          <Stat
+            label="Mediana aplicada"
+            value={pct(s.median)}
+            sub={`metade entre ${pct(s.p25, 1)} e ${pct(s.p75, 1)}`}
+            delta={dMedian.node}
+            deltaTone={dMedian.tone}
+            context={`Brasil: ${pct(brStats[yi].median)}`}
+          />
           <Stat
             label="Mediana por aluno"
             value={s.alunoMedian ? `R$ ${int(Math.round(s.alunoMedian))}` : "—"}
@@ -337,14 +367,32 @@ export default function UfDashboard({ uf, years, initialYear, rows: packed, stat
             title={`Mapa de ${year}`}
             description="Toque ou passe o mouse para ver o valor; toque de novo ou clique para abrir o município."
             action={
+              <span className="flex items-center gap-2">
+                <ChartActions
+                  title={`${info.name}: ${m.label}, ${year}`}
+                  filename={[uf, "mapa", metric, year]}
+                  svgSelector="svg[role=img], svg[role=group]"
+                  note={metric === "aluno" ? "Valores nominais" : undefined}
+                  csv={{
+                    columns: ["ibge", "municipio", "uf", "ano", metric === "mde" ? "mde_pct" : metric === "fun" ? "fundeb_pessoal_pct" : "por_aluno_rs", "nao_declarou"],
+                    rows: rows.map((r) => ({
+                      ibge: r.id, municipio: r.name, uf: r.uf, ano: year,
+                      [metric === "mde" ? "mde_pct" : metric === "fun" ? "fundeb_pessoal_pct" : "por_aluno_rs"]: r[metric][yi],
+                      nao_declarou: r.nd[yi] ? 1 : 0,
+                    })),
+                  }}
+                />
+              </span>
+            }
+          >
+            <div className="mb-3">
               <Segmented
                 ariaLabel="Indicador do mapa"
                 value={metric}
                 onChange={setMetric}
                 options={METRICS.map((x) => ({ value: x.key, label: x.key === "mde" ? "MDE" : x.key === "fun" ? "Fundeb" : "Por aluno", title: x.label }))}
               />
-            }
-          >
+            </div>
             <Choropleth
               src={uf}
               layer="mun"
@@ -364,7 +412,9 @@ export default function UfDashboard({ uf, years, initialYear, rows: packed, stat
                     <div className="text-base font-semibold tnum">
                       {metric === "mde" && r.nd[yi] ? <span className="text-critical">Não declarou</span> : v == null ? (r.since != null && year < r.since ? "Não existia" : "Sem dados") : m.fmt(v)}
                     </div>
-                    {metric !== "fun" && (isAtip(r, yi, metric === "aluno" ? "aluno" : "mde") || (metric === "mde" && isAtypical(v))) && <div className="text-xs text-warning-ink">Valor atípico: possível erro de preenchimento</div>}
+                    {metric !== "fun" && isAtip(r, yi, metric === "aluno" ? "aluno" : "mde") && (
+                      <div className="text-xs text-warning-ink">{atipNote([metric === "aluno" ? "aluno" : "mde"], isImplausible(r, yi))}</div>
+                    )}
                     <div className="text-muted-foreground">{r.name}</div>
                     <div className="text-xs text-muted-foreground tnum">{int(r.pop)} hab. · {r.inter}</div>
                   </>
@@ -373,7 +423,7 @@ export default function UfDashboard({ uf, years, initialYear, rows: packed, stat
             />
             <Legend title={m.label} bins={bins} nd={metric === "mde"} outlined={metric === "aluno" ? undefined : belowKeys} />
             <p className="mt-3 text-xs text-muted-foreground">
-              {metric !== "aluno" && "Contorno escuro: abaixo do mínimo legal. "}
+              {metric !== "aluno" && "Contorno vermelho (com ponto nos menores): abaixo do mínimo legal. "}
               Os mesmos números em tabela:{" "}
               <a href="#municipios" className="font-medium text-brand-ink underline-offset-2 hover:underline">
                 todos os municípios
@@ -381,11 +431,32 @@ export default function UfDashboard({ uf, years, initialYear, rows: packed, stat
             </p>
           </Panel>
           <div className="flex min-w-0 flex-col gap-6 lg:col-span-2">
-            <Panel title="Municípios abaixo dos 25%, por ano" description="Toque ou clique numa barra para mudar o exercício.">
+            <Panel
+              title="Municípios abaixo dos 25%, por ano"
+              description="Toque ou clique numa barra para mudar o exercício."
+              action={
+                <ChartActions
+                  title={`Municípios ${ofUf(uf)} abaixo de 25% em MDE, por ano`}
+                  filename={[uf, "abaixo-por-ano"]}
+                  csv={{ columns: ["ano", "abaixo_25", "declararam", "nao_declararam"], rows: perYear.map((p) => ({ ano: p.year, abaixo_25: p.below, declararam: p.reported, nao_declararam: p.nd })) }}
+                />
+              }
+            >
               <YearBars data={perYear} selected={year} onSelect={setYear} />
             </Panel>
-            <Panel title={`Distribuição em ${year}`} description="Quantos municípios aplicaram cada percentual em MDE.">
-              <Histogram values={dist} width={420} height={210} ariaLabel={`Distribuição do percentual aplicado em MDE ${ofUf(uf)}, ${year}`} />
+            <Panel
+              title={`Distribuição em ${year}`}
+              description="Quantos municípios aplicaram cada percentual em MDE."
+              action={
+                <ChartActions
+                  title={`Distribuição do % aplicado em MDE, ${info.name}, ${year}`}
+                  filename={[uf, "distribuicao", year]}
+                  svgSelector=".recharts-surface"
+                  csv={{ columns: ["faixa_mde", "municipios"], rows: histCounts(dist).map((n, i) => ({ faixa_mde: histLabel(i), municipios: n })) }}
+                />
+              }
+            >
+              <Histogram values={dist} height={250} ariaLabel={`Distribuição do percentual aplicado em MDE ${ofUf(uf)}, ${year}`} />
             </Panel>
           </div>
         </section>
@@ -395,6 +466,20 @@ export default function UfDashboard({ uf, years, initialYear, rows: packed, stat
             className="lg:col-span-2"
             title={`${info.name} frente à região e ao país`}
             description="% dos municípios que declararam e ficaram abaixo de 25%. Toque ou clique num ano para atualizar o painel."
+            action={
+              <ChartActions
+                title={`% de municípios abaixo de 25%: ${info.name}, região ${region.name} e Brasil, ${years[0]}–${years[years.length - 1]}`}
+                filename={[uf, "evolucao"]}
+                svgSelector=".recharts-surface"
+                csv={{
+                  columns: ["ano", info.name, region.name, "Brasil"],
+                  rows: years.map((y, i) => {
+                    const r2 = (v: number | null) => (v == null ? null : Math.round(v * 100) / 100);
+                    return { ano: y, [info.name]: r2(belowShare(stats[i])), [region.name]: r2(belowShare(regionStats[i])), Brasil: r2(belowShare(brStats[i])) };
+                  }),
+                }}
+              />
+            }
           >
             <MultiLine
               years={years}
@@ -409,29 +494,7 @@ export default function UfDashboard({ uf, years, initialYear, rows: packed, stat
               ]}
             />
           </Panel>
-          <Panel
-            title={`Maiores déficits acumulados até ${years[years.length - 1]}`}
-            description={`Estimativa de ${years[0]} a ${years[years.length - 1]}, descontado o que foi aplicado a mais depois (valores nominais). Não muda com o ano escolhido.`}
-            divided
-          >
-            <ol className="scroll-thin fade-b max-h-[22rem] overflow-y-auto p-1.5 pb-6 text-sm">
-              {deficits.map((d, i) => (
-                <li key={d.id}>
-                  <Link href={withYear(cityPath(d.uf, d.slug), year, initialYear)} className="flex items-center gap-3 rounded-md px-2.5 py-2 transition-colors duration-150 hover:bg-accent/60">
-                    <span className="w-5 shrink-0 text-right font-mono text-xs text-muted-foreground tnum">{i + 1}</span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate font-medium">{d.name}</span>
-                      <span className="block truncate text-xs text-muted-foreground" title={d.below.join(", ")}>
-                        {d.below.length} {d.below.length === 1 ? "ano" : "anos"} abaixo: {lastYears(d.below)}
-                      </span>
-                    </span>
-                    <span className="shrink-0 font-medium text-critical tnum">{brlShort(d.carry)}</span>
-                  </Link>
-                </li>
-              ))}
-              {deficits.length === 0 && <li className="px-2.5 py-6 text-center text-[13px] text-muted-foreground">Nenhum município com déficit acumulado.</li>}
-            </ol>
-          </Panel>
+          <DeficitPanel nominal={deficits} real={deficitsReal} years={years} year={year} initialYear={initialYear} compact />
         </section>
 
         <Panel
@@ -483,13 +546,14 @@ export default function UfDashboard({ uf, years, initialYear, rows: packed, stat
                 edge: "No limite (25–26%)",
                 ok: "26% ou mais",
                 fun: "Fundeb abaixo do mínimo",
+                both: "MDE e Fundeb abaixo do mínimo",
                 nd: "Não declarou",
                 nodata: "Sem dados",
                 ...(hasAlt ? { div: "SIOPE ≠ Tesouro" } : {}),
               }}
             />
             <FilterSelect
-              label="Reincidência (anos abaixo de 25%, 2008–2025)"
+              label={`Reincidência (anos abaixo de 25%; janelas e sequências até ${year})`}
               value={rec}
               onChange={(v) => { setRec(v as ReincFilter); setLimit(PAGE); }}
               items={REINCS}
@@ -499,8 +563,23 @@ export default function UfDashboard({ uf, years, initialYear, rows: packed, stat
                 <X /> Limpar
               </Button>
             )}
-            <div className="ml-auto text-[13px] text-muted-foreground tnum" role="status" aria-live="polite">
+            <div className="ml-auto flex items-center gap-3">
+            <UfTableExport
+              uf={uf}
+              rows={filtered}
+              years={years}
+              year={year}
+              nameParts={[
+                status !== "all" && status,
+                band !== "all" && POP_BANDS.find((b) => b.key === band)?.label,
+                inter !== "all" && normKey(inter).replace(/ /g, "-"),
+                rec !== "all" && `reinc-${rec}`,
+                q.trim() && normKey(q).replace(/ /g, "-"),
+              ]}
+            />
+            <div className="text-[13px] text-muted-foreground tnum" role="status" aria-live="polite">
               {filtered.length === rows.length ? `${int(rows.length)} municípios` : `${int(filtered.length)} de ${int(rows.length)}`}
+            </div>
             </div>
           </div>
 
@@ -525,7 +604,7 @@ export default function UfDashboard({ uf, years, initialYear, rows: packed, stat
                     {th("fun", "Fundeb pessoal", true)}
                     {th("aluno", "R$ por aluno", true)}
                     {th("short", "Faltou", true)}
-                    {th("reinc", rec === "2x" ? "Anos < 25% (fora 2020–21)" : "Anos < 25%", true, "pr-4 sm:pr-5")}
+                    {th("reinc", REINC[rec].col, true, "pr-4 sm:pr-5")}
                   </TableRow>
                 </TableHeader>
                 <TableBody className="tnum">
@@ -545,8 +624,8 @@ export default function UfDashboard({ uf, years, initialYear, rows: packed, stat
                         <TableCell className="hidden px-3 text-right text-muted-foreground sm:table-cell">{int(r.pop)}</TableCell>
                         <TableCell className="px-3 text-right">
                           <span className="inline-flex items-center justify-end gap-1.5">
-                            {(isAtip(r, yi) || isAtypical(v)) && (
-                              <Hint label="Valor atípico: possível erro de preenchimento, confira na fonte">
+                            {isAtip(r, yi, "mde") && (
+                              <Hint label={atipNote(atipOf(r, yi), isImplausible(r, yi))}>
                                 <TriangleAlert className="size-3.5 text-warning" />
                               </Hint>
                             )}
@@ -572,7 +651,7 @@ export default function UfDashboard({ uf, years, initialYear, rows: packed, stat
                           ) : fmtBrl(r.short[yi]!)}
                         </TableCell>
                         <TableCell className="pr-4 pl-3 text-right sm:pr-5">
-                          {(rec === "2x" ? reincX : reinc).get(r.id) || <span className="text-muted-foreground">0</span>}
+                          {recCount.get(r.id) || <span className="text-muted-foreground">0</span>}
                         </TableCell>
                       </TableRow>
                     );
@@ -626,7 +705,7 @@ function FilterSelect({
 function Hint({ label, children }: { label: string; children: ReactNode }) {
   return (
     <Tooltip>
-      <TooltipTrigger render={<span tabIndex={0} aria-label={label} className="inline-flex cursor-help items-center" />}>{children}</TooltipTrigger>
+      <TooltipTrigger render={<span role="img" tabIndex={0} aria-label={label} className="-m-1 inline-flex min-h-6 min-w-6 cursor-help items-center justify-center p-1" />}>{children}</TooltipTrigger>
       <TooltipContent>{label}</TooltipContent>
     </Tooltip>
   );

@@ -3,6 +3,7 @@ import {
   type City,
   type CityYear,
   existedIn,
+  IPCA_BASE,
   MDE_MIN,
   PANDEMIC_YEARS,
   YEARS,
@@ -10,7 +11,6 @@ import {
   deficitTrail,
   fundebLeftMax,
   funMin,
-  isAtypical,
   pct,
   shortfall,
   yearsBelow,
@@ -55,7 +55,12 @@ export function cityFacts(c: City) {
   const notDelivered = existing.filter((y) => rec(c, y)?.s === "nd");
   const below = yearsBelow(c);
   const belowPandemic = below.filter((y) => PANDEMIC_YEARS.has(y));
-  const atypMde = reported.filter((y) => isAtypical(rec(c, y)!.mde) || rec(c, y)?.atip?.includes("mde"));
+  // flags come from the data build (outlier against the municipality's own history, or implausible); persistent
+  // low application is real under-application and is never flagged
+  const atypMde = reported.filter((y) => rec(c, y)?.atip?.includes("mde"));
+  // physically implausible (MDE < 5% or > 60%): the only case where "erro de declaração" may be said
+  const atypImpl = atypMde.filter((y) => rec(c, y)?.atipImpl === 1);
+  const atypAluno = existing.filter((y) => rec(c, y)?.atip?.includes("aluno"));
   const atypBase = reported.filter((y) => rec(c, y)?.atip?.includes("base"));
   const funBelow = existing
     .filter((y) => rec(c, y)?.fun != null && rec(c, y)!.fun! < funMin(y))
@@ -67,9 +72,11 @@ export function cityFacts(c: City) {
   const edge = reported.filter((y) => rec(c, y)!.mde! >= MDE_MIN && rec(c, y)!.mde! < MDE_MIN + 1);
   const trail = deficitTrail(c);
   const carry = trail[trail.length - 1].carry;
+  const carryReal = trail[trail.length - 1].carryReal;
   const belowNoBase = below.filter((y) => rec(c, y)?.base == null);
-  // the R$ estimate leans on a year whose % or revenue base looks like a filing error
-  const carryShaky = carry > 0 && below.some((y) => atypMde.includes(y) || atypBase.includes(y));
+  // the R$ estimate leans on a year whose % or revenue base is out of the municipality's pattern
+  const shakyYears = below.filter((y) => atypMde.includes(y) || atypBase.includes(y));
+  const carryShaky = carry > 0 && shakyYears.length > 0;
   const last = reported[reported.length - 1] ?? null;
   // years after the last declared one with nothing sent (CIT-10: a city that stopped declaring)
   const stopped = last == null ? notDelivered : notDelivered.filter((y) => y > last);
@@ -92,7 +99,7 @@ export function cityFacts(c: City) {
 
   return {
     existing, reported, notDelivered, below, belowPandemic, seriousBelow, atypMde, atypBase, funBelow, funLeft, diverge, edge,
-    carry, carryShaky, belowNoBase, last, stopped, sources, pandemic, since: c.since,
+    atypAluno, atypImpl, carry, carryReal, carryShaky, shakyYears, belowNoBase, last, stopped, sources, pandemic, since: c.since,
   };
 }
 export type CityFacts = ReturnType<typeof cityFacts>;
@@ -143,7 +150,7 @@ export function buildTemplates(c: City): Template[] {
     if (f.notDelivered.length) ctx.push(`Não há registro de envio desses dados aos sistemas federais ${exercicios(f.notDelivered)}.`);
     if (f.atypMde.length)
       ctx.push(
-        `O percentual declarado ${exercicios(f.atypMde)} (${f.atypMde.map((y) => pct(rec(c, y)!.mde)).join("; ")}) está muito fora da faixa usual e pode conter erro de preenchimento; solicita-se sua confirmação ou retificação.`,
+        `O percentual declarado ${exercicios(f.atypMde)} (${f.atypMde.map((y) => pct(rec(c, y)!.mde)).join("; ")}) ${f.atypImpl.length === f.atypMde.length ? "é implausível e provavelmente contém erro de declaração" : "destoa do padrão dos demais anos do município"}; solicita-se sua confirmação ou retificação.`,
       );
     if (f.pandemic) {
       ctx.push(
@@ -157,7 +164,7 @@ export function buildTemplates(c: City): Template[] {
     }
     if (f.carry > 0)
       ctx.push(
-        `Por estimativa feita a partir desses dados (valores nominais, sem correção pela inflação), o valor aplicado a menos e ainda não compensado em anos posteriores soma cerca de ${brlShort(f.carry)}${f.carryShaky ? "; esse número depende de valores declarados atípicos e deve ser confirmado" : ""}.`,
+        `Por estimativa feita a partir desses dados, o valor aplicado a menos e ainda não compensado em anos posteriores soma cerca de ${brlShort(f.carry)} em valores da época (cerca de ${brlShort(f.carryReal)} em valores de ${IPCA_BASE}, corrigidos pelo IPCA)${f.carryShaky ? "; esse número depende de valores declarados fora do padrão e deve ser confirmado" : ""}.`,
       );
   }
   if (f.funBelow.length)
@@ -179,7 +186,7 @@ export function buildTemplates(c: City): Template[] {
       if (r?.s === "nd") return `  • ${y}: não declarou`;
       if (r?.mde == null) return `  • ${y}: sem dados`;
       const notes = [
-        f.atypMde.includes(y) ? "valor atípico — confirmar" : null,
+        f.atypMde.includes(y) ? "valor fora do padrão — confirmar" : null,
         PANDEMIC_YEARS.has(y) && r.mde < MDE_MIN ? "EC 119/2022" : null,
       ].filter(Boolean);
       return `  • ${y}: ${pct(r.mde)}${notes.length ? ` (${notes.join("; ")})` : ""}`;
@@ -205,7 +212,7 @@ export function buildTemplates(c: City): Template[] {
     ec119: f.belowPandemic.length
       ? `a demonstração da aplicação complementar exigida pela EC nº 119/2022 para ${listYears(f.belowPandemic)}, realizada até o exercício de 2023`
       : null,
-    atyp: f.atypMde.length ? `a confirmação ou retificação do percentual de MDE declarado ${exercicios(f.atypMde)}, que está fora da faixa usual` : null,
+    atyp: f.atypMde.length ? `a confirmação ou retificação do percentual de MDE declarado ${exercicios(f.atypMde)}, que destoa dos demais anos` : null,
     fun:
       f.funBelow.length || f.funLeft.length
         ? `o percentual dos recursos do Fundeb destinado à remuneração dos profissionais da educação e o saldo não utilizado em cada exercício, com a memória de cálculo e as medidas adotadas ${exercicios(funYears)}`
@@ -220,8 +227,10 @@ export function buildTemplates(c: City): Template[] {
       .replace(/;$/, ".");
 
   // ---- letters --------------------------------------------------------------------------------
+  // a municipality installed recently can't have "últimos 5 exercícios"
+  const recentTxt = f.existing.length >= 5 ? "nos últimos 5 exercícios" : exercicios(f.existing);
   const laiItems = [
-    "demonstrativo das despesas consideradas em MDE nos últimos 5 exercícios, por subfunção, elemento de despesa e, quando possível, por unidade escolar",
+    `demonstrativo das despesas consideradas em MDE ${recentTxt}, por subfunção, elemento de despesa e, quando possível, por unidade escolar`,
     "relação de contratos, convênios e parcerias com entidades privadas pagos com recursos de MDE/Fundeb, com objeto, valor e vigência",
     "atas e pareceres do Conselho de Acompanhamento e Controle Social do Fundeb (CACS-Fundeb) sobre as prestações de contas desses exercícios",
     "valor repassado diretamente às unidades escolares (Conselhos de Escola/APMs) por ano",
@@ -270,17 +279,17 @@ Atenciosamente,
 
   const cacsName = `Conselho de Acompanhamento e Controle Social do Fundeb ${df ? "do Distrito Federal" : `de ${c.name}`}`;
   const cacsItems = [
-    "análise da série histórica de aplicação em MDE (abaixo)",
+    f.reported.length ? "análise da série histórica de aplicação em MDE (abaixo)" : null,
     f.funBelow.length
       ? `verificação da aplicação mínima dos recursos do Fundeb na remuneração dos profissionais da educação (70% desde 2021, art. 26 da Lei nº 14.113/2020; 60% para o magistério até 2020, Lei nº 11.494/2007) ${exercicios(f.funBelow.map((x) => x.year))}, quando o percentual declarado foi de ${f.funBelow.map((x) => pct(x.value)).join("; ")}`
       : null,
     f.funLeft.length
       ? `verificação do saldo do Fundeb não utilizado no exercício acima do limite legal (até 10% desde 2021, art. 25, § 3º, da Lei nº 14.113/2020; 5% até 2020) ${exercicios(f.funLeft.map((x) => x.year))}, e da aplicação desse saldo no exercício seguinte`
       : null,
-    asks.comp ? `verificação d${asks.comp.slice(1)}` : null,
-    asks.ec119 ? `verificação d${asks.ec119.slice(1)}` : null,
+    asks.comp ? `verificação d${asks.comp}` : null,
+    asks.ec119 ? `verificação d${asks.ec119}` : null,
     f.notDelivered.length ? `cobrança do envio dos dados ao SIOPE ${exercicios(f.notDelivered)}, que não constam nos sistemas federais` : null,
-    asks.atyp ? `pedido d${asks.atyp.slice(1)}` : null,
+    asks.atyp ? `pedido de ${asks.atyp.replace(/^a /, "")}` : null,
     !f.funBelow.length && !f.funLeft.length && !asks.comp ? "verificação da composição das despesas computadas em MDE, especialmente contratos com entidades privadas" : null,
     "solicitação à Secretaria de Educação dos extratos e da relação de despesas pagas com recursos do Fundeb, por unidade escolar",
     "divulgação pública das atas e pareceres do Conselho",
@@ -365,8 +374,12 @@ Sala das Sessões, ___ de __________ de ____.
 
   const checks = [
     `o cumprimento do art. 212 da Constituição Federal${f.reported.length ? ` ${exercicios(f.below.length ? f.below : f.reported)}` : ""}`,
-    f.funBelow.length || f.funLeft.length
-      ? `o cumprimento do art. 212-A da Constituição Federal e da Lei nº 14.113/2020 (Fundeb) ${exercicios(funYears)}`
+    // Fundeb's legal basis changed in 2021: ADCT art. 60 + Lei 11.494/2007 before, CF art. 212-A + Lei 14.113/2020 after
+    funYears.some((y) => y <= 2020)
+      ? `o cumprimento do art. 60 do ADCT e da Lei nº 11.494/2007 (Fundeb) ${exercicios(funYears.filter((y) => y <= 2020))}`
+      : null,
+    funYears.some((y) => y >= 2021)
+      ? `o cumprimento do art. 212-A da Constituição Federal e da Lei nº 14.113/2020 (Fundeb) ${exercicios(funYears.filter((y) => y >= 2021))}`
       : null,
     f.notDelivered.length ? `o envio dos dados obrigatórios ao SIOPE ${exercicios(f.notDelivered)}` : null,
     f.below.length ? `a eventual compensação dos valores não aplicados${f.belowPandemic.length ? ", inclusive a complementação prevista na EC nº 119/2022" : ""}` : null,
@@ -391,7 +404,7 @@ Venho comunicar fatos para apreciação desse órgão.
 
 ${context}${seriesBlock}
 
-Solicito verificar: ${checks.map((x, i) => `(${["i", "ii", "iii", "iv", "v", "vi"][i]}) ${x}`).join("; ")}.
+Solicito verificar: ${checks.map((x, i) => `(${["i", "ii", "iii", "iv", "v", "vi", "vii"][i]}) ${x}`).join("; ")}.
 
 Observação: os dados são públicos e podem ser conferidos no SIOPE (${SIOPE_URL}) e no SICONFI (${SICONFI_URL}), código IBGE ${c.id} (${df ? "Distrito Federal" : `${c.name}, ${ufName}`}). Por serem autodeclarados, podem divergir da apuração desse Tribunal.
 

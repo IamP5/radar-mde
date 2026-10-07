@@ -11,7 +11,7 @@ const IDS = ["brasil", "estados", ...REGIONS.map((r) => `regiao-${r.slug}`), ...
  * Rendered on request and compressed (gzip/br), memoised per process: the Brasil file is ~17 MB raw (PERF-11).
  */
 export async function GET(req: Request, { params }: RouteContext<"/dados/csv/[uf]">) {
-  const { uf: raw } = await params;
+  const raw = (await params).uf.toLowerCase(); // /dados/csv/SP works too (FUN-23)
   if (!IDS.includes(raw.replace(/-excel$/, ""))) return new Response("Not found", { status: 404 });
   return compressed(req, `csv:${raw}`, () => build(raw), {
     "content-type": "text/csv; charset=utf-8",

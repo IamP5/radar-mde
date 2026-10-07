@@ -5,7 +5,7 @@
 import type { City, StateGov } from "./data";
 import { MDE_MIN, PANDEMIC_YEARS, fundebLeftMax } from "./format";
 import { getRegion, getUf } from "./geo";
-import { atipOf, deltaPp, type CityYear, type Row } from "./rows";
+import { IPCA_BASE, atipOf, deltaPp, ipcaFactor, isImplausible, type CityYear, type FinanceRow, type Row } from "./rows";
 
 export type CsvValue = string | number | null | undefined;
 export type CsvRecord = Record<string, CsvValue>;
@@ -39,8 +39,14 @@ export const CSV_COLUMNS: { key: string; label: string }[] = [
   { key: "saude_pct", label: "% aplicado em saúde (SICONFI; só alguns municípios de SP)" },
   { key: "mde_pct_siconfi", label: "% em MDE segundo o Tesouro (SICONFI), quando difere do SIOPE em 1 p.p. ou mais (só SP)" },
   { key: "pandemia_ec119", label: "1 = 2020 ou 2021: a EC 119/2022 dispensa punição se a diferença for compensada até 2023" },
-  { key: "atipico", label: "Valores atípicos, possível erro de declaração: mde (% fora de 18–45) | aluno (por aluno fora do padrão do ente) | base (receita destoa dos anos vizinhos), separados por |" },
+  { key: "atipico", label: "Valores fora do padrão do próprio ente (confirme na fonte), separados por |: mde (% < 5 ou > 60, ou um ano isolado ≥ 10 p.p. distante dos vizinhos e < 15% ou > 40%) | aluno (por aluno fora do padrão do ente ou salto de mais de 2,5× em um ano) | base (receita 2,5× acima/abaixo dos anos vizinhos)" },
+  { key: "atipico_grau", label: "confirmar (fora do padrão, pode ser real) | implausivel (MDE < 5% ou > 60%, ou por aluno > 8× a mediana nacional: provável erro de declaração); vazio = sem marca" },
   { key: "fonte", label: "siope | siconfi: sistema de onde veio o %" },
+  { key: "ipca_fator", label: `Fator do IPCA para levar R$ do ano a R$ de ${IPCA_BASE} (média anual do índice, IBGE/SIDRA tabela 1737)` },
+  { key: "mde_aplicado_rs_real", label: `mde_aplicado_rs em R$ de ${IPCA_BASE} (corrigido pelo IPCA)` },
+  { key: "receita_impostos_rs_real", label: `receita_impostos_rs em R$ de ${IPCA_BASE} (corrigido pelo IPCA)` },
+  { key: "faltou_rs_real", label: `faltou_rs em R$ de ${IPCA_BASE} (corrigido pelo IPCA)` },
+  { key: "por_aluno_rs_real", label: `por_aluno_rs em R$ de ${IPCA_BASE} (corrigido pelo IPCA)` },
 ];
 
 const YEAR_KEYS = CSV_COLUMNS.slice(CSV_COLUMNS.findIndex((c) => c.key === "ano")).map((c) => c.key);
@@ -52,7 +58,12 @@ export const STATE_CSV_COLUMNS = ["ibge", "municipio", "uf", "regiao", ...YEAR_K
 export const ROW_CSV_COLUMNS = [
   "ibge", "municipio", "uf", "regiao", "regiao_intermediaria", "capital", "populacao", "ano", "envio", "situacao_mde",
   "mde_pct", "delta_mde_pp", "faltou_rs", "fundeb_pessoal_pct", "fundeb_minimo_pct", "por_aluno_rs", "pandemia_ec119", "atipico",
+  "atipico_grau", "ipca_fator", "faltou_rs_real", "por_aluno_rs_real",
 ];
+/** Explorer/UF export with finance data (pass `loadFinance()` result to rowCsvRecord): same order as CITY_CSV_COLUMNS. */
+export const ROW_CSV_COLUMNS_FIN = CITY_CSV_COLUMNS.filter(
+  (k) => ROW_CSV_COLUMNS.includes(k) || ["mde_aplicado_rs", "aplicado_estimado", "receita_impostos_rs", "fundeb_nao_usado_pct", "fundeb_nao_usado_max_pct", "mde_aplicado_rs_real", "receita_impostos_rs_real"].includes(k),
+);
 
 const BASE_ORIGEM = { "8.2": "siope_8.2", receita: "receitas_siope", siconfi: "siconfi" } as const;
 
@@ -72,6 +83,11 @@ function faltou(mde: number | null | undefined, base: number | null | undefined)
 }
 
 const round2 = (v: number) => Math.round(v * 100) / 100;
+/** R$ of `y` → R$ of IPCA_BASE, rounded to whole reais (null when unknown). */
+function real(v: CsvValue, y: number): CsvValue {
+  const f = ipcaFactor(y);
+  return typeof v === "number" && f != null ? Math.round(v * f) : null;
+}
 
 /** Year-level columns of one record. `prev` is the previous year's record (for delta_mde_pp). */
 function yearCols(y: number, r: CityYear | undefined, prev: CityYear | undefined): CsvRecord {
@@ -96,7 +112,19 @@ function yearCols(y: number, r: CityYear | undefined, prev: CityYear | undefined
     mde_pct_siconfi: r?.alt,
     pandemia_ec119: PANDEMIC_YEARS.has(y) ? 1 : 0,
     atipico: r?.atip?.join("|") ?? null,
+    atipico_grau: r?.atip?.length ? (r.atipImpl ? "implausivel" : "confirmar") : null,
     fonte: r?.src,
+    ...realCols(y, r?.mdeV, r?.base, faltou(r?.mde, r?.base), r?.perAluno),
+  };
+}
+
+function realCols(y: number, mdeV: CsvValue, base: CsvValue, falt: CsvValue, aluno: CsvValue): CsvRecord {
+  return {
+    ipca_fator: ipcaFactor(y),
+    mde_aplicado_rs_real: real(mdeV, y),
+    receita_impostos_rs_real: real(base, y),
+    faltou_rs_real: real(falt, y),
+    por_aluno_rs_real: real(aluno, y),
   };
 }
 
@@ -123,20 +151,39 @@ export function stateCsvRecords(s: StateGov, years: number[]): CsvRecord[] {
   });
 }
 
-/** Explorer record for one client row and year index (columns: ROW_CSV_COLUMNS). Empty years before installation. */
-export function rowCsvRecord(r: Row, yi: number, years: number[]): CsvRecord {
+/**
+ * Explorer/UF record for one client row and year index (columns: ROW_CSV_COLUMNS, or ROW_CSV_COLUMNS_FIN when `fin`
+ * from loadFinance() is passed). Callers should skip years where `!existedIn(r, year)`.
+ */
+export function rowCsvRecord(r: Row, yi: number, years: number[], fin?: { years: number[]; get: (id: number) => FinanceRow | undefined }): CsvRecord {
   const y = years[yi];
   const mde = r.mde[yi];
   const nd = r.nd[yi];
   const rec = nd ? { s: "nd" } : mde != null ? { s: "ok", mde } : undefined;
+  const atip = atipOf(r, yi);
+  const falt = mde == null ? null : r.short[yi];
+  let finCols: CsvRecord = {};
+  const f = fin?.get(r.id);
+  const fi = fin ? fin.years.indexOf(y) : -1;
+  if (f && fi >= 0) {
+    const mdeV = f.mdeV[fi], base = f.base[fi], left = f.funLeft[fi];
+    finCols = {
+      mde_aplicado_rs: mdeV, aplicado_estimado: mdeV != null ? f.est[fi] : null, receita_impostos_rs: base,
+      fundeb_nao_usado_pct: left, fundeb_nao_usado_max_pct: left != null ? fundebLeftMax(y) : null,
+      mde_aplicado_rs_real: real(mdeV, y), receita_impostos_rs_real: real(base, y),
+    };
+  }
   return {
+    ...finCols,
+    atipico_grau: atip.length ? (isImplausible(r, yi) ? "implausivel" : "confirmar") : null,
+    ipca_fator: ipcaFactor(y), faltou_rs_real: real(falt, y), por_aluno_rs_real: real(r.aluno[yi], y),
     ibge: r.id, municipio: r.name, uf: r.uf, regiao: regionName(r.uf), regiao_intermediaria: r.inter,
     capital: r.capital ? 1 : 0, populacao: r.pop, ano: y,
     envio: envio(rec), situacao_mde: situacao(rec), mde_pct: mde, delta_mde_pp: deltaPp(r, yi),
-    faltou_rs: mde == null ? null : r.short[yi],
+    faltou_rs: falt,
     fundeb_pessoal_pct: r.fun[yi], fundeb_minimo_pct: r.fun[yi] != null ? funMinOf(y) : null,
     por_aluno_rs: r.aluno[yi], pandemia_ec119: PANDEMIC_YEARS.has(y) ? 1 : 0,
-    atipico: atipOf(r, yi).join("|") || null,
+    atipico: atip.join("|") || null,
   };
 }
 

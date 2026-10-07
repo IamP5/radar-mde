@@ -25,6 +25,7 @@ Read this before touching UI. Tokens live in `src/app/globals.css`.
 - 25% minimum: dashed `ReferenceLine` in foreground with a small label.
 - Context series (Brasil / parent) in `var(--ink)` dashed or thin; siblings gray.
 - Legend: direct labels at line end when ≤4 series, otherwise `ChartLegendContent`.
+- Export: every main chart/map Panel gets `ChartActions` (`@/components/kit/chart-actions`) in its `action` slot (PNG, SVG, CSV of its rows, citation). Its `title` is drawn on the image, so make it self-explanatory (metric, place, years).
 - Tooltip: shadcn content with `indicator="line"`, values formatted pt-BR.
 
 ## Data colors (validated)
@@ -51,5 +52,5 @@ Read this before touching UI. Tokens live in `src/app/globals.css`.
 - `EmptyState`: `live` only for async results/errors; `icon` renders above the title.
 - Print (`@media print`, A4): always light; site header, skip link, footer nav, theme switcher, `Button`s,
   radiogroups/tablists and textareas are hidden; sticky bars static; scrollers/tables expanded with repeating header;
-  cards/charts/maps don't split; charts scale to the page width. `PageHeader` prints URL + print date (`kit/print-meta.tsx`).
+  panels may split, but charts, maps, KPI cards and table rows don't, and a panel header stays with its body; charts fit their box (never taller than the container); numeric cells in data tables don't wrap. `PageHeader` prints URL + print date (`kit/print-meta.tsx`).
   Mark any other control `print:hidden`; print-only notes use `.print-only` or `hidden print:block`.

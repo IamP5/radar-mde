@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useRef, useState } from "react";
+import { useId, useMemo, useRef, useState } from "react";
 import { CartesianGrid, Line, LineChart, ReferenceArea, ReferenceLine, XAxis, YAxis, usePlotArea, useYAxisScale } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 import { cn } from "@/lib/utils";
@@ -42,6 +42,7 @@ const LABEL_GAP = 14;
 export default function MultiLine({ years, series, selected, onSelect, fmt, ariaLabel, height = 280, min = 0, band }: Props) {
   const [focus, setFocus] = useState<string | null>(null);
   const box = useRef<HTMLDivElement>(null);
+  const cssId = `ml-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
   const width = useWidth(box, 720, 0, 4000);
   const direct = series.length <= 6 && width >= 480;
 
@@ -72,7 +73,12 @@ export default function MultiLine({ years, series, selected, onSelect, fmt, aria
       <p className="sr-only">
         {ariaLabel}. Em {years[last]}: {summary}.
       </p>
-      <ChartContainer config={config} className={cn(CHART_CLASS, "h-[280px]", onSelect && "cursor-pointer")} style={{ height }} aria-hidden>
+      <style>
+        {series
+          .map((s, idx) => (dashOf(s) ? `[data-chart="chart-${cssId}"] .ml-line-${idx} .recharts-curve{stroke-dasharray:${dashOf(s)};stroke-linecap:${dashOf(s)!.startsWith("1 ") ? "round" : "butt"}}` : ""))
+          .join("")}
+      </style>
+      <ChartContainer id={cssId} config={config} className={cn(CHART_CLASS, "h-[280px]", onSelect && "cursor-pointer")} style={{ height }} aria-hidden>
         <LineChart
           data={data}
           accessibilityLayer={false}
@@ -127,16 +133,17 @@ export default function MultiLine({ years, series, selected, onSelect, fmt, aria
               />
             }
           />
-          {series.map((s) => (
+          {series.map((s, idx) => (
             <Line
               key={s.key}
               dataKey={s.key}
               name={s.key}
               type="linear"
               stroke={s.color}
-              strokeWidth={2}
-              strokeDasharray={dashOf(s)}
-              strokeLinecap={dashOf(s)?.startsWith("1 ") ? "round" : "butt"}
+              strokeWidth={s.emphasis ? 2.5 : 2}
+              // dash via CSS (see <style> below): a `strokeDasharray` prop makes Recharts measure getTotalLength()
+              // on every render, which dominated year-switch time (PERF-03)
+              className={`ml-line-${idx}`}
               strokeOpacity={focus != null && focus !== s.key ? 0.15 : 1}
               dot={false}
               activeDot={{ ...ACTIVE_DOT, fill: s.color }}

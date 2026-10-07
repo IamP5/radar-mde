@@ -16,19 +16,52 @@ import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "
 import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useYear } from "@/components/YearPicker";
+import { useYear, withYear } from "@/components/YearPicker";
 import { BINS, binColor } from "@/lib/bins";
-import { ROW_CSV_COLUMNS, csvFilename, downloadCsv, rowCsvRecord, toCsv } from "@/lib/csv";
+import { ROW_CSV_COLUMNS, ROW_CSV_COLUMNS_FIN, csvFilename, downloadCsv, rowCsvRecord, toCsv } from "@/lib/csv";
 import { MDE_MIN, PANDEMIC_YEARS, POP_BANDS, brlShort, funMin, int, normKey, pct, popBand, share } from "@/lib/format";
 import { REGIONS, UFS, cityPath, getRegion, getRegionBySlug, getUf, type RegionKey } from "@/lib/geo";
-import { ATIP_LABEL, aggregate, atipOf, deltaPp, existedIn, loadAllRows, shortfallLabel, timesBelow, type Row } from "@/lib/rows";
+import { aggregate, atipNote, atipOf, deltaPp, existedIn, isImplausible, loadAllRows, loadFinance, shortfallLabel, timesBelow, type Row } from "@/lib/rows";
 import { cn } from "@/lib/utils";
 
-type Situation = "all" | "below" | "edge" | "ok" | "nd" | "missing" | "fun";
-type Sit = Exclude<Situation, "all" | "fun"> | "na";
+type Situation = "all" | "below" | "edge" | "ok" | "nd" | "missing" | "fun" | "both";
+type Sit = Exclude<Situation, "all" | "fun" | "both"> | "na";
 type SortKey = "name" | "pop" | "mde" | "delta" | "sit" | "fun" | "aluno" | "short" | "times";
 type Sort = { key: SortKey; dir: 1 | -1 };
-type Item = { r: Row; key: string; region: RegionKey | undefined; regionSlug: string; band: string; times: number };
+type Item = { r: Row; key: string; region: RegionKey | undefined; regionSlug: string; band: string; times: number; timesX: number };
+
+/** Recurrence screens, same options and URL values as the UF table (GOV-10). Windowed/consecutive counts end at the selected year. */
+type Rec = "all" | "2" | "3" | "5" | "2x" | "u5" | "s2" | "s3";
+const REC: Record<Rec, { label: string; min: number; col: string }> = {
+  all: { label: "Qualquer histórico", min: 0, col: "Anos < 25%" },
+  "2": { label: "2+ anos abaixo de 25%", min: 2, col: "Anos < 25%" },
+  "3": { label: "3+ anos abaixo de 25%", min: 3, col: "Anos < 25%" },
+  "5": { label: "5+ anos abaixo de 25%", min: 5, col: "Anos < 25%" },
+  "2x": { label: "2+ anos fora de 2020–21", min: 2, col: "Anos < 25% (fora 2020–21)" },
+  u5: { label: "2+ nos últimos 5 anos", min: 2, col: "Abaixo nos últimos 5" },
+  s2: { label: "2+ anos seguidos", min: 2, col: "Anos seguidos < 25%" },
+  s3: { label: "3+ anos seguidos", min: 3, col: "Anos seguidos < 25%" },
+};
+const RECS = Object.keys(REC).filter((k) => k !== "all") as Exclude<Rec, "all">[];
+
+const isBelow = (v: number | null | undefined) => v != null && v < MDE_MIN;
+/** Longest run of consecutive years below 25% up to index `upTo`. */
+function longestRun(r: Row, upTo: number) {
+  let best = 0, cur = 0;
+  for (let i = 0; i <= upTo; i++) {
+    cur = isBelow(r.mde[i]) ? cur + 1 : 0;
+    if (cur > best) best = cur;
+  }
+  return best;
+}
+function recCount(it: Item, rec: Rec, yi: number): number {
+  switch (rec) {
+    case "2x": return it.timesX;
+    case "u5": return it.r.mde.slice(Math.max(0, yi - 4), yi + 1).filter(isBelow).length;
+    case "s2": case "s3": return longestRun(it.r, yi);
+    default: return it.times;
+  }
+}
 type Data = { years: number[]; items: Item[] };
 
 const ALL = "*";
@@ -42,6 +75,7 @@ const SITUATIONS: { key: Situation; label: string }[] = [
   { key: "nd", label: "Não declarou" },
   { key: "missing", label: "Sem dados" },
   { key: "fun", label: "Fundeb abaixo do mínimo" },
+  { key: "both", label: "Abaixo de 25% e Fundeb abaixo do mínimo" },
 ];
 
 const SIT_BADGE: Record<Sit, { kind: StatusKind; label: string }> = {
@@ -61,7 +95,7 @@ function situationOf(r: Row, yi: number, year: number): Sit {
   return v < MDE_MIN + 1 ? "edge" : "ok";
 }
 
-function sortValue(it: Item, k: SortKey, yi: number, year: number): number | string | null {
+function sortValue(it: Item, k: SortKey, yi: number, year: number, rec: Rec): number | string | null {
   const r = it.r;
   switch (k) {
     case "name": return it.key;
@@ -72,14 +106,14 @@ function sortValue(it: Item, k: SortKey, yi: number, year: number): number | str
     case "fun": return r.fun[yi];
     case "aluno": return r.aluno[yi];
     case "short": return r.short[yi];
-    case "times": return it.times;
+    case "times": return recCount(it, rec, yi);
   }
 }
 
 /* ---------- URL state (shareable views: JOR-03, GOV-06, FUN-07) ---------- */
 
 const SIT_PARAM: Record<Exclude<Situation, "all">, string> = {
-  below: "abaixo", edge: "limite", ok: "cumpriu", nd: "nao-declarou", missing: "sem-dados", fun: "fundeb",
+  below: "abaixo", edge: "limite", ok: "cumpriu", nd: "nao-declarou", missing: "sem-dados", fun: "fundeb", both: "mde-e-fundeb",
 };
 const SORT_PARAM: Record<SortKey, string> = {
   name: "nome", pop: "populacao", mde: "mde", delta: "variacao", sit: "situacao", fun: "fundeb", aluno: "aluno", short: "faltou", times: "anos",
@@ -90,7 +124,7 @@ const invert = <K extends string, V extends string>(m: Record<K, V>) => Object.f
 const SIT_FROM = invert(SIT_PARAM);
 const SORT_FROM = invert(SORT_PARAM);
 
-type View = { q: string; regiao: string; uf: string; porte: string; sit: Situation; reinc: boolean; capital: boolean; sort: Sort };
+type View = { q: string; regiao: string; uf: string; porte: string; sit: Situation; rec: Rec; capital: boolean; sort: Sort };
 
 function readView(search: string): Partial<View> {
   const p = new URLSearchParams(search);
@@ -105,7 +139,10 @@ function readView(search: string): Partial<View> {
   if (porte && POP_BANDS.some((b) => b.key === porte)) v.porte = porte;
   const sit = SIT_FROM[p.get("situacao") ?? ""];
   if (sit) v.sit = sit;
-  if (p.get("reinc") === "1") v.reinc = true;
+  const rc = p.get("reinc");
+  // "1" = the single "Reincidentes" toggle of the first version (2+ years)
+  if (rc === "1") v.rec = "2";
+  else if (rc && rc !== "all" && rc in REC) v.rec = rc as Rec;
   if (p.get("capital") === "1") v.capital = true;
   const o = p.get("ordem") ?? "";
   const key = SORT_FROM[o.replace(/^-/, "")];
@@ -122,7 +159,7 @@ function writeView(v: View) {
   set("uf", v.uf || null);
   set("porte", v.porte || null);
   set("situacao", v.sit === "all" ? null : SIT_PARAM[v.sit]);
-  set("reinc", v.reinc ? "1" : null);
+  set("reinc", v.rec === "all" ? null : v.rec);
   set("capital", v.capital ? "1" : null);
   const isDefault = v.sort.key === DEFAULT_SORT.key && v.sort.dir === DEFAULT_SORT.dir;
   set("ordem", isDefault ? null : `${v.sort.dir === -1 ? "-" : ""}${SORT_PARAM[v.sort.key]}`);
@@ -137,8 +174,11 @@ type Facets = {
   uf: Map<string, number>;
   porte: Map<string, number>;
   sit: Map<string, number>;
-  reinc: number;
+  rec: Map<string, number>;
   capital: number;
+  /** municipalities that existed in the selected year (the others aren't listed, JOR-21/ACA-19) */
+  existing: number;
+  notYet: number;
   filtered: Item[];
 };
 
@@ -161,7 +201,7 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
   const [uf, setUf] = useState("");
   const [porte, setPorte] = useState("");
   const [sit, setSit] = useState<Situation>("all");
-  const [reinc, setReinc] = useState(false);
+  const [rec, setRec] = useState<Rec>("all");
   const [capital, setCapital] = useState(false);
   const [sort, setSort] = useState<Sort>(DEFAULT_SORT);
   const [urlRead, setUrlRead] = useState(false);
@@ -174,7 +214,8 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
         if (!live) return;
         const items = f.rows.map((r) => {
           const region = getUf(r.uf)?.region;
-          return { r, key: normKey(r.name), region, regionSlug: region ? getRegion(region).slug : "", band: popBand(r.pop).key, times: timesBelow(r) };
+          return { r, key: normKey(r.name), region, regionSlug: region ? getRegion(region).slug : "", band: popBand(r.pop).key, times: timesBelow(r),
+            timesX: r.mde.reduce<number>((n, v, i) => n + (isBelow(v) && !PANDEMIC_YEARS.has(f.years[i]) ? 1 : 0), 0) };
         });
         setData({ years: f.years, items });
       })
@@ -193,19 +234,27 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
     if (v.uf) setUf(v.uf);
     if (v.porte) setPorte(v.porte);
     if (v.sit) setSit(v.sit);
-    if (v.reinc) setReinc(true);
+    if (v.rec) setRec(v.rec);
     if (v.capital) setCapital(true);
     if (v.sort) setSort(v.sort);
     setUrlRead(true);
+    // An invalid ?ano (falls back to the default year) shouldn't linger in the address bar (JOR-21)
+    const ano = new URLSearchParams(window.location.search).get("ano");
+    if (ano != null && !years.includes(Number(ano))) {
+      const u = new URL(window.location.href);
+      u.searchParams.delete("ano");
+      window.history.replaceState(window.history.state, "", u);
+    }
     /* eslint-enable react-hooks/set-state-in-effect */
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- once, after hydration
   }, []);
 
   // …and back to the URL (debounced: typing in the name filter shouldn't spam history.replaceState)
   useEffect(() => {
     if (!urlRead) return;
-    const t = setTimeout(() => writeView({ q, regiao, uf, porte, sit, reinc, capital, sort }), 250);
+    const t = setTimeout(() => writeView({ q, regiao, uf, porte, sit, rec, capital, sort }), 250);
     return () => clearTimeout(t);
-  }, [urlRead, q, regiao, uf, porte, sit, reinc, capital, sort]);
+  }, [urlRead, q, regiao, uf, porte, sit, rec, capital, sort]);
 
   const dq = useDeferredValue(q);
   const region = getRegionBySlug(regiao);
@@ -216,41 +265,49 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
 
   // One pass: the filtered set plus, for each filter, counts under all the *other* filters
   const facets = useMemo<Facets>(() => {
-    const f: Facets = { regiao: new Map(), uf: new Map(), porte: new Map(), sit: new Map(), reinc: 0, capital: 0, filtered: [] };
+    const f: Facets = { regiao: new Map(), uf: new Map(), porte: new Map(), sit: new Map(), rec: new Map(), capital: 0, existing: 0, notYet: 0, filtered: [] };
     if (!data || yi < 0) return f;
     const needle = normKey(dq);
     const band = POP_BANDS.find((b) => b.key === porte);
+    const recMin = REC[rec].min;
     for (const it of data.items) {
       const r = it.r;
+      if (!existedIn(r, year)) {
+        f.notYet++;
+        continue;
+      }
+      f.existing++;
       if (needle && !it.key.includes(needle)) continue;
       const pReg = !region || it.region === region.key;
       const pUf = !uf || r.uf === uf;
       const pPorte = !band || band.test(r.pop);
-      const pReinc = !reinc || it.times >= 2;
+      const pReinc = rec === "all" || recCount(it, rec, yi) >= recMin;
       const pCap = !capital || !!r.capital;
       const s = situationOf(r, yi, year);
       const fv = r.fun[yi];
       const isFun = fv != null && fv < fMin;
-      const pSit = sit === "all" || (sit === "fun" ? isFun : s === sit || (sit === "missing" && s === "na"));
+      const pSit =
+        sit === "all" || (sit === "fun" ? isFun : sit === "both" ? isFun && s === "below" : s === sit || (sit === "missing" && s === "na"));
       if (pUf && pPorte && pReinc && pSit && pCap) inc(f.regiao, it.regionSlug);
       if (pReg && pPorte && pReinc && pSit && pCap) inc(f.uf, r.uf);
       if (pReg && pUf && pReinc && pSit && pCap) inc(f.porte, it.band);
       if (pReg && pUf && pPorte && pReinc && pCap) {
         inc(f.sit, s === "na" ? "missing" : s);
         if (isFun) inc(f.sit, "fun");
+        if (isFun && s === "below") inc(f.sit, "both");
       }
-      if (pReg && pUf && pPorte && pSit && pCap && it.times >= 2) f.reinc++;
+      if (pReg && pUf && pPorte && pSit && pCap) for (const k of RECS) if (recCount(it, k, yi) >= REC[k].min) inc(f.rec, k);
       if (pReg && pUf && pPorte && pSit && pReinc && r.capital) f.capital++;
       if (pReg && pUf && pPorte && pReinc && pSit && pCap) f.filtered.push(it);
     }
     return f;
-  }, [data, yi, year, fMin, dq, region, uf, porte, sit, reinc, capital]);
+  }, [data, yi, year, fMin, dq, region, uf, porte, sit, rec, capital]);
   const filtered = facets.filtered;
 
   const sorted = useMemo(() => {
     const { key, dir } = sort;
     return [...filtered].sort((a, b) => {
-      const va = sortValue(a, key, yi, year), vb = sortValue(b, key, yi, year);
+      const va = sortValue(a, key, yi, year, rec), vb = sortValue(b, key, yi, year, rec);
       // nulls last regardless of direction
       if (va == null && vb == null) return collator.compare(a.key, b.key);
       if (va == null) return 1;
@@ -258,7 +315,7 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
       const d = typeof va === "string" ? collator.compare(va, vb as string) : va - (vb as number);
       return (d || collator.compare(a.key, b.key)) * dir;
     });
-  }, [filtered, sort, yi, year]);
+  }, [filtered, sort, yi, year, rec]);
 
   const rows = useMemo(() => filtered.map((it) => it.r), [filtered]);
   const stats = useMemo(() => (yi >= 0 ? aggregate(rows, yi, year) : null), [rows, yi, year]);
@@ -267,13 +324,18 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
   const scroller = useRef<HTMLDivElement>(null);
   const [rowH, setRowH] = useState(ROW_H_GUESS);
   const [win, setWin] = useState({ top: 0, height: 760 });
+  // more columns to the right (phones): fade the cut edge so it reads as scrollable (VIS-13)
+  const [moreRight, setMoreRight] = useState(false);
   useEffect(() => {
     const el = scroller.current;
     if (!el) return;
     let raf = 0;
     const update = () => {
       cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => setWin({ top: el.scrollTop, height: el.clientHeight }));
+      raf = requestAnimationFrame(() => {
+        setWin((w) => (w.top === el.scrollTop && w.height === el.clientHeight ? w : { top: el.scrollTop, height: el.clientHeight }));
+        setMoreRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
+      });
     };
     update();
     el.addEventListener("scroll", update, { passive: true });
@@ -307,45 +369,52 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
     setQ("");
     setPorte("");
     setSit("all");
-    setReinc(false);
+    setRec("all");
     setCapital(false);
     setRegiao("");
     setUf("");
   };
 
-  const sitLabel = (s: Situation) => (s === "fun" ? `Fundeb pessoal < ${fMin}%` : SITUATIONS.find((x) => x.key === s)?.label ?? "");
+  const sitLabel = (s: Situation) => (s === "fun" ? `Fundeb pessoal < ${fMin}%` : s === "both" ? `Abaixo de 25% e Fundeb < ${fMin}%` : SITUATIONS.find((x) => x.key === s)?.label ?? "");
   const chips: { key: string; label: ReactNode; remove: () => void }[] = [];
   if (q.trim()) chips.push({ key: "q", label: <>Nome contém “{q.trim()}”</>, remove: () => setQ("") });
   if (region) chips.push({ key: "regiao", label: <>Região: {region.name}</>, remove: () => changeRegiao("") });
   if (uf) chips.push({ key: "uf", label: <>UF: <span className="font-mono">{uf}</span></>, remove: () => setUf("") });
   if (porte) chips.push({ key: "porte", label: <>População: {POP_BANDS.find((b) => b.key === porte)?.label}</>, remove: () => setPorte("") });
   if (sit !== "all") chips.push({ key: "sit", label: <>{sitLabel(sit)} em {year}</>, remove: () => setSit("all") });
-  if (reinc) chips.push({ key: "reinc", label: "Reincidentes", remove: () => setReinc(false) });
+  if (rec !== "all") chips.push({ key: "reinc", label: rec === "u5" ? `2+ anos abaixo entre ${year - 4} e ${year}` : REC[rec].label, remove: () => setRec("all") });
   if (capital) chips.push({ key: "capital", label: "Capitais", remove: () => setCapital(false) });
 
   const toggleSort = (key: SortKey) =>
     setSort((s) => ({ key, dir: s.key === key ? (s.dir === 1 ? -1 : 1) : defaultDir(key) }));
 
-  const exportCsv = (scope: "year" | "series", excel: boolean) => {
-    if (!data || yi < 0) return;
+  const [exporting, setExporting] = useState(false);
+  const exportCsv = async (scope: "year" | "series", excel: boolean) => {
+    if (!data || yi < 0 || exporting) return;
+    setExporting(true);
+    // Revenue, amount applied, unspent Fundeb and IPCA columns come from a separate file fetched only here (GOV-09);
+    // if it can't be loaded, export the columns the table has rather than nothing.
+    const fin = await loadFinance().catch(() => undefined);
+    setExporting(false);
     const ordered = sorted.map((it) => it.r);
+    const record = (r: Row, i: number) => rowCsvRecord(r, i, data.years, fin);
     const records =
       scope === "year"
-        ? ordered.map((r) => rowCsvRecord(r, yi, data.years))
-        : ordered.flatMap((r) => data.years.flatMap((y, i) => (existedIn(r, y) ? [rowCsvRecord(r, i, data.years)] : [])));
+        ? ordered.map((r) => record(r, yi))
+        : ordered.flatMap((r) => data.years.flatMap((y, i) => (existedIn(r, y) ? [record(r, i)] : [])));
     const name = csvFilename(
       [
         region?.slug, uf, scope === "year" ? year : `${data.years[0]}-${data.years[data.years.length - 1]}`,
-        sit !== "all" && SIT_PARAM[sit], porte && POP_BANDS.find((b) => b.key === porte)?.label, reinc && "reincidentes",
+        sit !== "all" && SIT_PARAM[sit], porte && POP_BANDS.find((b) => b.key === porte)?.label, rec !== "all" && `reinc-${rec}`,
         capital && "capitais", q.trim() && normKey(q).replace(/ /g, "-"),
       ],
       excel,
     );
-    downloadCsv(name, toCsv(ROW_CSV_COLUMNS, records, { excel }));
+    downloadCsv(name, toCsv(fin ? ROW_CSV_COLUMNS_FIN : ROW_CSV_COLUMNS, records, { excel }));
   };
 
   const copyLink = async () => {
-    writeView({ q, regiao, uf, porte, sit, reinc, capital, sort });
+    writeView({ q, regiao, uf, porte, sit, rec, capital, sort });
     try {
       await navigator.clipboard.writeText(window.location.href);
       setCopied(true);
@@ -464,9 +533,19 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
           display={() => sitLabel(sit)}
           options={SITUATIONS.map((s) => ({ value: s.key, label: sitLabel(s.key), count: facets.sit.get(s.key) ?? 0, sep: s.key === "fun" }))}
         />
-        <ToggleChip on={reinc} onClick={() => setReinc((v) => !v)} title="Abaixo de 25% em dois anos ou mais" count={data ? facets.reinc : null}>
-          Reincidentes
-        </ToggleChip>
+        <FilterSelect
+          label="Reincidência"
+          value={rec === "all" ? "" : rec}
+          onChange={(v) => setRec((v || "all") as Rec)}
+          ready={!!data}
+          display={() => REC[rec].label}
+          options={RECS.map((k) => ({
+            value: k,
+            label: k === "u5" ? `2+ anos abaixo em ${year - 4}–${year}` : k === "s2" || k === "s3" ? `${REC[k].label} (até ${year})` : REC[k].label,
+            count: facets.rec.get(k) ?? 0,
+            sep: k === "2x",
+          }))}
+        />
         {(hasCapital || capital) && (
           <ToggleChip on={capital} onClick={() => setCapital((v) => !v)} title="Só as capitais dos estados e Brasília" count={data ? facets.capital : null}>
             Capitais
@@ -484,7 +563,7 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
               render={
                 <Button variant="outline" className="h-8 rounded-md">
                   <Download data-icon="inline-start" />
-                  Exportar CSV
+                  {exporting ? "Preparando…" : "Exportar CSV"}
                   <ChevronDown data-icon="inline-end" className="text-muted-foreground" />
                 </Button>
               }
@@ -528,7 +607,12 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
             "Dados indisponíveis"
           ) : data ? (
             <>
-              <span className="font-medium text-foreground tnum">{int(filtered.length)}</span> de <span className="tnum">{int(total)}</span> municípios
+              <span className="font-medium text-foreground tnum">{int(filtered.length)}</span> de <span className="tnum">{int(facets.existing)}</span> municípios
+              {facets.notYet > 0 && (
+                <span title="Municípios instalados depois deste ano não aparecem na tabela nem no CSV deste ano">
+                  {" "}em {year} (+{int(facets.notYet)} {facets.notYet === 1 ? "criado" : "criados"} depois)
+                </span>
+              )}
             </>
           ) : (
             "Carregando municípios…"
@@ -586,7 +670,7 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
                 label="Faltou aplicar (estimativa)"
                 value={label.value}
                 tone={stats.shortfall ? "bad" : "neutral"}
-                sub={label.note ?? (stats.shortfallAtip ? `dos quais ${brlShort(stats.shortfallAtip)} em valores atípicos` : `em ${year}, valores declarados e nominais`)}
+                sub={label.note ?? `em ${year}, valores declarados e nominais`}
                 className="col-span-2 sm:col-span-1"
               />
               <Stat label="MDE mediana" value={pct(stats.median, 1)} sub={`${int(stats.reported)} declararam`} />
@@ -622,7 +706,7 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
                 {sorted.length > 12 && " · role a tabela para ver todos"}
               </span>
               <span className="inline-flex items-center gap-1.5">
-                <AlertTriangle className="size-3.5" /> = valor atípico, possível erro de declaração
+                <AlertTriangle className="size-3.5" /> = valor fora do padrão, confirme na fonte
               </span>
             </div>
           ) : undefined
@@ -637,7 +721,14 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
             </Button>
           </div>
         ) : (
-          <div ref={scroller} className="scroll-thin relative max-h-[min(72vh,760px)] overflow-auto" tabIndex={-1}>
+          <div
+            ref={scroller}
+            className={cn(
+              "scroll-thin relative max-h-[min(72vh,760px)] overflow-auto",
+              moreRight && "[mask-image:linear-gradient(to_right,#000_calc(100%-2rem),transparent)]",
+            )}
+            tabIndex={-1}
+          >
             <table className="w-full min-w-[1040px] caption-bottom text-sm" aria-rowcount={sorted.length + 1}>
               <caption className="sr-only">Municípios filtrados, indicadores de {year}</caption>
               <TableHeader>
@@ -650,7 +741,7 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
                   {th("fun", "Fundeb pessoal", `% do Fundeb pago aos profissionais da educação (mínimo ${fMin}% em ${year})`)}
                   {th("aluno", "R$ por aluno", "Valores nominais")}
                   {th("short", "Faltou", "Quanto faltou aplicar para chegar a 25% (estimativa, valores nominais)")}
-                  {th("times", "Anos < 25%", `Anos abaixo de 25% entre ${firstYear} e ${lastYear}`)}
+                  {th("times", REC[rec].col, rec === "u5" ? `Anos abaixo de 25% entre ${year - 4} e ${year}` : rec === "s2" || rec === "s3" ? `Maior sequência de anos seguidos abaixo de 25% até ${year}` : `Anos abaixo de 25% entre ${firstYear} e ${lastYear}`)}
                   <TableHead scope="col" className={cn(stickyHead, "pr-4 text-left")}>
                     <span className="tnum">{firstYear}–{lastYear}</span>
                   </TableHead>
@@ -670,13 +761,14 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
                   : (
                     <>
                       {first > 0 && <tr aria-hidden style={{ height: first * rowH }} />}
-                      {visible.map(({ r, times }, i) => (
+                      {visible.map((it, i) => (
                         <ExplorerRow
-                          key={r.id}
+                          key={it.r.id}
                           ref={i === 0 ? measureRef : undefined}
                           index={first + i + 2}
-                          r={r}
-                          times={times}
+                          r={it.r}
+                          times={recCount(it, rec, yi)}
+                          initialYear={initialYear}
                           yi={yi}
                           year={year}
                           years={data.years}
@@ -802,8 +894,11 @@ function BinLegend() {
 const HATCH = "repeating-linear-gradient(135deg, var(--critical) 0 1px, transparent 1px 3px)";
 
 function ExplorerRow({
-  r, times, yi, year, years, index, ref,
-}: { r: Row; times: number; yi: number; year: number; years: number[]; index: number; ref?: (tr: HTMLTableRowElement | null) => void }) {
+  r, times, yi, year, years, index, initialYear, ref,
+}: {
+  r: Row; times: number; yi: number; year: number; years: number[]; index: number; initialYear: number;
+  ref?: (tr: HTMLTableRowElement | null) => void;
+}) {
   const v = r.mde[yi];
   const f = r.fun[yi];
   const a = r.aluno[yi];
@@ -813,12 +908,14 @@ function ExplorerRow({
   const below = v != null && v < MDE_MIN;
   const atip = atipOf(r, yi);
   const atipMde = atip.includes("mde") || atip.includes("base");
+  const impl = isImplausible(r, yi);
   return (
     <TableRow ref={ref} aria-rowindex={index} className="group h-[57px] hover:bg-accent/60">
       <TableCell className="sticky left-0 z-[1] max-w-[280px] bg-card py-2 pr-3 pl-4 group-hover:bg-[color-mix(in_oklab,var(--card),var(--accent)_60%)] max-sm:max-w-[150px]">
         <Link
-          href={cityPath(r.uf, r.slug)}
+          href={withYear(cityPath(r.uf, r.slug), year, initialYear)}
           prefetch={false}
+          title={r.name}
           className="block truncate font-medium hover:text-brand-ink hover:underline hover:underline-offset-2"
         >
           {r.name}
@@ -833,9 +930,9 @@ function ExplorerRow({
       <TableCell className={cn("px-2.5 text-right", below && "font-medium text-critical-ink")}>
         <span className="inline-flex items-center justify-end gap-1">
           {atipMde && (
-            <span title={atip.map((c) => ATIP_LABEL[c]).join("\n")} className="inline-flex text-warning-ink">
+            <span title={atipNote(atip.filter((c) => c !== "aluno"), impl)} className="inline-flex text-warning-ink">
               <AlertTriangle aria-hidden className="size-3.5" />
-              <span className="sr-only">(valor atípico, possível erro de declaração)</span>
+              <span className="sr-only">({impl ? "possível erro de declaração" : "valor fora do padrão, confirme na fonte"})</span>
             </span>
           )}
           {pct(v)}
@@ -843,7 +940,10 @@ function ExplorerRow({
         {below && <span className="sr-only"> (abaixo do mínimo)</span>}
       </TableCell>
       <TableCell className={cn("px-2.5 text-right", d == null || d === 0 ? "text-muted-foreground" : "text-foreground")}>
-        {d == null ? "—" : <span title={`${fmtDelta(d)} p.p. em relação a ${year - 1}`}>{fmtDelta(d)}</span>}
+        {d == null ? "—" : <span title={`${fmtDelta(d)} pontos percentuais em relação a ${year - 1}`}>
+            {fmtDelta(d)}
+            <span className="ml-0.5 text-[11px] text-muted-foreground">p.p.</span>
+          </span>}
       </TableCell>
       <TableCell className="px-2.5">
         <StatusBadge kind={s.kind}>{s.label}</StatusBadge>
@@ -853,9 +953,9 @@ function ExplorerRow({
         {a ? (
           <span className="inline-flex items-center justify-end gap-1">
             {atip.includes("aluno") && (
-              <span title={ATIP_LABEL.aluno} className="inline-flex text-warning-ink">
+              <span title={atipNote(["aluno"], impl)} className="inline-flex text-warning-ink">
                 <AlertTriangle aria-hidden className="size-3.5" />
-                <span className="sr-only">(valor atípico)</span>
+                <span className="sr-only">({impl ? "possível erro de declaração" : "valor fora do padrão, confirme na fonte"})</span>
               </span>
             )}
             R$ {Math.round(a).toLocaleString("pt-BR")}

@@ -19,12 +19,16 @@ export type YearPoint = {
   mdeVEst: boolean;
   src: "siope" | "siconfi" | null;
   atip: ("mde" | "aluno" | "base")[];
+  /** at least one flag is physically implausible (only then "possível erro de declaração") */
+  impl: boolean;
   medUf: number | null;
   medBr: number | null;
   rUf: Rank | null;
   rBr: Rank | null;
   /** estimated uncompensated deficit at the end of this year (R$, nominal) */
   carry: number;
+  /** same balance in R$ of the IPCA base year (each year's shortfall deflated first) */
+  carryReal: number;
 };
 export type CityYearData = {
   id: number;
@@ -44,6 +48,8 @@ export type CityYearData = {
   /** years after the last declared one with nothing sent */
   stopped: number[];
   firstBase: number | null;
+  /** years below 25% whose % or revenue base is out of pattern: the R$ deficit estimate rests on them */
+  shaky: number[];
   peers: { name: string; slug: string; v: (number | null)[] }[];
   /** the state's municipalities (same order as citiesOf) and their MDE % in the initial year; -1 = não declarou */
   map: { ids: number[]; initial: (number | null)[] };
@@ -69,13 +75,34 @@ export function prevPoint(d: CityYearData, y: number) {
   return [...d.points].reverse().find((p) => p.y < y && p.mde != null);
 }
 
-/** "Subiu 14,5 pontos em relação a 2024." */
-export function deltaSentence(d: CityYearData, p: YearPoint): string | null {
+/**
+ * Year to compare the selected one with: the previous year with a value, skipping years whose MDE is out of the
+ * municipality's own pattern (a jump "from" a probable filing error would be misleading). `skipped` = the
+ * out-of-pattern previous year, when one was skipped. No comparison when the selected year itself is out of pattern.
+ */
+export function comparison(d: CityYearData, p: YearPoint) {
+  if (p.mde == null || p.atip.includes("mde")) return null;
   const prev = prevPoint(d, p.y);
-  if (p.mde == null || !prev) return null;
-  const dv = p.mde - prev.mde!;
-  if (Math.abs(dv) < 0.05) return `Ficou igual a ${prev.y} (${pct(prev.mde)}).`;
-  return `${dv > 0 ? "Subiu" : "Caiu"} ${pts(dv)} ${Math.abs(dv) < 1.95 ? "ponto" : "pontos"} em relação a ${prev.y} (${pct(prev.mde)}).`;
+  if (!prev) return null;
+  if (!prev.atip.includes("mde")) return { base: prev, skipped: null };
+  const base = [...d.points].reverse().find((x) => x.y < prev.y && x.mde != null && !x.atip.includes("mde"));
+  return base ? { base, skipped: prev } : null;
+}
+
+const pontos = (dv: number) => `${pts(dv)} ${Math.abs(dv) < 1.95 ? "ponto" : "pontos"}`;
+
+/** "Subiu 14,5 pontos em relação a 2024 (10,47%)." — hedged when the previous year is out of pattern. */
+export function deltaSentence(d: CityYearData, p: YearPoint): string | null {
+  const cmp = comparison(d, p);
+  if (!cmp) return null;
+  const { base, skipped } = cmp;
+  const dv = p.mde! - base.mde!;
+  if (skipped) {
+    const rel = Math.abs(dv) < 0.05 ? "ficou igual" : `ficou ${pontos(dv)} ${dv > 0 ? "acima" : "abaixo"}`;
+    return `O valor declarado em ${skipped.y} (${pct(skipped.mde)}) foge do padrão do município; em relação a ${base.y} (${pct(base.mde)}), ${rel}.`;
+  }
+  if (Math.abs(dv) < 0.05) return `Ficou igual a ${base.y} (${pct(base.mde)}).`;
+  return `${dv > 0 ? "Subiu" : "Caiu"} ${pontos(dv)} em relação a ${base.y} (${pct(base.mde)}).`;
 }
 
 export const STATUS_KIND: Record<St, StatusKind> = { ok: "ok", edge: "edge", below: "below", nd: "below", none: "nd", na: "nd" };
@@ -90,7 +117,11 @@ export function summary(d: CityYearData, p: YearPoint): { badges: { kind: Status
   const level =
     p.st === "below" ? `abaixo do mínimo de ${MDE_MIN}%` : p.st === "edge" ? "cumpriu, mas no limite" : `acima do mínimo de ${MDE_MIN}%`;
   const extra = [
-    p.atip.includes("mde") ? "O valor é atípico e pode ser erro de declaração." : null,
+    p.atip.includes("mde")
+      ? p.impl
+        ? "O valor é implausível: possível erro de declaração — confirme na fonte."
+        : "O valor foge do padrão do próprio município — confirme na fonte."
+      : null,
     p.st === "below" && PANDEMIC_YEARS.has(y) ? "Em 2020 e 2021, a EC 119/2022 dispensa a punição se a diferença for compensada até 2023." : null,
   ].filter(Boolean);
 
@@ -119,7 +150,7 @@ export function summary(d: CityYearData, p: YearPoint): { badges: { kind: Status
   const badge =
     p.st === "below" ? `Abaixo de ${MDE_MIN}% em ${y}` : p.st === "edge" ? `No limite em ${y}` : `Cumpre ${MDE_MIN}% em ${y}`;
   return {
-    badges: [{ kind: STATUS_KIND[p.st], text: badge }, ...(p.atip.includes("mde") ? [{ kind: "edge" as const, text: "Valor atípico" }] : [])],
+    badges: [{ kind: STATUS_KIND[p.st], text: badge }, ...(p.atip.includes("mde") ? [{ kind: "edge" as const, text: "Fora do padrão" }] : [])],
     verdict: [`Em ${y}, aplicou ${pct(p.mde)} da receita de impostos em educação — ${level}.`, delta, ...extra].filter(Boolean).join(" "),
   };
 }

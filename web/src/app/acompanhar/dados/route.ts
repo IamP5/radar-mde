@@ -19,7 +19,10 @@ export function GET(req: Request) {
   const body: RowsFile = { years: YEARS, rows: packRows(rows) };
   return Response.json(body, {
     headers: {
-      "cache-control": url.searchParams.has("v") ? "public, max-age=86400, stale-while-revalidate=604800" : "public, max-age=300",
+      // s-maxage so the CDN (Vercel) caches it too, not just the browser (CDN-01); the query string is the cache key
+      "cache-control": url.searchParams.has("v")
+        ? "public, max-age=86400, s-maxage=31536000, stale-while-revalidate=604800"
+        : "public, max-age=300, s-maxage=300, stale-while-revalidate=86400",
     },
   });
 }

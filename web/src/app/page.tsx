@@ -1,4 +1,5 @@
 import { ArrowRight, Download } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/kit/page-header";
 import { SearchButton } from "@/components/SearchPalette";
@@ -6,6 +7,8 @@ import TerritoryDashboard from "@/components/territory/TerritoryDashboard";
 import { buttonVariants } from "@/components/ui/button";
 import { YEARS, brStats, defaultYear, int, regionSummaries, rowsIn, topDeficits, ufSummaries } from "@/lib/data";
 import { histCounts } from "@/lib/bins";
+
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 export default function Home() {
   const stats = brStats();
@@ -23,8 +26,19 @@ export default function Home() {
             governo federal (SIOPE/FNDE).
           </>
         }
-        actions={
-          <>
+      >
+        {/* CIT-01: the first thing most visitors want is their own city; secondary actions share its row (VIS-13) */}
+        <div className="mt-6 flex flex-col gap-3 md:flex-row md:items-start md:justify-between print:hidden">
+          <div className="w-full max-w-xl">
+            <SearchButton
+              variant="outline"
+              className="h-11 w-full justify-start gap-2.5 rounded-lg bg-background px-3.5 text-[0.9375rem] font-normal text-muted-foreground shadow-xs hover:text-foreground"
+            >
+              Digite o nome da sua cidade
+            </SearchButton>
+            <p className="mt-2 text-[13px] text-muted-foreground">Veja quanto a sua prefeitura aplica em educação, ano a ano.</p>
+          </div>
+          <div className="flex shrink-0 flex-wrap items-center gap-2 md:h-11">
             <a href="/dados/csv/brasil" download className={buttonVariants({ variant: "ghost", size: "sm" })}>
               <Download aria-hidden />
               Baixar CSV
@@ -33,18 +47,7 @@ export default function Home() {
               Explorar municípios
               <ArrowRight aria-hidden />
             </Link>
-          </>
-        }
-      >
-        {/* CIT-01: the first thing most visitors want is their own city */}
-        <div className="mt-6 max-w-xl print:hidden">
-          <SearchButton
-            variant="outline"
-            className="h-11 w-full justify-start gap-2.5 rounded-lg bg-background px-3.5 text-[0.9375rem] font-normal text-muted-foreground shadow-xs hover:text-foreground"
-          >
-            Digite o nome da sua cidade
-          </SearchButton>
-          <p className="mt-2 text-[13px] text-muted-foreground">Veja quanto a sua prefeitura aplica em educação, ano a ano.</p>
+          </div>
         </div>
       </PageHeader>
       <TerritoryDashboard
@@ -54,6 +57,7 @@ export default function Home() {
         ufs={ufSummaries()}
         regions={regionSummaries()}
         deficits={topDeficits({ level: "br" }, 25)}
+        deficitsReal={topDeficits({ level: "br" }, 25, { real: true })}
         hist={YEARS.map((_, i) => histCounts(rows.map((r) => r.mde[i])))}
       />
     </>

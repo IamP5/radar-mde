@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { PageBody, PageHeader } from "@/components/kit/page-header";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { META, YEARS, allCities, dateBR, int, stateGov } from "@/lib/data";
 import { UFS } from "@/lib/geo";
 import { cn } from "@/lib/utils";
@@ -11,7 +11,10 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = {
   title: "Metodologia",
   description: "De onde vêm os números do Radar MDE, quais indicadores do SIOPE são usados, como o painel calcula o que faltou aplicar e quais são os limites dos dados.",
+  alternates: { canonical: "/sobre" },
 };
+
+const fmtFactor = (v: number) => v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 /** SIOPE indicators used, with how the panel uses each one. */
 const INDICATORS: [string, string, string][] = [
@@ -102,6 +105,7 @@ export default function Page() {
           </p>
           <div className="my-6 overflow-hidden rounded-lg border bg-card">
             <Table>
+              <TableCaption className="sr-only">Regras legais de aplicação mínima até 2020 e desde 2021</TableCaption>
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
                   <TableHead scope="col" className={head}>Regra</TableHead>
@@ -162,6 +166,7 @@ export default function Page() {
           </p>
           <div className="my-6 overflow-x-auto rounded-lg border bg-card">
             <Table>
+              <TableCaption className="sr-only">Indicadores do SIOPE usados no painel: código, nome e uso</TableCaption>
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
                   <TableHead scope="col" className={`${head} w-14`}>Código</TableHead>
@@ -223,9 +228,13 @@ export default function Page() {
               não o Censo Escolar; erros nessa contagem geram valores muito altos ou muito baixos.
             </li>
             <li>
-              <strong>Valores monetários são nominais</strong>: todos os R$ estão em reais correntes de cada ano, sem correção pela
-              inflação. Somas de vários anos (saldo devedor, maiores déficits acumulados, série do que faltou) misturam reais de anos
-              diferentes e devem ser lidas como ordem de grandeza. Pelo IPCA, os preços subiram cerca de 2,6 vezes entre o fim de 2008 e o fim de 2025.
+              <strong>Valores monetários</strong>: os R$ mostrados são, por padrão, <strong>nominais</strong> (reais de cada ano). Somas
+              de vários anos (saldo devedor, maiores déficits acumulados, série do que faltou) misturam reais de anos diferentes; por isso
+              o painel também oferece esses valores <strong>corrigidos pelo IPCA</strong>, em R$ de {META.ipca.base}. A correção usa o
+              número-índice do IPCA do IBGE (SIDRA, tabela 1737), baixado em {dateBR(META.ipca.fetched)}: cada valor é multiplicado pela
+              média anual do índice em {META.ipca.base} dividida pela média anual do índice no seu ano. Por exemplo, R$ 1 de {YEARS[0]}{" "}
+              equivale a R$ {fmtFactor(META.ipca.factor[String(YEARS[0])])} de {META.ipca.base}. No CSV, a coluna <code>ipca_fator</code> e
+              as colunas terminadas em <code>_real</code> trazem a conversão.
             </li>
             <li>
               <strong>Saldo devedor (estimativa)</strong>: acumula o que faltou em cada ano e abate o que foi aplicado acima de 25% nos anos
@@ -263,10 +272,26 @@ export default function Page() {
               Noronha (PE) é distrito estadual, sem orçamento municipal, e fica fora da contagem.
             </li>
             <li>
-              <strong>Valores atípicos</strong> são marcados, não apagados, e continuam nos totais e medianas: percentual em MDE abaixo de 18%
-              ou acima de 45%; valor por aluno muito acima (mais de 2,5 vezes) ou abaixo (menos de 0,4 vez) do padrão do próprio município,
-              comparado à mediana nacional de cada ano; e receita de impostos que salta ou cai mais de 2,5 vezes em relação aos anos vizinhos
-              (o valor em R$ que faltou fica duvidoso). Costumam ser erros de declaração; confira na fonte antes de citar.
+              <strong>Valores fora do padrão</strong> são marcados, não apagados, e continuam nos totais e medianas. A marca compara o valor
+              com a <strong>própria história do município</strong>, não com uma faixa fixa:
+              <ul>
+                <li>
+                  <strong>% em MDE</strong>: um ano isolado que se afasta 10 pontos ou mais da mediana dos dois anos anteriores e dos dois
+                  seguintes e fica abaixo de 15% ou acima de 40%. Aplicação baixa que se repete por vários anos é tratada como real, e não
+                  é marcada.
+                </li>
+                <li>
+                  <strong>Por aluno</strong>: valor muito acima (mais de 2,5 vezes) ou abaixo (menos de 0,4 vez) do nível habitual do
+                  município (comparado à mediana nacional de cada ano), ou um salto de mais de 2,5 vezes (ou queda para menos de 0,4 vez)
+                  em relação ao ano anterior que não seja a volta ao nível de dois anos antes.
+                </li>
+                <li>
+                  <strong>Receita de impostos</strong>: 2,5 vezes acima ou abaixo da mediana dos anos vizinhos (o valor em R$ que faltou
+                  fica duvidoso).
+                </li>
+              </ul>
+              A marca diz “fora do padrão — confirme na fonte”. Só quando o valor é fisicamente improvável (MDE abaixo de 5% ou acima de 60%,
+              ou por aluno mais de 8 vezes a mediana nacional do ano) o painel fala em possível erro de declaração.
             </li>
             <li>
               <strong>Municípios criados depois de 2008</strong>:{" "}
@@ -315,7 +340,6 @@ export default function Page() {
           <h2 id="proximos-passos">Próximos passos</h2>
           <ul>
             <li>Alertas por e-mail quando um município acompanhado publicar novo relatório.</li>
-            <li>Valores corrigidos pela inflação (IPCA) ao lado dos nominais.</li>
             <li>Conferir o gasto por aluno com as matrículas do Censo Escolar/INEP e comparar com o CAQ.</li>
             <li>Percentual apurado pelos Tribunais de Contas ao lado do declarado.</li>
             <li>Cruzamento com o Tesouro (SICONFI) e percentual em saúde para todos os estados.</li>

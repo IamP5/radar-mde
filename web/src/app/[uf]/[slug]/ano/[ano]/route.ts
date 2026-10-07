@@ -8,7 +8,7 @@ import { YEARS, citiesOf, existedIn, getCity } from "@/lib/data";
  */
 export async function GET(_req: Request, { params }: RouteContext<"/[uf]/[slug]/ano/[ano]">) {
   const { uf, slug, ano } = await params;
-  const year = Number(ano);
+  const year = /^\d{4}$/.test(ano) ? Number(ano) : NaN;
   if (uf !== uf.toLowerCase() || !getCity(uf, slug) || !YEARS.includes(year)) return Response.json({ error: "not found" }, { status: 404 });
   const v = citiesOf(uf).map((c) => {
     const r = c.years[year];

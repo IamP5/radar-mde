@@ -6,20 +6,22 @@ import { Panel } from "@/components/kit/panel";
 import { Stat } from "@/components/kit/stat";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { CSV_COLUMNS, csvHref } from "@/lib/csv";
+import { SITE_URL } from "@/lib/site";
+import { Citations } from "./cite";
 import { META, YEARS, allCities, brStats, dateBR, int, stateGov, ufStats } from "@/lib/data";
 import { REGIONS, UFS, getUf } from "@/lib/geo";
 
 export const metadata: Metadata = {
   title: "Dados abertos",
   description: "Baixe a base do Radar MDE em CSV (padrão ou Excel Brasil) ou JSON: um registro por município e ano, com dicionário e forma de citar.",
+  alternates: { canonical: "/dados" },
 };
 
 const pctFmt = (v: number) => `${v.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%`;
 const head = "h-10 px-4 text-[13px] font-medium text-muted-foreground";
 
-const SITE = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "[endereço do Radar MDE]";
 
 /** State governments' years without an MDE declaration in the SIOPE open data (JOR-13). */
 function stateGaps() {
@@ -76,12 +78,12 @@ export default function Page() {
   const newer = allCities().filter((c) => c.since);
   const gaps = stateGaps();
   const year = META.updated.slice(0, 4);
-  const abnt = `RADAR MDE · BRASIL. Aplicação em manutenção e desenvolvimento do ensino nos municípios brasileiros, ${YEARS[0]}–${lastYear}. Base de dados, versão ${META.version}. Dados de FNDE/SIOPE, Tesouro Nacional/SICONFI e IBGE. Licença ${META.license}. Disponível em: ${SITE}/dados. Acesso em: dd mmm. aaaa.`;
+  const abnt = `RADAR MDE · BRASIL. Aplicação em manutenção e desenvolvimento do ensino nos municípios brasileiros, ${YEARS[0]}–${lastYear}. Base de dados, versão ${META.version}. Dados de FNDE/SIOPE, Tesouro Nacional/SICONFI e IBGE. Licença ${META.license}. Disponível em: ${SITE_URL}/dados.`;
   const bibtex = `@misc{radarmde${year},
   title        = {Radar MDE · Brasil: aplicação em MDE nos municípios brasileiros, ${YEARS[0]}--${lastYear}},
   year         = {${year}},
   note         = {Base de dados, versão ${META.version}. Fontes: FNDE/SIOPE, Tesouro Nacional/SICONFI, IBGE. Licença ${META.license}},
-  howpublished = {\\url{${SITE}/dados}}
+  howpublished = {\\url{${SITE_URL}/dados}}
 }`;
 
   return (
@@ -125,7 +127,9 @@ export default function Page() {
               <strong className="font-medium text-foreground">CSV padrão</strong>: UTF-8 com BOM, vírgula como separador e ponto decimal
               (padrão internacional, para R, Stata, Python e Google Planilhas). <strong className="font-medium text-foreground">Excel Brasil</strong>:
               ponto e vírgula como separador e vírgula decimal, abre direto em colunas no Excel em português. Valores em R$ são{" "}
-              <strong className="font-medium text-foreground">nominais</strong> (sem correção pela inflação). Célula vazia = sem dado ou não
+              <strong className="font-medium text-foreground">nominais</strong> (reais da época); as colunas terminadas em{" "}
+              <code className="font-mono text-[12.5px] text-foreground">_real</code> trazem os mesmos valores em R$ de {META.ipca.base},
+              corrigidos pelo IPCA. Célula vazia = sem dado ou não
               estimável, nunca zero.
             </p>
             <Code>{`# R
@@ -200,6 +204,7 @@ d = pandas.read_csv("radar-mde-brasil.csv", encoding="utf-8-sig")`}</Code>
         </H2>
         <Panel divided className="max-w-3xl">
           <Table className="tnum">
+            <TableCaption className="sr-only">Cobertura nacional por exercício: municípios, com dados de MDE, que não declararam e cobertura</TableCaption>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead scope="col" className={head}>Ano</TableHead>
@@ -237,6 +242,7 @@ d = pandas.read_csv("radar-mde-brasil.csv", encoding="utf-8-sig")`}</Code>
         </H2>
         <Panel divided className="max-w-3xl">
           <Table>
+            <TableCaption className="sr-only">Dicionário das colunas dos arquivos CSV</TableCaption>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead scope="col" className={`${head} w-56`}>Campo</TableHead>
@@ -287,14 +293,7 @@ d = pandas.read_csv("radar-mde-brasil.csv", encoding="utf-8-sig")`}</Code>
           Como citar
         </H2>
         <div className="max-w-3xl space-y-4 pb-4 text-[14px] leading-6 text-muted-foreground">
-          <div>
-            <div className="font-medium text-foreground">ABNT</div>
-            <Code>{abnt}</Code>
-          </div>
-          <div>
-            <div className="font-medium text-foreground">BibTeX</div>
-            <Code>{bibtex}</Code>
-          </div>
+          <Citations abnt={abnt} bibtex={bibtex} />
           <p>
             Versão dos dados <code className="font-mono text-[12.5px] text-foreground">{META.version}</code>: arquivos do SIOPE extraídos em{" "}
             {extracted}, base gerada em {dateBR(META.updated)}. População: {META.popSource}, a mesma para todos os anos. Licença:{" "}

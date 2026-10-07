@@ -30,12 +30,16 @@ function snapshot() {
   return cache;
 }
 
-/** Entries are "uf/slug" (e.g. "sp/santo-andre"); bare slugs saved before the national version were all from SP. */
-export function useWatchlist(): [string[], (id: string) => void] {
-  const raw = useSyncExternalStore(subscribe, snapshot, () => "[]");
+/**
+ * Entries are "uf/slug" (e.g. "sp/santo-andre"); bare slugs saved before the national version were all from SP.
+ * The third value is false during prerender/hydration (the list is unknown there, not empty), so callers can
+ * render a placeholder instead of an empty state that would then be swapped out (CLS-01).
+ */
+export function useWatchlist(): [string[], (id: string) => void, boolean] {
+  const raw = useSyncExternalStore<string | null>(subscribe, snapshot, () => null);
   let list: string[] = [];
   try {
-    list = (JSON.parse(raw) as string[]).map((s) => (s.includes("/") ? s : `sp/${s}`));
+    list = (JSON.parse(raw ?? "[]") as string[]).map((s) => (s.includes("/") ? s : `sp/${s}`));
   } catch {}
   const toggle = (id: string) => {
     const next = list.includes(id) ? list.filter((s) => s !== id) : [...list, id];
@@ -44,5 +48,5 @@ export function useWatchlist(): [string[], (id: string) => void] {
     } catch {}
     listeners.forEach((l) => l());
   };
-  return [list, toggle];
+  return [list, toggle, raw !== null];
 }

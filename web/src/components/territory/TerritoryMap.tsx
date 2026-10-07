@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { useCallback, useMemo, useState, type ReactNode } from "react";
-import Choropleth, { Legend } from "@/components/Choropleth";
+import Choropleth, { Legend, prewarmMap } from "@/components/Choropleth";
 import { Segmented } from "@/components/kit/segmented";
 import { StatusDot, type StatusKind } from "@/components/kit/status";
 import { withYear } from "@/components/YearPicker";
 import { BINS, METRICS, SHARE_BINS, colorOf, funBins, isBelowBin, quintileBins, type Bin, type MetricKey } from "@/lib/bins";
-import { MDE_MIN, int, isAtypical, pct } from "@/lib/format";
+import { MDE_MIN, int, pct } from "@/lib/format";
 import { UFS, cityPath, ufPath } from "@/lib/geo";
-import { belowShare, isAtip, shortfallLabel, type Row, type UfSummary } from "@/lib/rows";
+import { atipNote, belowShare, isAtip, isImplausible, shortfallLabel, type Row, type UfSummary } from "@/lib/rows";
 
 type UfMetric = "share" | "median" | "gov";
 const UF_METRICS: { key: UfMetric; label: string; short: string }[] = [
@@ -150,7 +150,9 @@ export default function TerritoryMap({ ufs, years, year, initialYear, rows, rows
             {nd ? <span className="text-critical">Não declarou</span> : v == null ? <span className="text-muted-foreground">{r.since != null && year < r.since ? "Não existia" : "Sem dados"}</span> : m.fmt(v)}
           </span>
         </div>
-        {metric !== "fun" && (isAtip(r, yi, metric === "aluno" ? "aluno" : "mde") || (metric === "mde" && isAtypical(v))) && <div className="text-xs text-warning-ink">Valor atípico: possível erro de preenchimento</div>}
+        {metric !== "fun" && isAtip(r, yi, metric === "aluno" ? "aluno" : "mde") && (
+                      <div className="text-xs text-warning-ink">{atipNote([metric === "aluno" ? "aluno" : "mde"], isImplausible(r, yi))}</div>
+                    )}
         <div className="text-xs text-muted-foreground tnum">{int(r.pop)} hab.</div>
       </>
     );
@@ -169,11 +171,24 @@ export default function TerritoryMap({ ufs, years, year, initialYear, rows, rows
   );
 
   const showMun = mode === "mun";
+  const mapHeight = ufCodes ? 520 : 600;
+  const warm = () => {
+    if (mode === "mun") return;
+    onNeedRows();
+    prewarmMap("br", "mun", ufCodes, mapHeight, true);
+  };
   const loading = showMun && !rows;
 
   return (
     <div>
       <div className="mb-3 flex flex-wrap items-center gap-2">
+        {/* PERF-12: start the municipal download and projection on intent, before the click */}
+        <span
+          className="contents"
+          onPointerEnter={warm}
+          onFocus={warm}
+          onTouchStart={warm}
+        >
         <Segmented
           ariaLabel="Nível do mapa"
           value={mode}
@@ -183,6 +198,7 @@ export default function TerritoryMap({ ufs, years, year, initialYear, rows, rows
             { value: "mun", label: "Municípios" },
           ]}
         />
+        </span>
         {showMun ? (
           <Segmented ariaLabel="Indicador do mapa" value={metric} onChange={setMetric} options={METRICS.map((m) => ({ value: m.key, label: MUN_SHORT[m.key], title: m.label }))} />
         ) : (
@@ -211,7 +227,7 @@ export default function TerritoryMap({ ufs, years, year, initialYear, rows, rows
             ? `Mapa ${ariaScope} por estado, ${year}: ${UF_METRICS.find((m) => m.key === ufMetric)!.label}. Use Tab para percorrer os estados.`
             : `Mapa ${ariaScope} por município, ${year}: ${METRICS.find((m) => m.key === metric)!.label}`
         }
-        height={ufCodes ? 520 : 600}
+        height={mapHeight}
       />
       {showMun ? (
         <Legend title={METRICS.find((m) => m.key === metric)!.label} bins={munBins} nd={metric === "mde"} outlined={metric === "aluno" ? undefined : belowKeys} />
@@ -219,7 +235,7 @@ export default function TerritoryMap({ ufs, years, year, initialYear, rows, rows
         <Legend title={UF_METRICS.find((m) => m.key === ufMetric)!.label} bins={ufBins} nd={false} outlined={ufMetric === "share" ? undefined : belowKeys} />
       )}
       <p className="mt-3 text-xs text-muted-foreground">
-        {(showMun ? metric !== "aluno" : ufMetric !== "share") ? "Contorno escuro: abaixo do mínimo legal. " : ""}
+        {(showMun ? metric !== "aluno" : ufMetric !== "share") ? "Contorno vermelho (com ponto nos menores): abaixo do mínimo legal. " : ""}
         Os mesmos números em tabela:{" "}
         {tableId && (
           <>

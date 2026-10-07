@@ -213,32 +213,55 @@ for uf, (code, name, reg) in UFS.items():
 
 
 def flag_atypical(entities):
-    """Mark (never drop) values that are probably filing errors, as rec["atip"] = ["mde", "aluno", "base"].
-    mde: % outside 18–45 (same rule as isAtypical() in the web app).
-    aluno: per-student value, relative to the national median of the year, < 0.4x or > 2.5x the entity's own
-           typical level (median over its years), or > 8x the national median.
-    base: tax-revenue base < 0.4x or > 2.5x the median of the entity's neighbouring years (±2)."""
+    """Mark (never drop) values outside the entity's own pattern, as rec["atip"] = ["mde", "aluno", "base"];
+    rec["atipImpl"] = 1 when a flag is physically implausible (likely a filing error).
+    mde:   < 5% or > 60% (implausible), or a one-year outlier against the entity's own history:
+           |value - median of the ±2 neighbouring years| >= 10 p.p. and value < 15% or > 40%.
+           Persistent low application is real under-application and is NOT flagged.
+    aluno: per-student, relative to the national median of the year, < 0.4x or > 2.5x the entity's own typical
+           level (median over its years); or a year-over-year jump > 2.5x / drop < 0.4x that is not a return to
+           the level of two years before; or > 8x the national median (implausible).
+    base:  tax-revenue base < 0.4x or > 2.5x the median of the entity's neighbouring years (±2)."""
     nat = {}
     for y in YEARS:
         v = [e["years"][y]["perAluno"] for e in entities if y in e["years"] and e["years"][y].get("perAluno")]
         nat[y] = statistics.median(v) if v else None
+
+    def around(vals, y):
+        nb = [vals[z] for z in range(y - 2, y + 3) if z != y and z in vals]
+        return statistics.median(nb) if len(nb) >= 2 else None
+
+    out = lambda r, lo=0.4, hi=2.5: not lo <= r <= hi
     for e in entities:
         ys = e["years"]
-        rel = {y: r["perAluno"] / nat[y] for y, r in ys.items() if r.get("perAluno") and nat[y]}
+        mde = {y: r["mde"] for y, r in ys.items() if r.get("mde") is not None}
+        alu = {y: r["perAluno"] for y, r in ys.items() if r.get("perAluno")}
+        rel = {y: v / nat[y] for y, v in alu.items() if nat[y]}
         own = statistics.median(rel.values()) if len(rel) >= 4 else None
         base = {y: r["base"] for y, r in ys.items() if r.get("base")}
         for y, r in ys.items():
-            f = []
-            if r.get("mde") is not None and (r["mde"] < 18 or r["mde"] > 45):
-                f.append("mde")
-            if y in rel and (rel[y] > 8 or (own and not 0.4 <= rel[y] / own <= 2.5)):
-                f.append("aluno")
+            f, impl = [], False
+            if y in mde:
+                v, md = mde[y], around(mde, y)
+                if v < 5 or v > 60:
+                    f.append("mde"); impl = True
+                elif md is not None and abs(v - md) >= 10 and (v < 15 or v > 40):
+                    f.append("mde")
+            if y in rel:
+                prev, prev2 = alu.get(y - 1), alu.get(y - 2)
+                jump = prev and out(alu[y] / prev) and not (prev2 and not out(alu[y] / prev2))
+                if rel[y] > 8:
+                    f.append("aluno"); impl = True
+                elif (own and out(rel[y] / own)) or jump:
+                    f.append("aluno")
             if y in base:
-                nb = [base[z] for z in range(y - 2, y + 3) if z != y and z in base]
-                if len(nb) >= 2 and not 0.4 <= base[y] / statistics.median(nb) <= 2.5:
+                md = around(base, y)
+                if md and out(base[y] / md):
                     f.append("base")
             if f:
                 r["atip"] = f
+                if impl:
+                    r["atipImpl"] = 1
 
 
 flag_atypical(cities)
@@ -262,12 +285,31 @@ updated = date.today().isoformat()
 digest = hashlib.sha1((cities_txt + states_txt).encode()).hexdigest()[:8]
 version = f"{updated}.{digest}"
 pop_year = max((e.get("exercicio") or 0) for e in json.load(open(os.path.join(BR, "entes.json")))) or None
+# IPCA deflators: annual average of the monthly index (IBGE SIDRA 1737/2266), to R$ of the latest published year
+ipca_raw = json.load(open(os.path.join(BR, "ipca_1737.json")))
+avg = {}
+for y in YEARS:
+    months = [v for k, v in ipca_raw["index"].items() if k.startswith(str(y))]
+    assert len(months) == 12, f"IPCA incomplete for {y}"
+    avg[y] = sum(months) / 12
+ipca_base = complete[-1]
+ipca = {"base": ipca_base, "factor": {str(y): round(avg[ipca_base] / avg[y], 6) for y in YEARS},
+        "source": ipca_raw["source"], "fetched": ipca_raw["fetched"],
+        "method": "média anual do número-índice do IPCA; fator = média do ano-base ÷ média do ano"}
+# health (SICONFI annex 14, SP only so far): which UFs have any value
+health_by_uf = defaultdict(int)
+for c in cities:
+    if any(r.get("sau") is not None for r in c["years"].values()):
+        health_by_uf[c["uf"]] += 1
 json.dump({"years": complete, "updated": updated, "extracted": extracted, "version": version,
            "popYear": pop_year, "popSource": f"SICONFI/Tesouro (cadastro de entes, exercício {pop_year}), estimativa IBGE",
            "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/deed.pt_BR",
            "installed": {str(k): v for k, v in INSTALLED.items()}, "nByYear": n_by_year,
+           "ipca": ipca, "health": {"ufs": sorted(health_by_uf), "cities": dict(health_by_uf)},
            "coverage": total, "coverageUf": coverage}, open(os.path.join(OUT, "meta.json"), "w"), ensure_ascii=False)
-json.dump({"v": version}, open(os.path.join(OUT, "version.json"), "w"))
+# small client-safe file (bundled into client code): data version, IPCA deflators, UFs with health data
+json.dump({"v": version, "ipca": ipca, "healthUfs": sorted(health_by_uf)}, open(os.path.join(OUT, "version.json"), "w"),
+          ensure_ascii=False)
 print("cities", n, "coverage(mde) by year", total)
 print("published years", complete)
 print("size MB", os.path.getsize(os.path.join(OUT, "cities.json")) / 1e6)
