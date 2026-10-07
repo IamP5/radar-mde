@@ -11,3 +11,4 @@ __pycache__/
 /qa/reports/**/results*.json
 /qa/reports/**/lh_*.json
 /build.log
+/web/.next-*/
