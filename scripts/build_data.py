@@ -4,7 +4,7 @@ Inputs (see fetch_br.py): data/raw/br/{ibge_municipios,entes}.json, siope_<UF>_<
 siope_receita_<UF>_<year>.json. SICONFI annex 14 files (data/raw/a14_*.json, São Paulo only) add the
 Treasury cross-check and health %, where present.
 """
-import json, os, re, unicodedata
+import hashlib, json, os, re, statistics, unicodedata
 from collections import defaultdict
 from datetime import date
 
@@ -28,6 +28,10 @@ UFS = {  # sigla: (IBGE code, name, region)
 }
 UF_BY_CODE = {v[0]: k for k, v in UFS.items()}
 BRASILIA = 5300108
+# Municipalities installed after 2008 (IBGE): years before installation get no record at all (never "não declarou")
+INSTALLED = {1504752: 2013, 4212650: 2013, 4220000: 2013, 5006275: 2013, 4314548: 2013, 5101837: 2025}
+# IBGE label typos in regiões intermediárias/imediatas
+LABEL_FIX = {"Juíz de Fora": "Juiz de Fora"}
 
 
 def slug(s):
@@ -111,12 +115,13 @@ def record(si, rec_base, y, sc=None):
     if si.get("8.2"):
         rec["mdeV"] = round(si["8.2"])
     if si.get("8.1"):
-        rec["base"] = round(si["8.1"] / 0.25)
+        rec["base"] = round(si["8.1"] / 0.25)  # baseSrc omitted = SIOPE 8.1 (the usual case)
     elif rec.get("mdeV") and rec["mde"] > 0:
-        rec["base"] = round(rec["mdeV"] / rec["mde"] * 100)
+        rec["base"], rec["baseSrc"] = round(rec["mdeV"] / rec["mde"] * 100), "8.2"
     elif rec_base > 0:
-        rec["base"] = round(rec_base)
-        rec["mdeV"] = round(rec["base"] * rec["mde"] / 100)
+        rec["base"], rec["baseSrc"] = round(rec_base), "receita"
+    if rec.get("base") and not rec.get("mdeV"):
+        rec["mdeV"], rec["mdeVEst"] = round(rec["base"] * rec["mde"] / 100), 1  # Radar estimate, not declared
     if "1.2" in si and si["1.2"] > 0:
         rec["fun"] = round(si["1.2"], 2)
         rec["funMin"] = 70 if y >= 2021 else 60
@@ -128,11 +133,12 @@ def record(si, rec_base, y, sc=None):
     if si.get("4.9") and 100 <= si["4.9"] <= 200_000:  # outside this band it's a filing error (R$ 5, R$ 514 mil)
         rec["perAluno"] = round(si["4.9"])
     if rec.get("mdeV") and rec.get("base") and abs(rec["mdeV"] / rec["base"] * 100 - rec["mde"]) > 1:
-        del rec["mdeV"]  # R$ applied contradicts the declared % (the % is SIOPE's official figure)
+        # R$ applied contradicts the declared % (the % is SIOPE's official figure): fall back to the estimate
+        rec["mdeV"], rec["mdeVEst"] = round(rec["base"] * rec["mde"] / 100), 1
     if sc:
         if "base" not in rec and sc["mde"] and sc["mde"]["pct"] > 0 and sc["mde"].get("val"):
-            rec["base"] = round(sc["mde"]["val"] / sc["mde"]["pct"] * 100)
-            rec["mdeV"] = round(rec["base"] * rec["mde"] / 100)
+            rec["base"], rec["baseSrc"] = round(sc["mde"]["val"] / sc["mde"]["pct"] * 100), "siconfi"
+            rec["mdeV"], rec["mdeVEst"] = round(rec["base"] * rec["mde"] / 100), 1
         if sc["mde"] and abs(sc["mde"]["pct"] - rec["mde"]) >= 1:
             rec["alt"] = round(sc["mde"]["pct"], 2)  # Treasury figure disagrees with SIOPE
     return rec
@@ -147,8 +153,11 @@ for m in sorted(ibge, key=lambda m: m["id"]):
         continue
     uf = UF_BY_CODE[cod // 100000]
     ri = m.get("regiao-imediata") or {}
+    since = INSTALLED.get(cod)
     years = {}
     for y in YEARS:
+        if since and y < since:
+            continue  # the municipality did not exist yet
         sc, simp = siconfi(cod, y)
         key = f"UF:DF" if cod == BRASILIA else cod // 10
         si = siope.get((key, y))
@@ -158,7 +167,7 @@ for m in sorted(ibge, key=lambda m: m["id"]):
             mde = sc["mde"]
             rec = {"s": "ok", "src": "siconfi", "mde": round(mde["pct"], 2), "mdeV": round(mde.get("val", 0))}
             if mde["pct"] > 0 and mde.get("val"):
-                rec["base"] = round(mde["val"] / mde["pct"] * 100)
+                rec["base"], rec["baseSrc"] = round(mde["val"] / mde["pct"] * 100), "siconfi"
             if sc["fun"]:
                 rec["fun"] = round(sc["fun"]["pct"], 2)
                 rec["funMin"] = sc["fun"].get("min") or (70 if y >= 2021 else 60)
@@ -171,11 +180,15 @@ for m in sorted(ibge, key=lambda m: m["id"]):
         if rec.get("mde") is not None:
             coverage[uf][y] += 1
         years[y] = rec
-    cities.append({
+    inter, imediata = (ri.get("regiao-intermediaria") or {}).get("nome"), ri.get("nome")
+    city = {
         "id": cod, "name": m["nome"], "slug": slug(m["nome"]), "uf": uf, "pop": pop.get(cod, 0),
-        "inter": (ri.get("regiao-intermediaria") or {}).get("nome"), "imediata": ri.get("nome"),
+        "inter": LABEL_FIX.get(inter, inter), "imediata": LABEL_FIX.get(imediata, imediata),
         "capital": False, "years": years,
-    })
+    }
+    if since:
+        city["since"] = since
+    cities.append(city)
 
 # capitals: SICONFI flags them in `entes`
 caps = {e["cod_ibge"] for e in json.load(open(os.path.join(BR, "entes.json"))) if str(e["capital"]).strip() == "1"}
@@ -198,15 +211,63 @@ for uf, (code, name, reg) in UFS.items():
             years[y] = {"s": "nd"}
     states.append({"uf": uf, "code": code, "name": name, "region": reg, "years": years})
 
-json.dump(cities, open(os.path.join(OUT, "cities.json"), "w"), ensure_ascii=False, separators=(",", ":"))
-json.dump(states, open(os.path.join(OUT, "states.json"), "w"), ensure_ascii=False, separators=(",", ":"))
+
+def flag_atypical(entities):
+    """Mark (never drop) values that are probably filing errors, as rec["atip"] = ["mde", "aluno", "base"].
+    mde: % outside 18–45 (same rule as isAtypical() in the web app).
+    aluno: per-student value, relative to the national median of the year, < 0.4x or > 2.5x the entity's own
+           typical level (median over its years), or > 8x the national median.
+    base: tax-revenue base < 0.4x or > 2.5x the median of the entity's neighbouring years (±2)."""
+    nat = {}
+    for y in YEARS:
+        v = [e["years"][y]["perAluno"] for e in entities if y in e["years"] and e["years"][y].get("perAluno")]
+        nat[y] = statistics.median(v) if v else None
+    for e in entities:
+        ys = e["years"]
+        rel = {y: r["perAluno"] / nat[y] for y, r in ys.items() if r.get("perAluno") and nat[y]}
+        own = statistics.median(rel.values()) if len(rel) >= 4 else None
+        base = {y: r["base"] for y, r in ys.items() if r.get("base")}
+        for y, r in ys.items():
+            f = []
+            if r.get("mde") is not None and (r["mde"] < 18 or r["mde"] > 45):
+                f.append("mde")
+            if y in rel and (rel[y] > 8 or (own and not 0.4 <= rel[y] / own <= 2.5)):
+                f.append("aluno")
+            if y in base:
+                nb = [base[z] for z in range(y - 2, y + 3) if z != y and z in base]
+                if len(nb) >= 2 and not 0.4 <= base[y] / statistics.median(nb) <= 2.5:
+                    f.append("base")
+            if f:
+                r["atip"] = f
+
+
+flag_atypical(cities)
+flag_atypical(states)
+
+cities_txt = json.dumps(cities, ensure_ascii=False, separators=(",", ":"))
+states_txt = json.dumps(states, ensure_ascii=False, separators=(",", ":"))
+open(os.path.join(OUT, "cities.json"), "w").write(cities_txt)
+open(os.path.join(OUT, "states.json"), "w").write(states_txt)
 
 n = len(cities)
 total = {y: sum(coverage[uf][y] for uf in UFS) for y in YEARS}
+# municipalities that existed in each year (denominator for coverage)
+n_by_year = {y: sum(1 for c in cities if c.get("since", 0) <= y) for y in YEARS}
 # Publish a year once the national picture is close to complete, so totals are comparable across years
-complete = [y for y in YEARS if total[y] >= 0.85 * n]
-json.dump({"years": complete, "updated": date.today().isoformat(), "coverage": total,
-           "coverageUf": coverage}, open(os.path.join(OUT, "meta.json"), "w"), ensure_ascii=False)
+complete = [y for y in YEARS if total[y] >= 0.85 * n_by_year[y]]
+# Raw SIOPE files are downloaded by fetch_br.py; their newest modification date is the extraction date
+siope_files = [os.path.join(BR, f) for f in os.listdir(BR) if f.startswith("siope_")]
+extracted = date.fromtimestamp(max(os.path.getmtime(f) for f in siope_files)).isoformat()
+updated = date.today().isoformat()
+digest = hashlib.sha1((cities_txt + states_txt).encode()).hexdigest()[:8]
+version = f"{updated}.{digest}"
+pop_year = max((e.get("exercicio") or 0) for e in json.load(open(os.path.join(BR, "entes.json")))) or None
+json.dump({"years": complete, "updated": updated, "extracted": extracted, "version": version,
+           "popYear": pop_year, "popSource": f"SICONFI/Tesouro (cadastro de entes, exercício {pop_year}), estimativa IBGE",
+           "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/deed.pt_BR",
+           "installed": {str(k): v for k, v in INSTALLED.items()}, "nByYear": n_by_year,
+           "coverage": total, "coverageUf": coverage}, open(os.path.join(OUT, "meta.json"), "w"), ensure_ascii=False)
+json.dump({"v": version}, open(os.path.join(OUT, "version.json"), "w"))
 print("cities", n, "coverage(mde) by year", total)
 print("published years", complete)
 print("size MB", os.path.getsize(os.path.join(OUT, "cities.json")) / 1e6)

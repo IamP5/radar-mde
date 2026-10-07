@@ -72,7 +72,7 @@ export default function YearPicker({ years, year, onChange, className }: { years
         ref={row}
         role="radiogroup"
         aria-labelledby={labelId}
-        className="relative flex min-w-0 items-center gap-0.5 overflow-x-auto rounded-lg bg-muted p-0.5 [scrollbar-width:none]"
+        className="relative flex min-w-0 items-center gap-0.5 overflow-x-auto rounded-lg bg-muted p-0.5 fade-x [scrollbar-width:none]"
         onKeyDown={(e) => {
           if (e.key === "ArrowLeft" || e.key === "ArrowDown") { e.preventDefault(); go(i - 1); }
           if (e.key === "ArrowRight" || e.key === "ArrowUp") { e.preventDefault(); go(i + 1); }
@@ -92,7 +92,9 @@ export default function YearPicker({ years, year, onChange, className }: { years
               onClick={() => onChange(y)}
               className={cn(
                 "h-7 shrink-0 rounded-md px-2 text-[13px] font-medium tnum transition-colors duration-150",
-                on ? "bg-background text-foreground shadow-[0_0_0_1px_var(--border),0_1px_2px_rgba(0,0,0,0.06)]" : "text-muted-foreground hover:text-foreground",
+                on
+                  ? "bg-background text-foreground shadow-[0_0_0_1px_var(--border),0_1px_2px_rgba(0,0,0,0.06)] forced-colors:bg-[Highlight] forced-colors:text-[HighlightText] forced-colors:forced-color-adjust-none"
+                  : "text-muted-foreground hover:text-foreground",
               )}
             >
               {y}

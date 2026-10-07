@@ -13,14 +13,14 @@ const DOT: Record<StatusKind, string> = {
 const TINT: Record<StatusKind, string> = {
   ok: "bg-good-soft text-good-ink",
   edge: "bg-warning-soft text-warning-ink",
-  below: "bg-critical-soft text-critical",
+  below: "bg-critical-soft text-critical-ink",
   nd: "bg-muted text-muted-foreground",
   info: "bg-brand-soft text-brand-ink",
 };
 
 /** 8px status dot (Vercel deployments style). Always paired with a text label. */
 export function StatusDot({ kind, className }: { kind: StatusKind; className?: string }) {
-  return <span aria-hidden className={cn("inline-block size-2 shrink-0 rounded-full", DOT[kind], className)} />;
+  return <span aria-hidden className={cn("inline-block size-2 shrink-0 rounded-full forced-color-adjust-none", DOT[kind], className)} />;
 }
 
 /** Tinted pill: color-100 background, color-900 text, with the dot. */

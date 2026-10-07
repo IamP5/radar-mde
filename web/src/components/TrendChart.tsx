@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useMemo, useRef } from "react";
-import { Area, CartesianGrid, ComposedChart, Line, XAxis, YAxis } from "recharts";
+import { Area, CartesianGrid, ComposedChart, Line, ReferenceArea, XAxis, YAxis } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 import { cn } from "@/lib/utils";
 import { ACTIVE_DOT, AXIS, CHART_CLASS, GRID, TooltipRow, YearTick, niceTicks, yearTicks } from "./chart-parts";
@@ -18,6 +18,8 @@ type Props = {
   height?: number;
   /** context lines (e.g. state and national medians), thin and unlabelled on the plot, listed in the tooltip */
   refs?: { label: string; color: string; values: (number | null)[] }[];
+  /** shaded span of years (e.g. 2020–2021, EC 119/2022) with a small label */
+  band?: { from: number; to: number; label: string };
 };
 
 const fmt = (v: number, unit: "%" | "R$", short = false) =>
@@ -28,7 +30,7 @@ const fmt = (v: number, unit: "%" | "R$", short = false) =>
       : `R$ ${Math.round(v).toLocaleString("pt-BR")}`;
 
 /** Single-series area/line with an optional dashed legal-minimum reference (may step), context lines, tooltip on hover. */
-export default function TrendChart({ points, label, thresholdLabel, unit = "%", height = 220, refs = [] }: Props) {
+export default function TrendChart({ points, label, thresholdLabel, unit = "%", height = 220, refs = [], band }: Props) {
   const gid = `trend-${useId().replace(/:/g, "")}`;
   const box = useRef<HTMLDivElement>(null);
   const width = useWidth(box, 600, 0, 4000);
@@ -58,6 +60,9 @@ export default function TrendChart({ points, label, thresholdLabel, unit = "%", 
   const lo = unit === "%" ? Math.max(0, Math.min(...all) - 2) : 0;
   const hi = unit === "%" ? Math.max(...all) + 2 : Math.max(...all) * 1.08;
   const { ticks, domain } = niceTicks(lo, hi);
+  // y axis as wide as its longest label ("125 mil" must not wrap or clip)
+  const yWidth = Math.max(36, Math.max(...ticks.map((t) => fmt(t, unit, true).length)) * 7.5 + 14);
+  const showBand = band && points.some((p) => p.year === band.from) && points.some((p) => p.year === band.to);
 
   const config: ChartConfig = {
     value: { label, color: "var(--series-1)" },
@@ -73,8 +78,14 @@ export default function TrendChart({ points, label, thresholdLabel, unit = "%", 
       <p className="sr-only">
         {label} por ano{thresholdLabel ? `, com linha de referência em ${thresholdLabel}` : ""}. Em {lastPt.year}: {fmt(lastPt.value!, unit)}.
         {belowYears.length > 0 && ` Abaixo do mínimo em ${belowYears.join(", ")}.`}
+        {showBand && ` Faixa destacada: ${band.from}–${band.to} (${band.label}).`}
       </p>
-      <ChartContainer config={config} className={cn(CHART_CLASS, "h-[220px]")} style={{ height }} aria-hidden>
+      <ChartContainer
+        config={config}
+        className={cn(CHART_CLASS, "h-[220px] [&_*:focus:not(:focus-visible)]:outline-none")}
+        style={{ height }}
+        aria-hidden
+      >
         <ComposedChart data={data} accessibilityLayer={false} margin={{ top: 8, right: 12, bottom: 0, left: 0 }}>
           <defs>
             <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
@@ -83,8 +94,19 @@ export default function TrendChart({ points, label, thresholdLabel, unit = "%", 
             </linearGradient>
           </defs>
           <CartesianGrid {...GRID} />
-          <XAxis dataKey="year" {...AXIS} ticks={yearTicks(points.map((p) => p.year), width - (unit === "%" ? 44 : 52) - 28)} interval={0} padding={{ left: 8, right: 8 }} tick={(p) => <YearTick {...p} />} />
-          <YAxis {...AXIS} width={unit === "%" ? 44 : 52} domain={domain} ticks={ticks} tickFormatter={(v: number) => fmt(v, unit, true)} allowDataOverflow />
+          {showBand && (
+            <ReferenceArea
+              x1={band.from}
+              x2={band.to}
+              fill="var(--muted-foreground)"
+              fillOpacity={0.1}
+              stroke="none"
+              ifOverflow="hidden"
+              label={{ value: band.label, position: "insideTop", fontSize: 11, fill: "var(--muted-foreground)" }}
+            />
+          )}
+          <XAxis dataKey="year" {...AXIS} ticks={yearTicks(points.map((p) => p.year), width - yWidth - 28)} interval={0} padding={{ left: 8, right: 8 }} tick={(p) => <YearTick {...p} />} />
+          <YAxis {...AXIS} width={yWidth} domain={domain} ticks={ticks} tickFormatter={(v: number) => fmt(v, unit, true)} allowDataOverflow />
           <ChartTooltip
             cursor={{ stroke: "var(--border)" }}
             itemSorter={(item) => (item.dataKey === "value" ? 0 : item.dataKey === "min" ? 2 : 1)}

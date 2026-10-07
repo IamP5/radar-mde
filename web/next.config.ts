@@ -11,6 +11,8 @@ const nextConfig: NextConfig = {
       { source: "/df", destination: "/df/brasilia", permanent: true },
       { source: "/municipio/:slug", destination: "/sp/:slug", permanent: true },
       { source: "/dados/radar-mde-sp.csv", destination: "/dados/csv/sp", permanent: true },
+      // Pages declare app/icon.svg; old clients and crawlers still ask for /favicon.ico
+      { source: "/favicon.ico", destination: "/icon.svg", permanent: false },
     ];
   },
   partialPrefetching: true,

@@ -3,13 +3,13 @@
 import { Check, ChevronsUpDown } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cityPath, getRegion, getUf, REGIONS, regionPath, UFS, ufPath, type RegionKey } from "@/lib/geo";
-import { norm } from "@/lib/format";
+import { normKey } from "@/lib/format";
 import { loadIndex, type IndexEntry } from "@/lib/indice";
 import { cn } from "@/lib/utils";
 
@@ -22,36 +22,40 @@ type Props = { region?: RegionKey; uf?: string; city?: string };
  */
 export default function Breadcrumbs({ region, uf, city }: Props) {
   const reg = region ?? (uf ? getUf(uf)!.region : undefined);
+  const [q, refresh] = useAnoQuery();
+  const y = (href: string) => `${href}${q}`;
+  // Distrito Federal: its "UF page" is Brasília's page, so the crumb would link to itself
+  const dfCity = uf?.toUpperCase() === "DF" && !!city;
   return (
-    <nav aria-label="Navegação territorial" className="min-w-0">
+    <nav aria-label="Navegação territorial" className="min-w-0" onPointerEnter={refresh} onFocusCapture={refresh}>
       <ol className="flex min-w-0 flex-wrap items-center gap-x-0.5 gap-y-1 text-sm text-muted-foreground">
         <li className="flex items-center">
-          <Crumb href="/" label="Brasil" current={!reg} />
+          <Crumb href={y("/")} label="Brasil" current={!reg} />
         </li>
         {reg && (
           <Level>
-            <Crumb href={regionPath(reg)} label={getRegion(reg).name} current={!uf} />
+            <Crumb href={y(regionPath(reg))} label={getRegion(reg).name} current={!uf} />
             <SiblingMenu
               label="Trocar de região"
               heading="Regiões"
-              items={REGIONS.map((r) => ({ key: r.key, label: r.name, href: regionPath(r.key), on: r.key === reg }))}
+              items={REGIONS.map((r) => ({ key: r.key, label: r.name, href: y(regionPath(r.key)), on: r.key === reg }))}
             />
           </Level>
         )}
         {uf && reg && (
           <Level>
-            <Crumb href={ufPath(uf)} label={getUf(uf)!.name} current={!city} />
+            <Crumb href={dfCity ? undefined : y(ufPath(uf))} label={getUf(uf)!.name} current={!city} />
             <SiblingMenu
               label="Trocar de estado"
               heading={`Estados da região ${getRegion(reg).name}`}
-              items={UFS.filter((u) => u.region === reg).map((u) => ({ key: u.uf, label: u.name, hint: u.uf, href: ufPath(u.uf), on: u.uf === uf }))}
+              items={UFS.filter((u) => u.region === reg).map((u) => ({ key: u.uf, label: u.name, hint: u.uf, href: y(ufPath(u.uf)), on: u.uf === uf.toUpperCase() }))}
             />
           </Level>
         )}
         {uf && city && (
           <Level>
             <Crumb label={city} current />
-            {uf !== "DF" && <CityPicker uf={uf} current={city} />}
+            {!dfCity && <CityPicker uf={uf} current={city} query={q} />}
           </Level>
         )}
       </ol>
@@ -69,17 +73,33 @@ function Level({ children }: { children: React.ReactNode }) {
 }
 
 function Crumb({ href, label, current }: { href?: string; label: string; current: boolean }) {
-  if (current || !href)
+  if (current)
     return (
       <span aria-current="page" className="truncate rounded-md px-1.5 py-0.5 font-medium text-foreground">
         {label}
       </span>
     );
+  if (!href) return <span className="truncate rounded-md px-1.5 py-0.5">{label}</span>;
   return (
-    <Link href={href} className="truncate rounded-md px-1.5 py-0.5 transition-colors duration-150 hover:bg-accent hover:text-foreground">
+    <Link href={href} className="inline-flex min-h-6 items-center truncate rounded-md px-1.5 py-0.5 transition-colors duration-150 hover:bg-accent hover:text-foreground">
       {label}
     </Link>
   );
+}
+
+/**
+ * "?ano=2019" while a non-default year is selected (pages mirror it to the URL with replaceState, which fires no
+ * event), re-read whenever the pointer or focus enters the breadcrumbs, i.e. before any crumb can be followed.
+ */
+function useAnoQuery() {
+  const [q, setQ] = useState("");
+  const refresh = useCallback(() => {
+    const a = new URLSearchParams(window.location.search).get("ano");
+    setQ(a && /^\d{4}$/.test(a) ? `?ano=${a}` : "");
+  }, []);
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- the URL is only readable after hydration
+  useEffect(refresh, [refresh]);
+  return [q, refresh] as const;
 }
 
 type Item = { key: string; label: string; hint?: string; href: string; on: boolean };
@@ -89,7 +109,7 @@ function SiblingMenu({ label, heading, items }: { label: string; heading: string
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button variant="ghost" size="icon-xs" aria-label={label} title={label} className="text-muted-foreground hover:text-foreground">
+          <Button variant="ghost" size="icon-xs" aria-label={label} title={label} className="text-muted-foreground hover:text-foreground print:hidden">
             <ChevronsUpDown className="size-3.5" />
           </Button>
         }
@@ -115,7 +135,7 @@ function SiblingMenu({ label, heading, items }: { label: string; heading: string
 }
 
 /** Searchable list of the state's municipalities (Popover + Command). */
-function CityPicker({ uf, current }: { uf: string; current: string }) {
+function CityPicker({ uf, current, query }: { uf: string; current: string; query: string }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [list, setList] = useState<IndexEntry[] | null>(null);
@@ -138,13 +158,14 @@ function CityPicker({ uf, current }: { uf: string; current: string }) {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
         render={
-          <Button variant="ghost" size="icon-xs" aria-label={`Trocar de município (${name})`} title="Trocar de município" className="text-muted-foreground hover:text-foreground">
+          <Button variant="ghost" size="icon-xs" aria-label={`Trocar de município (${name})`} title="Trocar de município" className="text-muted-foreground hover:text-foreground print:hidden">
             <ChevronsUpDown className="size-3.5" />
           </Button>
         }
       />
       <PopoverContent align="start" className="w-[min(18rem,calc(100vw-2rem))] gap-0 p-0">
-        <Command loop filter={(value, search) => (norm(value).includes(norm(search.trim())) ? 1 : 0)}>
+        {/* match on the name only (the value carries the IBGE code to stay unique), punctuation- and accent-insensitive */}
+        <Command loop filter={(value, search) => (normKey(value.replace(/\s\d+$/, "")).includes(normKey(search)) ? 1 : 0)}>
           <CommandInput placeholder={`Buscar em ${name}…`} aria-label={`Buscar município em ${name}`} />
           <CommandList className="scroll-thin">
             {!list ? (
@@ -162,7 +183,7 @@ function CityPicker({ uf, current }: { uf: string; current: string }) {
                       data-checked={c.name === current}
                       onSelect={() => {
                         setOpen(false);
-                        router.push(cityPath(c.uf, c.slug));
+                        router.push(`${cityPath(c.uf, c.slug)}${query}`);
                       }}
                       className={c.name === current ? "font-medium" : undefined}
                     >

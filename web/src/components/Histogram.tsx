@@ -3,13 +3,16 @@
 import { useMemo } from "react";
 import { Bar, BarChart, CartesianGrid, Cell, ReferenceLine, XAxis, YAxis } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
-import { BINS, binColor } from "@/lib/bins";
+import { BINS, HIST_HI as HI, HIST_LO as LO, HIST_NB as NB, binColor, histCounts } from "@/lib/bins";
 import { MDE_MIN } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { AXIS, CHART_CLASS, GRID, niceTicks } from "./chart-parts";
 
 type Props = {
-  values: number[];
+  /** raw MDE % values, or … */
+  values?: number[];
+  /** … counts already binned with `histCounts` (server-side for Brasil/região) */
+  counts?: number[];
   /** value to mark ("this municipality") */
   mark?: { value: number; label: string } | null;
   height?: number;
@@ -18,9 +21,6 @@ type Props = {
   ariaLabel: string;
 };
 
-const LO = 15;
-const HI = 45;
-const NB = HI - LO + 2; // "<15" + 15..44 + "≥45"
 
 const config: ChartConfig = Object.fromEntries(BINS.map((b) => [b.key, { label: b.label, color: b.color }]));
 
@@ -33,22 +33,21 @@ const compact = (v: number) => (v >= 1000 ? `${(v / 1000).toLocaleString("pt-BR"
 const X_TICKS = [15, 20, 25, 30, 35, 40, 45].map((t) => t - LO + 1);
 
 /** Distribution of MDE % in 1-point buckets, open-ended at both ends, colored by MDE bin, with the 25% minimum marked. */
-export default function Histogram({ values, mark, height = 220, ariaLabel }: Props) {
-  const data = useMemo(() => {
-    const counts = new Array<number>(NB).fill(0);
-    for (const v of values) counts[v < LO ? 0 : v >= HI ? NB - 1 : Math.floor(v) - LO + 1]++;
-    return counts.map((count, i) => ({ x: i + 0.5, i, count, label: bucketLabel(i), fill: binColor(center(i)) }));
-  }, [values]);
+export default function Histogram({ values, counts: pre, mark, height = 220, ariaLabel }: Props) {
+  const counts = useMemo(() => pre ?? histCounts(values ?? []), [pre, values]);
+  const data = useMemo(() => counts.map((count, i) => ({ x: i + 0.5, i, count, label: bucketLabel(i), fill: binColor(center(i)) })), [counts]);
   const max = Math.max(1, ...data.map((d) => d.count));
   const { ticks, domain } = niceTicks(0, max, 2);
-  const below = values.filter((v) => v < MDE_MIN).length;
+  // buckets 0..(MDE_MIN - LO) hold every value < 25%
+  const below = counts.slice(0, MDE_MIN - LO + 1).reduce((a, b) => a + b, 0);
+  const total = counts.reduce((a, b) => a + b, 0);
   const int = (v: number) => v.toLocaleString("pt-BR");
   const modal = data.reduce((a, b) => (b.count > a.count ? b : a), data[0]);
 
   return (
     <div>
       <p className="sr-only">
-        {ariaLabel}. {int(values.length)} municípios; {int(below)} abaixo de 25%. Faixa mais comum: {modal.label} ({int(modal.count)}).
+        {ariaLabel}. {int(total)} municípios; {int(below)} abaixo de 25%. Faixa mais comum: {modal.label} ({int(modal.count)}).
         {mark && ` ${mark.label}: ${mark.value.toLocaleString("pt-BR", { maximumFractionDigits: 2 })}%.`}
       </p>
       <ChartContainer config={config} className={cn(CHART_CLASS, "h-[220px]")} style={{ height }} aria-hidden>

@@ -2,7 +2,7 @@
 
 import { ArrowDown, ArrowRight, ArrowUp, ChevronsUpDown, Info, Search, TriangleAlert, X } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useDeferredValue, useEffect, useMemo, useState, type ReactNode } from "react";
 import Choropleth, { Legend } from "./Choropleth";
 import Histogram from "./Histogram";
 import MultiLine from "./MultiLine";
@@ -17,17 +17,20 @@ import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { BINS, METRICS, binColor, colorOf, funBins, quintileBins, type MetricKey } from "@/lib/bins";
-import { MDE_MIN, PANDEMIC_YEARS, POP_BANDS, brlShort, funMin, int, norm, pct, share } from "@/lib/format";
+import { BINS, METRICS, binColor, colorOf, funBins, isBelowBin, quintileBins, type Bin, type MetricKey } from "@/lib/bins";
+import { MDE_MIN, PANDEMIC_YEARS, POP_BANDS, brlShort, funMin, int, isAtypical, normKey, pct, share } from "@/lib/format";
 import { cityPath, getRegion, getUf, ofUf, type RegionKey } from "@/lib/geo";
-import { belowShare, shortfallLabel, timesBelow, type Deficit, type Row, type Stats } from "@/lib/rows";
+import { belowShare, isAtip, shortfallLabel, timesBelow, type Deficit, type Row, type Stats } from "@/lib/rows";
 import { cn } from "@/lib/utils";
+import { fromColumns, type Columns } from "./territory/pack";
+import { ShortfallInfo } from "./territory/InfoTip";
 
 type Props = {
   uf: string;
   years: number[];
   initialYear: number;
-  rows: Row[];
+  /** municipalities, column-keyed to keep the inlined RSC payload small (see territory/pack.ts) */
+  rows: Columns<Row>;
   stats: Stats[];
   regionStats: Stats[];
   brStats: Stats[];
@@ -38,13 +41,30 @@ type Props = {
 
 type SortKey = "name" | "pop" | "mde" | "fun" | "short" | "reinc" | "aluno";
 type StatusFilter = "all" | "below" | "edge" | "ok" | "nd" | "nodata" | "fun" | "div";
+type ReincFilter = "all" | "2" | "2x" | "3" | "5";
+const STATUSES: StatusFilter[] = ["all", "below", "edge", "ok", "nd", "nodata", "fun", "div"];
+const REINCS: Record<ReincFilter, string> = {
+  all: "Qualquer histórico",
+  "2": "2+ anos abaixo de 25%",
+  "2x": "2+ anos fora de 2020–21",
+  "3": "3+ anos abaixo de 25%",
+  "5": "5+ anos abaixo de 25%",
+};
+const SORTS: SortKey[] = ["name", "pop", "mde", "fun", "short", "reinc", "aluno"];
+const belowKeys = (b: Bin) => /^(b1|b2|f1|f2)$/.test(b.key);
+/** "…, 2021, 2022, 2023, 2025": the most recent years, ellipsis in front when older ones are omitted. */
+const lastYears = (ys: number[]) => `${ys.length > 4 ? "…, " : ""}${ys.slice(-4).join(", ")}`;
+/** Years below 25%, optionally ignoring the pandemic years covered by EC 119/2022. */
+const yearsBelowOf = (r: Row, skipPandemic: boolean, years: number[]) =>
+  r.mde.reduce<number>((n, v, i) => n + (v != null && v < MDE_MIN && !(skipPandemic && PANDEMIC_YEARS.has(years[i])) ? 1 : 0), 0);
 
 const PAGE = 50;
 const fmtBrl = (v: number) => (v > 0 ? brlShort(v) : "—");
 const pct1 = (v: number | null) => (v == null ? "—" : `${v.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%`);
 
-function rowStatus(r: Row, yi: number): { kind: StatusKind; label: string } {
+function rowStatus(r: Row, yi: number, year: number): { kind: StatusKind; label: string } {
   const v = r.mde[yi];
+  if (r.since != null && year < r.since) return { kind: "nd", label: "Não existia" };
   if (r.nd[yi]) return { kind: "below", label: "Não declarou" };
   if (v == null) return { kind: "nd", label: "Sem dados" };
   if (v < MDE_MIN) return { kind: "below", label: "Abaixo" };
@@ -52,14 +72,48 @@ function rowStatus(r: Row, yi: number): { kind: StatusKind; label: string } {
   return { kind: "ok", label: "Cumpre" };
 }
 
-export default function UfDashboard({ uf, years, initialYear, rows, stats, regionStats, brStats, gov, deficits }: Props) {
-  const [year, setYear] = useYear(years, initialYear);
+export default function UfDashboard({ uf, years, initialYear, rows: packed, stats, regionStats, brStats, gov, deficits }: Props) {
+  const rows = useMemo(() => fromColumns(packed), [packed]);
+  const [yearNow, setYear] = useYear(years, initialYear);
+  // the picker answers at once; the dashboard (charts, map, tables) follows as a low-priority render (INP)
+  const year = useDeferredValue(yearNow);
   const [q, setQ] = useState("");
   const [inter, setInter] = useState("all");
   const [band, setBand] = useState("all");
   const [status, setStatus] = useState<StatusFilter>("all");
+  const [rec, setRec] = useState<ReincFilter>("all");
   const [metric, setMetric] = useState<MetricKey>("mde");
   const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 }>({ key: "mde", dir: 1 });
+
+  // GOV-06: table filters and sort live in the URL (read after mount, so the HTML stays static)
+  useEffect(() => {
+    const p = new URLSearchParams(window.location.search);
+    const has = (k: string) => p.get(k) ?? "";
+    /* eslint-disable react-hooks/set-state-in-effect -- URL is only readable after hydration */
+    if (has("q")) setQ(has("q").slice(0, 80));
+    if (has("regint") && rows.some((r) => r.inter === has("regint"))) setInter(has("regint"));
+    if (POP_BANDS.some((b) => b.key === has("porte"))) setBand(has("porte"));
+    if (STATUSES.includes(has("situacao") as StatusFilter)) setStatus(has("situacao") as StatusFilter);
+    if (has("reinc") in REINCS) setRec(has("reinc") as ReincFilter);
+    const [k, d] = has("ordem").split("-");
+    if (SORTS.includes(k as SortKey)) setSort({ key: k as SortKey, dir: d === "desc" ? -1 : 1 });
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, [rows]);
+  const [hydrated, setHydrated] = useState(false);
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- write the URL only after it has been read
+  useEffect(() => setHydrated(true), []);
+  useEffect(() => {
+    if (!hydrated) return;
+    const u = new URL(window.location.href);
+    const set = (k: string, v: string, def: string) => (v === def ? u.searchParams.delete(k) : u.searchParams.set(k, v));
+    set("q", q.trim(), "");
+    set("regint", inter, "all");
+    set("porte", band, "all");
+    set("situacao", status, "all");
+    set("reinc", rec, "all");
+    set("ordem", `${sort.key}-${sort.dir === 1 ? "asc" : "desc"}`, "mde-asc");
+    if (u.href !== window.location.href) window.history.replaceState(window.history.state, "", u);
+  }, [hydrated, q, inter, band, status, rec, sort]);
   const [limit, setLimit] = useState(PAGE);
   const yi = years.indexOf(year);
   const info = getUf(uf)!;
@@ -71,6 +125,7 @@ export default function UfDashboard({ uf, years, initialYear, rows, stats, regio
   const inters = useMemo(() => [...new Set(rows.map((r) => r.inter))].sort((a, b) => a.localeCompare(b, "pt-BR")), [rows]);
   const byId = useMemo(() => new Map(rows.map((r) => [r.id, r])), [rows]);
   const reinc = useMemo(() => new Map(rows.map((r) => [r.id, timesBelow(r)])), [rows]);
+  const reincX = useMemo(() => new Map(rows.map((r) => [r.id, yearsBelowOf(r, true, years)])), [rows, years]);
 
   const perYear = useMemo(() => stats.map((st, i) => ({ year: years[i], below: st.below, reported: st.reported, nd: st.nd })), [stats, years]);
 
@@ -80,6 +135,7 @@ export default function UfDashboard({ uf, years, initialYear, rows, stats, regio
   );
   const fill = useCallback((id: number) => colorOf(bins, byId.get(id)?.[metric][yi]), [bins, byId, metric, yi]);
   const hatched = useCallback((id: number) => metric === "mde" && !!byId.get(id)?.nd[yi], [metric, byId, yi]);
+  const outlined = useCallback((id: number) => metric !== "aluno" && isBelowBin(bins, byId.get(id)?.[metric][yi]), [bins, byId, metric, yi]);
   const href = useCallback((id: number) => {
     const r = byId.get(id);
     return r ? withYear(cityPath(r.uf, r.slug), year, initialYear) : null;
@@ -87,10 +143,14 @@ export default function UfDashboard({ uf, years, initialYear, rows, stats, regio
   const m = METRICS.find((x) => x.key === metric)!;
 
   const filtered = useMemo(() => {
-    const nq = norm(q.trim());
+    const nq = normKey(q);
     const b = POP_BANDS.find((x) => x.key === band);
     const out = rows.filter((r) => {
-      if (nq && !norm(r.name).includes(nq)) return false;
+      if (nq && !normKey(r.name).includes(nq)) return false;
+      if (rec !== "all") {
+        const n = rec === "2x" ? reincX.get(r.id) ?? 0 : reinc.get(r.id) ?? 0;
+        if (n < (rec === "2x" ? 2 : Number(rec))) return false;
+      }
       if (inter !== "all" && r.inter !== inter) return false;
       if (b && !b.test(r.pop)) return false;
       const v = r.mde[yi];
@@ -107,7 +167,7 @@ export default function UfDashboard({ uf, years, initialYear, rows, stats, regio
     });
     const val = (r: Row): number | string | null => {
       switch (sort.key) {
-        case "name": return norm(r.name);
+        case "name": return normKey(r.name);
         case "pop": return r.pop;
         case "mde": return r.mde[yi];
         case "fun": return r.fun[yi];
@@ -123,10 +183,10 @@ export default function UfDashboard({ uf, years, initialYear, rows, stats, regio
       if (vb == null) return -1;
       return (va < vb ? -1 : va > vb ? 1 : 0) * sort.dir;
     });
-  }, [rows, q, inter, band, status, sort, yi, year, reinc]);
+  }, [rows, q, inter, band, status, rec, sort, yi, year, reinc, reincX]);
 
-  const filtering = q !== "" || inter !== "all" || band !== "all" || status !== "all";
-  const reset = () => { setQ(""); setInter("all"); setBand("all"); setStatus("all"); setLimit(PAGE); };
+  const filtering = q !== "" || inter !== "all" || band !== "all" || status !== "all" || rec !== "all";
+  const reset = () => { setQ(""); setInter("all"); setBand("all"); setStatus("all"); setRec("all"); setLimit(PAGE); };
 
   const th = (key: SortKey, label: string, right = false, className?: string) => {
     const on = sort.key === key;
@@ -139,10 +199,10 @@ export default function UfDashboard({ uf, years, initialYear, rows, stats, regio
       >
         <button
           type="button"
-          className={cn("inline-flex items-center gap-1 rounded-sm transition-colors hover:text-foreground", right && "flex-row-reverse", on && "text-foreground")}
+          className={cn("-mx-1.5 inline-flex h-7 items-center gap-1 rounded-md px-1.5 whitespace-nowrap transition-colors duration-150 hover:bg-accent hover:text-foreground", right && "flex-row-reverse", on && "text-foreground")}
           onClick={() => setSort((x) => ({ key, dir: x.key === key ? (x.dir === 1 ? -1 : 1) : key === "name" ? 1 : -1 }))}
         >
-          {label}
+          <span>{label}</span>
           <Icon aria-hidden className={cn("size-3", !on && "opacity-40")} />
         </button>
       </TableHead>
@@ -156,12 +216,13 @@ export default function UfDashboard({ uf, years, initialYear, rows, stats, regio
 
   return (
     <>
-      <div className="sticky top-(--header-h) z-30 border-b bg-(--header-bg) backdrop-blur-md backdrop-saturate-150">
+      <div data-subbar className="sticky top-(--header-h) z-30 border-b bg-(--header-bg) backdrop-blur-md backdrop-saturate-150">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-2 sm:px-6">
-          <YearPicker years={years} year={year} onChange={setYear} />
+          <YearPicker years={years} year={yearNow} onChange={setYear} />
           <div className="hidden items-center gap-3 text-[13px] text-muted-foreground tnum md:flex">
             <span>
-              <span className={cn("font-medium", s.below ? "text-critical" : "text-foreground")}>{int(s.below)}</span> de {int(s.reported)} abaixo de 25%
+              <span className={cn("font-medium", s.below ? "text-critical-ink" : "text-foreground")}>{int(s.below)}</span> de {int(s.reported)} abaixo de 25%
+              {s.nd > 0 && <> · {int(s.nd)} não declararam</>}
             </span>
             <span aria-hidden className="text-muted-foreground/40">·</span>
             <Link href={withYear(`/regiao/${region.slug}`, year, initialYear)} className="inline-flex items-center gap-1 transition-colors hover:text-foreground">
@@ -175,22 +236,43 @@ export default function UfDashboard({ uf, years, initialYear, rows, stats, regio
         <div className="space-y-3">
           <p className="max-w-4xl text-[15px] leading-7 text-pretty text-muted-foreground">
             Em <strong className="font-medium text-foreground">{year}</strong>,{" "}
-            <strong className={cn("font-medium", s.below ? "text-critical" : "text-foreground")}>
-              {int(s.below)} de {int(s.reported)} municípios
-            </strong>{" "}
-            {ofUf(uf)} ({share(s.below, s.reported)}) aplicaram menos de 25% em educação
+            {s.below === 0 ? (
+              <>
+                <strong className="font-medium text-foreground">nenhum</strong> dos {int(s.reported)} municípios {ofUf(uf)} que declararam aplicou menos de
+                25% em educação
+              </>
+            ) : (
+              <>
+                <strong className="font-medium text-critical">
+                  {int(s.below)} de {int(s.reported)} municípios
+                </strong>{" "}
+                {ofUf(uf)} que declararam ({share(s.below, s.reported)}) {s.below === 1 ? "aplicou" : "aplicaram"} menos de 25% em educação
+              </>
+            )}
             {s.shortfall > 0 ? (
               <>
-                , deixando de destinar {s.belowNoBase ? "ao menos " : ""}
-                <strong className="font-medium text-foreground">{brlShort(s.shortfall)}</strong> ao ensino
+                ; faltaram {s.belowNoBase ? "ao menos " : "cerca de "}
+                <strong className="font-medium text-foreground">{brlShort(s.shortfall)}</strong> para atingir o mínimo (estimativa)
               </>
             ) : ""}
-            . Na região {region.name}, foram {share(regionStats[yi].below, regionStats[yi].reported)}; no Brasil, {share(brStats[yi].below, brStats[yi].reported)}.
+            .{" "}
+            {s.nd > 0 && (
+              <>
+                <strong className="font-medium text-critical">
+                  {int(s.nd)} {s.nd === 1 ? "município não declarou" : "municípios não declararam"}
+                </strong>{" "}
+                os dados do ano.{" "}
+              </>
+            )}
+            Na região {region.name}, {pct1(belowShare(regionStats[yi]))} ficaram abaixo; no Brasil, {pct1(belowShare(brStats[yi]))}.
             {govV != null && (
               <>
                 {" "}O governo estadual aplicou <strong className={cn("font-medium", govV < MDE_MIN ? "text-critical" : "text-foreground")}>{pct(govV)}</strong> na própria rede.
               </>
             )}
+          </p>
+          <p className="sr-only" role="status" aria-live="polite">
+            Exibindo {year}: {int(s.below)} de {int(s.reported)} municípios abaixo de 25%{s.nd ? `, ${int(s.nd)} não declararam` : ""}; mediana {pct(s.median)}.
           </p>
           {PANDEMIC_YEARS.has(year) && (
             <Callout>
@@ -204,16 +286,32 @@ export default function UfDashboard({ uf, years, initialYear, rows, stats, regio
           <Stat
             label="Abaixo dos 25%"
             value={int(s.below)}
-            sub={`de ${int(s.reported)} com dados`}
+            sub={
+              <>
+                de {int(s.reported)} com dados
+                {s.nd > 0 && <span className="block font-medium text-critical-ink">+ {int(s.nd)} não declararam</span>}
+              </>
+            }
             tone={s.below ? "bad" : "neutral"}
             delta={dBelow != null ? (dBelow === 0 ? `= ${years[yi - 1]}` : `${dBelow > 0 ? "+" : "−"}${Math.abs(dBelow)} vs ${years[yi - 1]}`) : undefined}
-            deltaTone={dBelow == null || dBelow === 0 ? "neutral" : dBelow > 0 ? "bad" : "good"}
+            // fewer below is only "good" when it isn't because more municipalities stopped declaring (GOV-11)
+            deltaTone={dBelow == null || dBelow === 0 ? "neutral" : dBelow > 0 ? "bad" : prev && s.nd > prev.nd ? "neutral" : "good"}
             context={`${region.name}: ${pct1(belowShare(regionStats[yi]))} · Brasil: ${pct1(belowShare(brStats[yi]))}`}
           />
           <Stat
-            label="Deixou de ir para a educação"
+            label={
+              <span className="inline-flex items-center gap-1">
+                Faltou aplicar (estimativa)
+                <ShortfallInfo />
+              </span>
+            }
             value={shortfallLabel(s).value}
-            sub={shortfallLabel(s).note ?? "soma do que faltou para 25%"}
+            sub={
+              <>
+                {shortfallLabel(s).note ?? `em ${year}, valores declarados e nominais`}
+                {s.shortfallAtip > 0 && <span className="block">dos quais {brlShort(s.shortfallAtip)} de valores atípicos</span>}
+              </>
+            }
             tone={s.shortfall ? "bad" : "neutral"}
           />
           <Stat label="Mediana aplicada" value={pct(s.median)} sub={`metade entre ${pct(s.p25, 1)} e ${pct(s.p75, 1)}`} context={`Brasil: ${pct(brStats[yi].median)}`} />
@@ -227,7 +325,7 @@ export default function UfDashboard({ uf, years, initialYear, rows, stats, regio
             className="col-span-2 lg:col-span-1"
             label="Governo do estado"
             value={pct(govV)}
-            sub="aplicado em MDE na rede estadual"
+            sub={govV == null ? "sem dado do governo estadual neste ano" : "aplicado em MDE na rede estadual"}
             tone={govV != null && govV < MDE_MIN ? "bad" : "neutral"}
             context={gov.fun[yi] != null ? `Fundeb em salários: ${pct(gov.fun[yi], 1)}` : undefined}
           />
@@ -237,7 +335,7 @@ export default function UfDashboard({ uf, years, initialYear, rows, stats, regio
           <Panel
             className="lg:col-span-3"
             title={`Mapa de ${year}`}
-            description="Passe o mouse para ver o valor; clique para abrir o município."
+            description="Toque ou passe o mouse para ver o valor; toque de novo ou clique para abrir o município."
             action={
               <Segmented
                 ariaLabel="Indicador do mapa"
@@ -252,6 +350,8 @@ export default function UfDashboard({ uf, years, initialYear, rows, stats, regio
               layer="mun"
               fill={fill}
               hatched={hatched}
+              outlined={outlined}
+              describedBy="municipios-tabela"
               href={href}
               ariaLabel={`Mapa dos municípios ${ofUf(uf)}: ${m.label}, ${year}`}
               height={520}
@@ -262,18 +362,26 @@ export default function UfDashboard({ uf, years, initialYear, rows, stats, regio
                 return (
                   <>
                     <div className="text-base font-semibold tnum">
-                      {metric === "mde" && r.nd[yi] ? <span className="text-critical">Não declarou</span> : v == null ? "Sem dados" : m.fmt(v)}
+                      {metric === "mde" && r.nd[yi] ? <span className="text-critical">Não declarou</span> : v == null ? (r.since != null && year < r.since ? "Não existia" : "Sem dados") : m.fmt(v)}
                     </div>
+                    {metric !== "fun" && (isAtip(r, yi, metric === "aluno" ? "aluno" : "mde") || (metric === "mde" && isAtypical(v))) && <div className="text-xs text-warning-ink">Valor atípico: possível erro de preenchimento</div>}
                     <div className="text-muted-foreground">{r.name}</div>
                     <div className="text-xs text-muted-foreground tnum">{int(r.pop)} hab. · {r.inter}</div>
                   </>
                 );
               }}
             />
-            <Legend title={m.label} bins={bins} nd={metric === "mde"} />
+            <Legend title={m.label} bins={bins} nd={metric === "mde"} outlined={metric === "aluno" ? undefined : belowKeys} />
+            <p className="mt-3 text-xs text-muted-foreground">
+              {metric !== "aluno" && "Contorno escuro: abaixo do mínimo legal. "}
+              Os mesmos números em tabela:{" "}
+              <a href="#municipios" className="font-medium text-brand-ink underline-offset-2 hover:underline">
+                todos os municípios
+              </a>
+            </p>
           </Panel>
           <div className="flex min-w-0 flex-col gap-6 lg:col-span-2">
-            <Panel title="Municípios abaixo dos 25%, por ano" description="Clique numa barra para mudar o exercício.">
+            <Panel title="Municípios abaixo dos 25%, por ano" description="Toque ou clique numa barra para mudar o exercício.">
               <YearBars data={perYear} selected={year} onSelect={setYear} />
             </Panel>
             <Panel title={`Distribuição em ${year}`} description="Quantos municípios aplicaram cada percentual em MDE.">
@@ -286,7 +394,7 @@ export default function UfDashboard({ uf, years, initialYear, rows, stats, regio
           <Panel
             className="lg:col-span-2"
             title={`${info.name} frente à região e ao país`}
-            description="% dos municípios que declararam e ficaram abaixo de 25%. Clique num ano para atualizar o painel."
+            description="% dos municípios que declararam e ficaram abaixo de 25%. Toque ou clique num ano para atualizar o painel."
           >
             <MultiLine
               years={years}
@@ -302,20 +410,19 @@ export default function UfDashboard({ uf, years, initialYear, rows, stats, regio
             />
           </Panel>
           <Panel
-            title="Maiores déficits acumulados"
-            description={`Estimativa desde ${years[0]}, descontado o que foi aplicado a mais depois.`}
+            title={`Maiores déficits acumulados até ${years[years.length - 1]}`}
+            description={`Estimativa de ${years[0]} a ${years[years.length - 1]}, descontado o que foi aplicado a mais depois (valores nominais). Não muda com o ano escolhido.`}
             divided
           >
-            <ol className="scroll-thin max-h-[22rem] overflow-y-auto p-1.5 text-sm">
+            <ol className="scroll-thin fade-b max-h-[22rem] overflow-y-auto p-1.5 pb-6 text-sm">
               {deficits.map((d, i) => (
                 <li key={d.id}>
-                  <Link href={cityPath(d.uf, d.slug)} className="flex items-center gap-3 rounded-md px-2.5 py-2 transition-colors duration-150 hover:bg-accent/60">
+                  <Link href={withYear(cityPath(d.uf, d.slug), year, initialYear)} className="flex items-center gap-3 rounded-md px-2.5 py-2 transition-colors duration-150 hover:bg-accent/60">
                     <span className="w-5 shrink-0 text-right font-mono text-xs text-muted-foreground tnum">{i + 1}</span>
                     <span className="min-w-0 flex-1">
                       <span className="block truncate font-medium">{d.name}</span>
-                      <span className="block truncate text-xs text-muted-foreground">
-                        {d.below.length} {d.below.length === 1 ? "ano" : "anos"} abaixo: {d.below.slice(-4).join(", ")}
-                        {d.below.length > 4 ? "…" : ""}
+                      <span className="block truncate text-xs text-muted-foreground" title={d.below.join(", ")}>
+                        {d.below.length} {d.below.length === 1 ? "ano" : "anos"} abaixo: {lastYears(d.below)}
                       </span>
                     </span>
                     <span className="shrink-0 font-medium text-critical tnum">{brlShort(d.carry)}</span>
@@ -330,7 +437,7 @@ export default function UfDashboard({ uf, years, initialYear, rows, stats, regio
         <Panel
           id="municipios"
           title="Todos os municípios"
-          description={`Valores de ${year}. Ordene clicando no cabeçalho; clique no nome para ver a série completa.`}
+          description={`Valores de ${year}. Ordene pelo cabeçalho; abra o município pelo nome. Filtros e ordem ficam no endereço da página, para compartilhar.`}
           divided
           bodyClassName="p-0"
         >
@@ -381,6 +488,12 @@ export default function UfDashboard({ uf, years, initialYear, rows, stats, regio
                 ...(hasAlt ? { div: "SIOPE ≠ Tesouro" } : {}),
               }}
             />
+            <FilterSelect
+              label="Reincidência (anos abaixo de 25%, 2008–2025)"
+              value={rec}
+              onChange={(v) => { setRec(v as ReincFilter); setLimit(PAGE); }}
+              items={REINCS}
+            />
             {filtering && (
               <Button variant="ghost" size="sm" onClick={reset} className="text-muted-foreground">
                 <X /> Limpar
@@ -398,13 +511,13 @@ export default function UfDashboard({ uf, years, initialYear, rows, stats, regio
               <Button variant="outline" size="sm" className="mt-4" onClick={reset}>Limpar filtros</Button>
             </div>
           ) : (
-            <div className="scroll-thin relative max-h-[42rem] overflow-auto">
+            <div id="municipios-tabela" className="scroll-thin relative max-h-[42rem] overflow-auto">
               <table className="w-full caption-bottom text-sm">
                 <caption className="sr-only">Municípios {ofUf(uf)} em {year}</caption>
                 <TableHeader>
                   <TableRow className="border-0 hover:bg-transparent">
-                    {th("name", "Município", false, "left-0 z-20 min-w-44 pl-4 sm:pl-5")}
-                    {th("pop", "População", true)}
+                    {th("name", "Município", false, "left-0 z-20 min-w-36 pl-4 sm:min-w-44 sm:pl-5")}
+                    {th("pop", "População", true, "hidden sm:table-cell")}
                     {th("mde", `MDE ${year}`, true)}
                     <TableHead scope="col" className="sticky top-0 z-10 h-10 bg-card px-3 text-[13px] font-medium text-muted-foreground shadow-[inset_0_-1px_0_var(--border)]">
                       Situação
@@ -412,14 +525,14 @@ export default function UfDashboard({ uf, years, initialYear, rows, stats, regio
                     {th("fun", "Fundeb pessoal", true)}
                     {th("aluno", "R$ por aluno", true)}
                     {th("short", "Faltou", true)}
-                    {th("reinc", "Anos < 25%", true, "pr-4 sm:pr-5")}
+                    {th("reinc", rec === "2x" ? "Anos < 25% (fora 2020–21)" : "Anos < 25%", true, "pr-4 sm:pr-5")}
                   </TableRow>
                 </TableHeader>
                 <TableBody className="tnum">
                   {filtered.slice(0, limit).map((r) => {
                     const v = r.mde[yi];
                     const alt = r.alt?.[yi];
-                    const st = rowStatus(r, yi);
+                    const st = rowStatus(r, yi, year);
                     const funLow = r.fun[yi] != null && r.fun[yi]! < funMin(year);
                     return (
                       <TableRow key={r.id} className="group hover:bg-accent/60">
@@ -429,10 +542,10 @@ export default function UfDashboard({ uf, years, initialYear, rows, stats, regio
                           </Link>
                           <div className="truncate text-xs text-muted-foreground">{r.inter}</div>
                         </TableCell>
-                        <TableCell className="px-3 text-right text-muted-foreground">{int(r.pop)}</TableCell>
+                        <TableCell className="hidden px-3 text-right text-muted-foreground sm:table-cell">{int(r.pop)}</TableCell>
                         <TableCell className="px-3 text-right">
                           <span className="inline-flex items-center justify-end gap-1.5">
-                            {v != null && (v < 18 || v > 45) && (
+                            {(isAtip(r, yi) || isAtypical(v)) && (
                               <Hint label="Valor atípico: possível erro de preenchimento, confira na fonte">
                                 <TriangleAlert className="size-3.5 text-warning" />
                               </Hint>
@@ -459,7 +572,7 @@ export default function UfDashboard({ uf, years, initialYear, rows, stats, regio
                           ) : fmtBrl(r.short[yi]!)}
                         </TableCell>
                         <TableCell className="pr-4 pl-3 text-right sm:pr-5">
-                          {reinc.get(r.id) || <span className="text-muted-foreground">0</span>}
+                          {(rec === "2x" ? reincX : reinc).get(r.id) || <span className="text-muted-foreground">0</span>}
                         </TableCell>
                       </TableRow>
                     );

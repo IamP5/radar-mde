@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
-import { Suspense } from "react";
+import { notFound, permanentRedirect, redirect } from "next/navigation";
 import { Compass, Download } from "lucide-react";
 import Link from "next/link";
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -9,30 +8,32 @@ import { Button } from "@/components/ui/button";
 import UfDashboard from "@/components/UfDashboard";
 import { YEARS, brStats, citiesOf, defaultYear, int, regionStats, rowsIn, stateGov, topDeficits, ufStats } from "@/lib/data";
 import { UFS, getRegion, getUf, ofUf } from "@/lib/geo";
+import { toColumns } from "@/components/territory/pack";
+
+// Every UF is known at build time; an unknown sigla must be a real 404 (not a streamed soft 404), so the
+// page validates its param above any Suspense boundary and the whole route is required to be static.
+// `instant = false`: the param is read outside <Suspense> on purpose (the page is fully static either way).
+export const ensureStatic = "navigation";
+export const instant = false;
 
 export function generateStaticParams() {
   return UFS.map((u) => ({ uf: u.uf.toLowerCase() }));
 }
 
 export async function generateMetadata({ params }: PageProps<"/[uf]">): Promise<Metadata> {
-  const u = getUf((await params).uf);
-  return u
-    ? { title: u.name, description: `Quanto cada município ${ofUf(u.uf)} aplica em educação (MDE) e quem fica abaixo do mínimo constitucional de 25%.` }
-    : {};
-}
-
-export default function Page({ params }: PageProps<"/[uf]">) {
-  return (
-    <Suspense fallback={<div className="mx-auto my-8 h-96 max-w-7xl animate-pulse rounded-xl bg-muted" aria-label="Carregando" />}>
-      <Content params={params} />
-    </Suspense>
-  );
-}
-
-async function Content({ params }: { params: Promise<{ uf: string }> }) {
   const { uf: raw } = await params;
   const u = raw === raw.toLowerCase() ? getUf(raw) : undefined;
+  return u
+    ? { title: u.name, description: `Quanto cada município ${ofUf(u.uf)} aplica em educação (MDE) e quem fica abaixo do mínimo constitucional de 25%.` }
+    : { title: "Página não encontrada" };
+}
+
+export default async function Page({ params }: PageProps<"/[uf]">) {
+  const { uf: raw } = await params;
+  const u = getUf(raw);
   if (!u) notFound();
+  // "/SP" → "/sp": one canonical address per state
+  if (raw !== raw.toLowerCase()) permanentRedirect(`/${raw.toLowerCase()}`);
   // The Distrito Federal has a single "municipality" (Brasília): its page is the dashboard
   if (u.uf === "DF") redirect(`/df/${citiesOf("DF")[0].slug}`);
   const cities = citiesOf(u.uf);
@@ -66,7 +67,7 @@ async function Content({ params }: { params: Promise<{ uf: string }> }) {
         uf={u.uf}
         years={YEARS}
         initialYear={defaultYear()}
-        rows={rowsIn({ level: "uf", uf: u.uf })}
+        rows={toColumns(rowsIn({ level: "uf", uf: u.uf }))}
         stats={ufStats(u.uf)}
         regionStats={regionStats(u.region)}
         brStats={brStats()}

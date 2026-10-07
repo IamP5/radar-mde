@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
-/** Share menu: copy link (with inline "copiado" feedback), WhatsApp, and the native sheet where available. */
+/** Share menu (link keeps ?ano=): copy link (with inline "copiado" feedback), WhatsApp, and the native sheet where available. */
 export default function ShareButton({ text, path }: { text: string; path: string }) {
   const [copied, setCopied] = useState(false);
   const [native, setNative] = useState(false);
@@ -18,7 +18,11 @@ export default function ShareButton({ text, path }: { text: string; path: string
     const t = setTimeout(() => setCopied(false), 2000);
     return () => clearTimeout(t);
   }, [copied]);
-  const url = () => `${window.location.origin}${path}`;
+  // keep the selected year (?ano=, mirrored by useYear) so the link opens on the same exercise
+  const url = () => {
+    const ano = new URLSearchParams(window.location.search).get("ano");
+    return `${window.location.origin}${path}${ano && /^\d{4}$/.test(ano) ? `?ano=${ano}` : ""}`;
+  };
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(url());
@@ -32,7 +36,7 @@ export default function ShareButton({ text, path }: { text: string; path: string
       <DropdownMenu>
         <DropdownMenuTrigger
           render={
-            <Button variant="outline">
+            <Button variant="outline" className="print:hidden">
               {copied ? <Check className="text-good-ink" /> : <Share className="text-muted-foreground" />}
               {copied ? "Link copiado" : "Compartilhar"}
             </Button>

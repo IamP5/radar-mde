@@ -6,16 +6,41 @@ import "server-only";
 import fs from "node:fs";
 import path from "node:path";
 import meta from "@/data/meta.json";
-import { MDE_MIN, shortfall, type YearRecord } from "./format";
+import { MDE_MIN, shortfall } from "./format";
 import { REGIONS, UFS, getRegion, type RegionKey, type Scope, scopeUfs } from "./geo";
-import { aggregate, type Deficit, type RegionSummary, type Row, type Stats, type UfSummary } from "./rows";
+import { ATIP_BITS, aggregate, type CityYear, type Deficit, type RegionSummary, type Row, type Stats, type UfSummary } from "./rows";
 
 export * from "./format";
-export type { Deficit, RegionSummary, Row, Stats, UfSummary } from "./rows";
+export type { AtipCode, CityYear, Deficit, RegionSummary, Row, Stats, UfSummary } from "./rows";
+export { ATIP_LABEL, DATA_VERSION, atipOf, deltaPp, existedIn, isAtip } from "./rows";
 
 /** Years with (near) complete national coverage. */
 export const YEARS: number[] = meta.years;
 export const UPDATED: string = meta.updated;
+
+/** Dataset metadata for footers, /dados and /sobre (see qa/fixes/CONTRACT.md §5). */
+export const META = {
+  /** data version: build date + content hash */
+  version: meta.version,
+  /** ISO date of the build */
+  updated: meta.updated,
+  /** ISO date the raw SIOPE files were downloaded */
+  extracted: meta.extracted,
+  /** population is a single estimate (this year) applied to every year */
+  popYear: meta.popYear,
+  popSource: meta.popSource,
+  license: meta.license,
+  licenseUrl: meta.licenseUrl,
+  /** municipalities that existed in each year */
+  nByYear: meta.nByYear as Record<string, number>,
+  /** municipalities with an MDE % in each year */
+  coverage: meta.coverage as Record<string, number>,
+  /** IBGE code → installation year, for municipalities created after 2008 */
+  installed: meta.installed as Record<string, number>,
+};
+
+/** "07/10/2026" from an ISO date. */
+export const dateBR = (iso: string) => new Date(iso + "T12:00:00").toLocaleDateString("pt-BR");
 
 export type City = {
   id: number;
@@ -26,10 +51,12 @@ export type City = {
   inter: string | null;
   imediata: string | null;
   capital: boolean;
-  years: Partial<Record<string, YearRecord>>;
+  /** IBGE installation year, only for municipalities created after 2008; no records before it */
+  since?: number;
+  years: Partial<Record<string, CityYear>>;
 };
 
-export type StateGov = { uf: string; code: number; name: string; region: RegionKey; years: Partial<Record<string, YearRecord>> };
+export type StateGov = { uf: string; code: number; name: string; region: RegionKey; years: Partial<Record<string, CityYear>> };
 
 const read = <T,>(f: string): T => JSON.parse(fs.readFileSync(path.join(process.cwd(), "src", "data", f), "utf8"));
 
@@ -78,6 +105,10 @@ export function toRow(c: City): Row {
     aluno: YEARS.map((y) => c.years[y]?.perAluno ?? null),
   };
   if (YEARS.some((y) => c.years[y]?.alt != null)) row.alt = YEARS.map((y) => c.years[y]?.alt ?? null);
+  if (c.capital) row.capital = true;
+  if (c.since) row.since = c.since;
+  const atip = YEARS.map((y) => (c.years[y]?.atip ?? []).reduce((m, k) => m | ATIP_BITS[k], 0));
+  if (atip.some(Boolean)) row.atip = atip;
   return row;
 }
 

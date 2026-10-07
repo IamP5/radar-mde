@@ -8,7 +8,18 @@ import { cn } from "@/lib/utils";
 import { ACTIVE_DOT, AXIS, CHART_CLASS, GRID, TooltipRow, YearTick, niceTicks, yearKeys, yearTicks } from "./chart-parts";
 import { useWidth } from "./useWidth";
 
-export type Series = { key: string; label: string; color: string; values: (number | null)[]; emphasis?: boolean; href?: string };
+export type Series = {
+  key: string;
+  label: string;
+  color: string;
+  values: (number | null)[];
+  emphasis?: boolean;
+  href?: string;
+  /** SVG dash pattern, so series stay distinguishable without colour (A11Y-04); emphasis defaults to "6 3" */
+  dash?: string;
+};
+
+const dashOf = (s: Series) => s.dash ?? (s.emphasis ? "6 3" : undefined);
 
 type Props = {
   years: number[];
@@ -24,15 +35,15 @@ type Props = {
   band?: { from: number; to: number; label?: string };
 };
 
-const LABEL_W = 108;
+const LABEL_W = 128;
 const LABEL_GAP = 14;
 
-/** Multi-series line chart: crosshair + tooltip listing every series, direct labels at the line ends (≤5 series). */
+/** Multi-series line chart: crosshair + tooltip listing every series, direct labels at the line ends (≤6 series). */
 export default function MultiLine({ years, series, selected, onSelect, fmt, ariaLabel, height = 280, min = 0, band }: Props) {
   const [focus, setFocus] = useState<string | null>(null);
   const box = useRef<HTMLDivElement>(null);
   const width = useWidth(box, 720, 0, 4000);
-  const direct = series.length <= 5 && width >= 480;
+  const direct = series.length <= 6 && width >= 480;
 
   const data = useMemo(
     () => years.map((year, i) => Object.fromEntries([["year", year], ...series.map((s) => [s.key, s.values[i]] as const)])),
@@ -124,7 +135,8 @@ export default function MultiLine({ years, series, selected, onSelect, fmt, aria
               type="linear"
               stroke={s.color}
               strokeWidth={2}
-              strokeDasharray={s.emphasis ? "6 3" : undefined}
+              strokeDasharray={dashOf(s)}
+              strokeLinecap={dashOf(s)?.startsWith("1 ") ? "round" : "butt"}
               strokeOpacity={focus != null && focus !== s.key ? 0.15 : 1}
               dot={false}
               activeDot={{ ...ACTIVE_DOT, fill: s.color }}
@@ -140,7 +152,9 @@ export default function MultiLine({ years, series, selected, onSelect, fmt, aria
           {series.map((s) => {
             const inner = (
               <>
-                <span aria-hidden className={cn("inline-block w-3", s.emphasis ? "border-t-2 border-dashed" : "h-0.5 rounded-full")} style={s.emphasis ? { borderColor: s.color } : { background: s.color }} />
+                <svg aria-hidden width="18" height="4" className="shrink-0 overflow-visible forced-color-adjust-none">
+                  <line x1="1" x2="17" y1="2" y2="2" stroke={s.color} strokeWidth={2} strokeDasharray={dashOf(s)} strokeLinecap={dashOf(s)?.startsWith("1 ") ? "round" : "butt"} />
+                </svg>
                 <span className={s.emphasis ? "font-medium text-foreground" : undefined}>{s.label}</span>
               </>
             );
@@ -188,7 +202,7 @@ function EndLabels({ series, focus, setFocus }: { series: Series[]; focus: strin
       {ends.map(({ s, y }) => {
         const label = (
           <text
-            x={x}
+            x={x + 22}
             y={y}
             dy={4}
             fontSize={12}
@@ -196,14 +210,24 @@ function EndLabels({ series, focus, setFocus }: { series: Series[]; focus: strin
             fontWeight={s.emphasis ? 500 : 400}
             opacity={focus != null && focus !== s.key ? 0.35 : 1}
           >
-            <tspan fill={s.color}>● </tspan>
             {s.label.length > 15 ? `${s.label.slice(0, 14)}…` : s.label}
             <title>{s.label}</title>
           </text>
         );
+        const sample = (
+          <line x1={x} x2={x + 16} y1={y} y2={y} stroke={s.color} strokeWidth={2} strokeDasharray={dashOf(s)} strokeLinecap={dashOf(s)?.startsWith("1 ") ? "round" : "butt"} opacity={focus != null && focus !== s.key ? 0.35 : 1} />
+        );
         return (
           <g key={s.key} onPointerEnter={() => setFocus(s.key)} onPointerLeave={() => setFocus(null)} onClick={(e) => e.stopPropagation()}>
-            {s.href ? <Link href={s.href}>{label}</Link> : label}
+            {sample}
+            {/* the chart is aria-hidden: keep its end-label links out of the tab order (the legend/cards carry them) */}
+            {s.href ? (
+              <Link href={s.href} tabIndex={-1} aria-hidden>
+                {label}
+              </Link>
+            ) : (
+              label
+            )}
           </g>
         );
       })}

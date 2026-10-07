@@ -17,10 +17,10 @@ export function Panel({
       {hasHeader && (
         <header className={cn("flex flex-wrap items-start justify-between gap-x-4 gap-y-3 px-4 pt-4 sm:px-5", divided ? "border-b pb-4" : "pb-1")}>
           <div className="min-w-0 flex-1">
-            {title && <h2 className="text-[15px] leading-6 font-semibold tracking-[-0.01em]">{title}</h2>}
-            {description && <div className="mt-0.5 text-[13px] leading-5 text-pretty text-muted-foreground">{description}</div>}
+            {title && <h2 className="text-[0.9375rem] leading-6 font-semibold tracking-[-0.01em]">{title}</h2>}
+            {description && <div className="mt-0.5 text-[0.8125rem] leading-5 text-pretty text-muted-foreground">{description}</div>}
           </div>
-          {action && <div className="flex shrink-0 flex-wrap items-center gap-2">{action}</div>}
+          {action && <div className="flex max-w-full min-w-0 flex-wrap items-center gap-2">{action}</div>}
         </header>
       )}
       <div className={cn(hasHeader && !divided ? "px-4 pt-3 pb-4 sm:px-5" : divided ? "" : "p-4 sm:p-5", bodyClassName)}>{children}</div>
@@ -43,11 +43,23 @@ export function SectionTitle({ children, description, action }: { children: Reac
 }
 
 /** Empty / loading / error box with the same geometry as the content it replaces. */
-export function EmptyState({ title, children, className }: { title: ReactNode; children?: ReactNode; className?: string }) {
+export function EmptyState({
+  title, children, className, icon, live = false,
+}: {
+  title: ReactNode; children?: ReactNode; className?: string;
+  /** Rendered above the title (icon first, then title, then body). */
+  icon?: ReactNode;
+  /** Announce politely (async results / errors only; static empty pages stay silent). */
+  live?: boolean;
+}) {
   return (
-    <div role="status" className={cn("flex flex-col items-center justify-center rounded-lg border border-dashed px-6 py-10 text-center", className)}>
+    <div
+      role={live ? "status" : undefined}
+      className={cn("flex flex-col items-center justify-center rounded-lg border border-dashed px-6 py-10 text-center", className)}
+    >
+      {icon && <div className="mb-3 text-muted-foreground [&_svg]:size-5">{icon}</div>}
       <div className="text-sm font-medium">{title}</div>
-      {children && <div className="mt-1 max-w-sm text-[13px] text-muted-foreground">{children}</div>}
+      {children && <div className="mt-1 max-w-sm text-[0.8125rem] text-muted-foreground">{children}</div>}
     </div>
   );
 }

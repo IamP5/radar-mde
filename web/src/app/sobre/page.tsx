@@ -4,17 +4,35 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { PageBody, PageHeader } from "@/components/kit/page-header";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { META, YEARS, allCities, dateBR, int, stateGov } from "@/lib/data";
+import { UFS } from "@/lib/geo";
 import { cn } from "@/lib/utils";
 
-export const metadata: Metadata = { title: "Metodologia" };
+export const metadata: Metadata = {
+  title: "Metodologia",
+  description: "De onde vêm os números do Radar MDE, quais indicadores do SIOPE são usados, como o painel calcula o que faltou aplicar e quais são os limites dos dados.",
+};
+
+/** SIOPE indicators used, with how the panel uses each one. */
+const INDICATORS: [string, string, string][] = [
+  ["1.1", "% de aplicação das receitas de impostos e transferências em MDE", "Percentual principal (mínimo 25%)"],
+  ["1.2", "% do Fundeb aplicado na remuneração dos profissionais da educação", "Fundeb para profissionais (mínimo 60% até 2020, 70% desde 2021)"],
+  ["1.4", "% do Fundeb não aplicado no exercício", "Fundeb deixado para o ano seguinte (máximo 5% / 10%)"],
+  ["2.8", "% da despesa com educação na despesa total do ente", "Só no CSV (educacao_pct_despesa_total); ainda não aparece nas páginas"],
+  ["4.9", "Investimento educacional por aluno (R$)", "Por aluno; o número de alunos é o declarado pelo próprio ente ao SIOPE"],
+  ["8.1", "Mínimo de 25% das receitas de impostos a aplicar em MDE (R$)", "Receita de impostos (base) = 8.1 ÷ 0,25, desde 2020"],
+  ["8.2", "Valor aplicado em MDE (R$)", "R$ aplicado, desde 2020"],
+];
 
 const TOC = [
   { id: "origem", label: "Origem" },
   { id: "o-que-e-medido", label: "O que é medido" },
   { id: "fontes", label: "De onde vêm os dados" },
+  { id: "indicadores", label: "Indicadores do SIOPE" },
   { id: "niveis", label: "Do Brasil ao município" },
   { id: "calculos", label: "Cálculos" },
   { id: "limites", label: "Limites" },
+  { id: "como-citar", label: "Versão e como citar" },
   { id: "proximos-passos", label: "Próximos passos" },
 ];
 
@@ -34,6 +52,12 @@ function Callout({ tone = "info", title, children }: { tone?: "info" | "warning"
 const head = "h-10 px-4 text-[13px] font-medium text-muted-foreground";
 
 export default function Page() {
+  const newer = allCities().filter((c) => c.since);
+  const mgGaps = YEARS.filter((y) => stateGov("MG")?.years[y]?.mde == null);
+  const otherGaps = UFS.filter((u) => u.uf !== "MG")
+    .map((u) => ({ name: u.name, ys: YEARS.filter((y) => stateGov(u.uf)?.years[y]?.mde == null) }))
+    .filter((x) => x.ys.length);
+  const nSau = allCities().filter((c) => Object.values(c.years).some((r) => r?.sau != null)).length;
   return (
     <>
       <PageHeader
@@ -63,7 +87,7 @@ export default function Page() {
             </a>{" "}
             (UNINOVE, 2021). Analisando Santo André de 2010 a 2019, a autora encontrou anos com aplicação abaixo dos 25% sem compensação
             posterior, um portal da transparência “de difícil acesso e compreensão” e conselhos de controle social sem informação para agir.
-            Este painel tenta resolver a parte da transparência para os 5.570 municípios brasileiros, permitindo ir do retrato nacional às
+            Este painel tenta resolver a parte da transparência para os {int(allCities().length)} municípios brasileiros, permitindo ir do retrato nacional às
             regiões, aos estados e a cada cidade.
           </p>
 
@@ -109,15 +133,17 @@ export default function Page() {
           <p>
             <strong>Fonte principal: SIOPE</strong> (Sistema de Informações sobre Orçamentos Públicos em Educação, do FNDE), sistema oficial
             onde cada município declara suas receitas e despesas com educação. A série começa em <strong>2008</strong>, primeiro ano publicado
-            na API de dados abertos do FNDE. Até 2016 a declaração era anual; desde 2017 usamos o 6º bimestre (ano fechado). Indicadores: %
-            aplicado em MDE, % do Fundeb em remuneração, Fundeb não utilizado, investimento por aluno e participação da educação no gasto
-            total.
+            na API de dados abertos do FNDE. Até 2016 a declaração era anual; desde 2017 usamos o 6º bimestre (ano fechado). Os indicadores
+            usados estão na <a href="#indicadores">tabela abaixo</a>. A participação da educação no gasto total (2.8) está só no CSV; as
+            páginas ainda não a mostram.
           </p>
           <p>
-            <strong>Checagem cruzada e anos anteriores: SICONFI</strong>, o Relatório Resumido da Execução Orçamentária (RREO, Anexo 14)
-            enviado ao Tesouro Nacional. Quando o percentual do Tesouro difere do SIOPE em 1 ponto ou mais, o painel mostra os dois (marcados
-            com ≠): relatórios oficiais que não batem também são um problema de transparência. O SICONFI também fornece o % aplicado em saúde
-            (desde 2015).
+            <strong>Checagem cruzada: SICONFI</strong>, o Relatório Resumido da Execução Orçamentária (RREO, Anexo 14) enviado ao Tesouro
+            Nacional. Por ora, só foi baixado para os municípios de São Paulo. Quando o percentual do Tesouro difere do SIOPE em 1 ponto ou
+            mais, o painel mostra os dois (marcados com ≠): relatórios oficiais que não batem também são um problema de transparência. Para
+            poucos municípios de São Paulo sem declaração ao SIOPE, o SICONFI é a fonte do percentual. O mesmo relatório traz o % aplicado em
+            saúde, mas só para {int(nSau)} municípios paulistas e de forma irregular (a maioria em 2016 e 2025); fora de SP não há dado de
+            saúde.
           </p>
           <Callout title="Números declarados">
             Os números são <strong>declarados pelo próprio município</strong>. A mesma base traz a declaração de cada{" "}
@@ -126,9 +152,34 @@ export default function Page() {
             do IBGE.
           </Callout>
           <p>
-            O cruzamento com o Tesouro (SICONFI) e o percentual em saúde estão disponíveis, por ora, apenas para os municípios de São Paulo,
-            onde o painel começou.
+            <strong>População</strong>: uma única estimativa, do {META.popSource}, usada em todos os anos. Totais como “moram nesses
+            municípios” em anos antigos usam a população de hoje.
           </p>
+
+          <h2 id="indicadores">Indicadores do SIOPE usados</h2>
+          <p>
+            Códigos e nomes como aparecem na API de dados abertos do FNDE (<code>Indicadores_Siope</code>), para quem quiser refazer a série.
+          </p>
+          <div className="my-6 overflow-x-auto rounded-lg border bg-card">
+            <Table>
+              <TableHeader>
+                <TableRow className="hover:bg-transparent">
+                  <TableHead scope="col" className={`${head} w-14`}>Código</TableHead>
+                  <TableHead scope="col" className={head}>Indicador</TableHead>
+                  <TableHead scope="col" className={head}>Uso no painel</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody className="text-[14px]">
+                {INDICATORS.map(([code, name, use]) => (
+                  <TableRow key={code} className="hover:bg-accent/60">
+                    <TableCell className="px-4 align-top font-mono text-[13px] text-foreground">{code}</TableCell>
+                    <TableCell className="px-4 align-top whitespace-normal">{name}</TableCell>
+                    <TableCell className="px-4 align-top whitespace-normal">{use}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
 
           <h2 id="niveis">Do Brasil ao município</h2>
           <ul>
@@ -158,7 +209,23 @@ export default function Page() {
               indicador oficial (diferença menor que 2%) em 97% dos municípios.
             </li>
             <li>
-              <strong>Faltou</strong> = (25% − percentual aplicado) × base, quando o percentual é menor que 25%.
+              <strong>R$ aplicado</strong>: desde 2020, o valor declarado (8.2). Antes de 2020 o SIOPE não publica esse valor, e o painel{" "}
+              <strong>estima</strong> receita × percentual (marcado como estimado; no CSV, <code>aplicado_estimado = 1</code>). Também é
+              estimado quando o valor declarado não bate com o percentual declarado (diferença acima de 1 ponto); o percentual é o número
+              oficial.
+            </li>
+            <li>
+              <strong>Faltou</strong> = (25% − percentual aplicado) × base, quando o percentual é menor que 25%. Sem declaração, ou abaixo de
+              25% sem receita declarada, o valor não é estimável e fica vazio (nunca zero).
+            </li>
+            <li>
+              <strong>Por aluno</strong>: indicador 4.9 do SIOPE. O denominador é o número de matrículas que o próprio ente declarou ao SIOPE,
+              não o Censo Escolar; erros nessa contagem geram valores muito altos ou muito baixos.
+            </li>
+            <li>
+              <strong>Valores monetários são nominais</strong>: todos os R$ estão em reais correntes de cada ano, sem correção pela
+              inflação. Somas de vários anos (saldo devedor, maiores déficits acumulados, série do que faltou) misturam reais de anos
+              diferentes e devem ser lidas como ordem de grandeza. Pelo IPCA, os preços subiram cerca de 2,6 vezes entre o fim de 2008 e o fim de 2025.
             </li>
             <li>
               <strong>Saldo devedor (estimativa)</strong>: acumula o que faltou em cada ano e abate o que foi aplicado acima de 25% nos anos
@@ -192,9 +259,36 @@ export default function Page() {
             </li>
             <li>
               <strong>Limpeza da base</strong>: declarações com 0% em MDE e nenhum outro dado são formulários vazios e contam como “não
-              declarou”; investimento por aluno abaixo de R$ 100 ou acima de R$ 200 mil é tratado como erro de preenchimento; o valor aplicado
-              em R$ só é mostrado quando bate com o percentual declarado. Fernando de Noronha (PE) é distrito estadual, sem orçamento
-              municipal, e fica fora da contagem.
+              declarou”; investimento por aluno abaixo de R$ 100 ou acima de R$ 200 mil é descartado como erro de preenchimento. Fernando de
+              Noronha (PE) é distrito estadual, sem orçamento municipal, e fica fora da contagem.
+            </li>
+            <li>
+              <strong>Valores atípicos</strong> são marcados, não apagados, e continuam nos totais e medianas: percentual em MDE abaixo de 18%
+              ou acima de 45%; valor por aluno muito acima (mais de 2,5 vezes) ou abaixo (menos de 0,4 vez) do padrão do próprio município,
+              comparado à mediana nacional de cada ano; e receita de impostos que salta ou cai mais de 2,5 vezes em relação aos anos vizinhos
+              (o valor em R$ que faltou fica duvidoso). Costumam ser erros de declaração; confira na fonte antes de citar.
+            </li>
+            <li>
+              <strong>Municípios criados depois de 2008</strong>:{" "}
+              {newer.map((c, i) => (
+                <span key={c.id}>
+                  {i ? (i === newer.length - 1 ? " e " : ", ") : ""}
+                  {c.name} ({c.uf}, instalado em {c.since})
+                </span>
+              ))}
+              . Nos anos anteriores eles não existiam: aparecem como “não existia”, não como “não declarou”, e ficam fora do total de
+              municípios daqueles anos.
+            </li>
+            <li>
+              <strong>Governos estaduais</strong>: os dados abertos do SIOPE não trazem a declaração do governo de Minas Gerais em{" "}
+              {mgGaps.join(", ")}
+              {otherGaps.length > 0 && (
+                <>
+                  {" "}
+                  (nem de {otherGaps.map((g) => `${g.name} em ${g.ys.join(", ")}`).join("; ")})
+                </>
+              )}
+              . Nesses anos o painel mostra “sem dado” para o estado.
             </li>
             <li>
               Quando um município ficou abaixo de 25% mas não declarou a receita daquele ano, o valor que faltou não é estimado: os totais em
@@ -207,10 +301,22 @@ export default function Page() {
             </li>
           </ul>
 
+          <h2 id="como-citar">Versão e como citar</h2>
+          <p>
+            Versão dos dados <code>{META.version}</code>: arquivos do SIOPE extraídos em {dateBR(META.extracted)}. Os dados derivados estão
+            sob a licença{" "}
+            <a href={META.licenseUrl} target="_blank" rel="noreferrer">
+              {META.license}
+            </a>
+            . Cite as fontes originais (FNDE/SIOPE, Tesouro Nacional/SICONFI e IBGE) e o Radar MDE como forma de acesso; a{" "}
+            <Link href="/dados#citar">página de dados</Link> tem a referência pronta em ABNT e BibTeX.
+          </p>
+
           <h2 id="proximos-passos">Próximos passos</h2>
           <ul>
             <li>Alertas por e-mail quando um município acompanhado publicar novo relatório.</li>
-            <li>Gasto por aluno (com matrículas do Censo Escolar/INEP) e comparação com o CAQ.</li>
+            <li>Valores corrigidos pela inflação (IPCA) ao lado dos nominais.</li>
+            <li>Conferir o gasto por aluno com as matrículas do Censo Escolar/INEP e comparar com o CAQ.</li>
             <li>Percentual apurado pelos Tribunais de Contas ao lado do declarado.</li>
             <li>Cruzamento com o Tesouro (SICONFI) e percentual em saúde para todos os estados.</li>
           </ul>

@@ -1,31 +1,39 @@
-import { YEARS, allCities, citiesOf, shortfall } from "@/lib/data";
-import { UFS, getRegion, getUf } from "@/lib/geo";
+import { YEARS, allCities, citiesIn, citiesOf, stateGov } from "@/lib/data";
+import { CITY_CSV_COLUMNS, STATE_CSV_COLUMNS, cityCsvRecords, stateCsvRecords, toCsv } from "@/lib/csv";
+import { REGIONS, UFS, getRegionBySlug, getUf } from "@/lib/geo";
+import { compressed } from "@/app/data/compressed";
 
-export function generateStaticParams() {
-  return [{ uf: "brasil" }, ...UFS.map((u) => ({ uf: u.uf.toLowerCase() }))];
+const IDS = ["brasil", "estados", ...REGIONS.map((r) => `regiao-${r.slug}`), ...UFS.map((u) => u.uf.toLowerCase())];
+
+/**
+ * One line per municipality and year: /dados/csv/brasil, /<uf>, /regiao-<slug>; state governments: /estados.
+ * Append "-excel" for the Excel-Brasil variant (";" separator, decimal comma). Schema: lib/csv.ts.
+ * Rendered on request and compressed (gzip/br), memoised per process: the Brasil file is ~17 MB raw (PERF-11).
+ */
+export async function GET(req: Request, { params }: RouteContext<"/dados/csv/[uf]">) {
+  const { uf: raw } = await params;
+  if (!IDS.includes(raw.replace(/-excel$/, ""))) return new Response("Not found", { status: 404 });
+  return compressed(req, `csv:${raw}`, () => build(raw), {
+    "content-type": "text/csv; charset=utf-8",
+    "content-disposition": `attachment; filename="radar-mde-${raw}.csv"`,
+  });
 }
 
-/** One line per municipality and year: /dados/csv/brasil or /dados/csv/<uf>. */
-export async function GET(_req: Request, { params }: RouteContext<"/dados/csv/[uf]">) {
-  const { uf } = await params;
-  const cities = uf === "brasil" ? allCities() : getUf(uf) ? citiesOf(uf) : null;
-  if (!cities) return new Response("Not found", { status: 404 });
-  const head = ["ibge", "municipio", "uf", "regiao", "regiao_intermediaria", "regiao_imediata", "populacao", "ano", "situacao", "mde_pct", "mde_aplicado_rs", "receita_impostos_rs", "faltou_rs", "fundeb_pessoal_pct", "fundeb_minimo_pct", "fundeb_nao_usado_pct", "por_aluno_rs", "saude_pct", "fonte"];
-  const esc = (v: unknown) => (v == null ? "" : /[",\n]/.test(String(v)) ? `"${String(v).replace(/"/g, '""')}"` : String(v));
-  const lines = [head.join(",")];
-  for (const c of cities) {
-    const region = getRegion(getUf(c.uf)!.region).name;
-    for (const y of YEARS) {
-      const r = c.years[y];
-      if (!r) continue;
-      lines.push(
-        [c.id, c.name, c.uf, region, c.inter, c.imediata, c.pop, y, r.s === "nd" ? "nao_declarou" : "declarou", r.mde, r.mdeV, r.base, Math.round(shortfall(r)) || 0, r.fun, r.funMin, r.funLeft, r.perAluno, r.sau, r.src]
-          .map(esc)
-          .join(","),
-      );
-    }
+function build(raw: string): string | null {
+  const excel = raw.endsWith("-excel");
+  const id = excel ? raw.slice(0, -"-excel".length) : raw;
+  let text: string | null = null;
+  if (id === "estados") {
+    const recs = UFS.flatMap((u) => {
+      const g = stateGov(u.uf);
+      return g ? stateCsvRecords(g, YEARS) : [];
+    });
+    text = toCsv(STATE_CSV_COLUMNS, recs, { excel });
+  } else {
+    const region = id.startsWith("regiao-") ? getRegionBySlug(id.slice("regiao-".length)) : undefined;
+    const cities =
+      id === "brasil" ? allCities() : region ? citiesIn({ level: "region", region: region.key }) : getUf(id) ? citiesOf(id) : null;
+    if (cities) text = toCsv(CITY_CSV_COLUMNS, cities.flatMap((c) => cityCsvRecords(c, YEARS)), { excel });
   }
-  return new Response("﻿" + lines.join("\n"), {
-    headers: { "content-type": "text/csv; charset=utf-8", "content-disposition": `attachment; filename="radar-mde-${uf}.csv"` },
-  });
+  return text;
 }

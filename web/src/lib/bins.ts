@@ -50,15 +50,25 @@ export function quintileBins(values: number[]): Bin[] {
   }));
 }
 
-/** Share (0–100) of a territory's municipalities below the minimum: sequential red, 0% stays neutral. */
+/**
+ * Share (0–100) of a territory's municipalities below the minimum: sequential red; 0% is a near-white neutral
+ * (`--bin-zero`, outlined on the map) so "até 2%" can't be mistaken for "nenhum".
+ */
 export const SHARE_BINS: Bin[] = [
-  { key: "s0", label: "0%", color: "var(--bin-3)", test: (v) => v === 0 },
+  { key: "s0", label: "0%", color: "var(--bin-zero)", test: (v) => v === 0 },
   { key: "s1", label: "até 2%", color: "var(--red-1)", test: (v) => v > 0 && v < 2 },
   { key: "s2", label: "2–5%", color: "var(--red-2)", test: (v) => v >= 2 && v < 5 },
   { key: "s3", label: "5–10%", color: "var(--red-3)", test: (v) => v >= 5 && v < 10 },
   { key: "s4", label: "10–25%", color: "var(--red-4)", test: (v) => v >= 10 && v < 25 },
   { key: "s5", label: "≥ 25%", color: "var(--red-5)", test: (v) => v >= 25 },
 ];
+
+/** Classes that mean "below the legal minimum": the map adds a redundant outline so they survive grayscale/CVD. */
+export const isBelowBin = (bins: Bin[], v: number | null | undefined) => {
+  if (v == null) return false;
+  const b = bins.find((x) => x.test(v));
+  return b ? /^(b1|b2|f1|f2)$/.test(b.key) : false;
+};
 
 export const colorOf = (bins: Bin[], v: number | null | undefined) =>
   v == null ? NO_DATA_COLOR : (bins.find((b) => b.test(v)) ?? bins[bins.length - 1]).color;
@@ -72,3 +82,14 @@ export const METRICS: { key: MetricKey; label: string; short: string; fmt: (v: n
   { key: "fun", label: "% do Fundeb pago aos profissionais da educação", short: "Fundeb pessoal (%)", fmt: (v) => pct(v) },
   { key: "aluno", label: "Investimento por aluno (R$/ano, nominal)", short: "R$ por aluno", fmt: (v) => `R$ ${Math.round(v).toLocaleString("pt-BR")}` },
 ];
+
+/** Histogram buckets of MDE %: "< 15%", one per point 15–44, "≥ 45%". Shared by the chart and the servers
+ * that pre-bin whole countries/regions (so those pages don't need every municipality in the browser). */
+export const HIST_LO = 15;
+export const HIST_HI = 45;
+export const HIST_NB = HIST_HI - HIST_LO + 2;
+export function histCounts(values: (number | null | undefined)[]): number[] {
+  const counts = new Array<number>(HIST_NB).fill(0);
+  for (const v of values) if (v != null) counts[v < HIST_LO ? 0 : v >= HIST_HI ? HIST_NB - 1 : Math.floor(v) - HIST_LO + 1]++;
+  return counts;
+}

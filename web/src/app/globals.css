@@ -2,7 +2,14 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+/* dark tokens/utilities apply on screen only: print always renders the light theme */
+@custom-variant dark {
+  @media screen {
+    &:is(.dark *) {
+      @slot;
+    }
+  }
+}
 
 /*
  * Theme: shadcn/ui variables tuned to Vercel's Geist scale (near-white / near-black surfaces,
@@ -49,32 +56,39 @@
   --warning-ink: #9a5800;
   --warning-soft: #fff6e5;
   --critical: #da2f35;
+  --critical-ink: #c0262d; /* text on white / critical-soft: 5.9 / 5.3:1 */
   --critical-soft: #fff0f0;
 
-  /* MDE bins (diverging around 25%) */
+  /*
+   * MDE bins (diverging around 25%). Steps are spaced in luminance so neighbours differ by >= 1.9:1
+   * and the light steps still clear 1.5:1 against the white card (validated, see DESIGN.md · Data colors).
+   */
   --bin-1: #b42727;
-  --bin-2: #ec9a98;
-  --bin-3: #dcdad3;
-  --bin-4: #86b6ef;
-  --bin-5: #2a78d6;
-  --bin-nd: #f2f2f2;
-  /* categorical, fixed order */
+  --bin-2: #e27371;
+  --bin-3: #d1cfc8;
+  --bin-4: #5598e7;
+  --bin-5: #1c5cab;
+  --bin-nd: #ebebeb;
+  /* "zero" step for share maps (0% below): near-white neutral, draw with a hairline stroke */
+  --bin-zero: #f4f3f0;
+  /* categorical, fixed order; every slot >= 3:1 on white (dataviz validator: adjacent CVD >= 8, normal >= 15) */
   --series-1: #2a78d6;
-  --series-2: #eb6834;
-  --series-3: #1baf7a;
-  --series-4: #eda100;
-  --series-5: #e87ba4;
+  --series-2: #d0571f;
+  --series-3: #249c74;
+  --series-4: #b77610;
+  --series-5: #c4507f;
   /* sequential */
   --seq-1: #cde2fb;
   --seq-2: #86b6ef;
   --seq-3: #3987e5;
   --seq-4: #1c5cab;
   --seq-5: #0d366b;
-  --red-1: #f7d9d8;
-  --red-2: #efaeac;
-  --red-3: #e27371;
-  --red-4: #c53a39;
-  --red-5: #8a1f1f;
+  /* sequential red (share below 25%): >= 1.48:1 between steps, red-1 1.67:1 from --bin-zero */
+  --red-1: #efaeac;
+  --red-2: #e27371;
+  --red-3: #cd4a48;
+  --red-4: #a32828;
+  --red-5: #6a1616;
 
   --chart-1: var(--series-1);
   --chart-2: var(--series-2);
@@ -96,6 +110,7 @@
   --shadow-pop: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 4px 8px -4px rgba(0, 0, 0, 0.04), 0 16px 24px -8px rgba(0, 0, 0, 0.06);
 }
 
+@media screen {
 .dark {
   --background: #0a0a0a;
   --foreground: #ededed;
@@ -133,14 +148,16 @@
   --warning-ink: #ffb224;
   --warning-soft: #2a1d07;
   --critical: #ff6166;
+  --critical-ink: #ff6166;
   --critical-soft: #2a1011;
 
   --bin-1: #e66767;
-  --bin-2: #8f3a39;
-  --bin-3: #46453f;
-  --bin-4: #1c5cab;
+  --bin-2: #ad4543;
+  --bin-3: #383835;
+  --bin-4: #2a78d6;
   --bin-5: #6da7ec;
-  --bin-nd: #1a1a1a;
+  --bin-nd: #232323;
+  --bin-zero: #1c1c1a;
   --series-1: #3987e5;
   --series-2: #d95926;
   --series-3: #199e70;
@@ -151,11 +168,11 @@
   --seq-3: #2a78d6;
   --seq-4: #6da7ec;
   --seq-5: #b7d3f6;
-  --red-1: #5c3230;
-  --red-2: #833a38;
-  --red-3: #ad4543;
-  --red-4: #d75b59;
-  --red-5: #f59d9b;
+  --red-1: #6b3533;
+  --red-2: #9a403e;
+  --red-3: #c4504e;
+  --red-4: #e57e7c;
+  --red-5: #f8bfbd;
 
   --sidebar: #0a0a0a;
   --sidebar-foreground: #ededed;
@@ -169,6 +186,7 @@
   --header-bg: rgba(10, 10, 10, 0.75);
   --shadow-card: none;
   --shadow-pop: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 16px 32px -8px rgba(0, 0, 0, 0.6);
+}
 }
 
 @theme inline {
@@ -224,6 +242,7 @@
   --color-warning-ink: var(--warning-ink);
   --color-warning-soft: var(--warning-soft);
   --color-critical: var(--critical);
+  --color-critical-ink: var(--critical-ink);
   --color-critical-soft: var(--critical-soft);
   --color-bin-1: var(--bin-1);
   --color-bin-2: var(--bin-2);
@@ -231,6 +250,7 @@
   --color-bin-4: var(--bin-4);
   --color-bin-5: var(--bin-5);
   --color-bin-nd: var(--bin-nd);
+  --color-bin-zero: var(--bin-zero);
   --color-series-1: var(--series-1);
   --color-series-2: var(--series-2);
   --color-series-3: var(--series-3);
@@ -261,14 +281,16 @@ html {
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
   html {
     @apply font-sans;
     color-scheme: light;
   }
-  html.dark {
-    color-scheme: dark;
+  @media screen {
+    html.dark {
+      color-scheme: dark;
+    }
   }
   body {
     @apply bg-canvas text-foreground;
@@ -301,4 +323,227 @@ html {
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+/* ---------------------------------------------------------------------------------------------------------
+ * Accessibility globals (QA wave 1 · W5). Documented in DESIGN.md § Accessibility & print.
+ * ------------------------------------------------------------------------------------------------------- */
+
+/*
+ * Focus Not Obscured (WCAG 2.4.11): anything scrolled into view (Tab, anchors, find) stops below the sticky
+ * stack. --subbar-h is the height of a sticky context bar (`sticky top-(--header-h)`), when the page has one.
+ */
+html {
+  --subbar-h: 0px;
+  scroll-padding-top: calc(var(--header-h) + var(--subbar-h) + 0.75rem);
+  scroll-padding-bottom: 1rem;
+}
+html:has([data-subbar], [class*="top-(--header-h)"]) {
+  --subbar-h: 3.25rem;
+}
+@media (max-width: 767px) {
+  /* the UF bar wraps to two rows on phones */
+  html:has([data-subbar], [class*="top-(--header-h)"]) {
+    --subbar-h: 5.25rem;
+  }
+}
+
+/* Reflow at high zoom / short viewports (WCAG 1.4.10): nothing sticks, so content gets the whole height. */
+@media (max-height: 30rem) {
+  html,
+  html:has([data-subbar], [class*="top-(--header-h)"]) {
+    --header-h: 0px;
+    --subbar-h: 0px;
+  }
+  header.sticky,
+  [data-subbar],
+  [class*="top-(--header-h)"] {
+    position: static !important;
+  }
+}
+
+/* Mouse/touch focus on chart internals never draws a ring; keyboard focus (:focus-visible) still does. */
+.recharts-wrapper :focus:not(:focus-visible),
+.recharts-wrapper:focus:not(:focus-visible),
+svg :focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Data-viz helpers: fade the clipped edge of in-card scrollers (VIS-04, VIS-07). */
+@utility fade-b {
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 2.5rem), transparent);
+}
+@utility fade-x {
+  mask-image: linear-gradient(to right, transparent, #000 1rem, #000 calc(100% - 1rem), transparent);
+}
+
+/*
+ * Windows High Contrast / forced colors (A11Y-05): data swatches keep their real color, and every selected
+ * state gets a system-color outline because background-only selection disappears.
+ */
+@media (forced-colors: active) {
+  [style*="background"],
+  [data-swatch],
+  .recharts-surface,
+  svg[role="img"] {
+    forced-color-adjust: none;
+  }
+  [role="radio"][aria-checked="true"],
+  [role="tab"][aria-selected="true"],
+  [role="option"][aria-selected="true"],
+  [aria-pressed="true"],
+  [data-slot="tabs-trigger"][data-active] {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+  :focus-visible {
+    outline-color: Highlight;
+  }
+}
+
+/* ---------------------------------------------------------------------------------------------------------
+ * Print (GOV-07, VIS-10): A4, light theme, no chrome or controls, tables expanded, cards kept whole.
+ * Components opt out with Tailwind `print:hidden`; `.print-only` / `print:block` show print-only notes.
+ * ------------------------------------------------------------------------------------------------------- */
+@page {
+  size: A4;
+  margin: 12mm 11mm 14mm;
+}
+.print-only {
+  display: none;
+}
+@media print {
+  html,
+  html:has([data-subbar], [class*="top-(--header-h)"]) {
+    --header-h: 0px;
+    --subbar-h: 0px;
+    font-size: 14px;
+  }
+  *,
+  *::before,
+  *::after {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    backdrop-filter: none !important;
+    transition: none !important;
+    animation: none !important;
+  }
+  html,
+  body {
+    color-scheme: light !important; /* next-themes sets an inline dark color-scheme */
+    background: #fff !important;
+  }
+  .print-only {
+    display: block;
+  }
+
+  /* chrome and controls */
+  header.sticky,
+  a[href="#conteudo"],
+  main ~ footer ul,
+  main ~ footer [role="radiogroup"],
+  [data-slot="button"],
+  [data-slot="tooltip-trigger"] > svg,
+  [role="radiogroup"],
+  [role="tablist"],
+  textarea,
+  nextjs-portal {
+    display: none !important;
+  }
+  [data-subbar],
+  [class*="top-(--header-h)"],
+  .sticky {
+    position: static !important;
+  }
+  [data-subbar],
+  [class*="top-(--header-h)"] {
+    border: 0 !important;
+    background: none !important;
+  }
+  main ~ footer {
+    border-top: 1px solid var(--border);
+    background: none !important;
+  }
+  main ~ footer > div {
+    padding-block: 0.75rem !important;
+    gap: 0.5rem !important;
+  }
+
+  /* layout: page bands and canvas go white, content uses the full printable width */
+  .bg-canvas,
+  .bg-background,
+  .bg-card {
+    background: #fff !important;
+  }
+  .max-w-7xl {
+    max-width: none !important;
+    padding-inline: 0 !important;
+  }
+
+  /* cards: never split a chart, KPI, map or short card across pages (long tables/lists may break between rows) */
+  section:not(:has(table, li:nth-child(10))),
+  [data-slot="card"],
+  figure,
+  .recharts-wrapper,
+  svg[role="img"] {
+    break-inside: avoid;
+  }
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+
+  /* charts redraw to the page width (Recharts renders at the screen width) */
+  .recharts-responsive-container > div,
+  .recharts-wrapper {
+    width: 100% !important;
+    height: auto !important;
+  }
+  .recharts-wrapper > .recharts-surface {
+    width: 100%;
+    height: auto;
+  }
+
+  /* tables: no inner scroll, every column visible, header repeats on each page */
+  [data-slot="table-container"],
+  .overflow-x-auto,
+  .overflow-auto,
+  .overflow-y-auto,
+  [class*="max-h-"] {
+    overflow: visible !important;
+    max-height: none !important;
+    mask-image: none !important;
+  }
+  table {
+    width: 100% !important;
+    min-width: 0 !important;
+    font-size: 0.75rem;
+  }
+  th,
+  td {
+    padding-inline: 0.375rem !important;
+    white-space: normal !important;
+  }
+  thead {
+    display: table-header-group;
+  }
+  th button {
+    white-space: normal !important;
+    height: auto !important;
+  }
+  tr {
+    break-inside: avoid;
+  }
+  th.sticky,
+  td.sticky {
+    position: static !important;
+  }
+
+  a {
+    color: inherit !important;
+    text-decoration: none;
+  }
 }

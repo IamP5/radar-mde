@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import SearchPalette from "@/components/SearchPalette";
@@ -7,15 +7,33 @@ import { NavLinks } from "@/components/kit/nav";
 import { NAV } from "@/components/kit/nav-items";
 import { ThemeProvider, ThemeSwitcher, ThemeToggle } from "@/components/kit/theme";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { META, dateBR } from "@/lib/data";
+import { SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const geistSans = Geist({ subsets: ["latin"], variable: "--font-geist-sans" });
 const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
 
+const DESCRIPTION =
+  "Quanto cada um dos 5.570 municípios brasileiros aplica em educação, e se cumpre o mínimo constitucional de 25%. Do Brasil às regiões, estados e cidades, de 2008 a 2025.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: { default: "Radar MDE · Brasil", template: "%s · Radar MDE" },
-  description:
-    "Quanto cada um dos 5.570 municípios brasileiros aplica em educação, e se cumpre o mínimo constitucional de 25%. Do Brasil às regiões, estados e cidades, de 2008 a 2025.",
+  description: DESCRIPTION,
+  applicationName: SITE_NAME,
+  // Link-preview defaults (WhatsApp, redes sociais). No og:title/description here: they would shadow each page's own
+  // title (previews then fall back to <title>/description); app/opengraph-image.tsx is the default share image.
+  openGraph: { type: "website", locale: "pt_BR", siteName: SITE_NAME },
+  twitter: { card: "summary_large_image" },
+  formatDetection: { telephone: false },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+  ],
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -49,7 +67,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                 <NavLinks />
               </div>
             </header>
-            <main id="conteudo" className="flex-1">
+            <main id="conteudo" tabIndex={-1} className="flex-1 outline-none">
               {children}
             </main>
             <footer className="border-t bg-background">
@@ -64,12 +82,19 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                     A. Z. (2021), <em>O financiamento da Educação Básica no Brasil contemporâneo</em>, UNINOVE. Ferramenta
                     independente, sem vínculo com órgãos públicos.
                   </p>
+                  <p className="text-xs leading-5 text-muted-foreground">
+                    Dados extraídos em <time dateTime={META.extracted}>{dateBR(META.extracted)}</time> · versão{" "}
+                    <span className="font-mono">{META.version}</span> · licença{" "}
+                    <a href={META.licenseUrl} rel="license noopener" target="_blank" className="underline-offset-2 hover:text-foreground hover:underline">
+                      {META.license}
+                    </a>
+                  </p>
                 </div>
                 <div className="flex flex-col justify-between gap-6 md:items-end">
                   <ul className="flex flex-wrap gap-x-5 gap-y-2 text-[13px] text-muted-foreground">
                     {NAV.map((n) => (
                       <li key={n.href}>
-                        <Link href={n.href} className="transition-colors hover:text-foreground">
+                        <Link href={n.href} prefetch={false} className="inline-flex min-h-6 items-center transition-colors hover:text-foreground">
                           {n.label}
                         </Link>
                       </li>

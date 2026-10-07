@@ -1,0 +1,23 @@
+// usage: node fixes/w3/shot.mjs <path> [width=1440] [theme=light] [full=1] [out-name] [scrollToSelector]
+import { chromium } from "playwright";
+const [path = "/", w = "1440", theme = "light", full = "1", name, sel] = process.argv.slice(2);
+const base = process.env.BASE ?? "http://localhost:3210";
+const browser = await chromium.launch();
+const ctx = await browser.newContext({ viewport: { width: +w, height: 900 }, colorScheme: theme, deviceScaleFactor: 1 });
+await ctx.addInitScript((t) => { try { localStorage.setItem("theme", t); } catch {} }, theme);
+const page = await ctx.newPage();
+const errs = [];
+page.on("console", (m) => (m.type() === "error" || m.type() === "warning") && errs.push(`${m.type()}: ${m.text().slice(0, 3000)}`));
+page.on("pageerror", (e) => errs.push("pageerror: " + e.message));
+const reqs = [];
+page.on("request", (r) => reqs.push(r.url().replace(base, "")));
+const res = await page.goto(base + path, { waitUntil: "networkidle" });
+await page.waitForTimeout(800);
+if (sel) await page.locator(sel).first().scrollIntoViewIfNeeded();
+const file = `fixes/w3/shots/${name ?? (path.replace(/[^a-z0-9]+/gi, "_") || "home")}-${w}-${theme}.png`;
+await page.screenshot({ path: file, fullPage: full === "1" });
+console.log("status", res.status(), "file", file);
+console.log("data requests:", reqs.filter((u) => u.includes("/data/") || u.includes("/geo/")).join(" "));
+console.log("overflow:", await page.evaluate(() => document.documentElement.scrollWidth - innerWidth));
+if (errs.length) console.log(errs.join("\n"));
+await browser.close();

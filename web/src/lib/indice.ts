@@ -1,10 +1,12 @@
+import { DATA_VERSION } from "./rows";
+
 /** Client: the light municipality index (/data/indice.json, ~80 KB gzipped), shared by search and maps. */
 export type IndexEntry = { id: number; name: string; uf: string; slug: string; pop: number };
 type Raw = [id: number, name: string, uf: string, slug: string, pop: number];
 
 let promise: Promise<IndexEntry[]> | null = null;
 export function loadIndex(): Promise<IndexEntry[]> {
-  promise ??= fetch("/data/indice.json")
+  promise ??= fetch(`/data/indice.json?v=${DATA_VERSION}`)
     .then((r) => {
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       return r.json() as Promise<Raw[]>;

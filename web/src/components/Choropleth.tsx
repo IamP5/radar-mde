@@ -3,7 +3,7 @@
 import { geoMercator, geoPath } from "d3-geo";
 import type { Feature, FeatureCollection, Geometry, MultiLineString } from "geojson";
 import { useRouter } from "next/navigation";
-import { memo, useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
+import { memo, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { feature, mesh } from "topojson-client";
 import type { GeometryCollection, Topology } from "topojson-specification";
 import { NO_DATA_COLOR, type Bin } from "@/lib/bins";
@@ -17,6 +17,12 @@ type Props = {
   ufCodes?: number[];
   fill: (id: number) => string;
   hatched?: (id: number) => boolean;
+  /** shapes to outline in the foreground colour: "below the minimum" survives grayscale, CVD and print */
+  outlined?: (id: number) => boolean;
+  /** accessible name of a shape; when given (and the map has ≤ 40 shapes) shapes become keyboard links */
+  label?: (id: number) => string;
+  /** id of an element (table, list) holding the same data, announced with the map */
+  describedBy?: string;
   tooltip: (id: number) => ReactNode;
   href?: (id: number) => string | null;
   highlight?: number | null;
@@ -45,13 +51,14 @@ function loadTopo(src: string) {
 type Shape = { id: number; d: string };
 
 export default function Choropleth({
-  src, layer, ufCodes, fill, hatched, tooltip, href, highlight, ufBorders, ariaLabel, height = 560,
+  src, layer, ufCodes, fill, hatched, outlined, label, describedBy, tooltip, href, highlight, ufBorders, ariaLabel, height = 560,
 }: Props) {
   const [topo, setTopo] = useState<Topology | null>(null);
   const [failed, setFailed] = useState(false);
-  const [hover, setHover] = useState<{ id: number; x: number; y: number; w: number; h: number; touch?: boolean } | null>(null);
+  const [hover, setHover] = useState<{ id: number; x: number; y: number; w: number; h: number; touch?: boolean; kbd?: boolean } | null>(null);
   const wrap = useRef<HTMLDivElement>(null);
   const pointer = useRef<string>("mouse");
+  const g = useRef<SVGGElement>(null);
   const router = useRouter();
   const hatchId = `hatch-${useId().replace(/:/g, "")}`;
 
@@ -93,6 +100,30 @@ export default function Choropleth({
   const hoverShape = hover && geom ? geom.shapes.find((s) => s.id === hover.id) : null;
   const hiShape = highlight != null && geom ? geom.shapes.find((s) => s.id === highlight) : null;
   const dense = (geom?.shapes.length ?? 0) > 1500;
+  const keyboard = !!label && !!href && (geom?.shapes.length ?? 99) <= 40;
+
+  // Colours, outlines and labels are written straight onto the stable <path> nodes: a year or metric change
+  // touches thousands of attributes instead of re-rendering thousands of React elements (PERF-03).
+  useLayoutEffect(() => {
+    const el = g.current;
+    if (!el || !geom) return;
+    const base = dense ? 0.12 : 0.6;
+    for (const node of Array.from(el.children)) {
+      const id = Number(node.getAttribute("data-id"));
+      const out = outlined?.(id) ?? false;
+      node.setAttribute("fill", hatched?.(id) ? `url(#${hatchId})` : fill(id));
+      node.setAttribute("stroke", out ? "var(--foreground)" : layer === "uf" ? "color-mix(in oklab, var(--foreground) 28%, var(--background))" : "var(--background)");
+      node.setAttribute("stroke-width", String(out ? (dense ? 0.55 : 1.1) : base));
+      if (keyboard) node.setAttribute("aria-label", label!(id));
+      else node.removeAttribute("aria-label");
+    }
+  }, [geom, fill, hatched, outlined, label, keyboard, dense, layer, hatchId]);
+
+  const showAt = (target: Element, id: number) => {
+    const box = wrap.current!.getBoundingClientRect();
+    const r = target.getBoundingClientRect();
+    setHover({ id, x: r.left + r.width / 2 - box.left, y: r.top + r.height / 2 - box.top, w: box.width, h: box.height, kbd: true });
+  };
 
   const idFrom = (t: EventTarget) => {
     const v = (t as Element).getAttribute?.("data-id");
@@ -104,8 +135,25 @@ export default function Choropleth({
       <svg
         viewBox={`0 0 ${W} ${height}`}
         className="h-auto w-full select-none"
-        role="img"
+        role={keyboard ? "group" : "img"}
         aria-label={ariaLabel}
+        aria-describedby={describedBy}
+        onFocus={(e) => {
+          const id = idFrom(e.target);
+          // keyboard focus only: a tap also focuses the shape and has its own two-step flow
+          if (id != null && (e.target as Element).matches(":focus-visible")) showAt(e.target as Element, id);
+        }}
+        onBlur={() => setHover((h) => (h?.kbd ? null : h))}
+        onKeyDown={(e) => {
+          const id = idFrom(e.target);
+          if (id == null) return;
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            const to = href?.(id);
+            if (to) router.push(to);
+          }
+          if (e.key === "Escape") setHover(null);
+        }}
         onPointerDown={(e) => (pointer.current = e.pointerType)}
         onPointerMove={(e) => {
           if (e.pointerType !== "mouse") return;
@@ -138,11 +186,11 @@ export default function Choropleth({
             {failed ? "Não foi possível carregar o mapa." : "Carregando mapa…"}
           </text>
         )}
-        {geom && <Shapes shapes={geom.shapes} fill={fill} hatched={hatched} hatchId={hatchId} dense={dense} clickable={!!href} />}
+        {geom && <Shapes ref={g} shapes={geom.shapes} clickable={!!href} keyboard={keyboard} />}
         {geom?.borders && <path d={geom.borders} fill="none" stroke="var(--foreground)" strokeWidth={0.6} strokeOpacity={0.35} strokeLinejoin="round" pointerEvents="none" />}
         {geom?.outline && <path d={geom.outline} fill="none" stroke="var(--foreground)" strokeWidth={0.7} strokeOpacity={0.4} strokeLinejoin="round" pointerEvents="none" />}
         {hiShape && <path d={hiShape.d} fill="none" stroke="var(--foreground)" strokeWidth={2} strokeLinejoin="round" pointerEvents="none" />}
-        {hoverShape && <path d={hoverShape.d} fill="none" stroke="var(--foreground)" strokeWidth={1.5} strokeLinejoin="round" pointerEvents="none" />}
+        {hoverShape && <path d={hoverShape.d} fill="none" stroke="var(--foreground)" strokeWidth={keyboard ? 2 : 1.5} strokeLinejoin="round" pointerEvents="none" />}
       </svg>
       {hover && (
         <div
@@ -155,46 +203,50 @@ export default function Choropleth({
         >
           {tooltip(hover.id)}
           {hover.touch && href?.(hover.id) && <div className="mt-2 border-t pt-1.5 text-xs font-medium text-brand-ink">Toque de novo para abrir →</div>}
+          {hover.kbd && <div className="mt-2 border-t pt-1.5 text-xs text-muted-foreground">Enter para abrir</div>}
         </div>
       )}
     </div>
   );
 }
 
-/** Paths are memoised separately so hover state changes don't re-render thousands of shapes. */
+/**
+ * Paths are memoised on geometry only: fills/strokes/labels are set imperatively by the parent, so neither
+ * hover state nor a year change re-renders thousands of shapes.
+ */
 const Shapes = memo(function Shapes({
-  shapes, fill, hatched, hatchId, dense, clickable,
-}: { shapes: Shape[]; fill: (id: number) => string; hatched?: (id: number) => boolean; hatchId: string; dense: boolean; clickable: boolean }) {
+  ref, shapes, clickable, keyboard,
+}: { ref: React.Ref<SVGGElement>; shapes: Shape[]; clickable: boolean; keyboard: boolean }) {
   return (
-    <g className={clickable ? "cursor-pointer" : undefined}>
+    <g ref={ref} className={cn(clickable && "cursor-pointer", keyboard && "[&>path]:outline-none")}>
       {shapes.map((s) => (
-        <path
-          key={s.id}
-          data-id={s.id}
-          d={s.d}
-          fill={hatched?.(s.id) ? `url(#${hatchId})` : fill(s.id)}
-          stroke="var(--background)"
-          strokeWidth={dense ? 0.12 : 0.6}
-          strokeLinejoin="round"
-        />
+        <path key={s.id} data-id={s.id} d={s.d} strokeLinejoin="round" tabIndex={keyboard ? 0 : undefined} role={keyboard ? "link" : undefined} />
       ))}
     </g>
   );
 });
 
-const Swatch = ({ color, bordered }: { color: string; bordered?: boolean }) => (
-  <span aria-hidden className={cn("inline-block size-2.5 shrink-0 rounded-[3px]", bordered && "shadow-[inset_0_0_0_1px_var(--border)]")} style={{ background: color }} />
+const Swatch = ({ color, bordered, outlined }: { color: string; bordered?: boolean; outlined?: boolean }) => (
+  <span
+    aria-hidden
+    className={cn(
+      "inline-block size-2.5 shrink-0 rounded-[3px] forced-color-adjust-none",
+      bordered && "shadow-[inset_0_0_0_1px_var(--axis)]",
+      outlined && "shadow-[inset_0_0_0_1.5px_var(--foreground)]",
+    )}
+    style={{ background: color }}
+  />
 );
 
 /** Horizontal swatch legend: muted title, small rounded swatches, 12px labels; hatched = did not declare. */
-export function Legend({ title, bins, nd = true, extra }: { title: string; bins: Bin[]; nd?: boolean; extra?: ReactNode }) {
+export function Legend({ title, bins, nd = true, extra, outlined }: { title: string; bins: Bin[]; nd?: boolean; extra?: ReactNode; outlined?: (b: Bin) => boolean }) {
   return (
     <div className="mt-3 space-y-1.5 text-xs text-muted-foreground">
       <div className="text-xs font-medium text-foreground">{title}</div>
       <ul className="flex flex-wrap items-center gap-x-3.5 gap-y-1.5">
         {bins.map((b) => (
           <li key={b.key} className="flex items-center gap-1.5 tnum">
-            <Swatch color={b.color} />
+            <Swatch color={b.color} outlined={outlined?.(b)} bordered={b.color === "var(--bin-zero)"} />
             {b.label}
           </li>
         ))}
@@ -202,7 +254,7 @@ export function Legend({ title, bins, nd = true, extra }: { title: string; bins:
           <li className="flex items-center gap-1.5">
             <span
               aria-hidden
-              className="inline-block size-2.5 shrink-0 rounded-[3px] shadow-[inset_0_0_0_1px_var(--border)]"
+              className="inline-block size-2.5 shrink-0 rounded-[3px] shadow-[inset_0_0_0_1px_var(--border)] forced-color-adjust-none"
               style={{ background: `repeating-linear-gradient(-45deg, var(--critical) 0 1px, var(--bin-nd) 1px 3px)` }}
             />
             Não declarou

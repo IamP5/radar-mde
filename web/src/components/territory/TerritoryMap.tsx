@@ -1,13 +1,15 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useMemo, useState, type ReactNode } from "react";
 import Choropleth, { Legend } from "@/components/Choropleth";
 import { Segmented } from "@/components/kit/segmented";
 import { StatusDot, type StatusKind } from "@/components/kit/status";
-import { BINS, METRICS, SHARE_BINS, colorOf, funBins, quintileBins, type MetricKey } from "@/lib/bins";
-import { MDE_MIN, int, pct } from "@/lib/format";
+import { withYear } from "@/components/YearPicker";
+import { BINS, METRICS, SHARE_BINS, colorOf, funBins, isBelowBin, quintileBins, type Bin, type MetricKey } from "@/lib/bins";
+import { MDE_MIN, int, isAtypical, pct } from "@/lib/format";
 import { UFS, cityPath, ufPath } from "@/lib/geo";
-import { belowShare, shortfallLabel, type Row, type UfSummary } from "@/lib/rows";
+import { belowShare, isAtip, shortfallLabel, type Row, type UfSummary } from "@/lib/rows";
 
 type UfMetric = "share" | "median" | "gov";
 const UF_METRICS: { key: UfMetric; label: string; short: string }[] = [
@@ -21,9 +23,17 @@ type Props = {
   ufs: UfSummary[];
   years: number[];
   year: number;
+  /** the page's default year: links only carry `?ano=` when another year is selected */
+  initialYear: number;
   rows: Row[] | null;
   rowsError: boolean;
+  /** asks the dashboard to fetch municipal rows (only the municipal layer needs them) */
+  onNeedRows: () => void;
   defaultMode: "uf" | "mun";
+  /** id of the table with the same per-state numbers (keyboard / screen-reader alternative) */
+  tableId?: string;
+  /** link to the same municipalities as a table */
+  explorerHref: string;
   /** restrict to these UFs (region view) */
   ufCodes?: number[];
   ariaScope: string;
@@ -36,8 +46,14 @@ const Row = ({ k, v, className }: { k: string; v: ReactNode; className?: string 
   </>
 );
 
-export default function TerritoryMap({ ufs, years, year, rows, rowsError, defaultMode, ufCodes, ariaScope }: Props) {
-  const [mode, setMode] = useState<"uf" | "mun">(defaultMode);
+const belowKeys = (b: Bin) => /^(b1|b2|f1|f2)$/.test(b.key);
+
+export default function TerritoryMap({ ufs, years, year, initialYear, rows, rowsError, onNeedRows, defaultMode, ufCodes, ariaScope, tableId, explorerHref }: Props) {
+  const [mode, setModeState] = useState<"uf" | "mun">(defaultMode);
+  const setMode = (m: "uf" | "mun") => {
+    if (m === "mun") onNeedRows();
+    setModeState(m);
+  };
   const [metric, setMetric] = useState<MetricKey>("mde");
   const [ufMetric, setUfMetric] = useState<UfMetric>("share");
   const yi = years.indexOf(year);
@@ -74,6 +90,21 @@ export default function TerritoryMap({ ufs, years, year, rows, rowsError, defaul
     (id: number) => eff === "mun" && metric === "mde" && !!byId.get(id)?.nd[yi],
     [eff, metric, byId, yi],
   );
+  // below the legal minimum gets an outline, so it doesn't depend on telling two reds apart
+  const outlined = useCallback(
+    (id: number) =>
+      eff === "mun" ? metric !== "aluno" && isBelowBin(munBins, munVal(byId.get(id))) : ufMetric !== "share" && isBelowBin(BINS, ufVal(byCode.get(id))),
+    [eff, metric, munBins, munVal, byId, ufMetric, ufVal, byCode],
+  );
+  const label = useCallback(
+    (id: number) => {
+      const u = byCode.get(id);
+      if (!u) return "";
+      const s = u.stats[yi];
+      return `${u.name}: ${s.below} de ${s.reported} municípios abaixo de 25% em ${year}; MDE mediana ${pct(s.median)}`;
+    },
+    [byCode, yi, year],
+  );
 
   const tooltip = (id: number) => {
     if (eff === "uf") {
@@ -95,7 +126,7 @@ export default function TerritoryMap({ ufs, years, year, rows, rowsError, defaul
             <Row k="MDE mediana" v={pct(s.median)} />
             <Row k="Governo estadual" v={pct(u.gov[yi])} className={u.gov[yi] != null && u.gov[yi]! < MDE_MIN ? "text-critical" : ""} />
           </div>
-          <div className="mt-2 text-xs text-muted-foreground">Clique para abrir o estado</div>
+          {s.nd > 0 && <div className="mt-1 text-xs text-muted-foreground tnum">{s.nd} não declararam</div>}
         </>
       );
     }
@@ -116,9 +147,10 @@ export default function TerritoryMap({ ufs, years, year, rows, rowsError, defaul
         <div className="mt-1 flex items-baseline justify-between gap-4">
           <span className="text-xs text-muted-foreground">{m.short}</span>
           <span className="text-[15px] font-semibold tnum">
-            {nd ? <span className="text-critical">Não declarou</span> : v == null ? <span className="text-muted-foreground">Sem dados</span> : m.fmt(v)}
+            {nd ? <span className="text-critical">Não declarou</span> : v == null ? <span className="text-muted-foreground">{r.since != null && year < r.since ? "Não existia" : "Sem dados"}</span> : m.fmt(v)}
           </span>
         </div>
+        {metric !== "fun" && (isAtip(r, yi, metric === "aluno" ? "aluno" : "mde") || (metric === "mde" && isAtypical(v))) && <div className="text-xs text-warning-ink">Valor atípico: possível erro de preenchimento</div>}
         <div className="text-xs text-muted-foreground tnum">{int(r.pop)} hab.</div>
       </>
     );
@@ -128,12 +160,12 @@ export default function TerritoryMap({ ufs, years, year, rows, rowsError, defaul
     (id: number) => {
       if (eff === "uf") {
         const u = byCode.get(id);
-        return u ? ufPath(u.uf) : null;
+        return u ? withYear(ufPath(u.uf), year, initialYear) : null;
       }
       const r = byId.get(id);
-      return r ? cityPath(r.uf, r.slug) : null;
+      return r ? withYear(cityPath(r.uf, r.slug), year, initialYear) : null;
     },
-    [eff, byCode, byId],
+    [eff, byCode, byId, year, initialYear],
   );
 
   const showMun = mode === "mun";
@@ -168,17 +200,39 @@ export default function TerritoryMap({ ufs, years, year, rows, rowsError, defaul
         ufCodes={ufCodes}
         fill={fill}
         hatched={hatched}
+        outlined={outlined}
+        label={eff === "uf" ? label : undefined}
+        describedBy={eff === "uf" ? tableId : undefined}
         tooltip={tooltip}
         href={href}
         ufBorders={showMun}
-        ariaLabel={`Mapa ${ariaScope} por ${showMun ? "município" : "estado"}, ${year}`}
+        ariaLabel={
+          eff === "uf"
+            ? `Mapa ${ariaScope} por estado, ${year}: ${UF_METRICS.find((m) => m.key === ufMetric)!.label}. Use Tab para percorrer os estados.`
+            : `Mapa ${ariaScope} por município, ${year}: ${METRICS.find((m) => m.key === metric)!.label}`
+        }
         height={ufCodes ? 520 : 600}
       />
       {showMun ? (
-        <Legend title={METRICS.find((m) => m.key === metric)!.label} bins={munBins} nd={metric === "mde"} />
+        <Legend title={METRICS.find((m) => m.key === metric)!.label} bins={munBins} nd={metric === "mde"} outlined={metric === "aluno" ? undefined : belowKeys} />
       ) : (
-        <Legend title={UF_METRICS.find((m) => m.key === ufMetric)!.label} bins={ufBins} nd={false} />
+        <Legend title={UF_METRICS.find((m) => m.key === ufMetric)!.label} bins={ufBins} nd={false} outlined={ufMetric === "share" ? undefined : belowKeys} />
       )}
+      <p className="mt-3 text-xs text-muted-foreground">
+        {(showMun ? metric !== "aluno" : ufMetric !== "share") ? "Contorno escuro: abaixo do mínimo legal. " : ""}
+        Os mesmos números em tabela:{" "}
+        {tableId && (
+          <>
+            <a href={`#${tableId}`} className="font-medium text-brand-ink underline-offset-2 hover:underline">
+              ranking dos estados
+            </a>
+            {" · "}
+          </>
+        )}
+        <Link href={explorerHref} className="font-medium text-brand-ink underline-offset-2 hover:underline">
+          municípios no Explorar
+        </Link>
+      </p>
     </div>
   );
 }

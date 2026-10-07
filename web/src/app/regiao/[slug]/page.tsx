@@ -1,16 +1,21 @@
 import { ArrowRight, Download } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { Suspense } from "react";
+import { notFound, permanentRedirect } from "next/navigation";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import { PageBody, PageHeader } from "@/components/kit/page-header";
+import { PageHeader } from "@/components/kit/page-header";
 import TerritoryDashboard from "@/components/territory/TerritoryDashboard";
 import { buttonVariants } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { YEARS, brStats, citiesIn, defaultYear, int, regionStats, topDeficits, ufSummaries } from "@/lib/data";
+import { histCounts } from "@/lib/bins";
+import { csvHref } from "@/lib/csv";
+import { YEARS, brStats, citiesIn, defaultYear, int, regionStats, rowsIn, topDeficits, ufSummaries } from "@/lib/data";
 import { REGIONS, getRegionBySlug, regionPath } from "@/lib/geo";
 import { cn } from "@/lib/utils";
+
+// Five known regions: an unknown slug must be a real 404, so validate above any Suspense boundary and
+// require the route to be fully static (an unlisted slug waits for its render instead of streaming a shell).
+export const ensureStatic = "navigation";
+export const instant = false;
 
 export function generateStaticParams() {
   return REGIONS.map((r) => ({ slug: r.slug }));
@@ -18,44 +23,23 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps<"/regiao/[slug]">): Promise<Metadata> {
   const r = getRegionBySlug((await params).slug);
-  return r ? { title: `Região ${r.name}`, description: `Aplicação em educação (MDE) dos municípios da Região ${r.name}, por estado e município.` } : {};
+  return r
+    ? { title: `Região ${r.name}`, description: `Aplicação em educação (MDE) dos municípios da Região ${r.name}, por estado e município.` }
+    : { title: "Página não encontrada" };
 }
 
-export default function Page({ params }: PageProps<"/regiao/[slug]">) {
-  return (
-    <Suspense fallback={<Fallback />}>
-      <Content params={params} />
-    </Suspense>
-  );
-}
-
-function Fallback() {
-  return (
-    <>
-      <div className="border-b bg-background">
-        <div className="mx-auto max-w-7xl space-y-3 px-4 py-8 sm:px-6">
-          <Skeleton className="h-5 w-40" />
-          <Skeleton className="h-9 w-64" />
-          <Skeleton className="h-5 w-80 max-w-full" />
-        </div>
-      </div>
-      <PageBody>
-        <div role="status" aria-label="Carregando" className="grid grid-cols-2 gap-3 lg:grid-cols-5">
-          {Array.from({ length: 5 }, (_, i) => (
-            <Skeleton key={i} className="h-36 rounded-xl" />
-          ))}
-        </div>
-        <Skeleton className="h-[520px] rounded-xl" />
-      </PageBody>
-    </>
-  );
-}
-
-async function Content({ params }: { params: Promise<{ slug: string }> }) {
-  const r = getRegionBySlug((await params).slug);
-  if (!r) notFound();
+export default async function Page({ params }: PageProps<"/regiao/[slug]">) {
+  const { slug } = await params;
+  const r = getRegionBySlug(slug);
+  if (!r) {
+    // "/regiao/Sul" → "/regiao/sul"
+    const lower = getRegionBySlug(slug.toLowerCase());
+    if (lower) permanentRedirect(regionPath(lower.key));
+    notFound();
+  }
   const scope = { level: "region" as const, region: r.key };
   const cities = citiesIn(scope);
+  const rows = rowsIn(scope);
   return (
     <>
       <PageHeader
@@ -68,9 +52,9 @@ async function Content({ params }: { params: Promise<{ slug: string }> }) {
         }
         actions={
           <>
-            <a href="/dados/csv/brasil" download className={buttonVariants({ variant: "ghost", size: "sm" })}>
+            <a href={csvHref(`regiao-${r.slug}`)} download className={buttonVariants({ variant: "ghost", size: "sm" })}>
               <Download aria-hidden />
-              Baixar CSV
+              Baixar CSV da região
             </a>
             <Link href={`/explorar?regiao=${r.slug}`} className={buttonVariants({ variant: "outline", size: "sm" })}>
               Explorar municípios
@@ -109,6 +93,7 @@ async function Content({ params }: { params: Promise<{ slug: string }> }) {
         parent={brStats()}
         ufs={ufSummaries(r.ufs)}
         deficits={topDeficits(scope, 25)}
+        hist={YEARS.map((_, i) => histCounts(rows.map((x) => x.mde[i])))}
       />
     </>
   );

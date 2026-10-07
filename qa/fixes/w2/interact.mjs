@@ -1,0 +1,40 @@
+import { chromium } from "playwright";
+const base = "http://localhost:3210";
+const b = await chromium.launch();
+const ctx = await b.newContext({ viewport: { width: 1440, height: 900 }, permissions: ["clipboard-read", "clipboard-write"] });
+const p = await ctx.newPage();
+const errs = []; p.on("pageerror", e => errs.push(e.message)); p.on("console", m => m.type()==="error" && errs.push(m.text().slice(0,300)));
+await p.goto(base + "/sp/santo-andre", { waitUntil: "networkidle" });
+await p.getByRole("radio", { name: "2014" }).click();
+await p.waitForTimeout(1500);
+console.log("url:", p.url());
+console.log("kpi:", await p.locator('section[aria-label^="Indicadores"]').innerText().then(s=>s.replace(/\n/g," | ")));
+console.log("rank:", (await p.getByText(/aplicaram menos/).first().innerText()));
+console.log("map title:", await p.getByRole("heading", { name: /Onde fica/ }).innerText());
+console.log("hist title:", await p.getByRole("heading", { name: /entre os/ }).innerText());
+console.log("peer href:", await p.locator('ol a').nth(0).getAttribute("href"));
+await p.locator('nav[aria-label="Navegação territorial"]').hover();
+await p.waitForTimeout(200);
+console.log("crumb href:", await p.locator('nav[aria-label="Navegação territorial"] a').nth(2).getAttribute("href"));
+await p.getByRole("button", { name: "Compartilhar" }).click();
+await p.getByRole("menuitem", { name: "Copiar link" }).click();
+await p.waitForTimeout(300);
+console.log("share:", await p.evaluate(() => navigator.clipboard.readText()));
+await p.getByRole("button", { name: /^MDE: o que é/ }).first().click();
+await p.waitForTimeout(300);
+console.log("popover:", await p.locator('[data-slot=popover-content]').innerText().then(s=>s.slice(0,80)));
+await p.keyboard.press("Escape");
+// direct ?ano load
+await p.goto(base + "/rs/porto-alegre?ano=2021", { waitUntil: "networkidle" }); await p.waitForTimeout(1200);
+console.log("POA verdict:", await p.locator("h1 ~ div p").first().innerText());
+// h1 name
+console.log("h1 accessible:", await p.locator("h1").evaluate(e => e.innerText));
+// touch watch
+const t = await b.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+const tp = await t.newPage(); await tp.goto(base + "/sp/santo-andre", { waitUntil: "networkidle" });
+await tp.getByRole("button", { name: /Acompanhar/ }).tap(); await tp.waitForTimeout(300);
+console.log("watch icon after tap:", await tp.getByRole("button", { name: /Acompanhando/ }).locator("svg").getAttribute("class"));
+await tp.locator(".recharts-surface").first().tap({ position: { x: 150, y: 80 } }); await tp.waitForTimeout(200);
+console.log("focused outline:", await tp.evaluate(() => { const a = document.activeElement; return a?.tagName + " " + getComputedStyle(a).outlineStyle; }));
+console.log("errors:", errs);
+await b.close();
