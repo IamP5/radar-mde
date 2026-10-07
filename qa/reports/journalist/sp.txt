@@ -1,0 +1,526 @@
+Brasil
+/
+Sudeste
+/
+São Paulo
+São Paulo
+Quanto cada um dos 645 municípios de São Paulo aplica em educação e quem fica abaixo do mínimo constitucional de 25%.
+645 municípios · 46.081.801 habitantes · Região Sudeste
+Baixar CSV
+Explorar
+Exercício
+2008
+2009
+2010
+2011
+2012
+2013
+2014
+2015
+2016
+2017
+2018
+2019
+2020
+2021
+2022
+2023
+2024
+2025
+1 de 640 abaixo de 25%
+·
+Região Sudeste
+
+Em 2025, 1 de 640 municípios de São Paulo (0,2%) aplicaram menos de 25% em educação, deixando de destinar R$ 220 mil ao ensino. Na região Sudeste, foram 0,1%; no Brasil, 0,4%. O governo estadual aplicou 26,34% na própria rede.
+
+Abaixo dos 25%
+1
+−1 vs 2024
+de 640 com dados
+Sudeste: 0,1% · Brasil: 0,4%
+Deixou de ir para a educação
+R$ 220 mil
+soma do que faltou para 25%
+Mediana aplicada
+29,13%
+metade entre 27,1% e 31,5%
+Brasil: 27,12%
+Mediana por aluno
+R$ 18.970
+por ano, valor nominal
+Brasil: R$ 16.699
+Governo do estado
+26,34%
+aplicado em MDE na rede estadual
+Fundeb em salários: 83,1%
+Mapa de 2025
+Passe o mouse para ver o valor; clique para abrir o município.
+MDE
+Fundeb
+Por aluno
+% da receita de impostos aplicado em MDE
+< 22%
+22–25%
+25–26%
+26–30%
+≥ 30%
+Não declarou
+Sem dados
+Municípios abaixo dos 25%, por ano
+Clique numa barra para mudar o exercício.
+
+2008: 11 de 645; 2009: 3 de 641; 2010: 6 de 645; 2011: 7 de 644; 2012: 6 de 645; 2013: 11 de 645; 2014: 7 de 644; 2015: 7 de 644; 2016: 4 de 645; 2017: 0 de 645; 2018: 4 de 645; 2019: 14 de 645; 2020: 37 de 645; 2021: 118 de 645; 2022: 12 de 645; 2023: 0 de 645; 2024: 2 de 644; 2025: 1 de 640. Ano selecionado: 2025.
+
+’09
+’11
+’13
+’15
+’17
+’19
+’21
+’23
+’25
+0
+25
+50
+75
+100
+125
+118
+1
+Distribuição em 2025
+Quantos municípios aplicaram cada percentual em MDE.
+
+Distribuição do percentual aplicado em MDE de São Paulo, 2025. 640 municípios; 1 abaixo de 25%. Faixa mais comum: 28–29% (82).
+
+1 abaixo de 25%
+15%
+20%
+25%
+30%
+35%
+40%
+45%
+0
+50
+100
+São Paulo frente à região e ao país
+% dos municípios que declararam e ficaram abaixo de 25%. Clique num ano para atualizar o painel.
+
+Percentual de municípios abaixo de 25%: São Paulo, região Sudeste e Brasil. Em 2025: São Paulo 0,2%; Sudeste 0,1%; Brasil 0,4%.
+
+● Brasil
+● São Paulo
+● Sudeste
+2009
+2011
+2013
+2015
+2017
+2019
+2021
+2023
+2025
+0%
+5%
+10%
+15%
+20%
+Maiores déficits acumulados
+Estimativa desde 2008, descontado o que foi aplicado a mais depois.
+1
+Marília
+6 anos abaixo: 2015, 2021, 2022, 2024…
+R$ 21,4 mi
+2
+Riolândia
+1 ano abaixo: 2021
+R$ 3,5 mi
+3
+Nova Granada
+1 ano abaixo: 2020
+R$ 2,7 mi
+4
+Taquaritinga
+2 anos abaixo: 2021, 2024
+R$ 1,6 mi
+5
+Lucianópolis
+1 ano abaixo: 2022
+R$ 1,4 mi
+6
+Iaras
+2 anos abaixo: 2021, 2025
+R$ 220 mil
+Todos os municípios
+Valores de 2025. Ordene clicando no cabeçalho; clique no nome para ver a série completa.
+Todas as regiões
+Qualquer população
+Qualquer situação
+645 municípios
+Municípios de São Paulo em 2025
+Município
+	População
+	MDE 2025
+	Situação	Fundeb pessoal
+	R$ por aluno
+	Faltou
+	Anos < 25%
+
+
+Iaras
+Sorocaba
+	8.313	
+24,62%
+	
+Abaixo	83,29%	R$ 16.363	R$ 220 mil	2
+
+Magda
+Araçatuba
+	3.211	
+25,06%
+	
+No limite	84,18%	R$ 26.104	—	1
+
+Presidente Alves
+Bauru
+	3.830	
+25,06%
+	
+No limite	95,11%	R$ 40.097	—	1
+
+Engenheiro Coelho
+Campinas
+	20.261	
+25,07%
+	
+No limite	99,62%	R$ 16.063	—	1
+
+São Manuel
+Bauru
+	38.131	
+25,07%
+	
+No limite	99,37%	R$ 14.367	—	0
+
+Itapecerica da Serra
+São Paulo
+	163.003	
+25,08%
+	
+No limite	93,44%	R$ 13.539	—	2
+
+Santo André
+São Paulo
+	782.048	
+25,09%
+	
+No limite	87,88%	R$ 20.518	—	2
+
+Cajobi
+Ribeirão Preto
+	9.210	
+≠
+25,10%
+	
+No limite	72,84%	R$ 12.890	—	0
+
+Taubaté
+São José dos Campos
+	322.397	
+25,12%
+	
+No limite	80,98%	R$ 22.715	—	2
+
+Americana
+Campinas
+	247.571	
+25,13%
+	
+No limite	93,99%	R$ 20.675	—	2
+
+Lorena
+São José dos Campos
+	87.468	
+25,14%
+	
+No limite	80,88%	R$ 13.549	—	2
+
+Ibaté
+Araraquara
+	33.160	
+25,17%
+	
+No limite	93,84%	R$ 12.953	—	2
+
+São Paulo
+São Paulo
+	11.904.961	
+25,17%
+	
+No limite	98,20%	R$ 28.499	—	2
+
+Suzano
+São Paulo
+	320.261	
+25,20%
+	
+No limite	75,47%	R$ 15.125	—	0
+
+Pirapora do Bom Jesus
+São Paulo
+	18.925	
+25,21%
+	
+No limite	70,75%	R$ 11.495	—	3
+
+Riolândia
+São José do Rio Preto
+	10.444	
+25,21%
+	
+No limite	81,46%	R$ 14.698	—	1
+
+Santa Clara d'Oeste
+São José do Rio Preto
+	2.694	
+25,21%
+	
+No limite	85,48%	R$ 24.874	—	0
+
+São José dos Campos
+São José dos Campos
+	727.078	
+25,21%
+	
+No limite	87,90%	R$ 20.465	—	0
+
+Itanhaém
+São Paulo
+	118.495	
+25,22%
+	
+No limite	72,23%	R$ 12.953	—	0
+
+Nova Aliança
+São José do Rio Preto
+	6.885	
+25,24%
+	
+No limite	78,42%	R$ 17.670	—	0
+
+Cândido Mota
+Marília
+	30.157	
+25,26%
+	
+No limite	95,69%	R$ 17.721	—	1
+
+Diadema
+São Paulo
+	403.579	
+25,30%
+	
+No limite	87,08%	R$ 17.264	—	2
+
+Itapevi
+São Paulo
+	242.995	
+25,30%
+	
+No limite	86,18%	R$ 12.815	—	1
+
+São Carlos
+Araraquara
+	266.427	
+25,30%
+	
+No limite	99,42%	R$ 22.173	—	1
+
+Santa Cruz da Conceição
+Campinas
+	4.375	
+25,37%
+	
+No limite	100,00%	R$ 28.872	—	0
+
+Mairiporã
+São Paulo
+	97.835	
+25,43%
+	
+No limite	92,13%	R$ 16.099	—	1
+
+São Simão
+Ribeirão Preto
+	13.560	
+25,45%
+	
+No limite	81,90%	R$ 31.007	—	0
+
+Vargem Grande do Sul
+Campinas
+	41.256	
+25,47%
+	
+No limite	71,42%	R$ 13.144	—	0
+
+Ubatuba
+São José dos Campos
+	97.096	
+25,49%
+	
+No limite	89,50%	R$ 16.003	—	1
+
+Jaú
+Bauru
+	137.409	
+25,50%
+	
+No limite	99,07%	R$ 16.822	—	1
+
+Ribeirão Preto
+Ribeirão Preto
+	731.639	
+25,51%
+	
+No limite	92,02%	R$ 19.910	—	1
+
+Rubinéia
+São José do Rio Preto
+	3.998	
+≠
+25,51%
+	
+No limite	95,46%	R$ 35.768	—	0
+
+Tanabi
+São José do Rio Preto
+	26.071	
+≠
+25,51%
+	
+No limite	83,78%	R$ 16.950	—	0
+
+Guaratinguetá
+São José dos Campos
+	121.916	
+25,52%
+	
+No limite	94,27%	R$ 13.095	—	4
+
+Andradina
+Araçatuba
+	61.625	
+25,54%
+	
+No limite	81,46%	R$ 17.825	—	1
+
+Nova Luzitânia
+Araçatuba
+	2.817	
+25,57%
+	
+No limite	98,24%	R$ 23.729	—	1
+
+Jacareí
+São José dos Campos
+	250.952	
+25,58%
+	
+No limite	99,55%	R$ 15.866	—	2
+
+Sertãozinho
+Ribeirão Preto
+	132.176	
+25,58%
+	
+No limite	84,07%	R$ 13.805	—	1
+
+Aguaí
+Campinas
+	32.886	
+25,59%
+	
+No limite	89,96%	R$ 13.352	—	2
+
+Carapicuíba
+São Paulo
+	398.236	
+25,63%
+	
+No limite	70,99%	R$ 15.833	—	0
+
+Piracicaba
+Campinas
+	440.835	
+25,67%
+	
+No limite	90,26%	R$ 18.169	—	1
+
+Nova Granada
+São José do Rio Preto
+	19.733	
+≠
+25,69%
+	
+No limite	92,99%	R$ 17.035	—	1
+
+Tuiuti
+Campinas
+	6.976	
+25,72%
+	
+No limite	81,45%	R$ 15.059	—	0
+
+Monções
+Araçatuba
+	1.947	
+25,73%
+	
+No limite	99,63%	R$ 28.396	—	0
+
+Santos
+São Paulo
+	429.547	
+25,77%
+	
+No limite	92,65%	R$ 32.325	—	1
+
+Serra Negra
+Campinas
+	31.047	
+25,77%
+	
+No limite	97,98%	R$ 32.694	—	0
+
+José Bonifácio
+São José do Rio Preto
+	37.992	
+25,78%
+	
+No limite	100,00%	R$ 18.065	—	0
+
+Nova Guataporanga
+Presidente Prudente
+	2.188	
+≠
+25,78%
+	
+No limite	96,86%	R$ 22.337	—	0
+
+Mogi das Cruzes
+São Paulo
+	470.302	
+25,79%
+	
+No limite	80,44%	R$ 14.582	—	0
+
+Leme
+Campinas
+	101.537	
+25,85%
+	
+No limite	79,94%	R$ 14.883	—	0
+Mostrando 50 de 645
+Mostrar mais 100

@@ -1,0 +1,256 @@
+Pular para o conteúdo
+Radar MDE
+BR
+Painel
+Explorar
+Acompanhando
+Dados
+Metodologia
+Buscar município…
+⌘K
+Brasil
+/
+Sudeste
+/
+São Paulo
+/
+Adamantina
+Adamantina
+SP
+Cumpre 25% em 2025
+
+Em 2025, aplicou 31,89% — acima do mínimo de 25%.
+
+Acompanhar
+Compartilhar
+SIOPE
+População
+35.673 hab.
+Localização
+São Paulo, Região Sudeste
+Região imediata
+região imediata Adamantina - Lucélia
+Código IBGE
+IBGE 3500105
+MDE 2025
+31,89%
++1,7 p.p. vs 2024
+mínimo 25% da receita de impostos
+Mediana SP 29,1% · Brasil 27,1%
+Fundeb em salários 2025
+98,75%
+mínimo 70%
+Por aluno 2025
+R$ 56.317
+R$ 47,1 mi aplicados em MDE
+Déficit não compensado
+R$ 0
+estimativa acumulada desde 2008
+% da receita de impostos aplicado em educação (MDE)
+Série declarada ao SIOPE. A linha tracejada marca o mínimo constitucional de 25%.
+
+Adamantina por ano, com linha de referência em mínimo 25%. Em 2025: 31,89%.
+
+2009
+2011
+2013
+2015
+2017
+2019
+2021
+2023
+2025
+22,5%
+25%
+27,5%
+30%
+32,5%
+35%
+Adamantina
+mínimo 25%
+Mediana SP
+Mediana Brasil
+Posição em 2025
+Ranking pelo % aplicado em MDE (1º = quem mais aplicou).
+Entre os municípios de São Paulo
+138º
+de 640
+aplicou menos
+aplicou mais
+
+Aplicou mais que 79% dos municípios.
+
+Entre os municípios do Brasil
+520º
+de 5.560
+aplicou menos
+aplicou mais
+
+Aplicou mais que 91% dos municípios.
+
+Mediana SP
+29,1%
++2,8 p.p.
+Mediana Brasil
+27,1%
++4,8 p.p.
+Mínimo legal
+25,0%
++6,9 p.p.
+% do Fundeb pago aos profissionais da educação
+Mínimo de 60% (magistério) até 2020; 70% (profissionais) desde 2021.
+
+Fundeb por ano, com linha de referência em mínimo legal. Em 2025: 98,75%.
+
+2009
+2011
+2013
+2015
+2017
+2019
+2021
+2023
+2025
+50%
+60%
+70%
+80%
+90%
+100%
+110%
+Fundeb
+mínimo legal
+Investimento por aluno (R$/ano)
+Valores nominais declarados ao SIOPE, sem correção pela inflação.
+
+Por aluno por ano. Em 2025: R$ 56.317.
+
+2009
+2011
+2013
+2015
+2017
+2019
+2021
+2023
+2025
+0
+25 mil
+50 mil
+75 mil
+100mil
+125 mil
+Adamantina entre os 640 municípios de São Paulo
+Quantos municípios do estado aplicaram cada percentual em MDE em 2025; a marca indica Adamantina.
+
+Distribuição do MDE em São Paulo, 2025, com Adamantina destacado. 640 municípios; 1 abaixo de 25%. Faixa mais comum: 28–29% (82). Adamantina: 31,89%.
+
+1 abaixo de 25%
+Adamantina
+15%
+20%
+25%
+30%
+35%
+40%
+45%
+0
+50
+100
+Sinais de alerta
+Tudo o que os dados declarados indicam, em toda a série.
+Ficou “no limite” (25–26%) em 5 anos: aplica o mínimo, quase nada além.
+Ano a ano
+Todos os valores declarados, do mais recente ao mais antigo. A coluna Fonte leva ao dado original.
+Ano	MDE	Aplicado	Receita de impostos	Faltou	Saldo devedor	Fundeb salários	Fundeb não usado	Por aluno	Saúde	Fonte
+2025	31,89%	R$ 47,1 mi	R$ 147,8 mi	—	—	98,75%	—	R$ 56.317	—	SIOPE
+
+2024	30,21%	R$ 41,9 mi	R$ 138,8 mi	—	—	98,53%	0,03%	R$ 51.980	—	SIOPE
+
+2023	30,82%	R$ 38,1 mi	R$ 123,7 mi	—	—	98,68%	0,00%	R$ 95.343	—	SIOPE
+
+2022	26,07%	R$ 29,9 mi	R$ 114,7 mi	—	—	98,89%	0,00%	R$ 41.043	—	SIOPE
+
+2021*	26,47%	R$ 24,7 mi	R$ 93,4 mi	—	—	98,51%	0,00%	R$ 36.241	—	SIOPE
+
+2020*	29,02%	R$ 22,9 mi	R$ 78,9 mi	—	—	98,79%	0,00%	R$ 9.351	—	SIOPE
+
+2019	27,53%	R$ 21,2 mi	R$ 77,2 mi	—	—	98,82%	0,00%	R$ 9.145	—	SIOPE
+
+2018	28,24%	R$ 19,5 mi	R$ 69 mi	—	—	99,05%	0,00%	R$ 8.151	—	SIOPE
+
+2017	27,58%	R$ 17,5 mi	R$ 63,3 mi	—	—	98,79%	0,00%	R$ 7.320	—	SIOPE
+
+2016	27,62%	R$ 16,1 mi	R$ 58,2 mi	—	—	88,83%	3,04%	R$ 7.276	—	SIOPE
+
+2015	28,57%	R$ 15,2 mi	R$ 53,2 mi	—	—	85,32%	0,00%	R$ 6.463	—	SIOPE
+
+2014	27,69%	R$ 14,3 mi	R$ 51,6 mi	—	—	89,46%	0,00%	R$ 6.771	—	SIOPE
+
+2013	25,19%	R$ 12,3 mi	R$ 49 mi	—	—	84,80%	2,83%	R$ 5.947	—	SIOPE
+
+2012	25,76%	R$ 11,4 mi	R$ 44,2 mi	—	—	87,06%	2,01%	R$ 5.324	—	SIOPE
+
+2011	25,75%	R$ 11 mi	R$ 42,7 mi	—	—	77,88%	0,32%	R$ 5.084	—	SIOPE
+
+2010	26,77%	R$ 9,7 mi	R$ 36,1 mi	—	—	71,95%	0,92%	R$ 4.580	—	SIOPE
+
+2009	25,31%	R$ 8,3 mi	R$ 33 mi	—	—	83,59%	1,92%	R$ 3.535	—	SIOPE
+
+2008	25,68%	R$ 8,4 mi	R$ 32,6 mi	—	—	88,61%	—	R$ 3.243	—	SIOPE
+“Fundeb não usado”: parcela do Fundeb que ficou para o ano seguinte (máximo 5% até 2020 e 10% desde 2021). “Saldo devedor” é uma estimativa: soma o que faltou para 25% em cada ano e abate o que foi aplicado acima de 25% nos anos seguintes. * Em 2020–2021, a EC 119/2022 afastou a punição desde que a diferença fosse compensada até 2023.
+Onde fica · 2025
+Adamantina em destaque entre os municípios de São Paulo. Clique num município para abri-lo.
+% aplicado em MDE
+< 22%
+22–25%
+25–26%
+26–30%
+≥ 30%
+Não declarou
+Sem dados
+Vizinhos
+Municípios da região imediata Adamantina - Lucélia, MDE em 2025. Do menor para o maior.
+Osvaldo Cruz
+26,24%
+Lucélia
+28,87%
+Flórida Paulista
+29,33%
+Inúbia Paulista
+29,37%
+Pracinha
+29,73%
+Salmourão
+30,43%
+Pacaembu
+30,98%
+Mariápolis
+31,72%
+Adamantina
+31,89%
+Sagres
+32,80%
+O que você pode fazer
+Dados só mudam algo quando chegam a quem fiscaliza. Escolha um modelo, copie e envie — já vem preenchido com os números de Adamantina. Conselheiros do CACS-Fundeb, vereadores e famílias têm direito a essas informações.
+Pedido via Lei de Acesso
+Ofício ao CACS-Fundeb
+Requerimento (vereador)
+Comunicação ao TCE-SP / MP
+
+Para: Prefeitura Municipal de Adamantina – Serviço de Informação ao Cidadão (e-SIC) / Secretaria Municipal de Educação
+
+Copiar texto
+
+Revise os dados e acrescente seu nome antes de enviar.
+
+Radar MDE · Brasil
+
+Dados: FNDE/SIOPE (indicadores e receitas declarados pelos municípios e estados, 2008 em diante), Tesouro Nacional/SICONFI (RREO, Anexo 14, municípios de SP) e IBGE (territórios, malhas e população). Inspirado em Silva, A. Z. (2021), O financiamento da Educação Básica no Brasil contemporâneo, UNINOVE. Ferramenta independente, sem vínculo com órgãos públicos.
+
+Painel
+Explorar
+Acompanhando
+Dados
+Metodologia
+50

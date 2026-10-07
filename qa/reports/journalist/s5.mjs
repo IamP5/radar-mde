@@ -1,0 +1,16 @@
+import { chromium } from 'playwright';
+const D='reports/journalist/';
+const b = await chromium.launch(); const ctx=await b.newContext({viewport:{width:1440,height:900}}); const p = await ctx.newPage();
+await p.goto('http://localhost:3210/?ano=2021',{waitUntil:'networkidle'}); await p.waitForTimeout(2000);
+const map = p.locator('svg[aria-label^="Mapa do Brasil"]'); await map.scrollIntoViewIfNeeded();
+const ids = await map.locator('[data-id]').evaluateAll(es=>es.map(e=>e.tagName+':'+e.getAttribute('data-id')));
+console.log(ids.slice(0,30));
+const sp = map.locator('[data-id="35"]');
+const bb = await sp.boundingBox(); console.log('SP bbox',bb);
+await p.mouse.move(bb.x+bb.width/2, bb.y+bb.height/2,{steps:5}); await p.waitForTimeout(700);
+const wrapBox = await map.boundingBox();
+await p.screenshot({path:D+'map-hover-sp.png',clip:{x:wrapBox.x,y:wrapBox.y,width:wrapBox.width,height:wrapBox.height}});
+const tip = await p.locator('.shadow-pop').allInnerTexts(); console.log('tooltip',tip);
+await p.mouse.click(bb.x+bb.width/2, bb.y+bb.height/2); await p.waitForTimeout(4000);
+console.log('after click', p.url());
+await b.close();

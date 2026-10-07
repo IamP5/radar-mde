@@ -1,0 +1,262 @@
+
+== year
+PASS  year: default is 2025
+PASS  year: click 2015 sets ?ano=2015  — ?ano=2015
+PASS  year: headline updates to 2015
+PASS  year: survives reload  — 2015
+PASS  year: ArrowLeft -> 2014
+PASS  year: Home -> 2008
+PASS  year: prev button disabled at 2008
+PASS  year: ArrowLeft at 2008 stays
+PASS  year: End -> 2025 and ?ano removed
+PASS  year: next button disabled at 2025
+PASS  year: prev button -> 2024
+PASS  year: ?ano=1999 falls back to 2025
+PASS  year: ?ano=abc falls back to 2025
+PASS  year: ?ano=2015.5 falls back to 2025
+PASS  year: ?ano= falls back to 2025
+PASS  year: ?ano=2030 falls back to 2025
+PASS  year: ?ano=2012 deep link
+PASS  year: drill to UF keeps ?ano  — http://localhost:3210/sp?ano=2012 2012
+PASS  year: back restores 2012 on /  — http://localhost:3210/?ano=2012 2012
+PASS  year: forward restores 2012 on /sp  — http://localhost:3210/sp?ano=2012 2012
+PASS  year: UF year change updates URL  — ?ano=2019
+PASS  year: UF table city link carries ?ano  — /sp/pirapora-do-bom-jesus?ano=2019
+FAIL  year: city page honours ?ano=2019 (shows 2019 as focus year)  — Em 2025, aplicou 25,21% — cumpriu, mas no limite.
+PASS  year: no page errors
+
+== search
+PASS  search: Meta+K opens palette
+PASS  search: Esc closes (Meta+K)
+PASS  search: Ctrl+K opens palette
+PASS  search: Esc closes (Ctrl+K)
+PASS  search: / opens palette
+PASS  search: Esc closes (/)
+PASS  search: 'sao paulo' (no accent) finds São Paulo city first  — São PauloSudeste
+SP
+11.904.961 hab. | São Paulo de OlivençaNorte
+AM
+35.442 hab. | São Paulo do PotengiNordeste
+RN
+17.371 hab.
+PASS  search: 'SÃO' upper with accent works  — 9
+PASS  search: 'santa barbara d oeste' finds Santa Bárbara d'Oeste  — Santa Bárbara d'OesteSudeste
+SP
+189.456 hab.
+PASS  search: curly apostrophe finds Santa Bárbara d'Oeste  — Santa Bárbara d'OesteSudeste
+SP
+189.456 hab.
+PASS  search: 'pau d'arco' lists PA and TO  — Pau D'ArcoNorte
+PA
+7.354 hab. | Pau D'ArcoNorte
+TO
+4.057 hab. | Pau D'Arco do PiauíNordeste
+PI
+3.979 hab.
+PASS  search: 'pau d'arco to' filters to TO first  — Pau D'ArcoNorte
+TO
+4.057 hab.
+PASS  search: 'campinas sp'  — CampinasSudeste
+SP
+1.187.974 hab.
+PASS  search: 'nordeste' shows region  — Região Nordeste9 estados
+PASS  search: 'sp' shows UF São Paulo  — São PauloSudeste SP 11.904.961 hab. | GuarulhosSudeste SP 1.349.100 hab. | CampinasSudeste SP 1.187.974 hab. | São Bernardo do CampoSudeste SP 841.154 hab.
+PASS  search: no-result state
+PASS  search: whitespace-only shows default lists  — 33
+PASS  search: arrow keys move selection  — Santo AndréSudeste -> Santo AndréNordeste
+PASS  search: Enter navigates to Santo André SP  — http://localhost:3210/sp/santo-andre
+PASS  search: recents show Santo André
+PASS  search: '/' typed inside palette input stays in input
+PASS  search: '/' inside explorer input does not open palette
+PASS  search: corrupt recents do not crash
+FAIL  search: Enter on 'bahia' opens /ba  — http://localhost:3210/ba/itaguacu-da-bahia
+PASS  search: Distrito Federal -> /df/brasilia  — http://localhost:3210/df/brasilia
+PASS  search: no page errors
+
+== watch
+PASS  watch: empty state
+PASS  watch: aria-pressed true after click
+PASS  watch: state persists after reload
+PASS  watch: /acompanhar lists 3  — Acompanhando Os municípios que você salvou, com o percentual aplicado em MDE em cada ano. A lista fica guardada só neste navegador. 3 municípios Percentual aplicado em MDE por ano, 2008–2025. Em verme
+PASS  watch: remove buttons present  — 3
+PASS  watch: remove updates count to 2
+PASS  watch: removal persists after reload
+PASS  watch: legacy bare slug maps to SP + missing item footer  — Acompanhando Os municípios que você salvou, com o percentual aplicado em MDE em cada ano. A lista fica guardada só neste navegador. 1 município Percentual aplicado em MDE por ano, 2008–2025. Em vermelho, abaixo do mínimo de 25%. Adicionar Municípios acompanhados e percentual aplicado em MDE por ano 
+PASS  watch: corrupt storage shows empty state, no crash
+PASS  watch: non-string entries do not crash
+PASS  watch: other tab add reflects in /acompanhar (storage event)
+PASS  watch: no page errors
+
+== share
+PASS  share: copies city URL  — http://localhost:3210/pa/pau-d-arco
+PASS  share: button shows 'Link copiado'
+PASS  share: label resets
+PASS  share: WhatsApp opens wa.me with text  — https://api.whatsapp.com/send/?text=Pau+D%27Arco+%28PA%29%3A+Em+2025%2C+aplicou+32%2C87%25+%E2%80%94+acima+do+m%C3%ADnimo+de+25%25.+Veja+no+
+PASS  share: WhatsApp text contains city URL
+PASS  share: link from ?ano page (informational)  — http://localhost:3210/sp/santo-andre
+PASS  share: button on / (informational)  — absent
+PASS  share: button on /sp (informational)  — absent
+PASS  share: button on /regiao/sul (informational)  — absent
+PASS  share: button on /explorar (informational)  — absent
+
+== theme
+PASS  theme: light initially
+PASS  theme: header toggle -> dark
+PASS  theme: dark persists after reload
+PASS  theme: footer radio shows Escuro checked
+PASS  theme: Sistema -> follows light OS
+PASS  theme: persists across navigation
+PASS  theme: next-themes inline script present (no flash)
+
+== mobile
+PASS  mobile: no horizontal overflow on /  — 375
+PASS  mobile: nav visible
+PASS  mobile: nav -> Explorar (/explorar) no overflow  — 375
+PASS  mobile: nav -> Acompanhando (/acompanhar) no overflow  — 375
+PASS  mobile: nav -> Dados (/dados) no overflow  — 375
+PASS  mobile: nav -> Metodologia (/sobre) no overflow  — 375
+PASS  mobile: nav -> Painel (/) no overflow  — 375
+PASS  mobile: /sp no horizontal overflow  — 375
+PASS  mobile: /sp/santo-andre no horizontal overflow  — 375
+PASS  mobile: /explorar no horizontal overflow  — 375
+PASS  mobile: /acompanhar no horizontal overflow  — 375
+PASS  mobile: /dados no horizontal overflow  — 375
+PASS  mobile: /sobre no horizontal overflow  — 375
+PASS  mobile: /regiao/nordeste no horizontal overflow  — 375
+PASS  mobile: /df/brasilia no horizontal overflow  — 375
+PASS  mobile: /xx no horizontal overflow  — 375
+PASS  mobile: search opens by tap
+PASS  mobile: tap result navigates  — http://localhost:3210/pe/recife
+PASS  mobile: no page errors
+
+== explorer
+PASS  explorer: loads 5.570
+PASS  explorer: Região=Sul sets ?regiao=sul  — ?regiao=sul
+PASS  explorer: Sul count = 1.191  — 1191
+PASS  explorer: UF=SC count 295  — 295
+PASS  explorer: regiao+uf survive reload  — ?regiao=sul&uf=SC 295
+PASS  explorer: year select sets ?ano=2021  — ?regiao=sul&uf=SC&ano=2021
+PASS  explorer: SC below 25% in 2021 > 0  — 12
+FAIL  explorer: situação filter survives reload  — 12 -> 295 (?regiao=sul&uf=SC&ano=2021)
+PASS  explorer: name filter 'santa barbara d'oeste' matches >= 1  — 1
+FAIL  explorer: name filter 'santa barbara d’oeste' matches >= 1  — 0
+FAIL  explorer: name filter 'santa barbara d oeste' matches >= 1  — 0
+FAIL  explorer: name filter 'olho d agua' matches >= 5  — 0
+PASS  explorer: name filter 'SAO PAULO' matches >= 3  — 4
+FAIL  explorer: name filter 'embu guacu' matches >= 1  — 0
+PASS  explorer: sort População desc -> São Paulo first  — São Paulo
+PASS  explorer: sort População asc -> smallest first  — Serra da Saudade
+PASS  explorer: sort Município asc starts with A  — Abadia de Goiás
+PASS  explorer: first page 100 rows  — 100
+PASS  explorer: Mostrar mais -> 300 rows  — 300
+PASS  explorer: CSV filename  — radar-mde-explorar.csv
+PASS  explorer: CSV has BOM
+PASS  explorer: CSV RR rows = 15 x 18 years  — 270
+PASS  explorer: CSV no NaN/undefined
+PASS  explorer: CSV every row is RR
+PASS  csv route: /dados/csv/df ok
+PASS  explorer: 'Não declarou' 2025 > 0  — 10
+PASS  explorer: invalid params ignored
+PASS  explorer: conflicting regiao=sul&uf=SP -> Sul only  — 1191 url=?regiao=sul&uf=SP
+PASS  explorer: lowercase uf=sp accepted  — 645
+PASS  explorer: no page errors
+
+== uftable
+PASS  uf: shows 'Mostrando 50 de 645'  — Mostrando 50 de 645
+PASS  uf: Mostrar mais -> 150  — Mostrando 150 de 645
+FAIL  uf: search 'santa barbara d oeste' (no apostrophe) finds it
+FAIL  uf: search with curly apostrophe finds it
+PASS  uf: empty-search state shown
+PASS  uf: sort by name asc -> Adamantina  — Adamantina
+PASS  uf: map metric Fundeb checked
+PASS  uf: map metric Por aluno checked
+PASS  uf: map metric MDE checked
+PASS  uf: year 2021 -> headline
+PASS  uf: 3 filter selects  — 3
+PASS  uf: região intermediária filter applies  —  opts=
+PASS  uf: no page errors
+
+== territory
+PASS  home: Indicador da série -> % abaixo de 25%
+PASS  home: Indicador da série -> R$ que faltou
+PASS  home: Indicador da série -> MDE mediana
+PASS  home: Nível do mapa -> Estados
+PASS  home: Nível do mapa -> Municípios
+PASS  home: Indicador do mapa -> % abaixo de 25%
+PASS  home: Indicador do mapa -> MDE mediana
+PASS  home: Indicador do mapa -> Governo estadual
+PASS  home: segmented toggles no errors
+PASS  home: municipal map renders thousands of paths  — 5733
+PASS  home: evolução tab 0 selected
+PASS  home: evolução tab 1 selected
+PASS  home: evolução tab 2 selected
+PASS  home: ranking sort by MDE mediana
+PASS  home: no page errors
+PASS  region: 9 estados
+PASS  region: ?ano=2020 deep-link
+PASS  region: DF link goes to /df/brasilia with ano  — /df/brasilia?ano=2020
+
+== crumbs
+PASS  crumbs: region sibling menu navigates  — http://localhost:3210/regiao/nordeste
+PASS  crumbs: state menu lists 4 Sudeste UFs  — Minas GeraisMG|Espírito SantoES|Rio de JaneiroRJ|São PauloSP
+PASS  crumbs: state menu navigates to /mg  — http://localhost:3210/mg
+PASS  crumbs: city picker lists 645
+PASS  crumbs: city picker 'santa barbara d'oeste' finds Santa Bárbara d'Oeste  — Santa Bárbara d'Oeste
+FAIL  crumbs: city picker 'santa barbara d oeste' finds Santa Bárbara d'Oeste
+FAIL  crumbs: city picker 'santa bárbara d’oeste' finds Santa Bárbara d'Oeste
+FAIL  crumbs: city picker '3548' (IBGE digits) does not list unrelated cities  — 11 options e.g. Santo Antônio de Posse|Santo Antônio do Aracanguá|Santo Antônio do Jardim
+PASS  crumbs: city picker Enter navigates  — http://localhost:3210/sp/campinas
+PASS  crumbs: DF has no city picker  — Brasil / Centro-Oeste / Distrito Federal / Brasília
+PASS  crumbs: no page errors
+
+== clicks
+PASS  map: click on UF shape navigates  — http://localhost:3210/am
+FAIL  map: navigation from map keeps ?ano=2015  — http://localhost:3210/am
+PASS  uf: clicking a year bar changes year  — 2011 (35 bars)
+PASS  city: template tab 0 'Pedido via Lei de Acesso' has body  — 1635
+PASS  city: template tab 1 'Ofício ao CACS-Fundeb' has body  — 1260
+PASS  city: template tab 2 'Requerimento (vereador)' has body  — 1065
+PASS  city: template tab 3 'Comunicação ao TCE-SP / MP' has body  — 1160
+PASS  city: Copiar texto copies template  — 1160
+PASS  city: state map renders shapes  — 646
+PASS  city: neighbour link navigates  — /sp/itapecerica-da-serra -> http://localhost:3210/sp/itapecerica-da-serra
+FAIL  city(no data): LAI template does not claim compliance  — Contexto: Segundo os dados declarados pelo Município ao Sistema de Informações sobre Orçamentos Públicos em Educação (SIOPE/FNDE), o Município declarou ter cump
+FAIL  city(no data): does not flag 'não declarou' for years before installation (2008–2024)
+FAIL  city(no data): map highlights the municipality (geometry exists)  — highlight elements: 0
+PASS  clicks: no page errors
+
+== notfound
+FAIL  404: /xx -> HTTP 404  — status 200, h1="Página não encontrada", title="Radar MDE · Brasil"
+FAIL  404: /sp/nao-existe -> HTTP 404  — status 200, h1="Página não encontrada", title="Radar MDE · Brasil"
+FAIL  404: /regiao/foo -> HTTP 404  — status 200, h1="Página não encontrada", title="Radar MDE · Brasil"
+FAIL  404: /SP -> HTTP 404  — status 200, h1="Página não encontrada", title="São Paulo · Radar MDE"
+FAIL  404: /Sp/santo-andre -> HTTP 404  — status 200, h1="Página não encontrada", title="Santo André (SP) · Radar MDE"
+PASS  404: /sp/santo-andre/extra -> HTTP 404  — status 404, h1="Página não encontrada", title="Página não encontrada · Radar MDE"
+PASS  404: /dados/csv/xx -> HTTP 404  — status 404, h1="", title=""
+FAIL  404: /regiao/Sul -> HTTP 404  — status 200, h1="Página não encontrada", title="Radar MDE · Brasil"
+PASS  404: search CTA opens palette
+
+171/193 checks passed
+FAIL  year: city page honours ?ano=2019 (shows 2019 as focus year)  — Em 2025, aplicou 25,21% — cumpriu, mas no limite.
+FAIL  search: Enter on 'bahia' opens /ba  — http://localhost:3210/ba/itaguacu-da-bahia
+FAIL  explorer: situação filter survives reload  — 12 -> 295 (?regiao=sul&uf=SC&ano=2021)
+FAIL  explorer: name filter 'santa barbara d’oeste' matches >= 1  — 0
+FAIL  explorer: name filter 'santa barbara d oeste' matches >= 1  — 0
+FAIL  explorer: name filter 'olho d agua' matches >= 5  — 0
+FAIL  explorer: name filter 'embu guacu' matches >= 1  — 0
+FAIL  uf: search 'santa barbara d oeste' (no apostrophe) finds it
+FAIL  uf: search with curly apostrophe finds it
+FAIL  crumbs: city picker 'santa barbara d oeste' finds Santa Bárbara d'Oeste
+FAIL  crumbs: city picker 'santa bárbara d’oeste' finds Santa Bárbara d'Oeste
+FAIL  crumbs: city picker '3548' (IBGE digits) does not list unrelated cities  — 11 options e.g. Santo Antônio de Posse|Santo Antônio do Aracanguá|Santo Antônio do Jardim
+FAIL  map: navigation from map keeps ?ano=2015  — http://localhost:3210/am
+FAIL  city(no data): LAI template does not claim compliance  — Contexto: Segundo os dados declarados pelo Município ao Sistema de Informações sobre Orçamentos Públicos em Educação (SIOPE/FNDE), o Município declarou ter cump
+FAIL  city(no data): does not flag 'não declarou' for years before installation (2008–2024)
+FAIL  city(no data): map highlights the municipality (geometry exists)  — highlight elements: 0
+FAIL  404: /xx -> HTTP 404  — status 200, h1="Página não encontrada", title="Radar MDE · Brasil"
+FAIL  404: /sp/nao-existe -> HTTP 404  — status 200, h1="Página não encontrada", title="Radar MDE · Brasil"
+FAIL  404: /regiao/foo -> HTTP 404  — status 200, h1="Página não encontrada", title="Radar MDE · Brasil"
+FAIL  404: /SP -> HTTP 404  — status 200, h1="Página não encontrada", title="São Paulo · Radar MDE"
+FAIL  404: /Sp/santo-andre -> HTTP 404  — status 200, h1="Página não encontrada", title="Santo André (SP) · Radar MDE"
+FAIL  404: /regiao/Sul -> HTTP 404  — status 200, h1="Página não encontrada", title="Radar MDE · Brasil"
+RESULT: FAIL

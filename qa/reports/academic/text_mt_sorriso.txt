@@ -1,0 +1,252 @@
+Pular para o conteúdo
+Radar MDE
+BR
+Painel
+Explorar
+Acompanhando
+Dados
+Metodologia
+Buscar município…
+⌘K
+Brasil
+/
+Centro-Oeste
+/
+Mato Grosso
+/
+Sorriso
+Sorriso
+MT
+No limite em 2025
+
+Em 2025, aplicou 25,50% — cumpriu, mas no limite.
+
+Acompanhar
+Compartilhar
+SIOPE
+População
+124.665 hab.
+Localização
+Mato Grosso, Região Centro-Oeste
+Região imediata
+região imediata Sorriso
+Código IBGE
+IBGE 5107925
+MDE 2025
+25,50%
+−2,3 p.p. vs 2024
+mínimo 25% da receita de impostos
+Mediana MT 27,2% · Brasil 27,1%
+Fundeb em salários 2025
+82,98%
+mínimo 70%
+Por aluno 2025
+R$ 15.193
+R$ 161,6 mi aplicados em MDE
+Déficit não compensado
+R$ 0
+estimativa acumulada desde 2008
+% da receita de impostos aplicado em educação (MDE)
+Série declarada ao SIOPE. A linha tracejada marca o mínimo constitucional de 25%.
+
+Sorriso por ano, com linha de referência em mínimo 25%. Em 2025: 25,50%.
+
+2009
+2011
+2013
+2015
+2017
+2019
+2021
+2023
+2025
+22,5%
+25%
+27,5%
+30%
+32,5%
+35%
+Sorriso
+mínimo 25%
+Mediana MT
+Mediana Brasil
+Posição em 2025
+Ranking pelo % aplicado em MDE (1º = quem mais aplicou).
+Entre os municípios de Mato Grosso
+126º
+de 141
+aplicou menos
+aplicou mais
+
+Aplicou mais que 11% dos municípios.
+
+Entre os municípios do Brasil
+4.635º
+de 5.560
+aplicou menos
+aplicou mais
+
+Aplicou mais que 17% dos municípios.
+
+Mediana MT
+27,2%
+−1,7 p.p.
+Mediana Brasil
+27,1%
+−1,6 p.p.
+Mínimo legal
+25,0%
++0,5 p.p.
+% do Fundeb pago aos profissionais da educação
+Mínimo de 60% (magistério) até 2020; 70% (profissionais) desde 2021.
+
+Fundeb por ano, com linha de referência em mínimo legal. Em 2025: 82,98%.
+
+2009
+2011
+2013
+2015
+2017
+2019
+2021
+2023
+2025
+50%
+60%
+70%
+80%
+90%
+100%
+Fundeb
+mínimo legal
+Investimento por aluno (R$/ano)
+Valores nominais declarados ao SIOPE, sem correção pela inflação.
+
+Por aluno por ano. Em 2025: R$ 15.193.
+
+2009
+2011
+2013
+2015
+2017
+2019
+2021
+2023
+2025
+0
+10 mil
+20 mil
+30 mil
+40 mil
+Sorriso entre os 141 municípios de Mato Grosso
+Quantos municípios do estado aplicaram cada percentual em MDE em 2025; a marca indica Sorriso.
+
+Distribuição do MDE em Mato Grosso, 2025, com Sorriso destacado. 141 municípios; 1 abaixo de 25%. Faixa mais comum: 26–27% (32). Sorriso: 25,5%.
+
+1 abaixo de 25%
+Sorriso
+15%
+20%
+25%
+30%
+35%
+40%
+45%
+0
+20
+40
+Sinais de alerta
+Tudo o que os dados declarados indicam, em toda a série.
+Ficou “no limite” (25–26%) em 5 anos: aplica o mínimo, quase nada além.
+Ano a ano
+Todos os valores declarados, do mais recente ao mais antigo. A coluna Fonte leva ao dado original.
+Ano	MDE	Aplicado	Receita de impostos	Faltou	Saldo devedor	Fundeb salários	Fundeb não usado	Por aluno	Saúde	Fonte
+2025	25,50%	R$ 161,6 mi	R$ 634 mi	—	—	82,98%	1,66%	R$ 15.193	—	SIOPE
+
+2024	27,82%	R$ 159,9 mi	R$ 574,9 mi	—	—	76,97%	0,08%	R$ 15.116	—	SIOPE
+
+2023	29,09%	R$ 158,6 mi	R$ 545,3 mi	—	—	83,15%	0,00%	R$ 30.667	—	SIOPE
+
+2022	25,40%	R$ 115,7 mi	R$ 455,4 mi	—	—	72,98%	0,00%	R$ 12.588	—	SIOPE
+
+2021*	26,02%	R$ 95,5 mi	R$ 367 mi	—	—	72,16%	9,95%	R$ 10.862	—	SIOPE
+
+2020*	25,24%	R$ 69 mi	R$ 273,4 mi	—	—	80,19%	2,78%	R$ 7.232	—	SIOPE
+
+2019	26,54%	R$ 71,2 mi	R$ 268,1 mi	—	—	82,20%	4,23%	R$ 6.941	—	SIOPE
+
+2018	29,04%	R$ 65,4 mi	R$ 225,3 mi	—	—	93,03%	1,12%	R$ 6.503	—	SIOPE
+
+2017	29,24%	R$ 55,9 mi	R$ 191,2 mi	—	—	92,57%	0,11%	R$ 7.621	—	SIOPE
+
+2016	25,91%	R$ 46,6 mi	R$ 180 mi	—	—	82,03%	0,11%	R$ 5.299	—	SIOPE
+
+2015	27,92%	R$ 45,1 mi	R$ 161,4 mi	—	—	78,27%	0,27%	R$ 4.786	—	SIOPE
+
+2014	30,65%	R$ 44,6 mi	R$ 145,6 mi	—	—	82,70%	0,91%	R$ 4.738	—	SIOPE
+
+2013	30,94%	R$ 35,4 mi	R$ 114,5 mi	—	—	75,66%	0,11%	R$ 3.947	—	SIOPE
+
+2012	29,55%	R$ 28,3 mi	R$ 95,9 mi	—	—	84,18%	0,15%	R$ 3.641	—	SIOPE
+
+2011	32,45%	R$ 31,8 mi	R$ 98 mi	—	—	76,65%	0,98%	R$ 3.863	—	SIOPE
+
+2010	27,41%	R$ 19,9 mi	R$ 72,6 mi	—	—	70,05%	0,24%	R$ 2.886	—	SIOPE
+
+2009	29,81%	R$ 18,1 mi	R$ 60,6 mi	—	—	76,40%	0,00%	R$ 2.546	—	SIOPE
+
+2008	25,15%	R$ 15,1 mi	R$ 60 mi	—	—	68,12%	—	R$ 2.148	—	SIOPE
+“Fundeb não usado”: parcela do Fundeb que ficou para o ano seguinte (máximo 5% até 2020 e 10% desde 2021). “Saldo devedor” é uma estimativa: soma o que faltou para 25% em cada ano e abate o que foi aplicado acima de 25% nos anos seguintes. * Em 2020–2021, a EC 119/2022 afastou a punição desde que a diferença fosse compensada até 2023.
+Onde fica · 2025
+Sorriso em destaque entre os municípios de Mato Grosso. Clique num município para abri-lo.
+% aplicado em MDE
+< 22%
+22–25%
+25–26%
+26–30%
+≥ 30%
+Não declarou
+Sem dados
+Vizinhos
+Municípios da região imediata Sorriso, MDE em 2025. Do menor para o maior.
+Sorriso
+25,50%
+Lucas do Rio Verde
+26,70%
+Itanhangá
+27,09%
+Nova Mutum
+27,26%
+Santa Rita do Trivelato
+27,28%
+Nova Ubiratã
+27,90%
+Vera
+32,94%
+Tapurah
+33,23%
+Ipiranga do Norte
+35,64%
+O que você pode fazer
+Dados só mudam algo quando chegam a quem fiscaliza. Escolha um modelo, copie e envie — já vem preenchido com os números de Sorriso. Conselheiros do CACS-Fundeb, vereadores e famílias têm direito a essas informações.
+Pedido via Lei de Acesso
+Ofício ao CACS-Fundeb
+Requerimento (vereador)
+Comunicação ao TCE-MT / MP
+
+Para: Prefeitura Municipal de Sorriso – Serviço de Informação ao Cidadão (e-SIC) / Secretaria Municipal de Educação
+
+Copiar texto
+
+Revise os dados e acrescente seu nome antes de enviar.
+
+Radar MDE · Brasil
+
+Dados: FNDE/SIOPE (indicadores e receitas declarados pelos municípios e estados, 2008 em diante), Tesouro Nacional/SICONFI (RREO, Anexo 14, municípios de SP) e IBGE (territórios, malhas e população). Inspirado em Silva, A. Z. (2021), O financiamento da Educação Básica no Brasil contemporâneo, UNINOVE. Ferramenta independente, sem vínculo com órgãos públicos.
+
+Painel
+Explorar
+Acompanhando
+Dados
+Metodologia
+20

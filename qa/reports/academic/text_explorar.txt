@@ -1,0 +1,812 @@
+Pular para o conteúdo
+Radar MDE
+BR
+Painel
+Explorar
+Acompanhando
+Dados
+Metodologia
+Buscar município…
+⌘K
+Explorar municípios
+Os 5.570 municípios em uma tabela: filtre por região, estado, porte e situação, ordene qualquer coluna, compare 2008–2025 e exporte o recorte em CSV.
+Exercício
+2025
+Região
+UF
+População
+Situação em 2025
+Reincidentes
+424
+Exportar CSV
+5.570 de 5.570 municípios
+Municípios
+5.570
+todos do país
+Abaixo de 25% em 2025
+23
+0,4% dos que declararam
+Faltou para 25%
+R$ 150,1 mi
+soma do que faltou aplicar
+MDE mediana
+27,1%
+5.560 declararam
+População
+213,3 mi
+732.269 em municípios abaixo
+Municípios
+Indicadores de 2025. Clique no cabeçalho para ordenar; a série mostra 2008–2025.
+< 22%
+22–25%
+25–26%
+26–30%
+≥ 30%
+não declarou
+Municípios filtrados, indicadores de 2025
+Município
+	População
+	MDE
+2025
+	Situação
+	Fundeb pessoal
+	R$ por aluno
+	Faltou
+	Anos < 25%
+	2008–2025
+
+Piaçabuçu
+AL
+Maceió
+	16.192	5,63%
+(abaixo do mínimo)
+	
+Abaixo	48,55%	R$ 10.225	R$ 10,7 mi	1	
+
+
+Chapada da Natividade
+TO
+Palmas
+	3.176	11,01%
+(abaixo do mínimo)
+	
+Abaixo	53,76%	R$ 19.407	R$ 3,2 mi	1	
+
+
+Magalhães Barata
+PA
+Castanhal
+	8.439	14,21%
+(abaixo do mínimo)
+	
+Abaixo	76,12%	R$ 16.047	R$ 9,6 mi	1	
+
+
+Cubati
+PB
+Campina Grande
+	7.842	14,89%
+(abaixo do mínimo)
+	
+Abaixo	71,64%	R$ 15.064	R$ 2,9 mi	3	
+
+
+Brejo da Madre de Deus
+PE
+Caruaru
+	51.308	14,97%
+(abaixo do mínimo)
+	
+Abaixo	78,33%	R$ 11.537	R$ 11,2 mi	2	
+
+
+Volta Redonda
+RJ
+Volta Redonda - Barra Mansa
+	279.971	16,63%
+(abaixo do mínimo)
+	
+Abaixo	73,39%	R$ 10.195	R$ 84,4 mi	5	
+
+
+Tenente Ananias
+RN
+Mossoró
+	10.610	18,78%
+(abaixo do mínimo)
+	
+Abaixo	54,69%	R$ 13.211	R$ 2,1 mi	5	
+
+
+Praia Norte
+TO
+Araguaína
+	9.552	19,78%
+(abaixo do mínimo)
+	
+Abaixo	60,92%	R$ 13.191	R$ 1 mi	3	
+
+
+Centro Novo do Maranhão
+MA
+Santa Inês - Bacabal
+	16.477	19,84%
+(abaixo do mínimo)
+	
+Abaixo	63,40%	R$ 15.563	R$ 2,3 mi	2	
+
+
+Lagoa da Confusão
+TO
+Palmas
+	16.629	19,91%
+(abaixo do mínimo)
+	
+Abaixo	85,76%	R$ 12.833	R$ 3,1 mi	4	
+
+
+Marechal Thaumaturgo
+AC
+Cruzeiro do Sul
+	18.057	20,31%
+(abaixo do mínimo)
+	
+Abaixo	74,20%	R$ 12.608	R$ 1,8 mi	6	
+
+
+Porto Walter
+AC
+Cruzeiro do Sul
+	11.333	20,49%
+(abaixo do mínimo)
+	
+Abaixo	99,69%	R$ 12.207	R$ 1,2 mi	2	
+
+
+Rodrigues Alves
+AC
+Cruzeiro do Sul
+	15.560	20,85%
+(abaixo do mínimo)
+	
+Abaixo	89,15%	R$ 13.165	R$ 1,6 mi	2	
+
+
+São José de Mipibu
+RN
+Natal
+	50.053	20,89%
+(abaixo do mínimo)
+	
+Abaixo	70,70%	R$ 13.329	R$ 4,9 mi	3	
+
+
+Pirambu
+SE
+Aracaju
+	8.021	21,03%
+(abaixo do mínimo)
+	
+Abaixo	93,03%	R$ 13.312	R$ 1,2 mi	2	
+
+
+Custódia
+PE
+Caruaru
+	39.609	21,93%
+(abaixo do mínimo)
+	
+Abaixo	92,04%	R$ 12.654	R$ 3 mi	1	
+
+
+Luís Gomes
+RN
+Mossoró
+	9.271	22,03%
+(abaixo do mínimo)
+	
+Abaixo	74,28%	R$ 17.194	R$ 956 mil	3	
+
+
+Paranã
+TO
+Gurupi
+	10.877	22,53%
+(abaixo do mínimo)
+	
+Abaixo	85,58%	R$ 20.123	R$ 943 mil	1	
+
+
+Montanhas
+RN
+Natal
+	11.785	22,54%
+(abaixo do mínimo)
+	
+Abaixo	93,64%	R$ 12.256	R$ 817 mil	3	
+
+
+Jordão
+AC
+Cruzeiro do Sul
+	9.884	23,69%
+(abaixo do mínimo)
+	
+Abaixo	72,36%	R$ 14.524	R$ 305 mil	4	
+
+
+Tangará da Serra
+MT
+Cuiabá
+	114.603	24,40%
+(abaixo do mínimo)
+	
+Abaixo	71,23%	R$ 14.970	R$ 2,2 mi	4	
+
+
+Lobato
+PR
+Maringá
+	4.707	24,42%
+(abaixo do mínimo)
+	
+Abaixo	96,31%	R$ 18.038	R$ 232 mil	1	
+
+
+Iaras
+SP
+Sorocaba
+	8.313	24,62%
+(abaixo do mínimo)
+	
+Abaixo	83,29%	R$ 16.363	R$ 220 mil	2	
+
+
+Arauá
+SE
+Aracaju
+	10.464	25,00%	
+No limite	76,54%	R$ 17.075	—	1	
+
+
+Bom Jardim de Minas
+MG
+Juíz de Fora
+	6.988	25,00%	
+No limite	90,32%	R$ 13.171	—	1	
+
+
+Capitão Poço
+PA
+Castanhal
+	60.318	25,00%	
+No limite	81,11%	R$ 12.970	—	0	
+
+
+Central do Maranhão
+MA
+São Luís
+	7.220	25,00%	
+No limite	83,60%	R$ 13.534	—	0	
+
+
+Conceição do Almeida
+BA
+Santo Antônio de Jesus
+	16.134	25,00%	
+No limite	71,32%	R$ 13.927	—	1	
+
+
+Dianópolis
+TO
+Gurupi
+	17.966	25,00%	
+No limite	91,63%	R$ 15.065	—	1	
+
+
+Estrela de Alagoas
+AL
+Arapiraca
+	15.688	25,00%	
+No limite	70,35%	R$ 13.088	—	0	
+
+
+Guaiúba
+CE
+Fortaleza
+	25.158	25,00%	
+No limite	70,06%	R$ 14.965	—	0	
+
+
+Itajuípe
+BA
+Ilhéus ¿ Itabuna
+	19.191	25,00%	
+No limite	78,45%	R$ 14.997	—	1	
+
+
+Jacaraú
+PB
+João Pessoa
+	14.969	25,00%	
+No limite	83,84%	R$ 13.270	—	0	
+
+
+Janduís
+RN
+Mossoró
+	4.813	25,00%	
+No limite	71,30%	R$ 19.076	—	0	
+
+
+José da Penha
+RN
+Mossoró
+	5.966	25,00%	
+No limite	76,10%	R$ 15.890	—	0	
+
+
+Manari
+PE
+Caruaru
+	27.046	25,00%	
+No limite	73,43%	R$ 12.166	—	0	
+
+
+Mirabela
+MG
+Montes Claros
+	14.071	25,00%	
+No limite	95,92%	R$ 15.298	—	0	
+
+
+Mulungu
+CE
+Fortaleza
+	11.064	25,00%	
+No limite	70,71%	R$ 16.603	—	0	
+
+
+Natal
+RN
+Natal
+	784.249	25,00%	
+No limite	98,87%	R$ 15.651	—	1	
+
+
+Nova Esperança do Piriá
+PA
+Castanhal
+	21.304	25,00%	
+No limite	85,80%	R$ 11.680	—	0	
+
+
+Pocinhos
+PB
+Campina Grande
+	18.038	25,00%	
+No limite	75,71%	R$ 20.373	—	0	
+
+
+Prata
+PB
+Campina Grande
+	4.032	25,00%	
+No limite	78,19%	R$ 14.901	—	0	
+
+
+Riachuelo
+SE
+Aracaju
+	8.853	25,00%	
+No limite	74,89%	R$ 13.328	—	2	
+
+
+Santa Cruz de Goiás
+GO
+Goiânia
+	3.004	25,00%	
+No limite	97,53%	R$ 19.734	—	0	
+
+
+Santanópolis
+BA
+Feira de Santana
+	9.035	25,00%	
+No limite	78,61%	R$ 12.749	—	1	
+
+
+São João da Paraúna
+GO
+São Luís de Montes Belos - Iporá
+	1.812	25,00%	
+No limite	72,23%	R$ 26.332	—	0	
+
+
+São Miguel do Guamá
+PA
+Castanhal
+	55.970	25,00%	
+No limite	73,53%	R$ 13.303	—	1	
+
+
+Taperoá
+BA
+Santo Antônio de Jesus
+	18.556	25,00%	
+No limite	78,81%	R$ 13.590	—	2	
+
+
+Teresina
+PI
+Teresina
+	905.692	25,00%	
+No limite	96,94%	R$ 12.660	—	2	
+
+
+Vera Cruz
+RN
+Natal
+	11.053	25,00%	
+No limite	72,49%	R$ 16.001	—	0	
+
+
+Xapuri
+AC
+Rio Branco
+	19.170	25,00%	
+No limite	70,29%	R$ 15.266	—	0	
+
+
+Anagé
+BA
+Vitória da Conquista
+	26.745	25,01%	
+No limite	96,96%	R$ 12.637	—	2	
+
+
+Barão
+RS
+Caxias do Sul
+	6.496	25,01%	
+No limite	86,43%	R$ 20.280	—	0	
+
+
+Barcelos
+AM
+Manaus
+	18.210	25,01%	
+No limite	75,44%	R$ 13.680	—	0	
+
+
+Brejo Grande
+SE
+Aracaju
+	8.025	25,01%	
+No limite	71,36%	R$ 17.391	—	0	
+
+
+Capoeiras
+PE
+Caruaru
+	18.854	25,01%	
+No limite	70,06%	R$ 15.405	—	2	
+
+
+Cerro Largo
+RS
+Ijuí
+	14.014	25,01%	
+No limite	92,52%	R$ 16.873	—	2	
+
+
+Choró
+CE
+Quixadá
+	12.352	25,01%	
+No limite	78,14%	R$ 15.296	—	0	
+
+
+Cruzeta
+RN
+Caicó
+	8.245	25,01%	
+No limite	70,01%	R$ 18.626	—	2	
+
+
+Formoso do Araguaia
+TO
+Gurupi
+	19.473	25,01%	
+No limite	84,24%	R$ 17.393	—	0	
+
+
+Hidrolândia
+CE
+Sobral
+	18.186	25,01%	
+No limite	82,07%	R$ 13.715	—	0	
+
+
+Irecê
+BA
+Irecê
+	78.781	25,01%	
+No limite	87,35%	R$ 17.915	—	0	
+
+
+Itabaiana
+SE
+Itabaiana
+	109.250	25,01%	
+No limite	89,38%	R$ 15.938	—	2	
+
+
+Jaquirana
+RS
+Caxias do Sul
+	3.751	25,01%	
+No limite	90,68%	R$ 20.237	—	1	
+
+
+Juruaia
+MG
+Varginha
+	11.652	25,01%	
+No limite	88,04%	R$ 14.329	—	1	
+
+
+Malhada de Pedras
+BA
+Vitória da Conquista
+	8.982	25,01%	
+No limite	73,71%	R$ 13.189	—	0	
+
+
+Manhuaçu
+MG
+Juíz de Fora
+	97.328	25,01%	
+No limite	94,22%	R$ 14.421	—	1	
+
+
+Matias Olímpio
+PI
+Parnaíba
+	10.886	25,01%	
+No limite	71,64%	R$ 12.096	—	1	
+
+
+Montalvânia
+MG
+Montes Claros
+	14.068	25,01%	
+No limite	84,17%	R$ 18.743	—	0	
+
+
+Mozarlândia
+GO
+Goiânia
+	15.199	25,01%	
+No limite	87,24%	R$ 11.506	—	1	
+
+
+Nova Viçosa
+BA
+Ilhéus ¿ Itabuna
+	41.629	25,01%	
+No limite	72,68%	R$ 13.019	—	0	
+
+
+Pauini
+AM
+Lábrea
+	20.229	25,01%	
+No limite	73,80%	R$ 12.875	—	0	
+
+
+Ruy Barbosa
+BA
+Feira de Santana
+	29.590	25,01%	
+No limite	85,01%	R$ 12.557	—	3	
+
+
+São José do Norte
+RS
+Pelotas
+	26.248	25,01%	
+No limite	76,09%	R$ 12.580	—	0	
+
+
+São Luís
+MA
+São Luís
+	1.089.215	25,01%	
+No limite	74,66%	R$ 18.427	—	1	
+
+
+Tefé
+AM
+Tefé
+	80.137	25,01%	
+No limite	70,02%	R$ 16.328	—	1	
+
+
+Trizidela do Vale
+MA
+Santa Inês - Bacabal
+	23.097	25,01%	
+No limite	78,40%	R$ 10.573	—	0	
+
+
+Aguiarnópolis
+TO
+Araguaína
+	4.502	25,02%	
+No limite	101,66%	R$ 14.981	—	1	
+
+
+Amapá
+AP
+Oiapoque - Porto Grande
+	8.440	25,02%	
+No limite	84,83%	R$ 11.750	—	0	
+
+
+Barra de São Miguel
+AL
+Maceió
+	8.123	25,02%	
+No limite	77,50%	R$ 15.980	—	0	
+
+
+Bernardo do Mearim
+MA
+Santa Inês - Bacabal
+	5.989	25,02%	
+No limite	97,42%	R$ 12.844	—	0	
+
+
+Boquira
+BA
+Guanambi
+	19.782	25,02%	
+No limite	70,75%	R$ 13.801	—	0	
+
+
+Caseara
+TO
+Palmas
+	5.028	25,02%	
+No limite	76,57%	R$ 14.877	—	1	
+
+
+Corrente
+PI
+Corrente - Bom Jesus
+	28.381	25,02%	
+No limite	86,39%	R$ 13.829	—	0	
+
+
+Encantado
+RS
+Santa Cruz do Sul - Lajeado
+	23.520	25,02%	
+No limite	85,55%	R$ 22.768	—	0	
+
+
+Guaxupé
+MG
+Varginha
+	52.744	25,02%	
+No limite	77,16%	R$ 15.068	—	0	
+
+
+Maracanã
+PA
+Castanhal
+	27.129	25,02%	
+No limite	84,30%	R$ 15.085	—	0	
+
+
+Marituba
+PA
+Belém
+	119.437	25,02%	
+No limite	78,87%	R$ 12.243	—	1	
+
+
+Monte Alegre
+RN
+Natal
+	23.953	25,02%	
+No limite	74,14%	R$ 14.847	—	2	
+
+
+Morada Nova
+CE
+Quixadá
+	65.390	25,02%	
+No limite	81,48%	R$ 14.214	—	0	
+
+
+Muricilândia
+TO
+Araguaína
+	3.501	25,02%	
+No limite	70,17%	R$ 29.934	—	0	
+
+
+Nina Rodrigues
+MA
+São Luís
+	14.589	25,02%	
+No limite	72,47%	R$ 15.839	—	0	
+
+
+Nísia Floresta
+RN
+Natal
+	34.325	25,02%	
+No limite	91,93%	R$ 13.440	—	2	
+
+
+Nova Iguaçu
+RJ
+Rio de Janeiro
+	843.220	25,02%	
+No limite	70,87%	R$ 10.633	—	0	
+
+
+Paranapoema
+PR
+Maringá
+	2.352	25,02%	
+No limite	87,10%	R$ 21.180	—	1	
+
+
+Ponte Alta do Bom Jesus
+TO
+Gurupi
+	4.280	25,02%	
+No limite	74,07%	R$ 16.155	—	0	
+
+
+Porto de Pedras
+AL
+Maceió
+	9.517	25,02%	
+No limite	78,73%	R$ 13.717	—	1	
+
+
+Rodolfo Fernandes
+RN
+Mossoró
+	4.345	25,02%	
+No limite	71,36%	R$ 12.787	—	0	
+
+
+Santa Maria do Cambucá
+PE
+Recife
+	14.586	25,02%	
+No limite	80,48%	R$ 13.047	—	0	
+
+
+Santa Rosa do Tocantins
+TO
+Palmas
+	4.799	25,02%	
+No limite	70,36%	R$ 20.925	—	0	
+Mostrando 100 de 5.570
+Mostrar mais 200
+Radar MDE · Brasil
+
+Dados: FNDE/SIOPE (indicadores e receitas declarados pelos municípios e estados, 2008 em diante), Tesouro Nacional/SICONFI (RREO, Anexo 14, municípios de SP) e IBGE (territórios, malhas e população). Inspirado em Silva, A. Z. (2021), O financiamento da Educação Básica no Brasil contemporâneo, UNINOVE. Ferramenta independente, sem vínculo com órgãos públicos.
+
+Painel
+Explorar
+Acompanhando
+Dados
+Metodologia

@@ -1,0 +1,541 @@
+Pular para o conteúdo
+Radar MDE
+BR
+Painel
+Explorar
+Acompanhando
+Dados
+Metodologia
+Buscar município…
+⌘K
+Brasil
+/
+Centro-Oeste
+/
+Mato Grosso
+Mato Grosso
+Quanto cada um dos 142 municípios de Mato Grosso aplica em educação e quem fica abaixo do mínimo constitucional de 25%.
+142 municípios · 3.893.659 habitantes · Região Centro-Oeste
+Baixar CSV
+Explorar
+Exercício
+2008
+2009
+2010
+2011
+2012
+2013
+2014
+2015
+2016
+2017
+2018
+2019
+2020
+2021
+2022
+2023
+2024
+2025
+1 de 141 abaixo de 25%
+·
+Região Centro-Oeste
+
+Em 2025, 1 de 141 municípios de Mato Grosso (0,7%) aplicaram menos de 25% em educação, deixando de destinar R$ 2,2 mi ao ensino. Na região Centro-Oeste, foram 0,2%; no Brasil, 0,4%. O governo estadual aplicou 26,00% na própria rede.
+
+Abaixo dos 25%
+1
+−1 vs 2024
+de 141 com dados
+Centro-Oeste: 0,2% · Brasil: 0,4%
+Deixou de ir para a educação
+R$ 2,2 mi
+soma do que faltou para 25%
+Mediana aplicada
+27,24%
+metade entre 26,1% e 28,9%
+Brasil: 27,12%
+Mediana por aluno
+R$ 18.862
+por ano, valor nominal
+Brasil: R$ 16.699
+Governo do estado
+26,00%
+aplicado em MDE na rede estadual
+Fundeb em salários: 88,8%
+Mapa de 2025
+Passe o mouse para ver o valor; clique para abrir o município.
+MDE
+Fundeb
+Por aluno
+% da receita de impostos aplicado em MDE
+< 22%
+22–25%
+25–26%
+26–30%
+≥ 30%
+Não declarou
+Sem dados
+Municípios abaixo dos 25%, por ano
+Clique numa barra para mudar o exercício.
+
+2008: 2 de 140; 2009: 0 de 140; 2010: 0 de 140; 2011: 0 de 141; 2012: 1 de 141; 2013: 0 de 141; 2014: 0 de 141; 2015: 0 de 141; 2016: 1 de 141; 2017: 0 de 141; 2018: 1 de 141; 2019: 0 de 141; 2020: 11 de 141; 2021: 66 de 141; 2022: 0 de 141; 2023: 1 de 141; 2024: 2 de 141; 2025: 1 de 141. Ano selecionado: 2025.
+
+’09
+’11
+’13
+’15
+’17
+’19
+’21
+’23
+’25
+0
+20
+40
+60
+80
+66
+1
+Distribuição em 2025
+Quantos municípios aplicaram cada percentual em MDE.
+
+Distribuição do percentual aplicado em MDE de Mato Grosso, 2025. 141 municípios; 1 abaixo de 25%. Faixa mais comum: 26–27% (32).
+
+1 abaixo de 25%
+15%
+20%
+25%
+30%
+35%
+40%
+45%
+0
+20
+40
+Mato Grosso frente à região e ao país
+% dos municípios que declararam e ficaram abaixo de 25%. Clique num ano para atualizar o painel.
+
+Percentual de municípios abaixo de 25%: Mato Grosso, região Centro-Oeste e Brasil. Em 2025: Mato Grosso 0,7%; Centro-Oeste 0,2%; Brasil 0,4%.
+
+● Mato Grosso
+● Brasil
+● Centro-Oeste
+2009
+2011
+2013
+2015
+2017
+2019
+2021
+2023
+2025
+0%
+10%
+20%
+30%
+40%
+50%
+Maiores déficits acumulados
+Estimativa desde 2008, descontado o que foi aplicado a mais depois.
+1
+Cuiabá
+2 anos abaixo: 2021, 2024
+R$ 267,1 mi
+2
+Porto Alegre do Norte
+1 ano abaixo: 2021
+R$ 7,4 mi
+3
+Barra do Garças
+1 ano abaixo: 2021
+R$ 3,7 mi
+4
+Campinápolis
+1 ano abaixo: 2021
+R$ 3,4 mi
+5
+Tangará da Serra
+4 anos abaixo: 2016, 2018, 2021, 2025
+R$ 2,2 mi
+6
+Arenápolis
+2 anos abaixo: 2020, 2021
+R$ 192 mil
+Todos os municípios
+Valores de 2025. Ordene clicando no cabeçalho; clique no nome para ver a série completa.
+Todas as regiões
+Qualquer população
+Qualquer situação
+142 municípios
+Municípios de Mato Grosso em 2025
+Município
+	População
+	MDE 2025
+	Situação	Fundeb pessoal
+	R$ por aluno
+	Faltou
+	Anos < 25%
+
+
+Tangará da Serra
+Cuiabá
+	114.603	
+24,40%
+	
+Abaixo	71,23%	R$ 14.970	R$ 2,2 mi	4
+
+Poxoréu
+Rondonópolis
+	25.103	
+25,04%
+	
+No limite	75,89%	R$ 17.104	—	1
+
+Barra do Garças
+Barra do Garças
+	73.878	
+25,07%
+	
+No limite	71,08%	R$ 15.643	—	1
+
+Guarantã do Norte
+Sinop
+	31.209	
+25,10%
+	
+No limite	85,68%	R$ 14.506	—	0
+
+Pontes e Lacerda
+Cáceres
+	55.762	
+25,11%
+	
+No limite	77,39%	R$ 14.737	—	0
+
+Várzea Grande
+Cuiabá
+	318.922	
+25,11%
+	
+No limite	80,69%	R$ 12.215	—	2
+
+Campinápolis
+Barra do Garças
+	15.808	
+25,12%
+	
+No limite	70,97%	R$ 15.158	—	1
+
+Jaciara
+Rondonópolis
+	29.803	
+25,15%
+	
+No limite	82,15%	R$ 16.983	—	2
+
+Glória D'Oeste
+Cáceres
+	2.878	
+25,16%
+	
+No limite	96,17%	R$ 21.169	—	0
+
+Jangada
+Cuiabá
+	7.413	
+25,18%
+	
+No limite	86,94%	R$ 21.550	—	1
+
+Feliz Natal
+Sinop
+	10.523	
+25,31%
+	
+No limite	92,83%	R$ 16.095	—	0
+
+Alta Floresta
+Sinop
+	62.158	
+25,34%
+	
+No limite	91,58%	R$ 15.587	—	1
+
+Porto Alegre do Norte
+Barra do Garças
+	12.649	
+25,34%
+	
+No limite	97,97%	R$ 18.493	—	1
+
+Acorizal
+Cuiabá
+	4.948	
+25,40%
+	
+No limite	79,04%	R$ 16.878	—	2
+
+Nova Xavantina
+Barra do Garças
+	25.915	
+25,49%
+	
+No limite	80,30%	R$ 17.052	—	1
+
+Sorriso
+Sinop
+	124.665	
+25,50%
+	
+No limite	82,98%	R$ 15.193	—	0
+
+Vila Bela da Santíssima Trindade
+Cáceres
+	17.592	
+25,62%
+	
+No limite	86,70%	R$ 15.435	—	0
+
+Vila Rica
+Barra do Garças
+	19.686	
+25,68%
+	
+No limite	71,74%	R$ 14.562	—	1
+
+Luciara
+Barra do Garças
+	2.616	
+25,69%
+	
+No limite	71,28%	R$ 24.163	—	0
+
+São José dos Quatro Marcos
+Cáceres
+	17.721	
+25,74%
+	
+No limite	75,72%	R$ 17.297	—	1
+
+Nova Guarita
+Sinop
+	4.546	
+25,76%
+	
+No limite	83,64%	R$ 15.312	—	1
+
+Chapada dos Guimarães
+Cuiabá
+	19.458	
+25,77%
+	
+No limite	71,15%	R$ 18.626	—	1
+
+Dom Aquino
+Rondonópolis
+	7.890	
+25,78%
+	
+No limite	75,23%	R$ 17.281	—	1
+
+Rondolândia
+Sinop
+	3.518	
+25,80%
+	
+No limite	80,02%	R$ 56.331	—	0
+
+Juína
+Sinop
+	48.396	
+25,81%
+	
+No limite	86,61%	R$ 16.566	—	1
+
+Canarana
+Barra do Garças
+	28.324	
+25,86%
+	
+No limite	90,40%	R$ 18.184	—	0
+
+Castanheira
+Sinop
+	7.392	
+25,87%
+	
+No limite	100,28%	R$ 16.605	—	0
+
+Paranatinga
+Rondonópolis
+	28.870	
+25,97%
+	
+No limite	96,12%	R$ 15.966	—	0
+
+São José do Rio Claro
+Cuiabá
+	14.455	
+25,97%
+	
+No limite	97,00%	R$ 16.060	—	1
+
+Guiratinga
+Rondonópolis
+	10.252	
+25,98%
+	
+No limite	97,82%	R$ 20.241	—	2
+
+Carlinda
+Sinop
+	10.260	
+25,99%
+	
+No limite	75,20%	R$ 17.511	—	0
+
+Alto Paraguai
+Cuiabá
+	7.525	
+26,04%
+	
+Cumpre	81,83%	R$ 15.801	—	1
+
+Porto Estrela
+Cuiabá
+	3.141	
+26,07%
+	
+Cumpre	95,89%	R$ 26.601	—	0
+
+Arenápolis
+Cuiabá
+	10.769	
+26,11%
+	
+Cumpre	85,61%	R$ 15.403	—	2
+
+Brasnorte
+Cuiabá
+	17.645	
+26,14%
+	
+Cumpre	93,50%	R$ 18.397	—	0
+
+Cuiabá
+Cuiabá
+	691.875	
+26,14%
+	
+Cumpre	85,11%	R$ 17.650	—	2
+
+Alto Garças
+Rondonópolis
+	13.956	
+26,15%
+	
+Cumpre	98,57%	R$ 16.735	—	2
+
+Nova Santa Helena
+Sinop
+	4.502	
+26,18%
+	
+Cumpre	96,37%	R$ 17.618	—	1
+
+Salto do Céu
+Cáceres
+	3.657	
+26,18%
+	
+Cumpre	95,67%	R$ 22.411	—	1
+
+Água Boa
+Barra do Garças
+	32.099	
+26,23%
+	
+Cumpre	97,73%	R$ 19.550	—	1
+
+Santa Carmem
+Sinop
+	5.795	
+26,25%
+	
+Cumpre	94,68%	R$ 16.175	—	0
+
+Denise
+Cuiabá
+	6.675	
+26,33%
+	
+Cumpre	90,59%	R$ 17.911	—	1
+
+Rondonópolis
+Rondonópolis
+	263.708	
+26,33%
+	
+Cumpre	82,43%	R$ 15.429	—	0
+
+Porto Esperidião
+Cáceres
+	10.088	
+26,37%
+	
+Cumpre	87,99%	R$ 16.343	—	1
+
+Cotriguaçu
+Sinop
+	10.030	
+26,41%
+	
+Cumpre	86,38%	R$ 18.343	—	1
+
+Figueirópolis D'Oeste
+Cáceres
+	3.056	
+26,41%
+	
+Cumpre	76,07%	R$ 24.302	—	1
+
+Rio Branco
+Cáceres
+	4.440	
+26,43%
+	
+Cumpre	72,13%	R$ 17.198	—	1
+
+Campo Verde
+Cuiabá
+	49.053	
+26,44%
+	
+Cumpre	88,00%	R$ 16.881	—	1
+
+Cocalinho
+Barra do Garças
+	6.495	
+26,44%
+	
+Cumpre	83,46%	R$ 29.785	—	1
+
+Curvelândia
+Cáceres
+	4.970	
+26,53%
+	
+Cumpre	85,30%	R$ 15.627	—	1
+Mostrando 50 de 142
+Mostrar mais 92
+Radar MDE · Brasil
+
+Dados: FNDE/SIOPE (indicadores e receitas declarados pelos municípios e estados, 2008 em diante), Tesouro Nacional/SICONFI (RREO, Anexo 14, municípios de SP) e IBGE (territórios, malhas e população). Inspirado em Silva, A. Z. (2021), O financiamento da Educação Básica no Brasil contemporâneo, UNINOVE. Ferramenta independente, sem vínculo com órgãos públicos.
+
+Painel
+Explorar
+Acompanhando
+Dados
+Metodologia
+0%

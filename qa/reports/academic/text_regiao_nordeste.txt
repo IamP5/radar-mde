@@ -1,0 +1,397 @@
+Pular para o conteúdo
+Radar MDE
+BR
+Painel
+Explorar
+Acompanhando
+Dados
+Metodologia
+Buscar município…
+⌘K
+Brasil
+/
+Nordeste
+Região Nordeste
+9 estados · 1.793 municípios · 57.241.144 habitantes
+Baixar CSV
+Explorar municípios
+Norte
+Nordeste
+Centro-Oeste
+Sudeste
+Sul
+Exercício
+2008
+2009
+2010
+2011
+2012
+2013
+2014
+2015
+2016
+2017
+2018
+2019
+2020
+2021
+2022
+2023
+2024
+2025
+Série
+% abaixo de 25%
+R$ que faltou
+MDE mediana
+
+Em 2025, 10 municípios da região Nordeste (0,6% dos que declararam) aplicaram menos de 25% em educação — R$ 40,3 mi deixaram de ir para o ensino. A maior proporção está em Rio Grande do Norte (2,4%).
+
+Abaixo dos 25%
+10
+45
+a menos que em 2024
+de 1.791 municípios com dados
+Brasil: 0,4% abaixo
+Deixou de ir para a educação
+R$ 40,3 mi
+74%
+a menos que em 2024
+soma do que faltou para chegar a 25%
+Moram nesses municípios
+221.168
+87%
+a menos que em 2024
+pessoas (0,4% da população)
+Mediana aplicada em MDE
+26,36%
+igual a 2024
+a menos que em 2024
+metade entre 25,5% e 28,4%
+Brasil: 27,12%
+Fundeb abaixo de 70% em salários
+6
+23
+a menos que em 2024
+de 1.791 municípios
+Brasil: 0,1% abaixo
+Mapa · Região Nordeste
+Passe o mouse para ver os números; clique para descer de nível (estado ou município).
+2025
+Estados
+Municípios
+MDE (%)
+Fundeb pessoal
+R$ por aluno
+% da receita de impostos aplicado em MDE
+< 22%
+22–25%
+25–26%
+26–30%
+≥ 30%
+Não declarou
+Sem dados
+Estados da região
+% dos municípios abaixo de 25% em 2025 e a série desde 2008 (mesma escala).
+Maranhão
+0,5%
+MA
+1/217
+Piauí
+0%
+PI
+0/224
+Ceará
+0%
+CE
+0/184
+Rio Grande do Norte
+2,4%
+RN
+4/165
+Paraíba
+0,4%
+PB
+1/223
+Pernambuco
+1,1%
+PE
+2/184
+Alagoas
+1%
+AL
+1/102
+Sergipe
+1,3%
+SE
+1/75
+Bahia
+0%
+BA
+0/417
+Evolução 2008–2025
+Clique num ano do gráfico para atualizar o painel. 2020–2021: anos da pandemia (EC 119/2022).
+% de municípios abaixo de 25%
+0,6%
+R$ que faltou para 25%
+R$ 40,3 mi
+MDE mediana (%)
+26,4%
+
+% de municípios abaixo de 25% por ano, Região Nordeste. Em 2025: Nordeste 0,6%; Brasil 0,4%.
+
+● Nordeste
+● Brasil
+pandemia
+2008
+2009
+2010
+2011
+2012
+2013
+2014
+2015
+2016
+2017
+2018
+2019
+2020
+2021
+2022
+2023
+2024
+2025
+0%
+5%
+10%
+15%
+20%
+25%
+Distribuição dos municípios · 2025
+Quantos municípios aplicaram cada percentual da receita de impostos em MDE.
+
+Distribuição do percentual aplicado em MDE, Região Nordeste, 2025. 1.791 municípios; 10 abaixo de 25%. Faixa mais comum: 25–26% (730).
+
+10 abaixo de 25%
+15%
+20%
+25%
+30%
+35%
+40%
+45%
+0
+250
+500
+750
+Maiores déficits acumulados
+Saldo estimado que faltou para 25% desde 2008, descontado o que foi aplicado a mais depois.
+1
+Aracaju
+SE
+7 anos abaixo: 2017, 2018, 2019, 2021…
+R$ 460,5 mi
+2
+Cabo de Santo Agostinho
+PE
+2 anos abaixo: 2020, 2021
+R$ 29,1 mi
+3
+Parnamirim
+RN
+3 anos abaixo: 2018, 2020, 2021
+R$ 21 mi
+4
+Paulo Afonso
+BA
+3 anos abaixo: 2020, 2021, 2024
+R$ 20 mi
+5
+Buritirama
+BA
+2 anos abaixo: 2020, 2021
+R$ 16,3 mi
+6
+Arapiraca
+AL
+2 anos abaixo: 2020, 2021
+R$ 12,5 mi
+7
+Brejo da Madre de Deus
+PE
+2 anos abaixo: 2021, 2025
+R$ 11,2 mi
+8
+Piaçabuçu
+AL
+1 ano abaixo: 2025
+R$ 10,7 mi
+9
+Ouricuri
+PE
+1 ano abaixo: 2024
+R$ 10,5 mi
+10
+São José de Mipibu
+RN
+3 anos abaixo: 2021, 2024, 2025
+R$ 10,2 mi
+11
+Santa Maria da Boa Vista
+PE
+2 anos abaixo: 2021, 2022
+R$ 9,4 mi
+12
+Taperoá
+BA
+2 anos abaixo: 2020, 2021
+R$ 8,4 mi
+13
+Conceição do Almeida
+BA
+1 ano abaixo: 2024
+R$ 7,2 mi
+14
+Sousa
+PB
+1 ano abaixo: 2024
+R$ 7,1 mi
+15
+Tenente Ananias
+RN
+5 anos abaixo: 2022, 2023, 2024, 2025…
+R$ 6,8 mi
+16
+Cascavel
+CE
+1 ano abaixo: 2024
+R$ 6,6 mi
+17
+Rio Formoso
+PE
+4 anos abaixo: 2016, 2020, 2021, 2024
+R$ 6,1 mi
+18
+Canarana
+BA
+2 anos abaixo: 2023, 2024
+R$ 5,1 mi
+19
+Timon
+MA
+1 ano abaixo: 2024
+R$ 4,8 mi
+20
+Jijoca de Jericoacoara
+CE
+1 ano abaixo: 2024
+R$ 4,5 mi
+21
+Cubati
+PB
+3 anos abaixo: 2021, 2024, 2025
+R$ 4,4 mi
+22
+Bonito
+PE
+1 ano abaixo: 2024
+R$ 4,2 mi
+23
+Canguaretama
+RN
+2 anos abaixo: 2021, 2024
+R$ 3,7 mi
+24
+Sirinhaém
+PE
+1 ano abaixo: 2024
+R$ 3,6 mi
+25
+Valença
+BA
+2 anos abaixo: 2021, 2024
+R$ 3,6 mi
+Ranking dos estados · 2025
+Clique no cabeçalho para ordenar. “Governo estadual” é o percentual aplicado pelo próprio estado na sua rede.
+Estado
+	Municípios
+	% abaixo de 25%
+	Faltou (R$)
+	MDE mediana
+	Fundeb abaixo do mín.
+	R$/aluno (mediana)
+	Governo estadual
+	Sem dados
+
+
+Rio Grande do Norte
+RN
+	167	
+2,4%
+4/165
+	R$ 8,8 mi	26,51%	1,8%	R$ 14.847	27,43%	2
+
+Sergipe
+SE
+	75	
+1,3%
+1/75
+	R$ 1,2 mi	26,27%	0%	R$ 16.363	25,12%	0
+
+Pernambuco
+PE
+	184	
+1,1%
+2/184
+	R$ 14,2 mi	25,81%	0%	R$ 13.176,5	25,21%	0
+
+Alagoas
+AL
+	102	
+1%
+1/102
+	R$ 10,7 mi	25,53%	1%	R$ 14.555,5	25,12%	0
+
+Maranhão
+MA
+	217	
+0,5%
+1/217
+	R$ 2,3 mi	25,98%	0,5%	R$ 14.219	25,86%	0
+
+Paraíba
+PB
+	223	
+0,4%
+1/223
+	R$ 2,9 mi	27,17%	0%	R$ 14.767	28,97%	0
+
+Piauí
+PI
+	224	
+0%
+0/224
+	—	27,02%	0%	R$ 16.070	25,24%	0
+
+Ceará
+CE
+	184	
+0%
+0/184
+	—	26,21%	0%	R$ 15.039	25,25%	0
+
+Bahia
+BA
+	417	
+0%
+0/417
+	—	26,59%	0,2%	R$ 14.436	25,48%	0
+Radar MDE · Brasil
+
+Dados: FNDE/SIOPE (indicadores e receitas declarados pelos municípios e estados, 2008 em diante), Tesouro Nacional/SICONFI (RREO, Anexo 14, municípios de SP) e IBGE (territórios, malhas e população). Inspirado em Silva, A. Z. (2021), O financiamento da Educação Básica no Brasil contemporâneo, UNINOVE. Ferramenta independente, sem vínculo com órgãos públicos.
+
+Painel
+Explorar
+Acompanhando
+Dados
+Metodologia
+18

@@ -1,0 +1,263 @@
+Dados abertos
+Toda a base usada no painel, um registro por município e ano (2008–2025). Use à vontade em reportagens, pesquisas e conselhos, citando as fontes originais.
+CSV · Brasil inteiro
+JSON compacto
+Municípios
+5.570
+um arquivo por UF ou o país inteiro
+Exercícios
+18
+2008 a 2025
+Cobertura em 2025
+99,8%
+5.560 com dados de MDE
+Atualizado em
+07/10/2026
+FNDE/SIOPE, Tesouro/SICONFI e IBGE
+Como citar
+Os números são declarados pelos próprios municípios ao FNDE/SIOPE, com checagem pelo Tesouro Nacional/SICONFI e territórios e população do IBGE. Cite as fontes originais e, se quiser, o Radar MDE como forma de acesso.
+Por estado
+
+CSV com todas as colunas do dicionário abaixo. A barra mostra a cobertura de 2025: municípios com dados de MDE sobre o total.
+
+Norte
+RO
+Rondônia
+Baixar CSV
+x
+52 mun. · 100%
+AC
+Acre
+Baixar CSV
+x
+22 mun. · 100%
+AM
+Amazonas
+Baixar CSV
+x
+62 mun. · 100%
+RR
+Roraima
+Baixar CSV
+x
+15 mun. · 100%
+PA
+Pará
+Baixar CSV
+x
+144 mun. · 100%
+AP
+Amapá
+Baixar CSV
+x
+16 mun. · 100%
+TO
+Tocantins
+Baixar CSV
+x
+139 mun. · 100%
+Nordeste
+MA
+Maranhão
+Baixar CSV
+x
+217 mun. · 100%
+PI
+Piauí
+Baixar CSV
+x
+224 mun. · 100%
+CE
+Ceará
+Baixar CSV
+x
+184 mun. · 100%
+RN
+Rio Grande do Norte
+Baixar CSV
+x
+167 mun. · 98,8%
+PB
+Paraíba
+Baixar CSV
+x
+223 mun. · 100%
+PE
+Pernambuco
+Baixar CSV
+x
+184 mun. · 100%
+AL
+Alagoas
+Baixar CSV
+x
+102 mun. · 100%
+SE
+Sergipe
+Baixar CSV
+x
+75 mun. · 100%
+BA
+Bahia
+Baixar CSV
+x
+417 mun. · 100%
+Centro-Oeste
+MS
+Mato Grosso do Sul
+Baixar CSV
+x
+79 mun. · 100%
+MT
+Mato Grosso
+Baixar CSV
+x
+142 mun. · 99,3%
+GO
+Goiás
+Baixar CSV
+x
+246 mun. · 100%
+DF
+Distrito Federal
+Baixar CSV
+x
+1 mun. · 100%
+Sudeste
+MG
+Minas Gerais
+Baixar CSV
+x
+853 mun. · 100%
+ES
+Espírito Santo
+Baixar CSV
+x
+78 mun. · 100%
+RJ
+Rio de Janeiro
+Baixar CSV
+x
+92 mun. · 98,9%
+SP
+São Paulo
+Baixar CSV
+x
+645 mun. · 99,2%
+Sul
+PR
+Paraná
+Baixar CSV
+x
+399 mun. · 100%
+SC
+Santa Catarina
+Baixar CSV
+x
+295 mun. · 99,7%
+RS
+Rio Grande do Sul
+Baixar CSV
+x
+497 mun. · 100%
+Cobertura nacional por exercício
+
+Um ano só entra no painel quando ao menos 85% dos municípios do país têm dados.
+
+Ano	Com dados de MDE	Não declararam	Cobertura
+2025	5.560	10	
+x
+99,8%
+
+2024	5.565	5	
+x
+99,9%
+
+2023	5.567	3	
+x
+99,9%
+
+2022	5.567	3	
+x
+99,9%
+
+2021	5.567	3	
+x
+99,9%
+
+2020	5.547	23	
+x
+99,6%
+
+2019	5.556	14	
+x
+99,7%
+
+2018	5.560	10	
+x
+99,8%
+
+2017	5.564	6	
+x
+99,9%
+
+2016	5.473	97	
+x
+98,3%
+
+2015	5.513	57	
+x
+99%
+
+2014	5.544	26	
+x
+99,5%
+
+2013	5.550	20	
+x
+99,6%
+
+2012	5.427	143	
+x
+97,4%
+
+2011	5.492	78	
+x
+98,6%
+
+2010	5.537	33	
+x
+99,4%
+
+2009	5.539	31	
+x
+99,4%
+
+2008	5.506	64	
+x
+98,9%
+Dicionário
+
+Colunas dos arquivos CSV, na ordem em que aparecem. Valores em R$ são nominais.
+
+Campo	Descrição
+ibge	Código IBGE do município (7 dígitos).
+municipio, uf, regiao	Nome do município, sigla da UF e grande região.
+regiao_intermediaria, regiao_imediata	Regiões geográficas do IBGE (2017).
+populacao	População do município (IBGE).
+ano	Exercício a que se referem os valores.
+situacao	nao_declarou quando o município não tem dados de MDE para o ano; declarou nos demais casos.
+mde_pct	% da receita de impostos e transferências aplicado em Manutenção e Desenvolvimento do Ensino (mínimo 25%).
+mde_aplicado_rs	Valor apurado em MDE no exercício.
+receita_impostos_rs	Base de cálculo (impostos + transferências constitucionais). Desde 2020, indicador do SIOPE; antes, soma das receitas declaradas ao SIOPE (impostos, FPM, ITR, ICMS, IPVA, IPI-exportação, LC 87/96, dívida ativa e multas de impostos).
+faltou_rs	Quanto faltou para atingir 25% (0 se cumpriu).
+fundeb_pessoal_pct	% do Fundeb pago aos profissionais (mínimo 60% até 2020, 70% desde 2021).
+fundeb_minimo_pct	Mínimo legal de Fundeb para pessoal vigente no ano.
+fundeb_nao_usado_pct	Parcela do Fundeb deixada para o ano seguinte (máximo 5% até 2020, 10% desde 2021).
+por_aluno_rs	Investimento por aluno declarado ao SIOPE (indicador 4.9, valor nominal).
+saude_pct	% aplicado em saúde (mínimo 15%), só para municípios de SP (SICONFI).
+fonte	Sistema de origem do registro.
+Brasília e Fernando de Noronha
+Brasília (DF) usa a declaração do Distrito Federal, que acumula competências de estado e município. Fernando de Noronha (PE) é distrito estadual, sem orçamento municipal, e fica fora da contagem.
+
+Arquivos em UTF-8 com BOM, separados por vírgula: abrem direto no Excel, LibreOffice e Google Planilhas.

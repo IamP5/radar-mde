@@ -1,0 +1,9 @@
+  (tricky slug not in dataset, skipped: pe/fernando-de-noronha )
+Crawling 140 pages (103 cities) on http://localhost:3210 ...
+Checking 396 of 2133 unique internal links ...
+
+Pages: 140  404-probes: 6  links checked: 396  time: 97s
+FAIL  expected HTTP #, got # (# UI shown: true)
+      5 url(s): /xx /sp/nao-existe /regiao/foo /SP /sp/Santo-Andre
+
+RESULT: FAIL (5 problem urls)

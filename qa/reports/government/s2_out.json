@@ -1,0 +1,51 @@
+{
+  "out": {
+    "ma_yearShown": "2020",
+    "ma_urlAfterFilter": "http://localhost:3210/ma?ano=2020",
+    "ma_count": "6 de 217",
+    "ma_sortedTop": [
+      "Alto Parnaíba Imperatriz 11.392 15,76% Abaixo 75,96% R$ 5.825 R$ 2,6 mi 1",
+      "Cajapió São Luís 10.336 23,73% Abaixo 68,66% R$ 4.165 R$ 159 mil 1",
+      "Matinha São Luís 22.540 24,60% Abaixo 70,80% R$ 4.461 R$ 79 mil 1",
+      "Porto Franco Imperatriz 24.571 23,31% Abaixo 72,85% R$ 4.297 R$ 635 mil 1",
+      "Porto Rico do Maranhão São Luís 6.092 24,43% Abaixo 73,90% R$ 5.274 R$ 59 mil 1",
+      "Tutóia São Luís 55.076 10,91% Abaixo 61,41% R$ 4.768 R$ 5,4 mi 1"
+    ],
+    "ma_countAfterReload": "217 municípios",
+    "ma_fun": "0 de 217",
+    "ma_csvHref": "/dados/csv/ma",
+    "ma_clickDownload": "radar-mde-ma.csv",
+    "ma_csvStatus": 200,
+    "ma_csvHeaders": {
+      "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+      "x-nextjs-cache": "HIT",
+      "cache-control": "s-maxage=31536000",
+      "content-disposition": "attachment; filename=\"radar-mde-ma.csv\"",
+      "content-type": "text/csv; charset=utf-8",
+      "date": "Wed, 07 Oct 2026 14:26:13 GMT",
+      "connection": "keep-alive",
+      "keep-alive": "timeout=5",
+      "transfer-encoding": "chunked"
+    },
+    "ma_csvMs": 19,
+    "ex_yearShown": "Exercício\n2021",
+    "ex_url1": "http://localhost:3210/explorar?uf=SP&ano=2021",
+    "ex_url2": "http://localhost:3210/explorar?uf=SP&ano=2021",
+    "ex_count": "35 de 5.570 municípios UF: SP Abaixo de 25% em 2021 Reincidentes Limpar",
+    "ex_top": [
+      "Aguaí SP Campinas 32.886 23,09% (abaixo do mínimo) Abaixo 70,00% R$ 8.096 R$ 1,6 mi 2 ",
+      "Areiópolis SP Bauru 10.242 22,13% (abaixo do mínimo) Abaixo 70,55% R$ 7.348 R$ 719 mil 2 ",
+      "Birigui SP Araçatuba 123.340 21,70% (abaixo do mínimo) Abaixo 84,46% R$ 9.481 R$ 8,6 mi 2 ",
+      "Buri SP Sorocaba 20.731 21,98% (abaixo do mínimo) Abaixo 56,35% R$ 7.641 R$ 1,8 mi 2 ",
+      "Fartura SP Marília 17.029 23,39% (abaixo do mínimo) Abaixo 65,95% R$ 9.549 R$ 760 mil 2 ",
+      "Franca SP Ribeirão Preto 365.494 22,95% (abaixo do mínimo) Abaixo 52,73% R$ 10.980 R$ 13,3 mi 2 "
+    ],
+    "ex_csvName": "radar-mde-explorar.csv",
+    "ex_sharedCount": "645 de 5.570 municípios UF: SP Limpar",
+    "pa_text": "Brasil\n/\nNorte\n/\nPará\nPará\nQuanto cada um dos 144 municípios do Pará aplica em educação e quem fica abaixo do mínimo constitucional de 25%.\n144 municípios · 8.711.196 habitantes · Região Norte\nBaixar CSV\nExplorar\nExercício\n2008\n2009\n2010\n2011\n2012\n2013\n2014\n2015\n2016\n2017\n2018\n2019\n2020\n2021\n2022\n2023\n2024\n2025\n0 de 119 abaixo de 25%\n·\nRegião Norte\n\nEm 2016, 0 de 119 municípios do Pará (0%) aplicaram menos de 25% em educação. Na região Norte, foram 2,2%; no Brasil, 1,4%. O governo estadual aplicou 26,60% na própria rede.\n\nAbaixo dos 25%\n0\n−2 vs 2015\nde 119 com dados\nNorte: 2,2% · Brasil: 1,4%\nDeixou de ir para a educação\nR$ 0\nsoma do que faltou para 25%\nMediana aplicada\n27,09%\nmetade entre 25,4% e 30,1%\nBrasil: 27,32%\nMediana por aluno\nR$ 3.997\npor ano, valor nominal\nBrasil: R$ 5.355\nGoverno do estado\n26,60%\naplicado em MDE na rede estadual\nFundeb em salários: 95,9%\nMapa de 2016\nPasse o mouse para ver o valor; clique para abrir o município.\nMDE\nFundeb\nPor aluno\n% da receita de impostos aplicado em MDE\n< 22%\n22–25%\n25–26%\n26–30%\n≥ 30%\nNão declarou\nSem dados\nMunicípios abaixo dos 25%, por ano\nClique numa barra para mudar o exercício.\n\n2008: 5 de 131; 2009: 0 de 140; 2010: 2 de 136; 2011: 0 de 123; 2012: 0 de 111; 2013: 2 de 138; 2014: 2 de 137; 2015: 2 de 131; 2016: 0 de 119; 2017: 0 de 142; 2018: 1 de 139; 2019: 4 de 136; 2020: 10 de 136; 2021: 13 de 144; 2022: 5 de 144; 2023: 0 de 144; 2024: 0 de 144; 2025: 1 de 144. Ano selecionado: 2016.\n\n’09\n’11\n’13\n’15\n’17\n’19\n’21\n’23\n’25\n0\n5\n10\n15\n13\nDistribuição em 2016\nQuantos municípios aplicaram cada percentual em MDE.\n\nDistribuição do percentual aplicado em MDE do Pará, 2016. 119 municípios; 0 abaixo de 25%. Faixa mais comum: 25–26% (47).\n\n0 abaixo de 25%\n15%\n20%\n25%\n30%\n35%\n40%\n45%\n0\n20\n40\n60\nPará frente à região e ao país\n% dos municípios que declararam e ficaram abaixo de 25%. Clique num ano para atualizar o painel.\n\nPercentual de municípios abaixo de 25%: Pará, região Norte e Brasil. Em 2025: Pará 0,7%; Norte 2%; Brasil 0,4%.\n\n● Norte\n● Pará\n● Brasil\n2009\n2011\n2013\n2015\n2017\n2019\n2021\n2023\n2025\n0%\n5%\n10%\n15%\n20%\nMaiores déficits acumulados\nEstimativa desde 2008, descontado o que foi aplicado a mais depois.\n1\nIpixuna do Pará\n2 anos abaixo: 2021, 2022\nR$ 10,5 mi\n2\nMagalhães Barata\n1 ano abaixo: 2025\nR$ 9,6 mi\n3\nSalinópolis\n2 anos abaixo: 2020, 2021\nR$ 5,9 mi\n4\nBrasil Novo\n3 anos abaixo: 2013, 2014, 2022\nR$ 3,2 mi\n5\nTailândia\n2 anos abaixo: 2021, 2022\nR$ 261 mil\n6\nIrituia\n2 anos abaixo: 2020, 2022\nR$ 181 mil\nTod",
+    "pa_firstHref": "/pa/concordia-do-para?ano=2016",
+    "pa_cityUrl": "http://localhost:3210/pa?ano=2016",
+    "pa_cityStatLabel": "Abaixo dos 25%\n0\n−2 vs 2015\nde 119 com dados\nNorte: 2,2% · Brasil: 1,4%\nDeixou de ir para a educação\nR$ 0\nsoma do que faltou para 25%\nMediana aplicada\n27,09%\nmetade entre 25,4% e 30,1%\nBrasil: 27,32%\nMediana por aluno\nR$ 3.997\npor ano, valor nominal\nBrasil: R$ 5.355\nGoverno do estado\n26,60%\naplicado em MDE na rede estadual\nFundeb em salários: 95,9%"
+  },
+  "errs": []
+}

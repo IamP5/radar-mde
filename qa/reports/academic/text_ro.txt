@@ -1,0 +1,517 @@
+Pular para o conteúdo
+Radar MDE
+BR
+Painel
+Explorar
+Acompanhando
+Dados
+Metodologia
+Buscar município…
+⌘K
+Brasil
+/
+Norte
+/
+Rondônia
+Rondônia
+Quanto cada um dos 52 municípios de Rondônia aplica em educação e quem fica abaixo do mínimo constitucional de 25%.
+52 municípios · 1.751.950 habitantes · Região Norte
+Baixar CSV
+Explorar
+Exercício
+2008
+2009
+2010
+2011
+2012
+2013
+2014
+2015
+2016
+2017
+2018
+2019
+2020
+2021
+2022
+2023
+2024
+2025
+0 de 52 abaixo de 25%
+·
+Região Norte
+
+Em 2025, 0 de 52 municípios de Rondônia (0%) aplicaram menos de 25% em educação. Na região Norte, foram 2%; no Brasil, 0,4%. O governo estadual aplicou 25,50% na própria rede.
+
+Abaixo dos 25%
+0
+= 2024
+de 52 com dados
+Norte: 2% · Brasil: 0,4%
+Deixou de ir para a educação
+R$ 0
+soma do que faltou para 25%
+Mediana aplicada
+27,14%
+metade entre 26,2% e 29,5%
+Brasil: 27,12%
+Mediana por aluno
+R$ 18.191
+por ano, valor nominal
+Brasil: R$ 16.699
+Governo do estado
+25,50%
+aplicado em MDE na rede estadual
+Fundeb em salários: 87,6%
+Mapa de 2025
+Passe o mouse para ver o valor; clique para abrir o município.
+MDE
+Fundeb
+Por aluno
+% da receita de impostos aplicado em MDE
+< 22%
+22–25%
+25–26%
+26–30%
+≥ 30%
+Não declarou
+Sem dados
+Municípios abaixo dos 25%, por ano
+Clique numa barra para mudar o exercício.
+
+2008: 1 de 52; 2009: 0 de 52; 2010: 0 de 52; 2011: 1 de 52; 2012: 0 de 52; 2013: 0 de 52; 2014: 0 de 52; 2015: 1 de 52; 2016: 0 de 52; 2017: 0 de 52; 2018: 0 de 52; 2019: 0 de 52; 2020: 1 de 52; 2021: 8 de 52; 2022: 1 de 52; 2023: 0 de 52; 2024: 0 de 52; 2025: 0 de 52. Ano selecionado: 2025.
+
+’09
+’11
+’13
+’15
+’17
+’19
+’21
+’23
+’25
+0
+2
+4
+6
+8
+8
+Distribuição em 2025
+Quantos municípios aplicaram cada percentual em MDE.
+
+Distribuição do percentual aplicado em MDE de Rondônia, 2025. 52 municípios; 0 abaixo de 25%. Faixa mais comum: 26–27% (13).
+
+0 abaixo de 25%
+15%
+20%
+25%
+30%
+35%
+40%
+45%
+0
+5
+10
+15
+Rondônia frente à região e ao país
+% dos municípios que declararam e ficaram abaixo de 25%. Clique num ano para atualizar o painel.
+
+Percentual de municípios abaixo de 25%: Rondônia, região Norte e Brasil. Em 2025: Rondônia 0%; Norte 2%; Brasil 0,4%.
+
+● Norte
+● Brasil
+● Rondônia
+2009
+2011
+2013
+2015
+2017
+2019
+2021
+2023
+2025
+0%
+5%
+10%
+15%
+20%
+Maiores déficits acumulados
+Estimativa desde 2008, descontado o que foi aplicado a mais depois.
+Nenhum município com déficit acumulado.
+Todos os municípios
+Valores de 2025. Ordene clicando no cabeçalho; clique no nome para ver a série completa.
+Todas as regiões
+Qualquer população
+Qualquer situação
+52 municípios
+Municípios de Rondônia em 2025
+Município
+	População
+	MDE 2025
+	Situação	Fundeb pessoal
+	R$ por aluno
+	Faltou
+	Anos < 25%
+
+
+Candeias do Jamari
+Porto Velho
+	24.313	
+25,04%
+	
+No limite	78,98%	R$ 13.694	—	1
+
+Buritis
+Porto Velho
+	30.649	
+25,09%
+	
+No limite	85,79%	R$ 14.890	—	0
+
+Cujubim
+Porto Velho
+	15.877	
+25,15%
+	
+No limite	87,08%	R$ 14.080	—	0
+
+Mirante da Serra
+Ji-Paraná
+	9.657	
+25,22%
+	
+No limite	89,22%	R$ 18.282	—	1
+
+Alta Floresta D'Oeste
+Ji-Paraná
+	22.787	
+25,23%
+	
+No limite	90,22%	R$ 14.346	—	0
+
+Presidente Médici
+Ji-Paraná
+	20.443	
+25,26%
+	
+No limite	78,74%	R$ 15.234	—	1
+
+Ji-Paraná
+Ji-Paraná
+	140.101	
+25,58%
+	
+No limite	83,47%	R$ 15.480	—	0
+
+Cacoal
+Ji-Paraná
+	98.280	
+25,59%
+	
+No limite	78,20%	R$ 18.571	—	1
+
+Rio Crespo
+Porto Velho
+	3.767	
+25,62%
+	
+No limite	99,91%	R$ 36.395	—	0
+
+Porto Velho
+Porto Velho
+	517.709	
+25,89%
+	
+No limite	76,28%	R$ 15.836	—	0
+
+Pimenta Bueno
+Ji-Paraná
+	39.220	
+25,96%
+	
+No limite	81,88%	R$ 16.469	—	0
+
+Colorado do Oeste
+Ji-Paraná
+	16.508	
+26,14%
+	
+Cumpre	82,49%	R$ 17.990	—	0
+
+Ariquemes
+Porto Velho
+	109.170	
+26,19%
+	
+Cumpre	81,40%	R$ 15.478	—	0
+
+Machadinho D'Oeste
+Porto Velho
+	34.149	
+26,19%
+	
+Cumpre	78,19%	R$ 19.306	—	0
+
+Vilhena
+Ji-Paraná
+	109.651	
+26,20%
+	
+Cumpre	89,42%	R$ 17.101	—	0
+
+Santa Luzia D'Oeste
+Ji-Paraná
+	7.837	
+26,25%
+	
+Cumpre	78,59%	R$ 21.040	—	0
+
+Ouro Preto do Oeste
+Ji-Paraná
+	38.684	
+26,52%
+	
+Cumpre	98,06%	R$ 15.854	—	1
+
+Jaru
+Porto Velho
+	55.682	
+26,63%
+	
+Cumpre	76,88%	R$ 16.296	—	0
+
+Costa Marques
+Ji-Paraná
+	13.510	
+26,71%
+	
+Cumpre	84,60%	R$ 13.346	—	1
+
+Nova Mamoré
+Porto Velho
+	28.701	
+26,71%
+	
+Cumpre	72,02%	R$ 18.043	—	0
+
+Monte Negro
+Porto Velho
+	12.168	
+26,84%
+	
+Cumpre	78,06%	R$ 20.291	—	0
+
+Castanheiras
+Ji-Paraná
+	3.450	
+26,86%
+	
+Cumpre	79,64%	R$ 22.311	—	0
+
+Guajará-Mirim
+Porto Velho
+	43.594	
+26,89%
+	
+Cumpre	90,86%	R$ 15.612	—	2
+
+Espigão D'Oeste
+Ji-Paraná
+	32.842	
+26,94%
+	
+Cumpre	84,69%	R$ 15.735	—	0
+
+Campo Novo de Rondônia
+Porto Velho
+	9.095	
+27,02%
+	
+Cumpre	79,71%	R$ 19.426	—	0
+
+Urupá
+Ji-Paraná
+	11.314	
+27,09%
+	
+Cumpre	92,12%	R$ 16.299	—	0
+
+Cabixi
+Ji-Paraná
+	5.664	
+27,19%
+	
+Cumpre	96,38%	R$ 22.138	—	0
+
+Novo Horizonte do Oeste
+Ji-Paraná
+	7.972	
+27,20%
+	
+Cumpre	72,26%	R$ 20.116	—	0
+
+Rolim de Moura
+Ji-Paraná
+	62.959	
+27,58%
+	
+Cumpre	86,35%	R$ 20.554	—	0
+
+São Francisco do Guaporé
+Ji-Paraná
+	17.557	
+27,60%
+	
+Cumpre	89,56%	R$ 20.423	—	1
+
+Cerejeiras
+Ji-Paraná
+	16.966	
+27,78%
+	
+Cumpre	90,97%	R$ 18.878	—	0
+
+Governador Jorge Teixeira
+Porto Velho
+	8.340	
+28,22%
+	
+Cumpre	78,40%	R$ 17.734	—	0
+
+Ministro Andreazza
+Ji-Paraná
+	6.519	
+28,65%
+	
+Cumpre	72,93%	R$ 17.747	—	0
+
+Alvorada D'Oeste
+Ji-Paraná
+	13.720	
+28,79%
+	
+Cumpre	83,15%	R$ 16.103	—	0
+
+Teixeirópolis
+Ji-Paraná
+	4.521	
+28,87%
+	
+Cumpre	92,15%	R$ 17.567	—	1
+
+Chupinguaia
+Ji-Paraná
+	10.191	
+29,15%
+	
+Cumpre	81,33%	R$ 25.037	—	0
+
+Nova Brasilândia D'Oeste
+Ji-Paraná
+	16.374	
+29,24%
+	
+Cumpre	77,71%	R$ 14.474	—	0
+
+Alto Alegre dos Parecis
+Ji-Paraná
+	12.237	
+29,31%
+	
+Cumpre	91,21%	R$ 18.100	—	0
+
+Nova União
+Ji-Paraná
+	6.541	
+29,32%
+	
+Cumpre	83,47%	R$ 18.430	—	0
+
+Vale do Paraíso
+Ji-Paraná
+	6.790	
+29,50%
+	
+Cumpre	85,36%	R$ 17.799	—	0
+
+Itapuã do Oeste
+Porto Velho
+	9.228	
+29,51%
+	
+Cumpre	80,81%	R$ 19.024	—	1
+
+Parecis
+Ji-Paraná
+	4.372	
+29,73%
+	
+Cumpre	81,27%	R$ 23.624	—	1
+
+Vale do Anari
+Porto Velho
+	8.220	
+29,73%
+	
+Cumpre	76,16%	R$ 14.630	—	0
+
+Primavera de Rondônia
+Ji-Paraná
+	3.268	
+30,37%
+	
+Cumpre	83,89%	R$ 27.307	—	0
+
+Theobroma
+Porto Velho
+	8.459	
+30,39%
+	
+Cumpre	92,37%	R$ 21.665	—	0
+
+Pimenteiras do Oeste
+Ji-Paraná
+	2.309	
+30,78%
+	
+Cumpre	87,30%	R$ 36.537	—	0
+
+Corumbiara
+Ji-Paraná
+	7.968	
+30,80%
+	
+Cumpre	92,23%	R$ 25.174	—	0
+
+São Felipe D'Oeste
+Ji-Paraná
+	5.588	
+30,89%
+	
+Cumpre	85,94%	R$ 26.253	—	0
+
+Cacaulândia
+Porto Velho
+	4.292	
+31,24%
+	
+Cumpre	97,01%	R$ 32.306	—	0
+
+Seringueiras
+Ji-Paraná
+	12.965	
+32,15%
+	
+Cumpre	86,62%	R$ 24.806	—	0
+Mostrando 50 de 52
+Mostrar mais 2
+Radar MDE · Brasil
+
+Dados: FNDE/SIOPE (indicadores e receitas declarados pelos municípios e estados, 2008 em diante), Tesouro Nacional/SICONFI (RREO, Anexo 14, municípios de SP) e IBGE (territórios, malhas e população). Inspirado em Silva, A. Z. (2021), O financiamento da Educação Básica no Brasil contemporâneo, UNINOVE. Ferramenta independente, sem vínculo com órgãos públicos.
+
+Painel
+Explorar
+Acompanhando
+Dados
+Metodologia
+0%

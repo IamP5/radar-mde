@@ -87,6 +87,9 @@ export const share = (part: number, whole: number) => {
 
 export const norm = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
+/** Search key: accent-, case- and punctuation-insensitive ("Santa Bárbara d’Oeste" ≡ "santa barbara d oeste"). */
+export const normKey = (s: string) => norm(s).replace(/[^a-z0-9]+/g, " ").trim();
+
 export const POP_BANDS = [
   { key: "p1", label: "Até 5 mil", test: (p: number) => p <= 5000 },
   { key: "p2", label: "5 a 20 mil", test: (p: number) => p > 5000 && p <= 20000 },

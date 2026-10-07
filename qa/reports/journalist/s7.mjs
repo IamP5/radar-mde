@@ -1,0 +1,13 @@
+import { chromium } from 'playwright';
+const D='reports/journalist/';
+const b = await chromium.launch(); const ctx=await b.newContext({viewport:{width:1440,height:900}}); const p = await ctx.newPage();
+const errs=[]; p.on('pageerror',e=>errs.push('PAGEERR '+e.message)); p.on('console',m=>m.type()==='error'&&errs.push(m.text()));
+await p.goto('http://localhost:3210/mg?ano=2021',{waitUntil:'networkidle'}); await p.waitForTimeout(2000);
+let t=await p.locator('main').innerText(); console.log(t.slice(t.indexOf('Em 2021'), t.indexOf('Em 2021')+900));
+await p.screenshot({path:D+'mg-2021.png'});
+await p.goto('http://localhost:3210/rs',{waitUntil:'networkidle'}); await p.waitForTimeout(1500);
+t=await p.locator('main').innerText(); console.log(t.slice(t.indexOf('Em 2025'), t.indexOf('Em 2025')+400));
+await p.goto('http://localhost:3210/regiao/sul?ano=2021',{waitUntil:'networkidle'}); await p.waitForTimeout(2000);
+await p.screenshot({path:D+'regiao-sul-2021.png',fullPage:true});
+t=await p.locator('main').innerText(); console.log(t.slice(t.indexOf('Em 2021'), t.indexOf('Em 2021')+500));
+console.log(errs); await b.close();

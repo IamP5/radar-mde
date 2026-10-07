@@ -1,0 +1,636 @@
+Pular para o conteúdo
+Radar MDE
+BR
+Painel
+Explorar
+Acompanhando
+Dados
+Metodologia
+Buscar município…
+⌘K
+A educação recebe o que a Constituição manda?
+Todo município deve aplicar no mínimo 25% da receita de impostos na manutenção e desenvolvimento do ensino (MDE, art. 212 da CF). Acompanhe os 5.570 municípios do país de 2008 a 2025, do Brasil às regiões, estados e cidades, com os dados que eles mesmos declararam ao governo federal (SIOPE/FNDE).
+Baixar CSV
+Explorar municípios
+Exercício
+2008
+2009
+2010
+2011
+2012
+2013
+2014
+2015
+2016
+2017
+2018
+2019
+2020
+2021
+2022
+2023
+2024
+2025
+Série
+% abaixo de 25%
+R$ que faltou
+MDE mediana
+
+Em 2025, 23 municípios brasileiros (0,4% dos que declararam) aplicaram menos de 25% em educação — R$ 150,1 mi deixaram de ir para o ensino. A maior proporção está em Acre (18%).
+
+Abaixo dos 25%
+23
+61
+a menos que em 2024
+de 5.560 municípios com dados
+Deixou de ir para a educação
+R$ 150,1 mi
+61%
+a menos que em 2024
+soma do que faltou para chegar a 25%
+Moram nesses municípios
+732.269
+80%
+a menos que em 2024
+pessoas (0,3% da população)
+Mediana aplicada em MDE
+27,12%
+0,1 p.p.
+a menos que em 2024
+metade entre 25,8% e 29,2%
+Fundeb abaixo de 70% em salários
+8
+40
+a menos que em 2024
+de 5.560 municípios
+Mapa · Brasil
+Passe o mouse para ver os números; clique para descer de nível (estado → município).
+2025
+Estados
+Municípios
+% abaixo de 25%
+MDE mediana
+Governo estadual
+% de municípios abaixo de 25%
+0%
+até 2%
+2–5%
+5–10%
+10–25%
+≥ 25%
+Sem dados
+Por região
+% dos municípios abaixo de 25% em 2025 e a série desde 2008 (mesma escala).
+Norte
+2%
+RO · AC · AM · RR · PA · AP · TO
+9/450
+Nordeste
+0,6%
+MA · PI · CE · RN · PB · PE · AL · SE · BA
+10/1791
+Centro-Oeste
+0,2%
+MS · MT · GO · DF
+1/467
+Sudeste
+0,1%
+MG · ES · RJ · SP
+2/1662
+Sul
+0,1%
+PR · SC · RS
+1/1190
+Evolução 2008–2025
+Clique num ano do gráfico para atualizar o painel. 2020–2021: anos da pandemia (EC 119/2022).
+% de municípios abaixo de 25%
+0,4%
+R$ que faltou para 25%
+R$ 150,1 mi
+MDE mediana (%)
+27,1%
+
+% de municípios abaixo de 25% por ano, Brasil. Em 2025: Norte 2%; Nordeste 0,6%; Centro-Oeste 0,2%; Sudeste 0,1%; Sul 0,1%; Brasil 0,4%.
+
+pandemia
+2008
+2009
+2010
+2011
+2012
+2013
+2014
+2015
+2016
+2017
+2018
+2019
+2020
+2021
+2022
+2023
+2024
+2025
+0%
+5%
+10%
+15%
+20%
+25%
+Norte
+Nordeste
+Centro-Oeste
+Sudeste
+Sul
+Brasil
+Todos os estados
+% dos municípios abaixo de 25% em cada ano, mesma escala em todos os quadros. Clique para abrir o estado.
+Rondônia
+0%
+RO · Norte
+0/52
+Acre
+18%
+AC · Norte
+4/22
+Amazonas
+0%
+AM · Norte
+0/62
+Roraima
+0%
+RR · Norte
+0/15
+Pará
+0,7%
+PA · Norte
+1/144
+Amapá
+0%
+AP · Norte
+0/16
+Tocantins
+2,9%
+TO · Norte
+4/139
+Maranhão
+0,5%
+MA · Nordeste
+1/217
+Piauí
+0%
+PI · Nordeste
+0/224
+Ceará
+0%
+CE · Nordeste
+0/184
+Rio Grande do Norte
+2,4%
+RN · Nordeste
+4/165
+Paraíba
+0,4%
+PB · Nordeste
+1/223
+Pernambuco
+1,1%
+PE · Nordeste
+2/184
+Alagoas
+1%
+AL · Nordeste
+1/102
+Sergipe
+1,3%
+SE · Nordeste
+1/75
+Bahia
+0%
+BA · Nordeste
+0/417
+Minas Gerais
+0%
+MG · Sudeste
+0/853
+Espírito Santo
+0%
+ES · Sudeste
+0/78
+Rio de Janeiro
+1,1%
+RJ · Sudeste
+1/91
+São Paulo
+0,2%
+SP · Sudeste
+1/640
+Paraná
+0,3%
+PR · Sul
+1/399
+Santa Catarina
+0%
+SC · Sul
+0/294
+Rio Grande do Sul
+0%
+RS · Sul
+0/497
+Mato Grosso do Sul
+0%
+MS · Centro-Oeste
+0/79
+Mato Grosso
+0,7%
+MT · Centro-Oeste
+1/141
+Goiás
+0%
+GO · Centro-Oeste
+0/246
+Distrito Federal
+0%
+DF · Centro-Oeste
+0/1
+Distribuição dos municípios · 2025
+Quantos municípios aplicaram cada percentual da receita de impostos em MDE.
+
+Distribuição do percentual aplicado em MDE, Brasil, 2025. 5.560 municípios; 23 abaixo de 25%. Faixa mais comum: 25–26% (1.605).
+
+23 abaixo de 25%
+15%
+20%
+25%
+30%
+35%
+40%
+45%
+0
+1 mil
+2 mil
+Maiores déficits acumulados
+Saldo estimado que faltou para 25% desde 2008, descontado o que foi aplicado a mais depois.
+1
+Porto Alegre
+RS
+4 anos abaixo: 2018, 2019, 2020, 2021
+R$ 674 mi
+2
+Aracaju
+SE
+7 anos abaixo: 2017, 2018, 2019, 2021…
+R$ 460,5 mi
+3
+Volta Redonda
+RJ
+5 anos abaixo: 2021, 2022, 2023, 2025…
+R$ 448,7 mi
+4
+Cuiabá
+MT
+2 anos abaixo: 2021, 2024
+R$ 267,1 mi
+5
+Canoas
+RS
+1 ano abaixo: 2023
+R$ 106,7 mi
+6
+São João de Meriti
+RJ
+3 anos abaixo: 2016, 2021, 2023
+R$ 96,4 mi
+7
+Cabo Frio
+RJ
+1 ano abaixo: 2016
+R$ 57,6 mi
+8
+Passo Fundo
+RS
+3 anos abaixo: 2020, 2021, 2022
+R$ 57,1 mi
+9
+Cabo de Santo Agostinho
+PE
+2 anos abaixo: 2020, 2021
+R$ 29,1 mi
+10
+Rio das Ostras
+RJ
+2 anos abaixo: 2020, 2021
+R$ 26,6 mi
+11
+Marília
+SP
+6 anos abaixo: 2015, 2021, 2022, 2024…
+R$ 21,4 mi
+12
+Parnamirim
+RN
+3 anos abaixo: 2018, 2020, 2021
+R$ 21 mi
+13
+Paulo Afonso
+BA
+3 anos abaixo: 2020, 2021, 2024
+R$ 20 mi
+14
+Buritirama
+BA
+2 anos abaixo: 2020, 2021
+R$ 16,3 mi
+15
+Mangaratiba
+RJ
+1 ano abaixo: 2024
+R$ 13,1 mi
+16
+Arapiraca
+AL
+2 anos abaixo: 2020, 2021
+R$ 12,5 mi
+17
+Brejo da Madre de Deus
+PE
+2 anos abaixo: 2021, 2025
+R$ 11,2 mi
+18
+Piaçabuçu
+AL
+1 ano abaixo: 2025
+R$ 10,7 mi
+19
+Ouricuri
+PE
+1 ano abaixo: 2024
+R$ 10,5 mi
+20
+Ipixuna do Pará
+PA
+2 anos abaixo: 2021, 2022
+R$ 10,5 mi
+21
+São José de Mipibu
+RN
+3 anos abaixo: 2021, 2024, 2025
+R$ 10,2 mi
+22
+Magalhães Barata
+PA
+1 ano abaixo: 2025
+R$ 9,6 mi
+23
+Santa Maria da Boa Vista
+PE
+2 anos abaixo: 2021, 2022
+R$ 9,4 mi
+24
+Marechal Thaumaturgo
+AC
+6 anos abaixo: 2021, 2023, 2024, 2025…
+R$ 8,9 mi
+25
+Lagoa da Confusão
+TO
+4 anos abaixo: 2019, 2021, 2024, 2025
+R$ 8,5 mi
+Ranking dos estados · 2025
+Clique no cabeçalho para ordenar. “Governo estadual” é o percentual aplicado pelo próprio estado na sua rede.
+Estado
+	Municípios
+	% abaixo de 25%
+	Faltou (R$)
+	MDE mediana
+	Fundeb abaixo do mín.
+	R$/aluno (mediana)
+	Governo estadual
+	Sem dados
+
+
+Acre
+AC
+Norte
+	22	
+18,2%
+4/22
+	R$ 4,9 mi	25,96%	0%	R$ 14.173,5	25,03%	0
+
+Tocantins
+TO
+Norte
+	139	
+2,9%
+4/139
+	R$ 8,3 mi	26,21%	1,4%	R$ 18.284	25,11%	0
+
+Rio Grande do Norte
+RN
+Nordeste
+	167	
+2,4%
+4/165
+	R$ 8,8 mi	26,51%	1,8%	R$ 14.847	27,43%	2
+
+Sergipe
+SE
+Nordeste
+	75	
+1,3%
+1/75
+	R$ 1,2 mi	26,27%	0%	R$ 16.363	25,12%	0
+
+Rio de Janeiro
+RJ
+Sudeste
+	92	
+1,1%
+1/91
+	R$ 84,4 mi	27,44%	0%	R$ 17.383	26,68%	1
+
+Pernambuco
+PE
+Nordeste
+	184	
+1,1%
+2/184
+	R$ 14,2 mi	25,81%	0%	R$ 13.176,5	25,21%	0
+
+Alagoas
+AL
+Nordeste
+	102	
+1%
+1/102
+	R$ 10,7 mi	25,53%	1%	R$ 14.555,5	25,12%	0
+
+Mato Grosso
+MT
+Centro-Oeste
+	142	
+0,7%
+1/141
+	R$ 2,2 mi	27,24%	0%	R$ 18.862	26,00%	1
+
+Pará
+PA
+Norte
+	144	
+0,7%
+1/144
+	R$ 9,6 mi	25,84%	0%	R$ 13.422,5	26,60%	0
+
+Maranhão
+MA
+Nordeste
+	217	
+0,5%
+1/217
+	R$ 2,3 mi	25,98%	0,5%	R$ 14.219	25,86%	0
+
+Paraíba
+PB
+Nordeste
+	223	
+0,4%
+1/223
+	R$ 2,9 mi	27,17%	0%	R$ 14.767	28,97%	0
+
+Paraná
+PR
+Sul
+	399	
+0,3%
+1/399
+	R$ 232 mil	28,03%	0%	R$ 16.277	33,54%	0
+
+São Paulo
+SP
+Sudeste
+	645	
+0,2%
+1/640
+	R$ 220 mil	29,13%	0%	R$ 18.969,5	26,34%	5
+
+Rondônia
+RO
+Norte
+	52	
+0%
+0/52
+	—	27,14%	0%	R$ 18.191	25,50%	0
+
+Amazonas
+AM
+Norte
+	62	
+0%
+0/62
+	—	26,21%	0%	R$ 14.007,5	25,37%	0
+
+Roraima
+RR
+Norte
+	15	
+0%
+0/15
+	—	26,36%	0%	R$ 15.748	25,68%	0
+
+Amapá
+AP
+Norte
+	16	
+0%
+0/16
+	—	25,80%	0%	R$ 14.225,5	30,32%	0
+
+Piauí
+PI
+Nordeste
+	224	
+0%
+0/224
+	—	27,02%	0%	R$ 16.070	25,24%	0
+
+Ceará
+CE
+Nordeste
+	184	
+0%
+0/184
+	—	26,21%	0%	R$ 15.039	25,25%	0
+
+Bahia
+BA
+Nordeste
+	417	
+0%
+0/417
+	—	26,59%	0,2%	R$ 14.436	25,48%	0
+
+Minas Gerais
+MG
+Sudeste
+	853	
+0%
+0/853
+	—	27,04%	0%	R$ 17.830	—	0
+
+Espírito Santo
+ES
+Sudeste
+	78	
+0%
+0/78
+	—	27,03%	0%	R$ 17.971,5	25,28%	0
+
+Santa Catarina
+SC
+Sul
+	295	
+0%
+0/294
+	—	27,74%	0%	R$ 18.932,5	26,71%	1
+
+Rio Grande do Sul
+RS
+Sul
+	497	
+0%
+0/497
+	—	27,14%	0%	R$ 20.326	20,66%	0
+
+Mato Grosso do Sul
+MS
+Centro-Oeste
+	79	
+0%
+0/79
+	—	27,95%	0%	R$ 16.691	27,89%	0
+
+Goiás
+GO
+Centro-Oeste
+	246	
+0%
+0/246
+	—	27,29%	0%	R$ 18.298	25,71%	0
+
+Distrito Federal
+DF
+Centro-Oeste
+	1	
+0%
+0/1
+	—	25,21%	0%	R$ 19.161	25,21%	0
+Radar MDE · Brasil
+
+Dados: FNDE/SIOPE (indicadores e receitas declarados pelos municípios e estados, 2008 em diante), Tesouro Nacional/SICONFI (RREO, Anexo 14, municípios de SP) e IBGE (territórios, malhas e população). Inspirado em Silva, A. Z. (2021), O financiamento da Educação Básica no Brasil contemporâneo, UNINOVE. Ferramenta independente, sem vínculo com órgãos públicos.
+
+Painel
+Explorar
+Acompanhando
+Dados
+Metodologia
+18

@@ -1,0 +1,12 @@
+import { chromium } from 'playwright';
+import fs from 'fs';
+const b=await chromium.launch(); const ctx=await b.newContext({acceptDownloads:true,viewport:{width:1440,height:900}}); const p=await ctx.newPage();
+const errs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('console',m=>m.type()==='error'&&errs.push(m.text()));
+await p.goto('http://localhost:3210/explorar?ano=2021',{waitUntil:'networkidle'}); await p.waitForTimeout(2000);
+console.log('url',p.url(), (await p.locator('text=/de 5.570 municípios/').first().innerText()));
+const [d]=await Promise.all([p.waitForEvent('download'), p.getByRole('button',{name:/Exportar CSV/}).click().catch(async()=>p.getByText('Exportar CSV').click())]);
+const path='reports/academic/explorar-export.csv'; await d.saveAs(path); console.log('file',d.suggestedFilename());
+console.log(fs.readFileSync(path,'utf8').split('\n').slice(0,4).join('\n'));
+await p.screenshot({path:'reports/academic/explorar_2021.png'});
+console.log(errs);
+await b.close();

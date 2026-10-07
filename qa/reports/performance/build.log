@@ -1,0 +1,60 @@
+▲ Next.js 16.4.0 (Turbopack)
+✓ Running next.config.ts took 12ms
+- Cache Components enabled
+- Partial Prefetching enabled
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 2.6s
+  Running TypeScript ...
+
+  We detected TypeScript in your project and reconfigured your tsconfig.json file for you.
+  The following suggested values were added to your tsconfig.json. These values can be changed to fit your project's needs:
+
+  	- include was updated to add '.next-perf/types/**/*.ts'
+  	- include was updated to add '.next-perf/dev/types/**/*.ts'
+
+  Finished TypeScript in 2.1s ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/5669) ...
+  Generating static pages using 11 workers (1417/5669) 
+  Generating static pages using 11 workers (2834/5669) 
+  Generating static pages using 11 workers (4251/5669) 
+✓ Generating static pages using 11 workers (5669/5669) in 49s
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├   /[uf]
+│ ├ ◐ /[uf]
+│ ├ ○ /ro
+│ ├ ○ /ac
+│ └ ◐ [+25 more paths]
+├   /[uf]/[slug]
+│ ├ ◐ /[uf]/[slug]
+│ ├ ◐ /ro/[slug]
+│ ├ ○ /ro/alta-floresta-d-oeste
+│ └ ◐ [+5595 more paths]
+├ ○ /acompanhar
+├ ○ /dados
+├   /dados/csv/[uf]
+│ ├ ● /dados/csv/brasil
+│ ├ ● /dados/csv/ro
+│ ├ ● /dados/csv/ac
+│ └ ● [+25 more paths]
+├ ○ /data/indice.json
+├ ○ /data/municipios.json
+├ ○ /explorar
+├   /regiao/[slug]
+│ ├ ◐ /regiao/[slug]
+│ ├ ○ /regiao/norte
+│ ├ ○ /regiao/nordeste
+│ └ ◐ [+3 more paths]
+└ ○ /sobre
+
+
+○  (Static)             prerendered as static content
+●  (SSG)                prerendered as static HTML (uses generateStaticParams)
+◐  (Partial Prerender)  prerendered as static HTML with dynamic server-streamed content
+
+NEXT_DIST_DIR=.next-perf NEXT_TELEMETRY_DISABLED=1 npx next build  266.53s user 33.45s system 550% cpu 54.507 total

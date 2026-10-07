@@ -4,3 +4,10 @@
 /data/*.log
 /data/priority.json
 __pycache__/
+/qa/node_modules/
+/qa/reports/**/*.png
+/qa/reports/**/*.csv
+/qa/reports/**/*.pdf
+/qa/reports/**/results*.json
+/qa/reports/**/lh_*.json
+/build.log
