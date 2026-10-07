@@ -1,0 +1,17 @@
+import { chromium } from 'playwright';
+const B='http://localhost:3299';
+const b = await chromium.launch(); const ctx = await b.newContext({viewport:{width:1440,height:900}, permissions:['clipboard-read','clipboard-write']}); const p = await ctx.newPage();
+const out={};
+await p.goto(B+'/sp/franca',{waitUntil:'networkidle'});
+await p.evaluate(()=>navigator.clipboard.writeText('VAZIO'));
+await p.locator('#agir [role=tab]').nth(1).click(); await p.waitForTimeout(300);
+await p.locator('#agir [role=tabpanel]:visible textarea').fill('EDITADO PARA EMAIL');
+await p.route('mailto:*', r=>r.abort()).catch(()=>{});
+await p.locator('#agir [role=tabpanel]:visible a[href^="mailto:"]').click({noWaitAfter:true}).catch(e=>out.clickErr=e.message.slice(0,100));
+await p.waitForTimeout(500);
+out.clipAfterEmail = (await p.evaluate(()=>navigator.clipboard.readText())).slice(0,60);
+out.hint = await p.locator('#agir [role=tabpanel]:visible [role=status]').innerText().catch(()=>null);
+await p.goto(B+'/explorar?uf=SP&ano=2021',{waitUntil:'networkidle'}); await p.waitForTimeout(1500);
+await p.getByRole('combobox',{name:/Situação em/}).first().click(); await p.waitForTimeout(300);
+out.exSit = await p.getByRole('option').allInnerTexts();
+console.log(JSON.stringify(out,null,1)); await b.close();

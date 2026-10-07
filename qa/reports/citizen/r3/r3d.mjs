@@ -1,0 +1,15 @@
+import { chromium } from 'playwright';
+const B='http://localhost:3299';
+const b = await chromium.launch();
+const ctx = await b.newContext({viewport:{width:360,height:740},deviceScaleFactor:2,isMobile:true,hasTouch:true});
+const p = await ctx.newPage();
+await p.goto(B+'/',{waitUntil:'networkidle'}); await p.waitForTimeout(800);
+const t = p.getByRole('radio',{name:/IPCA|Corrigido/i}).or(p.getByRole('button',{name:/IPCA|Corrigido/i})).or(p.getByRole('tab',{name:/IPCA|Corrigido/i})).first();
+await t.scrollIntoViewIfNeeded(); await p.evaluate(()=>scrollBy(0,-200)); await p.waitForTimeout(300);
+await p.screenshot({path:'ipca_before.png'});
+const txt=async()=> (await p.evaluate(()=>document.querySelector('main').innerText)).split('\n').filter(l=>/R\$ [\d.,]+ (mi|bi)/.test(l)).slice(0,12).join(' ‖ ');
+const b1=await txt(); await t.tap(); await p.waitForTimeout(700); const a1=await txt();
+console.log('before', b1); console.log('after', a1);
+await p.screenshot({path:'ipca_after.png'});
+const tb=await t.boundingBox(); console.log('toggle box',tb);
+await b.close();

@@ -196,3 +196,40 @@ Totals: **12 FIXED** (ACA-01, 02, 03, 06, 07, 08, 12, 13, 14, 15, 16, 17), **5 P
 
 #### ACA-21 · polish · UI — Atypical values are not shown on the city charts or counted in alerts
 (Detail of ACA-04 partial, logged so it can be tracked.) Flagged per-student points (Adamantina 2021, 2023, 2024) look the same as normal points on "Investimento por aluno", and "Sinais de alerta" leaves them out. **Fix:** In `TrendChart`, draw a hollow ⚠ dot with a tooltip "valor atípico — possível erro de declaração" for any year whose `atip` includes the metric. Add an alert line "Valor por aluno atípico em …" in `page.tsx`.
+
+## Round 3: final check of fix wave 2 (commit 72c19ee, production build on :3299)
+
+Evidence is in `qa/reports/academic/r3/` (`ipca.mjs`, `export.mjs`, `tour.mjs`, screenshots, exported chart files). There were no console or page errors. axe (wcag2a/aa) found no violations on /, /sobre, /dados, /sp/adamantina and /sp/santo-andre?ano=2014.
+
+### Status of items that were PARTIAL or NEW in round 2
+
+| ID | Status | Evidence |
+|----|--------|----------|
+| ACA-04 atypical values | **FIXED** | The new rule in `build_data.py` matches /sobre point by point: MDE is "improvável" below 5% or above 60%, or "fora do padrão" when it sits ≥10 p.p. from the ±2-year median and is below 15% or above 40%. Per-student is flagged when it falls outside 0,4–2,5× the municipality's usual level relative to the national median, or jumps 2,5× unless it returns to the level of two years before; above 8× the national median it is "improvável". The tax base uses ±2-year neighbours. Rio Branco 2023 and Corumbiara 2023 are now flagged ("aluno"). Unflagged jumps above 2,5× fell from 298 to 20. Those 20 are spike-then-return patterns (ACA-23). The CSV has `atipico_grau` = `confirmar` or `implausivel`. |
+| ACA-05 nominal R$ / IPCA | **FIXED** | All 18 `meta.ipca.factor` values match my recomputation from `data/raw/br/ipca_1737.json` (index annual average ÷ 2025 average) to 1e-5; for example 2008 = 2,582613. The figure /sobre quotes (2,58) is correct. On the home page, "Maiores déficits acumulados" has a Nominal / Corrigido (IPCA) toggle. My independent real-terms recomputation of the carry-over matches: Porto Alegre 1.028,4 mi ("R$ 1 bi"), Aracaju 735,5 mi, Santo André to 2019 48,0 mi. City KPIs show both figures. CSV `*_real` = nominal × `ipca_fator` with 0 mismatches across all rows, and they are empty when the nominal value is empty. |
+| ACA-09 population year | **PARTIAL** (unchanged; documented only) | Population is still one 2026 estimate for all years. Acceptable if stated, as it now is. Yearly IBGE estimates remain a nice-to-have. |
+| ACA-10 Saúde column | **FIXED** | /ce/fortaleza has no "Saúde" column; /sp/santo-andre still has it (SP data). |
+| ACA-11 / ACA-18 citation | **PARTIAL (deployment config)** | Real access date ("Acesso em: 7 out. 2026") and a single `SITE_URL` source. However, this build has no `NEXT_PUBLIC_SITE_URL`/`VERCEL_*` set, so ABNT, BibTeX, the "Copiar citação" text and the exported PNG footer all show **`http://localhost:3000`**, and the server is on :3299 (see ACA-22). |
+| ACA-19 Explorar non-existent municipality | **FIXED** | /explorar?ano=2021 shows "5.569 de 5.569 municípios". The "Só 2021" export has 5.569 rows and no 5101837. |
+| ACA-20 OG bars baseline | **FIXED** | `r3/og_adamantina.png` bars start from 0. The 2025/2008 bar height ratio is about 1,24, which matches 31,89/25,68. |
+| ACA-21 atypical on charts and alerts | **FIXED** | The Adamantina per-student chart has hollow orange markers with the legend "fora do padrão (2021, 2023, 2024)" (`r3/chart_adamantina_aluno.png`). "Sinais de alerta" says: "Valor por aluno fora do padrão do próprio município em 2021, 2023 e 2024: confirme na fonte." |
+
+Overall (all 21 IDs): **18 FIXED**, **2 PARTIAL** (ACA-09 documented-only; ACA-11/18 depends on the deployment URL), 0 NOT FIXED, 0 REGRESSED. ACA-18 is folded into ACA-11, so it isn't counted separately.
+
+### New feature pass (chart export, IPCA toggle)
+
+Chart export ("Exportar: <título>" menu: PNG, SVG, CSV, CSV Excel Brasil, Copiar citação) works. File names are descriptive (`radar-mde_sp_adamantina_por-aluno.{csv,png,svg}`). The CSV includes a `fora_do_padrao` 0/1 column. The PNG has title, source, URL and a "valores nominais" note.
+
+#### ACA-22 · minor · content/config — Citations and exported charts embed `http://localhost:3000`
+- **URL:** /dados (ABNT/BibTeX); any chart → "Copiar citação"; the PNG/SVG footer
+- **Actual:** The output reads "Radar MDE (2026). Investimento por aluno … http://localhost:3000/sp/adamantina. Fonte: FNDE/SIOPE. Acesso em 07/10/2026." This happens on the :3299 build, which has no site env var.
+- **Root cause:** `lib/site.ts` falls back to `http://localhost:3000` when `NEXT_PUBLIC_SITE_URL` and `VERCEL_*` are both unset. That is fine on Vercel. A self-hosted build or a staging copy would still ship citations pointing at localhost.
+- **Fix:** For citations and chart exports (client-side), prefer `window.location.origin`. Or make `next build` fail, or print a loud warning, when `SITE_URL` resolves to localhost in production.
+
+#### ACA-23 · polish · data — The per-student rule misses one-year spikes that drop back the next year
+- **Examples (unflagged):** Sítio do Mato/BA 10.147 → **21.055** (2023) → 8.008; Brejão/PE 8.747 → **22.139** (2023) → 15.153; Satuba/AL 5.216 → **14.533** (2021); Gurupi/TO 10.694 → **6.124** (2018) → 16.793. Of the remaining year-over-year jumps above 2,5×, 20 are unflagged. In each, the jump the rule compares is the one *back* to normal, and the "return to the level of two years before" exception exempts it.
+- **Fix:** Also flag year *y* when the value is more than 2× (or less than 0,5×) **both** neighbours (y−1 and y+1), i.e. a classic spike test. Keep the current return exception for the following year.
+
+#### ACA-24 · polish · UI — Rounding hides the IPCA effect on large totals, and the exported PNG lacks the marker legend
+- In "Corrigido (IPCA)", Porto Alegre shows "R$ 1 bi" when the value is 1.028 mi. Use 3 significant figures ("R$ 1,03 bi") so the change from 674 mi is readable.
+- The exported per-student PNG (`r3/radar-mde_sp_adamantina_por-aluno.png`) keeps the orange "fora do padrão" circles but drops their legend. Add the legend line to the exported image.

@@ -297,3 +297,72 @@ Same personas and devices as round 1: iPhone 13 touch, plus Android 360×740 wit
 3. **CIT-17:** trend sentence built on an atypical year, which also propagates into the share text and OG description.
 4. **CIT-11:** small glossary hit areas.
 5. **CIT-19:** "Salvos" vs "Acompanhar" naming.
+
+---
+
+## Round 3: final check of fix wave 2 (commit 72c19ee, production build on :3299)
+
+Devices and scripts: Android 360×740 with touch, 4× CPU and about 1.6 Mbps / 150 ms, plus iPhone 13. Scripts and evidence are in `qa/reports/citizen/r3/` (`r3a.mjs` journey/naming/targets, `r3b.mjs` kit e-mail/chart export/IPCA on the city page, `r3c.mjs` + `r3d.mjs` IPCA toggle/watchlist, `zoom.mjs`). No console errors.
+
+### Journey, throttled Android
+Home → tap "Digite o nome da sua cidade" → type "conceicao do almeida" → tap the result → verdict visible took **6.35 s end to end**, including typing at 30 ms per key, and **1,079 KB** transferred.
+
+The verdict now handles the atypical year correctly: "Em 2025, aplicou 25,00% … cumpriu, mas no limite. O valor declarado em 2024 (10,47%) foge do padrão do município; em relação a 2023 (26,40%), ficou 1,4 ponto abaixo."
+
+All four of the persona's questions are answered in the hero or are one tap away.
+
+### Status of open items
+
+| ID | Status | Evidence / note |
+|---|---|---|
+| CIT-11 touch targets | **FIXED** | Glossary triggers are now 24–28 px (`MDE`, `Fundeb`, `Déficit`, `Região imediata`). Only 4 inline terms in small-print text remain at 20 px (`Mediana`, `pontos percentuais`, `mediana`, `EC 119/2022`); these are inline links, which are WCAG-exempt. "Voltar para 2025" and the kit intro links are no longer under 24 px. |
+| CIT-15 y-axis clipping | **FIXED** | Tick labels now start inside the plot (x=36 vs 31 before). "80%"/"90%" are fully legible on both cities. `r3/z_doF_fundeb_conceicao-do-almeida.png` |
+| CIT-16 OG origin | **FIXED (code)** | `lib/site.ts` now resolves `NEXT_PUBLIC_SITE_URL` → `VERCEL_PROJECT_PRODUCTION_URL` → `VERCEL_URL` → localhost, and warns at build time. Locally it emits `http://localhost:3000/...`, which is expected without env vars. Confirm on the first Vercel deploy that `og:image` is absolute and https. |
+| CIT-17 trend vs atypical year | **FIXED** | The hero uses the last non-atypical year (quoted above). The deficit card and the "Sinais" panel now say "estimativa que depende de valor fora do padrão em 2024 — confirme na fonte". |
+| CIT-18 OG bars | **FIXED** | `r3/og_ba.png`: zero baseline, 2024 drawn as a short red bar. `r3/og_rn.png`: non-declared years drawn as dashed red outlines, with the caption "contorno vermelho: não declarou". |
+| CIT-19 naming | **FIXED** | Button "Salvar" → "Salvo" (filled star). Nav "Salvos", H1 "Municípios salvos", footer "Salvos". The only leftover is footer "Metodologia" vs nav "Método", which is fine (short label). |
+| CIT-20 data use | **PARTIAL** | `/geo/*` now sends `max-age=86400, s-maxage=604800`. The city page no longer prefetches `/ba` RSC. The home still prefetches `/to?_rsc` (30 KB, the "Tocantins" link in the headline) and `/explorar` RSC. That is small, but could be `prefetch={false}`. |
+| CIT-21 long mailto | **FIXED** | E-mail is now an `<a href="mailto:?subject=…&body=(O texto completo foi copiado…)">` of 322 characters. Tapping it copies the full letter (2,997 characters) to the clipboard and shows "Texto copiado: no e-mail que abriu, cole no corpo da mensagem (Ctrl+V ou ⌘+V)." Edits survive switching between letters. New optional "Seu nome" / "Contato" fields fill every letter. |
+| CIT-22 watchlist atypical | **FIXED** | The 2024 cell has a dashed orange outline, a dot, and an `aria-label` reading "2024: 10,47% — Percentual em MDE fora do padrão do próprio município — confirme na fonte". `r3/acomp_crop.png` |
+
+**Totals for rounds 1 and 2 combined (22 findings):** 21 FIXED · 1 PARTIAL (CIT-20) · 0 NOT FIXED · 0 REGRESSED.
+
+### Fresh pass on the new features (round 3)
+
+**Verified OK:**
+- "Salvar" flow and toast; star state on touch.
+- The IPCA toggle "Nominal / Corrigido (IPCA)" on the home and `/ba` deficit lists. Values switch (e.g. Porto Alegre R$ 674 mi → R$ 1 bi) and the description says "em R$ de 2025 corrigidos pelo IPCA". The city deficit sentence gives both values: "R$ 7,2 mi em R$ da época, ou R$ 7,5 mi em R$ de 2025".
+- The chart export menu on mobile: a 32 px download button that opens "Baixar gráfico". PNG (960×792), SVG, CSV and CSV Excel-BR all download with clear filenames (`radar-mde_ba_conceicao-do-almeida_mde.png`). "Copiar citação" is also present.
+
+#### CIT-23: Exported chart PNG has its source URL cut off and no legend
+- **Severity:** minor · **Type:** UI · **URL:** city page → chart ⤓ → "Imagem PNG"
+- **Actual:**
+  - The footer line "Fonte: FNDE/SIOPE. Radar MDE · Brasil — http://localhost:3000/ba/conceicao-do-almeid…" is cut off at the right edge, and on a real domain the URL is longer.
+  - The image has three lines (blue municipality, orange dotted BA median, black dotted Brasil median), but the only legend is the sentence "Medianas: BA e Brasil". Someone receiving the image on WhatsApp can't tell which line is the city.
+- **Evidence:** `r3/dl_radar-mde_ba_conceicao-do-almeida_mde.png`
+- **Fix:**
+  - Wrap the source line, or put the URL on its own line in a smaller font.
+  - Draw the same legend row as on screen ("— Conceição do Almeida · ··· Mediana BA · ··· Mediana Brasil · - - mínimo 25%").
+
+#### CIT-24: Exported CSV has floating-point noise
+- **Severity:** minor · **Type:** bug · **URL:** chart ⤓ → "Dados em CSV"
+- **Actual:** The median columns show values like `28.244999999999997` and `26.564999999999998` (`mediana_uf_pct`).
+- **Evidence:** `r3/dl_radar-mde_ba_conceicao-do-almeida_mde.csv`
+- **Fix:** Round medians to 2 decimals before serialising, e.g. `Math.round(v*100)/100`, in the chart-export CSV builder.
+
+#### CIT-25: Phone users are told to paste with "Ctrl+V ou ⌘+V"
+- **Severity:** polish · **Type:** content · **URL:** `#agir` (E-mail and Copiar status messages, and the mailto body)
+- **Fix:** Use device-neutral copy: **"Texto copiado. No e-mail que abriu, toque e segure no corpo da mensagem e escolha Colar (no computador: Ctrl+V)."** Use the same in the mailto placeholder body.
+
+#### CIT-26: No way to send the chart image to WhatsApp directly on a phone
+- **Severity:** polish · **Type:** UX
+- **Actual:** "Imagem PNG" saves a file to Downloads. A parent then has to find it and attach it in WhatsApp.
+- **Fix:** When `navigator.canShare({files})` is true, add **"Compartilhar imagem…"** as the first menu item and call `navigator.share({files:[png], text, url})`.
+
+#### CIT-27: The IPCA-corrected value rounds to "R$ 1 bi"
+- **Severity:** polish · **Type:** content · **URL:** `/` → "Maiores déficits acumulados" → Corrigido (IPCA)
+- **Actual:** The nominal value shows "R$ 674 mi", while the corrected one shows only "R$ 1 bi". Billions lose a significant digit compared with millions.
+- **Fix:** Use one decimal for billions ("R$ 1,0 bi" or "R$ 1,02 bi").
+
+#### Also noted (not filed)
+The watchlist's dashed "fora do padrão" outline has no visible legend, only a title/aria-label. The card subtitle could add "contorno tracejado: valor fora do padrão".

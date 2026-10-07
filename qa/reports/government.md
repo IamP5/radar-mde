@@ -396,3 +396,81 @@ I re-read all 4 letters for each of these cities: Uberlândia, Feira de Santana,
 5. Fix the legal details: cite the Fundeb law of the right period in the TCE letter (GOV-24), and add a human-readable source link next to the JSON link (GOV-18).
 
 _Note (after the :3299 rebuild for the uppercase-URL cache fix):_ none of my round-2 routes had returned 404, a blank page or a 308. After the rebuild I re-checked `/mg/uberlandia`, `/ba/feira-de-santana`, `/sp`, `/ma`, `/pa`, `/mg`, `/rj`, `/sp/santo-andre`, `/rj/cabo-frio`, `/sp/franca`, `/explorar?uf=SP&ano=2021` and `/dados/csv/ma-excel`: all return 200. I re-ran `r2_fresh.mjs`; it reproduces GOV-20 (`editPersists2: false`) and GOV-23 (`aria-prohibited-attr`), with no console errors. The statuses above are unchanged.
+
+---
+
+## Round 3: final check of fix wave 2 (commit 72c19ee)
+
+- **Target:** fresh production build at http://localhost:3299.
+- **Scripts:** `reports/government/r3.mjs` (letters, edit persistence, UF recurrence and export, deficits, Explorer, print, axe, mobile), `r3b.mjs` (e-mail copy, Explorer situation options) and `r3c.mjs` (chart export).
+- **Evidence:** `/Users/tuba/Dev/projects/radar-mde/qa/reports/government/r3/`; raw output in `r3.json`.
+- **Errors:** no console errors or page errors on any route.
+- **axe (WCAG 2 A/AA):** 0 violations on `/sp?situacao=below&ano=2021`, `/rj/cabo-frio` and `/explorar?uf=SP`.
+
+### Status of findings that were open after round 2
+
+| ID | Status | Evidence |
+|---|---|---|
+| GOV-09 Explorer CSV columns | **FIXED** | `r3/ex_radar-mde_SP_2021_abaixo_excel.csv` now has `mde_aplicado_rs`, `receita_impostos_rs`, `fundeb_nao_usado_pct` and `fundeb_nao_usado_max_pct`, plus `atipico_grau` and the IPCA-corrected `*_real` columns, in Excel-BR format. |
+| GOV-10 recurrence screening | **FIXED** | UF table options: 2+, 3+, 5+, 2+ outside 2020–21, "2+ nos últimos 5 anos", "2+ anos seguidos" and "3+ anos seguidos". The column header follows the option ("Abaixo nos últimos 5", "Anos seguidos < 25%"). There is a combined "MDE e Fundeb abaixo do mínimo" situation. SP 2021 below 25%: 118 → 22 (2+ in the last 5 years) → 17 (2+ in a row) → 2 (3+ in a row: Marília, Barretos). MDE + Fundeb together: 20. Explorer has the same options with counts ("2+ anos abaixo em 2017–2021", "… seguidos (até 2021)", "Abaixo de 25% e Fundeb < 70%"), and the state is kept in the URL (`reinc=u5`). One ordering glitch is listed as GOV-27. |
+| GOV-12 deficit ranking includes atypical values | **FIXED** | `/pa` "Maiores déficits": Ipixuna do Pará, Magalhães Barata, Salinópolis and Brasil Novo each show "Inclui valor fora do padrão do próprio município (ano); confirme na fonte". Same on `/sp` (Riolândia, Nova Granada). There is also a nominal/IPCA toggle. Screenshot: `r3/pa_deficits.png`. |
+| GOV-18 Fonte opens raw JSON | **PARTIAL** (unchanged) | Links now have explicit names ("Dados brutos de 2019 no SIOPE (JSON, abre em nova aba)"), but they still point to the OData API. There is still no human-readable SIOPE or SICONFI report link a secretária could attach. Low priority. |
+| GOV-19 garbled CACS words | **FIXED** | I scanned all 20 letters (5 cities × 4) for `d `/`ds ` artefacts, double spaces, "undefined", "NaN" and "null" and found none. Cabo Frio's CACS letter now reads "Verificação das medidas…" and "Pedido de confirmação…"; Buri's reads "Verificação da demonstração…". |
+| GOV-20 edits lost on tab switch | **FIXED** | Edits survive tab switching on Uberlândia and Franca (`keptAcrossTabs: true`). They reset on page reload, which is acceptable since nothing is stored. |
+| GOV-21 UF CSV ignores filters | **FIXED** | The new "Exportar tabela" menu follows the filters and the table order. Example: `sp?ano=2021&situacao=below&reinc=u5` → `radar-mde_SP_2021_below_reinc-u5.csv` with 22 rows, and the series in Excel-BR with 396 rows (22 × 18). The header button now offers "CSV padrão / Excel Brasil" for the whole state. |
+| GOV-22 print issues | **FIXED** | Uberlândia prints on 5 A4 pages, with no half-empty first page. The Fundeb chart's axes (50–90%, 2009–2025) are fully visible. The year-by-year table header repeats on each page. See `r3/print_mg_uberlandia.pdf`, `r3/print_uberlandia_pages.png`. Panels may now split across pages (e.g. "Posição em 2025"): acceptable. A UF-page print problem is listed as GOV-28. |
+| GOV-23 aria on the atypical hint | **FIXED** | axe reports 0 issues on `/sp?situacao=below&ano=2021`. |
+| GOV-24 Fundeb law by year | **FIXED** | Cabo Frio TCE letter: "(ii) o cumprimento do art. 60 do ADCT e da Lei nº 11.494/2007 (Fundeb) no exercício de 2016". Franca splits the years correctly: 2012 → ADCT art. 60 / Lei 11.494; 2021–22 → art. 212-A / Lei 14.113. |
+| GOV-25 deficit KPI caveat | **FIXED** | Cabo Frio: "Déficit até 2019 · R$ 57,6 mi · estimativa que depende de valor fora do padrão em 2016 — confirme na fonte". |
+| GOV-26 kit leftovers | **FIXED** | <ul><li>Boa Esperança do Norte: the CACS letter no longer has the "série histórica (abaixo)" item, and the LAI letter asks for "no exercício de 2025" instead of "últimos 5 exercícios".</li><li>The `mailto:` links are now about 280–340 characters. Clicking "E-mail" copies the full (edited) text to the clipboard and shows "Texto copiado: no e-mail que abriu, cole no corpo da mensagem".</li><li>At 375px the kit has no horizontal overflow (`r3/mobile_kit.png`).</li></ul> Tiny leftover: "no exercício de 2025, que não constam" (singular year, plural verb). |
+
+**Round 3 totals for the 12 rechecked IDs:** 11 FIXED · 1 PARTIAL (GOV-18) · 0 NOT FIXED · 0 REGRESSED.
+
+**Letters:** I re-read all 4 letters for Cabo Frio, Franca, Uberlândia, Buri and Boa Esperança do Norte. Each one is pre-filled correctly, uses the right court (TCE-RJ, TCE-SP, TCE-MG, TCE-MT), cites the right law for each period, carries the EC 119 and atypical-value caveats, includes the Fundeb points and lists the years not declared. I found no factual or grammatical errors beyond the GOV-26 leftover.
+
+### New findings (round 3)
+
+#### GOV-27 · minor · UI: UF "Reincidência" options are out of order ("Qualquer histórico" sits 4th)
+- **URL:** http://localhost:3299/sp?ano=2021, Reincidência dropdown.
+- **Actual order:** "2+ anos abaixo de 25%", "3+ …", "5+ …", **"Qualquer histórico"**, "2+ anos fora de 2020–21", "2+ nos últimos 5 anos", "2+ anos seguidos", "3+ anos seguidos".
+- **Expected:** "Qualquer histórico" (the reset option) first, as in Explorer ("Todos" first).
+- **Evidence:** `r3/r3.json` → `uf.recOptions`.
+- **Root cause:** `web/src/components/UfDashboard.tsx` builds `REINCS` with `Object.fromEntries(Object.entries(REINC))`. JavaScript always lists integer-like keys ("2", "3", "5") before string keys, so `all` moves behind them.
+- **Fix:** Pass an ordered array of `[key, label]` pairs to `FilterSelect`, or rename the keys to non-numeric ones ("n2", "n3", "n5"; keep accepting the old URL values).
+
+#### GOV-28 · minor · UI: printing a filtered UF table prints only the first 50 rows and the filter controls
+- **URL:** http://localhost:3299/sp?ano=2021&situacao=below (print to A4, 6 pages)
+- **Actual:**
+  - The table stops at "Mostrando 50 de 118", so an auditor printing the list of 118 municipalities below 25% gets 50.
+  - The search box and filter selects are printed as empty-looking controls.
+  - On continuation pages the repeated header row shows only "Situação": the sortable headers' labels (inside `<button>`) are blank.
+- **Evidence:** `r3/print_sp_ano_2021_situacao_below.pdf`, `r3/print_sp_table_pages.png`
+- **Root cause:**
+  - Pagination (`limit`, PAGE = 50) in `web/src/components/UfDashboard.tsx` applies in print too.
+  - The print stylesheet in `globals.css` does not hide the filter bar.
+  - Sort buttons in a repeated `thead` lose their text in Chrome's print layout, probably because of `print:hidden` icons or sticky styles on the buttons.
+- **Fix:**
+  - On `beforeprint`, render all filtered rows (or add a "Imprimir lista completa" action).
+  - Replace the filter bar with a one-line print summary ("Filtros: Abaixo de 25% · 2021 · 118 municípios").
+  - Make the header labels plain text in print (`print:` styles on the sort button: static position, no hidden span).
+
+#### GOV-29 · polish · content: exported chart PNG has no legend for the two median lines, and its URL shows `localhost:3000` unless `NEXT_PUBLIC_SITE_URL` is set
+- **URL:** http://localhost:3299/mg/uberlandia?ano=2021 → MDE chart → "Exportar" → Imagem PNG
+- **Actual:**
+  - The PNG (`r3/chart_radar-mde_mg_uberlandia_mde.png`) shows a blue line, an orange dotted line and a black dotted line. The footer says only "Medianas: MG e Brasil", so on a slide nobody can tell which dotted line is MG.
+  - The PNG footer and "Copiar citação" use `http://localhost:3000/mg/uberlandia?ano=2021`: wrong host, and wrong port compared with :3299. That is the documented `lib/site.ts` fallback; it is a deployment-configuration issue rather than a code bug.
+- **Fix:**
+  - Draw a small legend into the exported image in `buildExport` (`web/src/components/kit/chart-actions.tsx`), using the chart's series labels and colours. Or say the colours in the note: "Medianas: MG (laranja) e Brasil (preto)".
+  - Make sure `NEXT_PUBLIC_SITE_URL` is set in the production environment. A build-time error, rather than only a `console.warn`, would catch this.
+
+Everything else in the fresh pass worked:
+- Chart export PNG, SVG and CSV, plus the Excel-BR CSV and the citation.
+- Year picker plus print with `?ano=`.
+- The "Salvar" button.
+- IPCA toggle on the deficits.
+- Mobile 375px layout with no horizontal overflow.
+
+### Final summary for this persona (after 3 rounds)
+- **GOV-01 to GOV-26:** 25 FIXED · 1 PARTIAL (GOV-18, raw-JSON source links). New in round 3: 3 minor or polish (GOV-27, GOV-28, GOV-29).
+- **What remains is not serious:** no blocker or major issue is open for government users.
+- **Biggest remaining gap for auditors:** printing a filtered UF list (GOV-28).

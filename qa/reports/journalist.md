@@ -352,3 +352,86 @@ Other checks, all ✓:
 2. Rework the atypical rule (JOR-17) so it flags filing errors, not the newsworthy cases themselves.
 3. Finish the newsroom kit (JOR-04): per-chart PNG/CSV download, "copiar citação" (value + year + scope + source + data version + permalink), embed. Add year-specific OG cards (JOR-19).
 4. Set `NEXT_PUBLIC_SITE_URL` as a build requirement (JOR-20).
+
+---
+
+## Round 3: final check of fix wave 2 (commit 72c19ee, production build on :3299)
+
+Evidence: `qa/reports/journalist/r3/` (scripts `a–d.mjs`, exported PNG/SVG/CSV files, page-text dumps). No console errors. Bugs were reproduced at least twice. `NEXT_PUBLIC_SITE_URL` is unset in this build, so `SITE_URL` falls back to `http://localhost:3000`.
+
+### Fact-check under the new atypical rule and IPCA
+
+- **Headlines unchanged:** 2021 has 1.090 municipalities below 25%, median 25,79%, shortfall ≥ R$ 4,3 bi (+228% vs 2020; recomputed 4.345,5 vs 1.324,3 ✓). 2025 has 23 below, R$ 150,1 mi, median 27,12% ✓. KPI cards no longer show "dos quais … atípicos" ✓.
+- **New atypical rule:** `mde` flags fell, e.g. 2021 from 102 to 41 and 2025 from 9 to 8.
+  - Volta Redonda, Cuiabá and Porto Alegre are no longer flagged. Joinville and Contagem 2021 show only "(abaixo do mínimo)".
+  - Wording is "possível erro de declaração" only for implausible values (Cantá 2,28%, Alto Alegre 3,62%). One-off dips get "valor fora do padrão, confirme na fonte" (Santa Brígida 6,63%; Paracatu 14,17% between 25,4 and 27,7).
+  - JOR-17 is **FIXED**.
+- **IPCA:** factors are in `meta.ipca` (SIDRA 1737, annual average, base 2025; 2021→2025 = 1,2528). I recomputed the deficit carry with each year's flow converted to R$ of 2025. The "Corrigido (IPCA)" toggle on home matches exactly:
+
+| # | Municipality | Nominal (UI) | IPCA (UI) | IPCA recomputed |
+|---|---|---|---|---|
+| 1 | Porto Alegre | R$ 674 mi | R$ 1 bi | 1.028,4 mi |
+| 2 | Aracaju | R$ 460,5 mi | R$ 735,5 mi | 735,5 |
+| 3 | Volta Redonda | R$ 448,7 mi | R$ 512,4 mi | 512,4 |
+| 4 | Cuiabá | R$ 267,1 mi | R$ 311,4 mi | 311,4 |
+| 5 | São João de Meriti | (6th nominal) | R$ 128,4 mi | 128,4 |
+| 6 | Canoas | R$ 106,7 mi | R$ 117,2 mi | 117,2 |
+
+  The ranking changes order: São João de Meriti passes Canoas once corrected. The city card "Déficit até 2021: R$ 1 bi … · R$ 1,4 bi corrigidos pelo IPCA" matches the recomputed 1.437 mi ✓. /sobre documents the method, and the CSV has `ipca_fator` plus `*_real` columns ✓.
+
+### Status of remaining findings
+
+| ID | Status | Evidence |
+|---|---|---|
+| JOR-04 chart export / citation / embed | **PARTIAL** (much improved) | Every main chart has an "Exportar: <title>" menu: PNG, SVG (editable), CSV, CSV Excel Brasil, Copiar citação. Covered: home map, trend, distribution; city MDE, Fundeb and per-student charts. The PNGs are legible at 2× with a title and a "Fonte: FNDE/SIOPE. Radar MDE · Brasil — <url>" footer. The trend chart keeps the pandemic band and dashed line styles. Citation: "Radar MDE (2026). Mapa · Brasil · 2021. http://localhost:3000/?ano=2021. Fonte: FNDE/SIOPE. Acesso em 07/10/2026." Missing: map export has no legend (JOR-24), no embed iframe. |
+| JOR-15 delta wording | **FIXED** | Same pattern on all levels: home "+707 vs 2020 / 707 a mais que em 2020", SP "+81 vs 2020", Sul "+104 vs 2020". |
+| JOR-17 atypical rule | **FIXED** | See above. |
+| JOR-18 MG/RJ cached 308 | **FIXED** (round 2 rebuild) | `/mg?ano=2021` and `/rj?ano=2021` return 200. |
+| JOR-19 share preview year | **FIXED** (per decision) | WhatsApp text: "Porto Alegre (RS): Em 2021, aplicou 21,02%… abaixo do mínimo… EC 119/2022… Veja no Radar MDE: …/rs/porto-alegre?ano=2021" (2/2). The OG image stays on the latest year, which was accepted. |
+| JOR-20 site URL | **FIXED** (consistent server-side; see JOR-23) | Sitemap, robots, canonical, `og:url` and chart citations all use `SITE_URL` (`http://localhost:3000` here). robots.txt no longer has a `Host:` line. A build warning fires when `NEXT_PUBLIC_SITE_URL` is unset. |
+| JOR-21 Explorer counts / invalid ano | **FIXED** | 2008: "5.564 de 5.564 municípios em 2008 (+6 criados depois)". `?ano=1999` is removed from the URL. |
+| JOR-22 Explorer card vs home | **FIXED** | Neither shows the atypical line now. Explorer: "R$ 4,3 bi+ · 1 de 1090 sem receita declarada". |
+
+**Totals (all 22 findings):** 21 FIXED, 1 PARTIAL (JOR-04), 0 NOT FIXED, 0 REGRESSED.
+
+### New findings (round 3)
+
+#### JOR-23: Share links and chart citations use different origins
+- **Severity:** minor. **Type:** bug/config
+- **URL:** `/rs/porto-alegre?ano=2021`
+- **Actual:** "Copiar link" and WhatsApp share use `window.location.origin` (`http://localhost:3299/...`). The chart citation, the PNG footer, canonical and `og:url` use `SITE_URL` (`http://localhost:3000/...`). On a Vercel preview, or behind a proxy, the two will differ. Here the citation URL (port 3000) doesn't even resolve.
+- **Root cause:** `web/src/components/ShareButton.tsx` (`url()` builds from `window.location.origin`) vs `web/src/components/kit/chart-actions.tsx` `pageUrl()` (`SITE_URL`). The client fallback `localhost:${PORT||3000}` can't see the server's port.
+- **Fix:** Use one helper (`SITE_URL` + path + `?ano`) for share, citation and image footer. For the client-side fallback (no env), use `window.location.origin` rather than `localhost:3000`.
+
+#### JOR-24: Exported map PNG/SVG has no legend and the title omits the metric
+- **Severity:** major (for this persona). **Type:** UX
+- **URL:** `/?ano=2021`, map → Exportar → Imagem PNG (`r3/home-0-radar-mde_brasil_mapa_2021.png`)
+- **Actual:**
+  - The image is titled "Mapa · Brasil · 2021" and shows red shades with no legend.
+  - Nothing says the colour is "% de municípios abaixo de 25%", or which shade means what (0% / até 2% / … / ≥ 25%).
+  - It can't be published as is; a newsroom would have to rebuild the legend by hand.
+  - Same gap on the city MDE chart: the footer says "Medianas: RS e Brasil" but doesn't say which dotted line (orange or black) is which.
+- **Root cause:** `web/src/components/kit/chart-actions.tsx` `buildExport` serializes only the chart `<svg>`. The map legend (`Choropleth.tsx` `Legend`) and the series legend are HTML outside the svg. The map title comes from `TerritoryDashboard.tsx` (`title={\`Mapa · ${scopeLabel} · ${year}\`}`).
+- **Fix:**
+  - Pass the bins and labels (or a legend render function) to `ChartActions` and draw a swatch row in the export footer.
+  - Include the active metric in the title, e.g. "% de municípios abaixo de 25% por estado · Brasil · 2021" (or "MDE (%) por município…" in municipal mode).
+  - Do the same for line-series legends.
+
+#### JOR-25: Chart CSV has floating-point artefacts
+- **Severity:** polish. **Type:** data/UI
+- **URL:** `/rs/porto-alegre` MDE chart → "Dados em CSV" (`r3/city-radar-mde_rs_porto-alegre_mde.csv`)
+- **Actual:** `mediana_uf_pct` = `27.255000000000003` (2008), `27.055` etc. The even-n median isn't rounded before export.
+- **Fix:** Round to 2 decimals in the CSV builder, or in `quant()` for medians.
+
+#### JOR-26: IPCA toggle and trend tab are not in the URL
+- **Severity:** polish. **Type:** UX
+- **URL:** `/` → "Corrigido (IPCA)"
+- **Actual:** the URL stays `/` (same for the trend tab "R$ que faltou" and the map level/metric). A shared link opens the nominal list, so a "ranking corrected for inflation" can't be cited by URL. The citation from that panel doesn't say whether the values were nominal or IPCA.
+- **Fix:** Mirror these in the URL (`?valores=ipca`, `?serie=faltou`, `?mapa=mun`) and include "(R$ de 2025, IPCA)" in the citation and export title when active.
+
+### Final recommendations (persona)
+
+1. Add a legend and the metric name to the exported images (JOR-24). This is the last blocker for newsroom reuse of the charts.
+2. Use one origin helper for share, citation and image footer, and set `NEXT_PUBLIC_SITE_URL` in deploys (JOR-23).
+3. Put the remaining view state (IPCA, trend tab, map mode) in the URL (JOR-26).
+4. Optional: an embed (`/embed/...`) view to finish JOR-04.
