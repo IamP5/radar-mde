@@ -1118,7 +1118,7 @@
       "finalUrl": "/go/cezarina",
       "title": "Cezarina (GO) · Radar MDE",
       "h1": "Cezarina\n(Goiás)\nGO",
-      "svgPaths": 379
+      "svgPaths": 382
     },
     {
       "url": "/ma/bacurituba",
@@ -1538,7 +1538,7 @@
       "finalUrl": "/sc/itapema",
       "title": "Itapema (SC) · Radar MDE",
       "h1": "Itapema\n(Santa Catarina)\nSC",
-      "svgPaths": 426
+      "svgPaths": 429
     },
     {
       "url": "/se/sao-miguel-do-aleixo",
@@ -3525,7 +3525,7 @@
       "note": ""
     },
     {
-      "href": "/al/olho-d-agua-grande",
+      "href": "/al/minador-do-negrao",
       "status": 200,
       "ok": true,
       "note": ""
@@ -3717,7 +3717,7 @@
       "note": ""
     },
     {
-      "href": "/ce/cruz",
+      "href": "/ce/ipu",
       "status": 200,
       "ok": true,
       "note": ""

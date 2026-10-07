@@ -13,6 +13,22 @@ npm install
 npm run dev        # http://localhost:3000
 ```
 
+## Publicar
+
+Defina `NEXT_PUBLIC_SITE_URL` (ex.: `https://radar-mde.org`) no ambiente de produção: ele é usado em canonical,
+Open Graph/WhatsApp, sitemap, robots e citações. Na Vercel, sem a variável, usa-se `VERCEL_PROJECT_PRODUCTION_URL`.
+
+## Testes (QA)
+
+Relatórios por persona e scripts de regressão Playwright/axe em `qa/` (`cd qa && npm install`). Com o site rodando:
+
+```bash
+node reports/functional/crawl.mjs --base http://localhost:3000   # rotas, links, 404, redirecionamentos
+BASE=http://localhost:3000 node reports/functional/interact.mjs  # interações (busca, explorar, kit, ano…)
+BASE=http://localhost:3000 node reports/functional/csvcheck.mjs  # CSVs
+BASE=http://localhost:3000 node reports/a11y-visual/a11y-regression.mjs  # axe claro/escuro, overflow, teclado
+```
+
 ## Atualizar os dados
 
 Tudo é baixado antes e servido como site estático (nenhuma chamada às APIs em tempo de uso).
@@ -21,6 +37,7 @@ Tudo é baixado antes e servido como site estático (nenhuma chamada às APIs em
 python3 scripts/fetch_br.py ref           # IBGE (municípios, malhas) + SICONFI (população)  ~1 min
 python3 scripts/fetch_br.py indicadores   # SIOPE: indicadores por UF e ano, 2008–2025        ~5 min
 python3 scripts/fetch_br.py receita       # SIOPE: receitas 2008–2020 para a base de impostos ~1,5 h
+python3 scripts/fetch_br.py ipca          # IBGE SIDRA 1737: IPCA para valores corrigidos
 scripts/build_geo.sh                      # malhas → web/public/geo/*.topo.json (mapshaper)
 python3 scripts/build_data.py             # gera web/src/data/{cities,states,meta}.json
 ```
