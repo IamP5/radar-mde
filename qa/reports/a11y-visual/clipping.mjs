@@ -3,7 +3,7 @@ const ROUTES=['/','/regiao/sudeste','/sp','/sp/santo-andre','/explorar','/acompa
 const widths=(process.argv[2]||'320,375,768,1024,1440').split(',').map(Number);
 const b=await chromium.launch();
 for(const w of widths){ const p=await (await b.newContext({viewport:{width:w,height:900}})).newPage();
- for(const r of ROUTES){ await p.goto('http://localhost:3210'+r,{waitUntil:'networkidle',timeout:120000}); await p.waitForTimeout(400);
+ for(const r of ROUTES){ await p.goto((process.env.BASE||'http://localhost:3210')+r,{waitUntil:'networkidle',timeout:120000}); await p.waitForTimeout(400);
   const res=await p.evaluate(()=>{ const out=[];
    for(const el of document.querySelectorAll('main *, header *')){ const s=getComputedStyle(el); if(s.display==='none')continue;
      // clipped by overflow hidden without ellipsis

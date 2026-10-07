@@ -1,7 +1,7 @@
 import { chromium } from 'playwright';
 const b=await chromium.launch(); const p=await (await b.newContext({viewport:{width:1280,height:800}})).newPage();
 const act=()=>p.evaluate(()=>{const e=document.activeElement;return `${e.tagName.toLowerCase()}[${e.getAttribute('role')||''}] "${(e.getAttribute('aria-label')||e.getAttribute('placeholder')||e.textContent||'').trim().slice(0,40)}" inDialog=${!!e.closest('[role=dialog]')} dialogs=${document.querySelectorAll('[role=dialog]').length} ad=${e.getAttribute('aria-activedescendant')}`});
-await p.goto('http://localhost:3210/',{waitUntil:'networkidle'}); await p.waitForTimeout(500);
+await p.goto((process.env.BASE||'http://localhost:3210')+'/',{waitUntil:'networkidle'}); await p.waitForTimeout(500);
 await p.getByRole('button',{name:/Buscar/}).focus(); await p.keyboard.press('Enter'); await p.waitForTimeout(500);
 console.log('open:',await act());
 console.log(await p.evaluate(()=>{const d=document.querySelector('[role=dialog]');return d.outerHTML.slice(0,400)}));

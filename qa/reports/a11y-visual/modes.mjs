@@ -1,5 +1,5 @@
 import { chromium } from 'playwright';
-const S=new URL('./shots/',import.meta.url).pathname; const B='http://localhost:3210';
+const S=new URL('./'+(process.env.SHOTDIR||'shots')+'/',import.meta.url).pathname; const B=(process.env.BASE||'http://localhost:3210');
 const b=await chromium.launch();
 // 1) 200% zoom == 640px CSS viewport at 1280 device; check reflow & sticky height share
 for (const [w,h] of [[640,400],[320,256]]) { const p=await (await b.newContext({viewport:{width:w,height:h}})).newPage();

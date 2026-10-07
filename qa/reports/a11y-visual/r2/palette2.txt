@@ -1,0 +1,7 @@
+open input "Buscar município, estado ou re" inDialog=true dialogs=1
+tab 1 input "Buscar município, estado ou re" inDialog=true dialogs=1
+tab 2 input "Buscar município, estado ou re" inDialog=true dialogs=1
+tab 3 input "Buscar município, estado ou re" inDialog=true dialogs=1
+esc a "Explorar" inDialog=false dialogs=0
+ctrl+k input "Buscar município, estado ou re" inDialog=true dialogs=1
+esc a "Explorar" inDialog=false dialogs=0

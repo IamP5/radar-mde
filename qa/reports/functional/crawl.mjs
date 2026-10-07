@@ -48,7 +48,10 @@ const pages = [
   ...UFS.map((u) => `/${u.toLowerCase()}`),
   ...sample.keys(),
 ];
-const notFound = ["/xx", "/sp/nao-existe", "/regiao/foo", "/SP", "/sp/Santo-Andre", "/dados/csv/xx"];
+const notFound = ["/xx", "/regiao", "/sp/nao-existe", "/regiao/foo", "/sp/santo-andre/extra", "/dados/csv/xx", "/dados/csv/regiao-foo", "/sp/nao-existe/ano/2019", "/sp/santo-andre/ano/1999"];
+// Round 2: case variants must 308 to the lowercase canonical URL (with a Location header, on every hit)
+const redirects = { "/SP": "/sp", "/Rj": "/rj", "/regiao/Sul": "/regiao/sul", "/Sp/santo-andre": "/sp/santo-andre", "/sp/Santo-Andre": "/sp/santo-andre", "/SP/santo-andre": "/sp/santo-andre", "/df": "/df/brasilia" };
+const assets = { "/robots.txt": /text\/plain/, "/sitemap.xml": /xml/, "/manifest.webmanifest": /manifest\+json/, "/icon.svg": /svg/, "/opengraph-image": /image\/png/, "/sp/santo-andre/opengraph-image": /image\/png/, "/data/indice.json": /json/, "/acompanhar/dados": /json/, "/sp/santo-andre/ano/2019": /json/ };
 
 const BAD_TEXT = /\b(NaN|undefined|Infinity|null)\b|\[object Object\]/;
 const CONSOLE_BAD = /hydrat|did not match|unique "key"|Warning:|Error/i;
@@ -125,6 +128,20 @@ for (const u of notFound) {
   nf.push({ url: u, status: res.status, location: res.headers.get("location"), shows404: /Página não encontrada/.test(body) || res.status === 404 });
 }
 
+const rd = [];
+for (const [u, want] of Object.entries(redirects)) {
+  for (let hit = 1; hit <= 2; hit++) {
+    const res = await fetch(BASE + u, { redirect: "manual" });
+    const loc = res.headers.get("location");
+    rd.push({ url: u, hit, status: res.status, location: loc, ok: [301, 307, 308].includes(res.status) && !!loc && new URL(loc, BASE).pathname === want });
+  }
+}
+const as = [];
+for (const [u, ct] of Object.entries(assets)) {
+  const res = await fetch(BASE + u);
+  as.push({ url: u, status: res.status, ct: res.headers.get("content-type"), ok: res.status === 200 && ct.test(res.headers.get("content-type") ?? "") });
+}
+
 // ---- internal links ----
 let links = [...linkSet].filter((h) => !h.startsWith("/_next"));
 const cityLinks = links.filter((h) => /^\/[a-z]{2}\/[^/?]+/.test(h));
@@ -135,7 +152,7 @@ if (LINKS === "sample") {
   links = [...other, ...pick];
 }
 console.log(`Checking ${links.length} of ${linkSet.size} unique internal links ...`);
-const linkRes = await pool(links, 8, async (h) => {
+const linkRes = await pool(links, BASE.includes("3210") ? 6 : 12, async (h) => {
   try {
     const res = await fetch(BASE + h, { method: /\/dados\/csv\/|\.json$/.test(h) ? "HEAD" : "GET", redirect: "follow" });
     let ok = res.status === 200;
@@ -164,9 +181,11 @@ for (const r of results) {
   if (prob.length) fails.push({ url: r.url, prob });
 }
 for (const n of nf) if (n.status !== 404) fails.push({ url: n.url, prob: [`expected HTTP 404, got ${n.status}${n.location ? " -> " + n.location : ""} (404 UI shown: ${n.shows404})`] });
+for (const r of rd) if (!r.ok) fails.push({ url: r.url, prob: [`expected 308 -> lowercase with Location (hit ${r.hit}), got ${r.status} location=${r.location}`] });
+for (const a of as) if (!a.ok) fails.push({ url: a.url, prob: [`asset/endpoint: ${a.status} ${a.ct}`] });
 for (const l of linkRes) if (!l.ok) fails.push({ url: l.href, prob: [`broken link: ${l.status} ${l.note}`] });
 
-fs.writeFileSync(path.join(HERE, "crawl-results.json"), JSON.stringify({ results, nf, linkRes, fails }, null, 2));
+fs.writeFileSync(path.join(HERE, `crawl-results-${new URL(BASE).port}.json`), JSON.stringify({ results, nf, rd, as, linkRes, fails }, null, 2));
 console.log(`\nPages: ${results.length}  404-probes: ${nf.length}  links checked: ${linkRes.length}  time: ${((Date.now() - t0) / 1000).toFixed(0)}s`);
 const byProb = new Map();
 for (const f of fails) for (const p of f.prob) {

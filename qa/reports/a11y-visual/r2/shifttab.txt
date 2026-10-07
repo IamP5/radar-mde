@@ -1,0 +1,9 @@
+/ obscured count 0
+/sp obscured count 0
+OBSCURED {"t":"Pular para o conteúdo","top":8,"bottom":48,"bar":57}
+OBSCURED {"t":"(globalThis[\"TURBOPACK\"] || (g","top":0,"bottom":800,"bar":57}
+/sp/santo-andre obscured count 6
+OBSCURED {"t":"Pular para o conteúdo","top":8,"bottom":48,"bar":57}
+OBSCURED {"t":"((a,b,c,d,e,f,g,h)=>{let i=doc","top":0,"bottom":1477,"bar":57}
+/explorar obscured count 2
+/regiao/sudeste obscured count 0

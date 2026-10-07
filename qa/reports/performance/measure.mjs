@@ -43,6 +43,8 @@ async function newCtx(browser, { throttle = true } = {}) {
     userAgent: "Mozilla/5.0 (Linux; Android 11; moto g power (2022)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36",
   });
   await ctx.addInitScript(INIT);
+  // Round 2: 3 saved cities for /acompanhar (key "radar-mde:watch", entries "uf/slug")
+  await ctx.addInitScript(() => { try { if (!localStorage.getItem("radar-mde:watch")) localStorage.setItem("radar-mde:watch", JSON.stringify(["sp/santo-andre", "mg/belo-horizonte", "ba/salvador"])); } catch {} });
   const page = await ctx.newPage();
   const cdp = await ctx.newCDPSession(page);
   await cdp.send("Network.enable");
@@ -164,6 +166,22 @@ async function interact(browser) {
       await b.first().click();
       await page.waitForTimeout(400);
     }
+    // Round 2: virtualized table — scroll the inner scroller to the end in 40 steps, count frames/long tasks
+    const scroll = await page.evaluate(async () => {
+      const el = [...document.querySelectorAll("div")].find((d) => d.querySelector("table[aria-rowcount]") && d.scrollHeight > d.clientHeight + 100 && /auto|scroll/.test(getComputedStyle(d).overflowY));
+      if (!el) return { found: false };
+      const n0 = window.__perf.longtasks.length;
+      const frames = []; let last = performance.now(); let run = true;
+      const tick = (t) => { frames.push(t - last); last = t; if (run) requestAnimationFrame(tick); };
+      requestAnimationFrame(tick);
+      const t0 = performance.now();
+      for (let i = 1; i <= 40; i++) { el.scrollTop = (el.scrollHeight * i) / 40; await new Promise((r) => setTimeout(r, 50)); }
+      await new Promise((r) => setTimeout(r, 500));
+      run = false;
+      const lt = window.__perf.longtasks.slice(n0);
+      return { found: true, scrollHeight: el.scrollHeight, ms: Math.round(performance.now() - t0), frames: frames.length, jankFrames: frames.filter((f) => f > 50).length, worstFrame: Math.round(Math.max(...frames)), tbt: lt.reduce((s, [, d]) => s + Math.max(0, d - 50), 0), longest: Math.max(0, ...lt.map(([, d]) => d)), rowsInDom: document.querySelectorAll("table[aria-rowcount] tbody tr").length, nodes: document.getElementsByTagName("*").length };
+    });
+    out.explorerScroll = scroll;
     const rows1 = await page.locator("table tbody tr").count();
     const lt = await page.evaluate((m) => { const lt = window.__perf.longtasks.slice(m.n); const ev = window.__perf.events.slice(m.e); return { tbt: lt.reduce((s, [, d]) => s + Math.max(0, d - 50), 0), longest: Math.max(0, ...lt.map(([, d]) => d)), maxEvent: Math.max(0, ...ev.map(([, d]) => d)) }; }, m);
     const search = page.getByRole("textbox", { name: /Buscar município/ }).first();
@@ -192,7 +210,7 @@ async function interact(browser) {
 async function robust(browser) {
   const out = {};
   // failed data fetches: abort /data/* and /geo/*
-  for (const [route, pattern] of [["/", "**/data/*.json"], ["/", "**/geo/**"], ["/explorar", "**/data/*.json"], ["/acompanhar", "**/data/*.json"], ["/sp/santo-andre", "**/geo/**"], ["/sp/santo-andre", "**/data/*.json"]]) {
+  for (const [route, pattern] of [["/", "**/data/*.json"], ["/", "**/geo/**"], ["/explorar", "**/data/*.json"], ["/acompanhar", "**/acompanhar/dados*"], ["/sp/santo-andre", "**/geo/**"], ["/sp/santo-andre", "**/data/*.json"]]) {
     const { ctx, page } = await newCtx(browser, { throttle: false });
     const errs = [];
     page.on("pageerror", (e) => errs.push(e.message));

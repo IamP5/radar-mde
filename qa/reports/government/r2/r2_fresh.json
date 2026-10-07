@@ -1,0 +1,48 @@
+{
+  "out": {
+    "axe /ba/feira-de-santana": [],
+    "axe /ba/feira-de-santana?ano=2016": [],
+    "axe /sp?situacao=below&ano=2021": [
+      "aria-prohibited-attr (serious) x1: #base-ui-_r_6_"
+    ],
+    "axe /explorar?uf=SP&situacao=abaixo": [],
+    "axe /pa/mojui-dos-campos?ano=2010": [],
+    "edge /pa/mojui-dos-campos?ano=2010": {
+      "kpi": "MDE em 2010 | — | o município ainda não existia | Mediana PA 27,8% · Brasil 27,8% | Fundeb em salários 2010 | — | mínimo 60% | Por aluno em 2010 | — | por ano, educação básica · R$ da época | Déficit até 2010 | — | estimativa disponível a partir de 2013",
+      "head": "Brasil | / | Norte | / | Pará | / | Mojuí dos Campos | Mojuí dos Campos | (Pará) | PA | Não existia em 2010 | Abaixo dos 25% em 1 ano desde 2013 |  | Mojuí dos Campos ainda não existia em 2010: o município foi instalado em 2013. |  | O que posso fazer? | Acompanhar | Compartilhar | 25.818 hab. | Pará, Região Norte | Região imediata de Santarém | IBGE 1504752 | Exercício | 2008 | 2009 | 2010 | 2011 | 2012 | 2013 | 2014 | 2015 | 2016 | 2017 | 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 | 2025 |  | Mostrando 2010. Voltar para 20"
+    },
+    "edge /ba/feira-de-santana?ano=1999": {
+      "kpi": "MDE em 2025 | 27,07% | +1,6 ponto | 25,43% em 2024 · mínimo 25% | Mediana BA 26,6% · Brasil 27,1% | Fundeb em salários 2025 | 83,34% | mínimo 70% | Por aluno em 2025 | R$ 11.988 | R$ 357,7 mi aplicados · R$ da época | Déficit até 2025 | R$ 0 | nada a compensar pela estimativa",
+      "head": "Brasil | / | Nordeste | / | Bahia | / | Feira de Santana | Feira de Santana | (Bahia) | BA | Cumpre 25% em 2025 |  | Em 2025, aplicou 27,07% da receita de impostos em educação — acima do mínimo de 25%. Subiu 1,6 ponto em relação a 2024 (25,43%). |  | O que posso fazer? | Acompanhar | Compartilhar | SIOPE | 660.806 hab. | Bahia, Região Nordeste | Região imediata de Feira de Santana | IBGE 2910800 | Exercício | 2008 | 2009 | 2010 | 2011 | 2012 | 2013 | 2014 | 2015 | 2016 | 2017 | 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 202"
+    },
+    "edge /ba/feira-de-santana?ano=abc": {
+      "kpi": "MDE em 2025 | 27,07% | +1,6 ponto | 25,43% em 2024 · mínimo 25% | Mediana BA 26,6% · Brasil 27,1% | Fundeb em salários 2025 | 83,34% | mínimo 70% | Por aluno em 2025 | R$ 11.988 | R$ 357,7 mi aplicados · R$ da época | Déficit até 2025 | R$ 0 | nada a compensar pela estimativa",
+      "head": "Brasil | / | Nordeste | / | Bahia | / | Feira de Santana | Feira de Santana | (Bahia) | BA | Cumpre 25% em 2025 |  | Em 2025, aplicou 27,07% da receita de impostos em educação — acima do mínimo de 25%. Subiu 1,6 ponto em relação a 2024 (25,43%). |  | O que posso fazer? | Acompanhar | Compartilhar | SIOPE | 660.806 hab. | Bahia, Região Nordeste | Região imediata de Feira de Santana | IBGE 2910800 | Exercício | 2008 | 2009 | 2010 | 2011 | 2012 | 2013 | 2014 | 2015 | 2016 | 2017 | 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 202"
+    },
+    "edge /rj/cabo-frio?ano=2022": {
+      "kpi": "MDE em 2022 | — | não declarou | Mediana RJ 29,6% · Brasil 27,9% | Fundeb em salários 2022 | — | mínimo 70% | Por aluno em 2022 | — | por ano, educação básica · R$ da época | Déficit até 2022 | R$ 57,6 mi | estimativa não compensada desde 2008, R$ da época",
+      "head": "Brasil | / | Sudeste | / | Rio de Janeiro | / | Cabo Frio | Cabo Frio | (Rio de Janeiro) | RJ | Não declarou 2022 | Abaixo dos 25% em 1 ano desde 2008 |  | Não declarou ao governo federal os dados de educação de 2022, por isso não dá para saber quanto aplicou. |  | O que posso fazer? | Acompanhar | Compartilhar | 238.438 hab. | Rio de Janeiro, Região Sudeste | Região imediata de Cabo Frio | IBGE 3300704 | Exercício | 2008 | 2009 | 2010 | 2011 | 2012 | 2013 | 2014 | 2015 | 2016 | 2017 | 2018 | 2019 | 2020 | 2021 | 2022 | "
+    },
+    "editPersists2": false,
+    "editAfterYear": true,
+    "glossary": [
+      "",
+      "Região imediata",
+      "MDE",
+      "Mediana",
+      "Fundeb",
+      "Déficit",
+      "MDE",
+      "SIOPE",
+      "EC 119/2022",
+      "pontos percentuais",
+      "mediana",
+      "região imediata"
+    ],
+    "glossaryOpen": "645 municípios\nAdamantina\nAdolfo\nAguaí\nÁguas da Prata\nÁguas de Lindóia\nÁguas de Santa Bárbara\nÁguas de São Pedro\nAgudos\nAlambari\nAlfredo Marcondes\nAltair\nAltinópolis\nAlto Alegre\nAlumínio\nÁlvares Florence\nÁlvares Machado\nÁlvaro de Carvalho\nAlvinlândia\nAmericana\nAmérico Brasiliense\nAmérico de Campos\nA",
+    "oqueFazer": null,
+    "mobileOverflow": 0,
+    "mobileUfOverflow": 0
+  },
+  "errs": []
+}

@@ -1,0 +1,79 @@
+{
+  "out": {
+    "uf_below": "118 de 645",
+    "uf_below_2x": "5 de 645",
+    "uf_below_3": "9 de 645",
+    "uf_url": "http://localhost:3299/sp?ano=2021&situacao=below&reinc=3&ordem=reinc-desc",
+    "uf_top": [
+      "Marília Marília 247.348 19,41% Abaixo 73,87% R$ 10.947 R$ 32,7 mi 6",
+      "Guaratinguetá São José dos Campos 121.916 24,53% Abaixo 70,00% R$ 8.800 R$ 1,2 mi 4",
+      "Américo Brasiliense Araraquara 33.708 22,95% Abaixo 70,11% R$ 8.159 R$ 1,7 mi 3",
+      "Barretos Ribeirão Preto 126.957 24,38% Abaixo 67,24% R$ 10.413 R$ 2,1 mi 3",
+      "Cananéia Sorocaba 12.491 24,96% Abaixo 82,35% R$ 9.633 R$ 15 mil 3"
+    ],
+    "uf_afterReload": "9 de 645",
+    "uf_newTab": "9 de 645",
+    "uf_statusOptions": [
+      "Qualquer situação",
+      "Abaixo de 25%",
+      "No limite (25–26%)",
+      "26% ou mais",
+      "Fundeb abaixo do mínimo",
+      "Não declarou",
+      "Sem dados",
+      "SIOPE ≠ Tesouro"
+    ],
+    "uf_statusMulti": null,
+    "uf_csvLinks": [
+      "/dados/csv/sp | Baixar CSV"
+    ],
+    "pa_headline": "ão Norte\nBaixar CSV\nExplorar\nExercício\n2008\n2009\n2010\n2011\n2012\n2013\n2014\n2015\n2016\n2017\n2018\n2019\n2020\n2021\n2022\n2023\n2024\n2025\n0 de 119 abaixo de 25% · 25 não declararam\n·\nRegião Norte\n\nEm 2016, nenhum dos 119 municípios do Pará que declararam aplicou menos de 25% em educação. 25 municípios não declararam os dados do ano. Na região Norte, 2,2% ficaram abaixo; no Brasil, 1,4%. O governo estadual aplicou 26,60% na própria rede.\n\nExibindo 2016: 0 de 119 municípios abaixo de 25%, 25 não declararam; mediana 27,09%.\n\nAbaixo dos 25%\n0\n−2 vs 2015\nde 119 com dados\n+ 25 não declararam\nNorte: 2,2% · Brasil: 1,4%\nFaltou aplicar (estimativa)\nR$ 0\nem 2016, valores declarados e nominais\nMediana aplicada\n27,09%\nmetade entre 25,4% e 30,1%\nBrasil: 27,32%\nMediana por aluno\nR$ 3.997\npor ano, valor nominal\nBrasil: R$ 5.355\nGoverno do estado\n26,60%\naplicado em MDE na rede estadual\nFundeb em salários: 95,9%\n",
+    "pa_deficits": "Maiores déficits acumulados até 2025\nEstimativa de 2008 a 2025, descontado o que foi aplicado a mais depois (valores nominais). Não muda com o ano escolhido.\n1\nIpixuna do Pará\n2 anos abaixo: 2021, 2022\nR$ 10,5 mi\n2\nMagalhães Barata\n1 ano abaixo: 2025\nR$ 9,6 mi\n3\nSalinópolis\n2 anos abaixo: 2020, 2021\nR$ 5,9 mi\n4\nBrasil Novo\n3 anos abaixo: 2013, 2014, 2022\nR$ 3,2 mi\n5\nTailândia\n2 anos abaixo: 2021, 2022\nR$ 261 mil\n6\nIrituia\n2 anos abaixo: 2020, 2022\nR$ 181 mil",
+    "ex_url": "http://localhost:3299/explorar?uf=SP&ano=2021&situacao=abaixo&reinc=1",
+    "ex_count": "35 de 5.570 municípios UF: SP Abaixo de 25% em 2021 Reincidentes Limpar",
+    "ex_newTab": "35 de 5.570 municípios UF: SP Abaixo de 25% em 2021 Reincidentes Limpar",
+    "ex_dl_0": "/Users/tuba/Dev/projects/radar-mde/qa/reports/government/r2/ex_0_radar-mde_SP_2021_abaixo_reincidentes.csv",
+    "ex_dl_1": "/Users/tuba/Dev/projects/radar-mde/qa/reports/government/r2/ex_1_radar-mde_SP_2008-2025_abaixo_reincidentes.csv",
+    "ex_dl_2": "/Users/tuba/Dev/projects/radar-mde/qa/reports/government/r2/ex_2_radar-mde_SP_2021_abaixo_reincidentes_excel.csv",
+    "ex_dl_3": "/Users/tuba/Dev/projects/radar-mde/qa/reports/government/r2/ex_3_radar-mde_SP_2008-2025_abaixo_reincidentes_excel.csv",
+    "dados_ma": {
+      "status": 200,
+      "ct": "text/csv; charset=utf-8",
+      "cd": "attachment; filename=\"radar-mde-ma.csv\"",
+      "head": "﻿ibge,municipio,uf,regiao,regiao_intermediaria,regiao_imediata,capital,populacao,ano,envio,situacao_mde,mde_pct,delta_mde_pp,mde_aplicado_rs,aplicado_estimado,receita_impostos_rs,base_origem,faltou_rs,fundeb_pessoal_pct,fundeb_minimo_pct,fundeb_nao_usado_pct,fundeb_nao_usado_max_pct,por_aluno_rs,educacao_pct_despesa_total,saude_pct,mde_pct_siconfi,pandemia_ec119,atipico,fonte\r // 2100055,Açailândia,MA,Nordeste,Imperatriz,Açailândia,0,110611,2008,declarou,limite,25.23,,16313909,1,64660758,receitas_siope,0,60.27,60,,,1302,30.43,,,0,,siope\r // 2100055,Açailândia,MA,Nordeste,Imperatriz,Açailândia,"
+    },
+    "dados_ma-excel": {
+      "status": 200,
+      "ct": "text/csv; charset=utf-8",
+      "cd": "attachment; filename=\"radar-mde-ma-excel.csv\"",
+      "head": "﻿ibge;municipio;uf;regiao;regiao_intermediaria;regiao_imediata;capital;populacao;ano;envio;situacao_mde;mde_pct;delta_mde_pp;mde_aplicado_rs;aplicado_estimado;receita_impostos_rs;base_origem;faltou_rs;fundeb_pessoal_pct;fundeb_minimo_pct;fundeb_nao_usado_pct;fundeb_nao_usado_max_pct;por_aluno_rs;educacao_pct_despesa_total;saude_pct;mde_pct_siconfi;pandemia_ec119;atipico;fonte\r // 2100055;Açailândia;MA;Nordeste;Imperatriz;Açailândia;0;110611;2008;declarou;limite;25,23;;16313909;1;64660758;receitas_siope;0;60,27;60;;;1302;30,43;;;0;;siope\r // 2100055;Açailândia;MA;Nordeste;Imperatriz;Açailândia;"
+    },
+    "dados_regiao-norte-excel": {
+      "status": 200,
+      "ct": "text/csv; charset=utf-8",
+      "cd": "attachment; filename=\"radar-mde-regiao-norte-excel.csv\"",
+      "head": "﻿ibge;municipio;uf;regiao;regiao_intermediaria;regiao_imediata;capital;populacao;ano;envio;situacao_mde;mde_pct;delta_mde_pp;mde_aplicado_rs;aplicado_estimado;receita_impostos_rs;base_origem;faltou_rs;fundeb_pessoal_pct;fundeb_minimo_pct;fundeb_nao_usado_pct;fundeb_nao_usado_max_pct;por_aluno_rs;educacao_pct_despesa_total;saude_pct;mde_pct_siconfi;pandemia_ec119;atipico;fonte\r // 1100015;Alta Floresta D'Oeste;RO;Norte;Ji-Paraná;Cacoal;0;22787;2008;declarou;cumpriu;27,53;;4854685;1;17634162;receitas_siope;0;60,49;60;;;2704;31,34;;;0;;siope\r // 1100015;Alta Floresta D'Oeste;RO;Norte;Ji-Paraná;Ca"
+    },
+    "dados_estados": {
+      "status": 200,
+      "ct": "text/csv; charset=utf-8",
+      "cd": "attachment; filename=\"radar-mde-estados.csv\"",
+      "head": "﻿ibge,municipio,uf,regiao,ano,envio,situacao_mde,mde_pct,delta_mde_pp,mde_aplicado_rs,aplicado_estimado,receita_impostos_rs,base_origem,faltou_rs,fundeb_pessoal_pct,fundeb_minimo_pct,fundeb_nao_usado_pct,fundeb_nao_usado_max_pct,por_aluno_rs,educacao_pct_despesa_total,saude_pct,mde_pct_siconfi,pandemia_ec119,atipico,fonte\r // 11,Rondônia,RO,Norte,2008,declarou,limite,25.66,,,,,,0,73.13,60,,,2258,16.02,,,0,,siope\r // 11,Rondônia,RO,Norte,2009,declarou,cumpriu,27.07,1.41,,,,,0,63.69,60,0,5,2408,14.97,,,0,,siope\r"
+    },
+    "dados_links": [
+      "/dados/csv/brasil",
+      "/dados/csv/brasil-excel",
+      "/dados/csv/regiao-norte",
+      "/dados/csv/regiao-norte-excel",
+      "/dados/csv/regiao-nordeste",
+      "/dados/csv/regiao-nordeste-excel",
+      "/dados/csv/regiao-centro-oeste",
+      "/dados/csv/regiao-centro-oeste-excel",
+      "/dados/csv/regiao-sudeste",
+      "/dados/csv/regiao-sudeste-excel",
+      "/dados/csv/regiao-sul",
+      "/dados/csv/regiao-sul-excel"
+    ]
+  },
+  "errs": []
+}

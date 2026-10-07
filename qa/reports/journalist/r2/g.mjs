@@ -1,0 +1,12 @@
+import { chromium } from 'playwright';
+const B='http://localhost:3299';
+const b = await chromium.launch(); const p = await (await b.newContext({viewport:{width:1440,height:900}})).newPage();
+await p.goto(B+'/sp?ano=2021',{waitUntil:'networkidle'}); await p.waitForTimeout(1500);
+let t=await p.locator('main').innerText();
+console.log((t.match(/Em 2021,[^\n]*/)||[''])[0]); console.log((t.match(/Abaixo dos 25%\n[^\n]+\n[^\n]+\n[^\n]+\n[^\n]+\n[^\n]+/)||[''])[0].replace(/\n/g,' / '));
+console.log((t.match(/Faltou aplicar[^\n]*\n[^\n]+\n[^\n]+\n[^\n]+\n[^\n]+/)||[''])[0].replace(/\n/g,' / '));
+await p.goto(B+'/explorar?ano=2008',{waitUntil:'networkidle'}); await p.waitForTimeout(2000);
+t=await p.locator('main').innerText(); console.log((t.match(/Municípios\n[^\n]+\n[^\n]+/)||[''])[0].replace(/\n/g,' / '), '|', (t.match(/[\d.]+ de [\d.]+ municípios/)||[''])[0]);
+await p.goto(B+'/explorar?q=mojui&ano=2010',{waitUntil:'networkidle'}); await p.waitForTimeout(2000);
+console.log('mojui 2010', await p.locator('table tbody tr').evaluateAll(rs=>rs.filter(r=>r.innerText.trim()).slice(0,2).map(r=>r.innerText.replace(/\s+/g,' '))));
+await b.close();

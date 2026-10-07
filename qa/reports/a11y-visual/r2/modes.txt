@@ -1,0 +1,5 @@
+zoom 640x400 / {"sw":640,"vw":640,"stickyBottom":0,"vh":400} sticky covers 0%
+zoom 640x400 /sp {"sw":640,"vw":640,"stickyBottom":0,"vh":400} sticky covers 0%
+zoom 640x400 /sp/santo-andre {"sw":640,"vw":640,"stickyBottom":0,"vh":400} sticky covers 0%
+zoom 640x400 /explorar {"sw":640,"vw":640,"stickyBottom":37,"vh":400} sticky covers 9%
+zoom 320x256 / {"sw":320,"vw":320,"stickyBottom":0,"vh":256} sticky covers 0%

@@ -1,0 +1,272 @@
+
+## 320 / (67)
+   HSCROLL nav[] sw=333 cw=304 tabindex=null "PainelExplorarAcompanhandoSalv"
+   HSCROLL div[radiogroup] sw=899 cw=224 tabindex=null "200820092010201120122013201420"
+   HIDDEN-CLIP p.sr-only sw=780 cw=1 "Exibindo 2025: 23 de 5.560 municípios ab"
+   HIDDEN-CLIP span.sr-only sw=166 cw=1 "(a menos que no ano anterior)"
+   HSCROLL div[radiogroup] sw=360 cw=254 tabindex=null "% abaixo de 25%MDE medianaGove"
+   ELLIPSIS span title=true "RO · AC · AM · RR · PA · AP · TO"
+   ELLIPSIS span title=true "MA · PI · CE · RN · PB · PE · AL · SE · BA"
+   ELLIPSIS span title=true "Centro-Oeste"
+   ELLIPSIS span title=true "MS · MT · GO · DF"
+   ELLIPSIS span title=true "MG · ES · RJ · SP"
+   ELLIPSIS span title=true "PR · SC · RS"
+   HIDDEN-CLIP p.sr-only sw=1020 cw=1 "% de municípios abaixo de 25% por ano, B"
+   HIDDEN-CLIP p.sr-only sw=960 cw=1 "Distribuição do percentual aplicado em M"
+   HSCROLL div[region] sw=813 cw=286 tabindex=0 "Ranking dos estados do Brasil "
+   HIDDEN-CLIP caption.sr-only sw=237 cw=1 "Ranking dos estados do Brasil em 2025"
+  counts { HSCROLL: 4, 'HIDDEN-CLIP': 5, ELLIPSIS: 58 }
+
+## 320 /regiao/sudeste (28)
+   HSCROLL nav[] sw=333 cw=304 tabindex=null "PainelExplorarAcompanhandoSalv"
+   HSCROLL ul[] sw=356 cw=288 tabindex=null "NorteNordesteCentro-OesteSudes"
+   HSCROLL div[radiogroup] sw=899 cw=224 tabindex=null "200820092010201120122013201420"
+   HIDDEN-CLIP p.sr-only sw=764 cw=1 "Exibindo 2025: 2 de 1.662 municípios aba"
+   HIDDEN-CLIP span.sr-only sw=166 cw=1 "(a menos que no ano anterior)"
+   HIDDEN-CLIP span.sr-only sw=155 cw=1 "(a mais que no ano anterior)"
+   HSCROLL div[radiogroup] sw=291 cw=254 tabindex=null "MDE (%)Fundeb pessoalR$ por al"
+   ELLIPSIS span title=true "Minas Gerais"
+   ELLIPSIS span title=true "Espírito Santo"
+   ELLIPSIS span title=true "Rio de Janeiro"
+   ELLIPSIS span title=true "São Paulo"
+   ELLIPSIS span title=false "R$ 84,7 mi"
+   HIDDEN-CLIP p.sr-only sw=683 cw=1 "% de municípios abaixo de 25% por ano, R"
+   HIDDEN-CLIP p.sr-only sw=1003 cw=1 "Distribuição do percentual aplicado em M"
+   ELLIPSIS span title=true "5 anos abaixo: …, 2021, 2022, 2023, 2025"
+   HSCROLL div[region] sw=777 cw=286 tabindex=0 "Ranking dos estados da região "
+   HIDDEN-CLIP caption.sr-only sw=292 cw=1 "Ranking dos estados da região Sudeste em"
+  counts { HSCROLL: 5, 'HIDDEN-CLIP': 6, ELLIPSIS: 17 }
+
+## 320 /sp (11)
+   HSCROLL nav[] sw=333 cw=304 tabindex=null "PainelExplorarAcompanhandoSalv"
+   HSCROLL div[radiogroup] sw=899 cw=224 tabindex=null "200820092010201120122013201420"
+   HIDDEN-CLIP p.sr-only sw=635 cw=1 "Exibindo 2025: 1 de 640 municípios abaix"
+   HIDDEN-CLIP p.sr-only sw=2362 cw=1 "2008: 11 de 645; 2009: 3 de 641; 2010: 6"
+   HIDDEN-CLIP p.sr-only sw=965 cw=1 "Distribuição do percentual aplicado em M"
+   HIDDEN-CLIP p.sr-only sw=948 cw=1 "Percentual de municípios abaixo de 25%: "
+   ELLIPSIS span title=true "6 anos abaixo: …, 2015, 2021, 2022, 2024"
+   ELLIPSIS span title=true "2 anos abaixo: 2021, 2025"
+   HIDDEN-CLIP input. sw=17 cw=1 ""
+   HSCROLL div[] sw=866 cw=286 tabindex=null "Municípios de São Paulo em 202"
+   HIDDEN-CLIP caption.sr-only sw=219 cw=1 "Municípios de São Paulo em 2025"
+  counts { HSCROLL: 3, 'HIDDEN-CLIP': 6, ELLIPSIS: 2 }
+
+## 320 /sp/santo-andre (1)
+   HSCROLL nav[] sw=333 cw=304 tabindex=null "PainelExplorarAcompanhandoSalv"
+  counts { HSCROLL: 1 }
+
+## 320 /explorar (15)
+   HSCROLL nav[] sw=333 cw=304 tabindex=null "PainelExplorarAcompanhandoSalv"
+   HIDDEN-CLIP input. sw=40 cw=1 ""
+   HIDDEN-CLIP input. sw=7 cw=1 ""
+   HSCROLL div[] sw=1055 cw=286 tabindex=-1 "Municípios filtrados, indicado"
+   HIDDEN-CLIP caption.sr-only sw=264 cw=1 "Municípios filtrados, indicadores de 202"
+   HIDDEN-CLIP span.sr-only sw=274 cw=1 "(valor atípico, possível erro de declara"
+   HIDDEN-CLIP span.sr-only sw=123 cw=1 "(abaixo do mínimo)"
+   ELLIPSIS a title=false "Chapada da Natividade"
+   ELLIPSIS a title=false "Brejo da Madre de Deus"
+   ELLIPSIS span title=false "Volta Redonda - Barra Mansa"
+   ELLIPSIS a title=false "Centro Novo do Maranhão"
+   ELLIPSIS span title=false "Santa Inês - Bacabal"
+   ELLIPSIS a title=false "Lagoa da Confusão"
+  counts { HSCROLL: 2, 'HIDDEN-CLIP': 5, ELLIPSIS: 8 }
+
+## 320 /acompanhar (1)
+   HSCROLL nav[] sw=333 cw=304 tabindex=null "PainelExplorarAcompanhandoSalv"
+  counts { HSCROLL: 1 }
+
+## 320 /dados (7)
+   HSCROLL nav[] sw=333 cw=304 tabindex=null "PainelExplorarAcompanhandoSalv"
+   HIDDEN-CLIP div.relative.flex.min-w-0.flex-col sw=139 cw=136 "Extraído em07/10/2026versão 2026-10-07.5"
+   HIDDEN-CLIP span.sr-only sw=82 cw=1 "Baixar CSV"
+   HIDDEN-CLIP span. sw=7 cw=1 "x"
+   HSCROLL div[table-container] sw=436 cw=286 tabindex=null "AnoMunicípiosCom dados de MDEN"
+   HIDDEN-CLIP span. sw=8 cw=1 "x"
+   HSCROLL div[table-container] sw=376 cw=286 tabindex=null "CampoDescriçãoibgeCódigo IBGE "
+  counts { HSCROLL: 3, 'HIDDEN-CLIP': 4 }
+
+## 320 /sobre (3)
+   HSCROLL nav[] sw=333 cw=304 tabindex=null "PainelExplorarAcompanhandoSalv"
+   HSCROLL div[table-container] sw=306 cw=286 tabindex=null "RegraAté 2020Desde 2021Aplicaç"
+   HSCROLL div[table-container] sw=433 cw=286 tabindex=null "CódigoIndicadorUso no painel1."
+  counts { HSCROLL: 3 }
+
+## 375 / (25)
+   HSCROLL div[radiogroup] sw=899 cw=279 tabindex=null "200820092010201120122013201420"
+   HIDDEN-CLIP p.sr-only sw=780 cw=1 "Exibindo 2025: 23 de 5.560 municípios ab"
+   HIDDEN-CLIP span.sr-only sw=166 cw=1 "(a menos que no ano anterior)"
+   HSCROLL div[radiogroup] sw=360 cw=309 tabindex=null "% abaixo de 25%MDE medianaGove"
+   ELLIPSIS span title=true "RO · AC · AM · RR · PA · AP · TO"
+   ELLIPSIS span title=true "MA · PI · CE · RN · PB · PE · AL · SE · BA"
+   ELLIPSIS span title=true "MS · MT · GO · DF"
+   ELLIPSIS span title=true "MG · ES · RJ · SP"
+   HIDDEN-CLIP p.sr-only sw=1020 cw=1 "% de municípios abaixo de 25% por ano, B"
+   ELLIPSIS span title=true "Rio Grande do Norte"
+   ELLIPSIS span title=true "Rio Grande do Sul"
+   HIDDEN-CLIP p.sr-only sw=960 cw=1 "Distribuição do percentual aplicado em M"
+   HSCROLL div[region] sw=813 cw=341 tabindex=0 "Ranking dos estados do Brasil "
+   HIDDEN-CLIP caption.sr-only sw=237 cw=1 "Ranking dos estados do Brasil em 2025"
+  counts { HSCROLL: 3, 'HIDDEN-CLIP': 5, ELLIPSIS: 17 }
+
+## 375 /regiao/sudeste (13)
+   HSCROLL ul[] sw=356 cw=343 tabindex=null "NorteNordesteCentro-OesteSudes"
+   HSCROLL div[radiogroup] sw=899 cw=279 tabindex=null "200820092010201120122013201420"
+   HIDDEN-CLIP p.sr-only sw=764 cw=1 "Exibindo 2025: 2 de 1.662 municípios aba"
+   HIDDEN-CLIP span.sr-only sw=166 cw=1 "(a menos que no ano anterior)"
+   HIDDEN-CLIP span.sr-only sw=155 cw=1 "(a mais que no ano anterior)"
+   HIDDEN-CLIP p.sr-only sw=683 cw=1 "% de municípios abaixo de 25% por ano, R"
+   HIDDEN-CLIP p.sr-only sw=1003 cw=1 "Distribuição do percentual aplicado em M"
+   ELLIPSIS span title=true "5 anos abaixo: …, 2021, 2022, 2023, 2025"
+   ELLIPSIS span title=true "6 anos abaixo: …, 2015, 2021, 2022, 2024"
+   ELLIPSIS span title=false "Engenheiro Paulo de Frontin"
+   ELLIPSIS span title=true "4 anos abaixo: 2018, 2019, 2020, 2021"
+   HSCROLL div[region] sw=777 cw=341 tabindex=0 "Ranking dos estados da região "
+   HIDDEN-CLIP caption.sr-only sw=292 cw=1 "Ranking dos estados da região Sudeste em"
+  counts { HSCROLL: 3, 'HIDDEN-CLIP': 6, ELLIPSIS: 4 }
+
+## 375 /sp (9)
+   HSCROLL div[radiogroup] sw=899 cw=279 tabindex=null "200820092010201120122013201420"
+   HIDDEN-CLIP p.sr-only sw=635 cw=1 "Exibindo 2025: 1 de 640 municípios abaix"
+   HIDDEN-CLIP p.sr-only sw=2362 cw=1 "2008: 11 de 645; 2009: 3 de 641; 2010: 6"
+   HIDDEN-CLIP p.sr-only sw=965 cw=1 "Distribuição do percentual aplicado em M"
+   HIDDEN-CLIP p.sr-only sw=948 cw=1 "Percentual de municípios abaixo de 25%: "
+   ELLIPSIS span title=true "6 anos abaixo: …, 2015, 2021, 2022, 2024"
+   HIDDEN-CLIP input. sw=17 cw=1 ""
+   HSCROLL div[] sw=866 cw=341 tabindex=null "Municípios de São Paulo em 202"
+   HIDDEN-CLIP caption.sr-only sw=219 cw=1 "Municípios de São Paulo em 2025"
+  counts { HSCROLL: 2, 'HIDDEN-CLIP': 6, ELLIPSIS: 1 }
+
+## 375 /sp/santo-andre (0)
+  counts {}
+
+## 375 /explorar (14)
+   HIDDEN-CLIP input. sw=40 cw=1 ""
+   HIDDEN-CLIP input. sw=7 cw=1 ""
+   HSCROLL div[] sw=1055 cw=341 tabindex=-1 "Municípios filtrados, indicado"
+   HIDDEN-CLIP caption.sr-only sw=264 cw=1 "Municípios filtrados, indicadores de 202"
+   HIDDEN-CLIP span.sr-only sw=274 cw=1 "(valor atípico, possível erro de declara"
+   HIDDEN-CLIP span.sr-only sw=123 cw=1 "(abaixo do mínimo)"
+   ELLIPSIS a title=false "Chapada da Natividade"
+   ELLIPSIS a title=false "Brejo da Madre de Deus"
+   ELLIPSIS span title=false "Volta Redonda - Barra Mansa"
+   ELLIPSIS a title=false "Centro Novo do Maranhão"
+   ELLIPSIS span title=false "Santa Inês - Bacabal"
+   ELLIPSIS a title=false "Lagoa da Confusão"
+  counts { 'HIDDEN-CLIP': 5, HSCROLL: 1, ELLIPSIS: 8 }
+
+## 375 /acompanhar (0)
+  counts {}
+
+## 375 /dados (5)
+   HIDDEN-CLIP span.sr-only sw=82 cw=1 "Baixar CSV"
+   HIDDEN-CLIP span. sw=7 cw=1 "x"
+   HSCROLL div[table-container] sw=436 cw=341 tabindex=null "AnoMunicípiosCom dados de MDEN"
+   HIDDEN-CLIP span. sw=8 cw=1 "x"
+   HSCROLL div[table-container] sw=376 cw=341 tabindex=null "CampoDescriçãoibgeCódigo IBGE "
+  counts { 'HIDDEN-CLIP': 3, HSCROLL: 2 }
+
+## 375 /sobre (1)
+   HSCROLL div[table-container] sw=433 cw=341 tabindex=null "CódigoIndicadorUso no painel1."
+  counts { HSCROLL: 1 }
+
+## 1280 / (6)
+   HSCROLL div[radiogroup] sw=899 cw=720 tabindex=null "200820092010201120122013201420"
+   HIDDEN-CLIP p.sr-only sw=780 cw=1 "Exibindo 2025: 23 de 5.560 municípios ab"
+   HIDDEN-CLIP span.sr-only sw=166 cw=1 "(a menos que no ano anterior)"
+   HIDDEN-CLIP p.sr-only sw=1020 cw=1 "% de municípios abaixo de 25% por ano, B"
+   HIDDEN-CLIP p.sr-only sw=960 cw=1 "Distribuição do percentual aplicado em M"
+   HIDDEN-CLIP caption.sr-only sw=255 cw=1 "Ranking dos estados do Brasil em 2025"
+  counts { HSCROLL: 1, 'HIDDEN-CLIP': 5 }
+
+## 1280 /regiao/sudeste (7)
+   HSCROLL div[radiogroup] sw=899 cw=720 tabindex=null "200820092010201120122013201420"
+   HIDDEN-CLIP p.sr-only sw=764 cw=1 "Exibindo 2025: 2 de 1.662 municípios aba"
+   HIDDEN-CLIP span.sr-only sw=166 cw=1 "(a menos que no ano anterior)"
+   HIDDEN-CLIP span.sr-only sw=155 cw=1 "(a mais que no ano anterior)"
+   HIDDEN-CLIP p.sr-only sw=683 cw=1 "% de municípios abaixo de 25% por ano, R"
+   HIDDEN-CLIP p.sr-only sw=1003 cw=1 "Distribuição do percentual aplicado em M"
+   HIDDEN-CLIP caption.sr-only sw=315 cw=1 "Ranking dos estados da região Sudeste em"
+  counts { HSCROLL: 1, 'HIDDEN-CLIP': 6 }
+
+## 1280 /sp (6)
+   HIDDEN-CLIP p.sr-only sw=635 cw=1 "Exibindo 2025: 1 de 640 municípios abaix"
+   HIDDEN-CLIP p.sr-only sw=2362 cw=1 "2008: 11 de 645; 2009: 3 de 641; 2010: 6"
+   HIDDEN-CLIP p.sr-only sw=965 cw=1 "Distribuição do percentual aplicado em M"
+   HIDDEN-CLIP p.sr-only sw=948 cw=1 "Percentual de municípios abaixo de 25%: "
+   HIDDEN-CLIP input. sw=17 cw=1 ""
+   HIDDEN-CLIP caption.sr-only sw=219 cw=1 "Municípios de São Paulo em 2025"
+  counts { 'HIDDEN-CLIP': 6 }
+
+## 1280 /sp/santo-andre (0)
+  counts {}
+
+## 1280 /explorar (5)
+   HIDDEN-CLIP input. sw=40 cw=1 ""
+   HIDDEN-CLIP input. sw=7 cw=1 ""
+   HIDDEN-CLIP caption.sr-only sw=264 cw=1 "Municípios filtrados, indicadores de 202"
+   HIDDEN-CLIP span.sr-only sw=274 cw=1 "(valor atípico, possível erro de declara"
+   HIDDEN-CLIP span.sr-only sw=123 cw=1 "(abaixo do mínimo)"
+  counts { 'HIDDEN-CLIP': 5 }
+
+## 1280 /acompanhar (0)
+  counts {}
+
+## 1280 /dados (3)
+   HIDDEN-CLIP span.sr-only sw=82 cw=1 "Baixar CSV"
+   HIDDEN-CLIP span. sw=7 cw=1 "x"
+   HIDDEN-CLIP span. sw=8 cw=1 "x"
+  counts { 'HIDDEN-CLIP': 3 }
+
+## 1280 /sobre (0)
+  counts {}
+
+## 1440 / (6)
+   HSCROLL div[radiogroup] sw=899 cw=720 tabindex=null "200820092010201120122013201420"
+   HIDDEN-CLIP p.sr-only sw=780 cw=1 "Exibindo 2025: 23 de 5.560 municípios ab"
+   HIDDEN-CLIP span.sr-only sw=166 cw=1 "(a menos que no ano anterior)"
+   HIDDEN-CLIP p.sr-only sw=1020 cw=1 "% de municípios abaixo de 25% por ano, B"
+   HIDDEN-CLIP p.sr-only sw=960 cw=1 "Distribuição do percentual aplicado em M"
+   HIDDEN-CLIP caption.sr-only sw=255 cw=1 "Ranking dos estados do Brasil em 2025"
+  counts { HSCROLL: 1, 'HIDDEN-CLIP': 5 }
+
+## 1440 /regiao/sudeste (7)
+   HSCROLL div[radiogroup] sw=899 cw=720 tabindex=null "200820092010201120122013201420"
+   HIDDEN-CLIP p.sr-only sw=764 cw=1 "Exibindo 2025: 2 de 1.662 municípios aba"
+   HIDDEN-CLIP span.sr-only sw=166 cw=1 "(a menos que no ano anterior)"
+   HIDDEN-CLIP span.sr-only sw=155 cw=1 "(a mais que no ano anterior)"
+   HIDDEN-CLIP p.sr-only sw=683 cw=1 "% de municípios abaixo de 25% por ano, R"
+   HIDDEN-CLIP p.sr-only sw=1003 cw=1 "Distribuição do percentual aplicado em M"
+   HIDDEN-CLIP caption.sr-only sw=315 cw=1 "Ranking dos estados da região Sudeste em"
+  counts { HSCROLL: 1, 'HIDDEN-CLIP': 6 }
+
+## 1440 /sp (6)
+   HIDDEN-CLIP p.sr-only sw=635 cw=1 "Exibindo 2025: 1 de 640 municípios abaix"
+   HIDDEN-CLIP p.sr-only sw=2362 cw=1 "2008: 11 de 645; 2009: 3 de 641; 2010: 6"
+   HIDDEN-CLIP p.sr-only sw=965 cw=1 "Distribuição do percentual aplicado em M"
+   HIDDEN-CLIP p.sr-only sw=948 cw=1 "Percentual de municípios abaixo de 25%: "
+   HIDDEN-CLIP input. sw=17 cw=1 ""
+   HIDDEN-CLIP caption.sr-only sw=219 cw=1 "Municípios de São Paulo em 2025"
+  counts { 'HIDDEN-CLIP': 6 }
+
+## 1440 /sp/santo-andre (0)
+  counts {}
+
+## 1440 /explorar (5)
+   HIDDEN-CLIP input. sw=40 cw=1 ""
+   HIDDEN-CLIP input. sw=7 cw=1 ""
+   HIDDEN-CLIP caption.sr-only sw=264 cw=1 "Municípios filtrados, indicadores de 202"
+   HIDDEN-CLIP span.sr-only sw=274 cw=1 "(valor atípico, possível erro de declara"
+   HIDDEN-CLIP span.sr-only sw=123 cw=1 "(abaixo do mínimo)"
+  counts { 'HIDDEN-CLIP': 5 }
+
+## 1440 /acompanhar (0)
+  counts {}
+
+## 1440 /dados (3)
+   HIDDEN-CLIP span.sr-only sw=82 cw=1 "Baixar CSV"
+   HIDDEN-CLIP span. sw=7 cw=1 "x"
+   HIDDEN-CLIP span. sw=8 cw=1 "x"
+  counts { 'HIDDEN-CLIP': 3 }
+
+## 1440 /sobre (0)
+  counts {}

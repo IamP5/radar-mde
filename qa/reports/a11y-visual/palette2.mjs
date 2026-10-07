@@ -1,7 +1,7 @@
 import { chromium } from 'playwright';
 const b=await chromium.launch(); const p=await (await b.newContext({viewport:{width:1280,height:800}})).newPage();
 const act=()=>p.evaluate(()=>{const e=document.activeElement;return `${e.tagName.toLowerCase()} "${(e.getAttribute('aria-label')||e.getAttribute('placeholder')||e.textContent||'').trim().slice(0,30)}" inDialog=${!!e.closest('[role=dialog]')} dialogs=${document.querySelectorAll('[role=dialog]').length}`});
-await p.goto('http://localhost:3210/',{waitUntil:'networkidle'}); await p.waitForTimeout(500);
+await p.goto((process.env.BASE||'http://localhost:3210')+'/',{waitUntil:'networkidle'}); await p.waitForTimeout(500);
 await p.keyboard.press('Tab'); await p.keyboard.press('Enter'); // skip link
 await p.keyboard.press('Meta+k'); await p.waitForTimeout(500); console.log('open',await act());
 await p.keyboard.type('santo'); await p.waitForTimeout(500);

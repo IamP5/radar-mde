@@ -1,6 +1,6 @@
 import { chromium } from 'playwright';
 const route=process.argv[2]; const b=await chromium.launch(); const p=await (await b.newContext({viewport:{width:1280,height:800}})).newPage();
-await p.goto('http://localhost:3210'+route,{waitUntil:'networkidle'}); await p.waitForTimeout(500);
+await p.goto((process.env.BASE||'http://localhost:3210')+route,{waitUntil:'networkidle'}); await p.waitForTimeout(500);
 await p.keyboard.press('End'); await p.evaluate(()=>window.scrollTo(0,document.body.scrollHeight)); await p.focus('footer a');
 let obs=0;
 for(let i=0;i<60;i++){ await p.keyboard.press('Shift+Tab'); await p.waitForTimeout(250);

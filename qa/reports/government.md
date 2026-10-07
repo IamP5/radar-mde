@@ -267,3 +267,130 @@ Neither page says how final the 2025 figures are or when the data was extracted 
 3. **Make it print- and Excel-ready for briefings** (GOV-07, GOV-08, GOV-14). Add a print stylesheet with a source and date footer, a "Baixar CSV (Excel BR)" or `.xlsx` option, and PNG/CSV export per chart for slides.
 4. **Add a year selector to the city page** (GOV-05). Honour `?ano=` so drill-down from UF and region keeps context and a secretária can brief on any exercise. Add "compare with similar-size municipalities in the state" (same `POP_BANDS`) alongside região imediata neighbours.
 5. **Give auditors proper screening tools** (GOV-10, GOV-11, GOV-12): a configurable recurrence period, an EC 119 toggle and consecutive-year counts; AND-combinable MDE / Fundeb pessoal / Fundeb não usado / não declarou filters; non-declarants surfaced in the UF KPIs; atypical markers in the deficit ranking.
+
+---
+
+## Round 2: re-validation after commit ff4a309
+
+- **Target:** production build at http://localhost:3299, same persona journeys.
+- **Scripts:** `reports/government/r2_city.mjs`, `r2_auditor.mjs`, `r2_fresh.mjs`.
+- **Evidence:** `/Users/tuba/Dev/projects/radar-mde/qa/reports/government/r2/`. Raw outputs are in `r2_city.json`, `r2_auditor.json` and `r2_fresh.json`.
+- **Errors:** no console errors or page errors on any route tested.
+
+I re-read all 4 letters for each of these cities: Uberlândia, Feira de Santana, Boa Esperança do Norte, Cabo Frio, Buri, Franca, Aracaju, São Paulo and Brasília.
+
+### Status of round-1 findings
+
+| ID | Status | Evidence / note |
+|---|---|---|
+| GOV-01 no data ≠ compliance | **FIXED** | Boa Esperança do Norte: all 4 letters now say "Não há registro de envio… no exercício de 2025… não é possível verificar". Item 1 of the CACS letter still points to a series that isn't there (see GOV-26). |
+| GOV-02 years not declared dropped | **FIXED** | Cabo Frio: the series lists "2020: não declarou … 2025: não declarou". LAI item 5, vereador item c), CACS item 5 and TCE item (iii) all ask for the missing statements. |
+| GOV-03 Fundeb ignored | **FIXED** | Franca and Buri: the context gives 2021 at 52,73% and 2022 at 67,50% (minimum 70%), and unspent Fundeb above the limit in 2012 and 2021. The CACS letter has agenda items 2–3 (art. 26 and art. 25 §3º of Lei 14.113). The TCE letter cites art. 212-A. |
+| GOV-04 atypical values / EC 119 | **FIXED** in the letters, **partial** on the page | Letters: Cabo Frio 2016 is marked "(valor atípico — confirmar)" and "R$ 57,6 mi … depende de valores declarados atípicos e deve ser confirmado". Uberlândia gets the EC 119 paragraph ("parece ter coberto essa diferença…"), and the art. 35 intervention sentence is gone. The "Déficit até 2019: R$ 57,6 mi" KPI on the Cabo Frio page still has no caveat (GOV-25). |
+| GOV-05 city ignores `?ano=` | **FIXED** | `/mg/uberlandia?ano=2019` shows "MDE em 2019 · 28,80%". `/pa/concordia-do-para?ano=2016` shows 2016. Picking 2021 updates the URL to `?ano=2021`. The share link copies `…/mg/uberlandia?ano=2021`. Printing with `?ano=2021` prints 2021. Mojuí dos Campos with `?ano=2010` says "ainda não existia". Invalid `?ano=1999` or `abc` falls back to the latest year. |
+| GOV-06 filters not in URL | **FIXED** | UF page: `/sp?ano=2021&situacao=below&reinc=3&ordem=reinc-desc` gives "9 de 645" after reload and in a new tab. Explorer: `/explorar?uf=SP&ano=2021&situacao=abaixo&reinc=1` gives 35 in a new tab (round 1: 645). |
+| GOV-07 print/PDF | **FIXED** (new minor issues in GOV-22) | Each page now carries a print header (URL + "impresso em 07/10/2026" + source), no sticky header, all 11 table columns including Fonte, the MDE chart through 2025, no buttons or kit. The footer shows "Dados extraídos em … · versão … · CC BY 4.0". See `print_mg_uberlandia.pdf`, `print_uberlandia_pages_*.png`. |
+| GOV-08 Excel-BR CSV | **FIXED** (UF page gap in GOV-21) | `/dados/csv/ma-excel` uses `;` separators, decimal comma and a BOM, and `/dados` lists an `-excel` link for every scope. Explorer has "Só 2021 / Série 2008–2025 · Excel Brasil". |
+| GOV-09 Explorer CSV | **PARTIAL** | Fixed: you can export the year only or the full series, rows follow the table order, filenames describe the filters (`radar-mde_SP_2021_abaixo_reincidentes_excel.csv`), the vocabulary matches `/dados` (`envio`, `situacao_mde`, `pandemia_ec119`, `atipico`), and `faltou_rs` is empty when not declared. Still missing from Explorer exports: tax revenue, amount applied and unspent Fundeb (the `Row` limitation documented in CONTRACT §6). An auditor screening a state still has to switch to `/dados/csv/<uf>` for those. |
+| GOV-10 recurrence screening | **PARTIAL** | The UF page now has "Reincidência": 2+, 2+ outside 2020–21, 3+ and 5+, all in the URL. SP 2021 below 25%: 118 → 5 (excluding the pandemic years) → 9 (3+). Still missing: a configurable period ("last N years"), consecutive years, combining MDE + Fundeb (Situação is single-select on both pages), and the same options in Explorer (still a single ≥2 "Reincidentes" toggle). |
+| GOV-11 non-declarants hidden | **FIXED** | `/pa?ano=2016`: "0 de 119 abaixo de 25% · 25 não declararam", the headline sentence repeats it, and the KPI shows "+ 25 não declararam". |
+| GOV-12 deficit ranking includes atypical values | **NOT FIXED** | `/pa`, "Maiores déficits acumulados": #1 Ipixuna do Pará (2021 is 9,71%, flagged `atip:["mde"]`) and #2 Magalhães Barata (2025 flagged `["mde","base"]`) still show no marker. The `atip` data exists, but `topDeficits` (`lib/data.ts`) and the list in `UfDashboard.tsx` don't use it. |
+| GOV-13 2023 amount applied missing | **FIXED** | Uberlândia 2023 shows "≈ R$ 630,4 mi" with the "≈ = estimado pelo Radar" note. |
+| GOV-14 data date | **FIXED** | The footer has "Dados extraídos em 07/10/2026 · versão 2026-10-07.586603bb · licença CC BY 4.0", and print adds the date and source. |
+| GOV-15 wording | **FIXED** | "no exercício de 2021" singular; "Excelentíssimo(a) Senhor(a) Prefeito(a)"; SIOPE URL now gov.br/fnde; only SIOPE is cited when it is the only source; Lei Orgânica clause added to the vereador letter. The new code introduces its own wording bug (GOV-19). |
+| GOV-16 badge contrast | **FIXED** | axe reports 0 issues on `/ba/feira-de-santana`, `?ano=2016`, `/explorar` and the Mojuí page. A new, different axe issue shows up on the UF table (GOV-23). |
+| GOV-17 letters not editable | **FIXED** (with a new bug, GOV-20) | Letters are editable. "Copiar texto" copies the edited text. WhatsApp and E-mail buttons are there, plus "Onde enviar" with Fala.BR and search links. "Desfazer edições" is shown. |
+| GOV-18 Fonte opens raw JSON | **PARTIAL** | The table description now says "leva aos dados brutos (JSON) no sistema oficial", so expectations are set. There is still no human-readable link (SIOPE municipal report or SICONFI RREO page) that finance staff could attach as evidence. |
+
+**Totals:** 14 FIXED · 3 PARTIAL (GOV-09, GOV-10, GOV-18) · 1 NOT FIXED (GOV-12) · 0 REGRESSED.
+
+### New findings (round 2)
+
+#### GOV-19 · major · content: CACS letter has garbled words ("Verificação d demonstração", "Verificação ds medidas", "Pedido d confirmação")
+- **URLs:** http://localhost:3299/mg/uberlandia, `/sp/franca`, `/rj/cabo-frio`, CACS tab.
+- **Actual text:**
+  - Uberlândia, item 2: "Verificação d demonstração da aplicação complementar exigida pela EC nº 119/2022…" (Franca, item 4: same).
+  - Cabo Frio, item 4: "Verificação ds medidas adotadas para compensar…".
+  - Cabo Frio, item 6: "Pedido d confirmação ou retificação…".
+  - Reproduced on 3 cities.
+- **Expected:** "Verificação da demonstração…", "Verificação das medidas…", "Pedido de confirmação…".
+- **Evidence:** `r2/r2_city.json` → `/mg/uberlandia.letters[1]`, `/rj/cabo-frio.letters[1]`.
+- **Root cause:** `web/src/lib/templates.ts`, `cacsItems`. The items are built as `` `verificação d${asks.comp.slice(1)}` ``, `` `verificação d${asks.ec119.slice(1)}` `` and `` `pedido d${asks.atyp.slice(1)}` ``. `asks.*` start with "as …" or "a …", so `slice(1)` drops the article's first letter instead of merging it.
+- **Fix:**
+  - Use `` `verificação d${asks.comp}` `` ("d"+"as" → "das") and `` `verificação d${asks.ec119}` `` ("da").
+  - Use `` `pedido de ${asks.atyp.replace(/^a /, "")}` ``.
+  - Better: keep a noun-only form of each ask and add the article explicitly.
+  - Add a unit test asserting no `/\bd[s ]\b/` artefacts in the generated letters.
+
+#### GOV-20 · major · UX: edits to a letter are lost when switching tabs
+- **URLs:** http://localhost:3299/mg/uberlandia and `/sp/franca`
+- **Steps:**
+  1. In "Pedir informações" (or "Avisar o conselho"), replace "[Seu nome]" or add text.
+  2. Click another letter tab, then come back.
+- **Expected:** The edits persist. The UI says "Você pode editar o texto aqui: troque [Seu nome] e [Contato]…", and a council member filling in several letters will switch tabs.
+- **Actual:** The text resets to the template (`editPersists: false` on both cities). Changing the year keeps the edits (`editAfterYear: true`), so only tab switching loses them.
+- **Evidence:** `r2/r2_city.json` (`editPersists`), `r2/r2_fresh.json` (`editPersists2`).
+- **Root cause:** `web/src/components/ActionKit.tsx`. `Letter` holds `text` in local `useState`, and Base UI `TabsContent` unmounts inactive panels, so the state is discarded.
+- **Fix:**
+  - Pass `keepMounted` to `TabsContent`, or lift `text` per `t.id` into `ActionKit`. Optionally persist it to `sessionStorage`.
+  - Better: add shared "Seu nome / Contato / Segmento" fields above the tabs that fill the placeholders in all 4 letters.
+
+#### GOV-21 · minor · UX: the UF page "Baixar CSV" ignores the table filters and has no Excel-BR option
+- **URL:** http://localhost:3299/sp?ano=2021&situacao=below&reinc=3
+- **Actual:**
+  - The only download is `/dados/csv/sp`: comma-separated, every municipality and every year.
+  - An auditor who just filtered 9 municipalities must go to `/explorar` and set the filters up again to export that list, or to `/dados` for the Excel variant.
+- **Root cause:** `web/src/app/[uf]/page.tsx` (header actions); `UfDashboard.tsx` has no export.
+- **Fix:**
+  - Replace the button with the same dropdown as Explorer ("Esta tabela (N municípios, ano) / Série completa" × "CSV padrão / Excel Brasil"), reusing `rowCsvRecord`/`toCsv`/`csvFilename`.
+  - Or link "Abrir no Explorar com estes filtros" with the same query string.
+
+#### GOV-22 · minor · UI: print issues remain (Fundeb chart clipped, half-empty first page)
+- **URL:** http://localhost:3299/mg/uberlandia (print to A4)
+- **Actual:**
+  - In "% do Fundeb pago aos profissionais", the y-axis labels are cut on the left and the x-axis years are cut at the bottom, overlapping the legend ("50%" sits on top of "Fundeb — mínimo legal").
+  - Page 1 has only the header and the 4 KPIs, and the rest of the page is blank. Pages 2–5 also have large gaps.
+  - The result is 6 A4 pages for one municipality.
+- **Evidence:** `r2/print_p5_fundeb_chart.png`, `r2/print_uberlandia_pages_1.png`, `r2/print_uberlandia_pages_2.png`, `r2/print_mg_uberlandia.pdf`
+- **Root cause:**
+  - `TrendChart` keeps its screen-measured width or height in print.
+  - The `break-inside: avoid` rules in `web/src/app/globals.css` (print block) push whole panels to the next page.
+- **Fix:**
+  - Give charts a fixed print height and redraw them on the `beforeprint` event (or use `matchMedia('print')` in `useWidth`).
+  - Allow the year-by-year table to break across pages, and keep `avoid` only for small cards.
+  - Consider a compact "ficha para impressão" (KPIs + MDE chart + table) of 2 pages.
+
+#### GOV-23 · minor · a11y: `aria-label` on a role-less span in the UF table (axe `aria-prohibited-attr`, serious)
+- **URL:** http://localhost:3299/sp?situacao=below&ano=2021
+- **Finding:** `<span tabindex="0" aria-label="Valor atípico: possível erro de preenchimento, confira na fonte" data-slot="tooltip-trigger">`, the atypical hint in the MDE cell. Screen readers may ignore the label.
+- **Root cause:** `Hint` in `web/src/components/UfDashboard.tsx`
+- **Fix:** Add `role="img"` (or render a `<button type="button">`) on the trigger. Keep the visible tooltip.
+
+#### GOV-24 · minor · content: TCE letter cites art. 212-A / Lei 14.113 for Fundeb years before 2021
+- **URL:** http://localhost:3299/rj/cabo-frio, TCE tab: "(ii) o cumprimento do art. 212-A da Constituição Federal e da Lei nº 14.113/2020 (Fundeb) no exercício de 2016".
+- **Problem:** Art. 212-A (EC 108/2020) and Lei 14.113 did not exist in 2016. Fundeb was then governed by art. 60 of the ADCT and Lei 11.494/2007. The CACS letter gets this right ("60% para o magistério até 2020, Lei nº 11.494/2007"); the TCE letter does not.
+- **Root cause:** `checks` in `web/src/lib/templates.ts`
+- **Fix:** Split by year. For years ≤ 2020, cite "art. 60 do ADCT e da Lei nº 11.494/2007"; for years ≥ 2021, cite "art. 212-A da CF e da Lei nº 14.113/2020".
+
+#### GOV-25 · minor · content: the city deficit KPI has no caveat when the estimate rests on atypical values
+- **URL:** http://localhost:3299/rj/cabo-frio (also with `?ano=2022`)
+- **Actual:**
+  - The KPI reads "Déficit até 2019: R$ 57,6 mi · estimativa não compensada desde 2008". The whole amount comes from the 2016 value of 4,34%, flagged atypical.
+  - The "Sinais de alerta" panel and the letters carry the caveat; the headline KPI, which is what gets screenshotted into a slide, does not.
+- **Root cause:** The deficit `Stat` in `web/src/app/[uf]/[slug]/city-year.tsx` doesn't read `cityFacts().carryShaky`.
+- **Fix:** When `carryShaky` is set, show a ⚠ icon and the sub-text "depende de valor atípico de 2016, confirme na fonte".
+
+#### GOV-26 · polish · content/UX: small leftovers in the kit
+- **Boa Esperança do Norte (installed 2025):**
+  - The CACS letter item 1 says "Análise da série histórica de aplicação em MDE (abaixo)", but no series is printed.
+  - The LAI letter asks for "últimos 5 exercícios" for a municipality with 1 year of existence.
+  - Fix: drop item 1 when `reported.length === 0`, and use `min(5, anos desde a instalação)`.
+- **Mobile intro text** (`#agir` description, 375px): "…uma comunicação ao Tribunal de Contas ." The glossary term's inline-block leaves a space before the period. See `r2/mobile_kit.png`.
+- **E-mail links:** the `mailto:` links are 3.3k–5k characters (Uberlândia/Franca LAI ≈ 4.7k). Some desktop clients (Outlook on Windows) truncate mailto bodies around 2k. Consider a note "se o texto chegar cortado, use Copiar texto", or put a shorter summary in the body.
+
+### Updated top 5 for this persona
+1. Fix the CACS wording bug (GOV-19) and keep edits across tabs, with shared name and contact fields (GOV-20). These are the two things a council member will notice first.
+2. Mark atypical values in "Maiores déficits" and on the city deficit KPI (GOV-12, GOV-25). These are the most quotable numbers on the site.
+3. Make audit screening complete: an export of the filtered UF table plus an Excel option on the UF page (GOV-21), MDE + Fundeb combinable filters, and a recurrence window and consecutive-year count, also in Explorer (GOV-10).
+4. Polish the print: chart sizing and page breaks, or a compact 2-page "ficha" (GOV-22).
+5. Fix the legal details: cite the Fundeb law of the right period in the TCE letter (GOV-24), and add a human-readable source link next to the JSON link (GOV-18).

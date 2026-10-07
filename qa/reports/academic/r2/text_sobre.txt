@@ -1,0 +1,107 @@
+Pular para o conteúdo
+Radar MDE
+BR
+Painel
+Explorar
+Acompanhando
+Dados
+Metodologia
+Buscar município…
+⌘K
+Metodologia
+De onde vêm os números, como o painel calcula o que faltou aplicar e o que ele ainda não consegue dizer.
+Origem
+
+O Radar MDE nasceu da tese de doutorado de Adriana Zanini da Silva, O financiamento da Educação Básica no Brasil contemporâneo: avanços e contradições revelados nos gastos da educação de Santo André (UNINOVE, 2021). Analisando Santo André de 2010 a 2019, a autora encontrou anos com aplicação abaixo dos 25% sem compensação posterior, um portal da transparência “de difícil acesso e compreensão” e conselhos de controle social sem informação para agir. Este painel tenta resolver a parte da transparência para os 5.570 municípios brasileiros, permitindo ir do retrato nacional às regiões, aos estados e a cada cidade.
+
+O que é medido
+
+MDE (art. 212 da Constituição): municípios devem aplicar ao menos 25% da receita resultante de impostos, incluindo transferências, na manutenção e desenvolvimento do ensino. O descumprimento pode levar à intervenção estadual (art. 35, III).
+
+Fundeb em remuneração: ao menos 70% dos recursos do Fundeb devem pagar profissionais da educação básica (Lei 14.113/2020). Até 2020 a regra era 60% para o magistério.
+
+Regra	Até 2020	Desde 2021
+Aplicação mínima em MDE	25%	25%
+Fundeb para profissionais (mínimo)	60%	70%
+Fundeb deixado para o ano seguinte (máximo)	5%	10%
+De onde vêm os dados
+
+Fonte principal: SIOPE (Sistema de Informações sobre Orçamentos Públicos em Educação, do FNDE), sistema oficial onde cada município declara suas receitas e despesas com educação. A série começa em 2008, primeiro ano publicado na API de dados abertos do FNDE. Até 2016 a declaração era anual; desde 2017 usamos o 6º bimestre (ano fechado). Os indicadores usados estão na tabela abaixo. A participação da educação no gasto total (2.8) está só no CSV; as páginas ainda não a mostram.
+
+Checagem cruzada: SICONFI, o Relatório Resumido da Execução Orçamentária (RREO, Anexo 14) enviado ao Tesouro Nacional. Por ora, só foi baixado para os municípios de São Paulo. Quando o percentual do Tesouro difere do SIOPE em 1 ponto ou mais, o painel mostra os dois (marcados com ≠): relatórios oficiais que não batem também são um problema de transparência. Para poucos municípios de São Paulo sem declaração ao SIOPE, o SICONFI é a fonte do percentual. O mesmo relatório traz o % aplicado em saúde, mas só para 325 municípios paulistas e de forma irregular (a maioria em 2016 e 2025); fora de SP não há dado de saúde.
+
+Números declarados
+Os números são declarados pelo próprio município. A mesma base traz a declaração de cada governo estadual, mostrada nas páginas dos estados. Brasília usa a declaração do Distrito Federal, que acumula as competências de estado e município. Grandes regiões, estados, regiões intermediárias e imediatas, população e malhas dos mapas vêm do IBGE.
+
+População: uma única estimativa, do SICONFI/Tesouro (cadastro de entes, exercício 2026), estimativa IBGE, usada em todos os anos. Totais como “moram nesses municípios” em anos antigos usam a população de hoje.
+
+Indicadores do SIOPE usados
+
+Códigos e nomes como aparecem na API de dados abertos do FNDE (Indicadores_Siope), para quem quiser refazer a série.
+
+Código	Indicador	Uso no painel
+1.1	% de aplicação das receitas de impostos e transferências em MDE	Percentual principal (mínimo 25%)
+1.2	% do Fundeb aplicado na remuneração dos profissionais da educação	Fundeb para profissionais (mínimo 60% até 2020, 70% desde 2021)
+1.4	% do Fundeb não aplicado no exercício	Fundeb deixado para o ano seguinte (máximo 5% / 10%)
+2.8	% da despesa com educação na despesa total do ente	Só no CSV (educacao_pct_despesa_total); ainda não aparece nas páginas
+4.9	Investimento educacional por aluno (R$)	Por aluno; o número de alunos é o declarado pelo próprio ente ao SIOPE
+8.1	Mínimo de 25% das receitas de impostos a aplicar em MDE (R$)	Receita de impostos (base) = 8.1 ÷ 0,25, desde 2020
+8.2	Valor aplicado em MDE (R$)	R$ aplicado, desde 2020
+Do Brasil ao município
+Brasil e regiões: quantos municípios ficaram abaixo de 25%, quanto deixou de ir para a educação, a mediana aplicada e a evolução desde 2008. O mapa alterna entre estados e os 5.570 municípios.
+Estados: os municípios do estado no mapa e em tabela filtrável, comparados com a região e o país, e o percentual aplicado pelo próprio governo estadual.
+Municípios: série completa, posição no estado e no país, vizinhos e modelos de pedidos de informação.
+O ano escolhido acompanha a navegação (parâmetro ?ano= no endereço), para comparar o mesmo exercício em todos os níveis.
+Cálculos
+Receita de impostos (base): desde 2020, o próprio indicador do SIOPE. De 2008 a 2019, somamos as receitas realizadas declaradas ao SIOPE que compõem a base do art. 212: impostos municipais (IPTU, ISS, ITBI, IRRF), multas e dívida ativa de impostos, FPM, ITR, cota-parte de ICMS, IPVA e IPI-exportação e a compensação da LC 87/96. Em 2020, essa soma coincide com o indicador oficial (diferença menor que 2%) em 97% dos municípios.
+R$ aplicado: desde 2020, o valor declarado (8.2). Antes de 2020 o SIOPE não publica esse valor, e o painel estima receita × percentual (marcado como estimado; no CSV, aplicado_estimado = 1). Também é estimado quando o valor declarado não bate com o percentual declarado (diferença acima de 1 ponto); o percentual é o número oficial.
+Faltou = (25% − percentual aplicado) × base, quando o percentual é menor que 25%. Sem declaração, ou abaixo de 25% sem receita declarada, o valor não é estimável e fica vazio (nunca zero).
+Por aluno: indicador 4.9 do SIOPE. O denominador é o número de matrículas que o próprio ente declarou ao SIOPE, não o Censo Escolar; erros nessa contagem geram valores muito altos ou muito baixos.
+Valores monetários são nominais: todos os R$ estão em reais correntes de cada ano, sem correção pela inflação. Somas de vários anos (saldo devedor, maiores déficits acumulados, série do que faltou) misturam reais de anos diferentes e devem ser lidas como ordem de grandeza. Pelo IPCA, os preços subiram cerca de 2,6 vezes entre o fim de 2008 e o fim de 2025.
+Saldo devedor (estimativa): acumula o que faltou em cada ano e abate o que foi aplicado acima de 25% nos anos seguintes, nunca ficando negativo. É a lógica de compensação discutida na tese; não substitui a apuração oficial do Tribunal de Contas.
+Pandemia: pela EC 119/2022, a aplicação abaixo do mínimo em 2020 e 2021 não gera punição se compensada até 2023. Os anos aparecem marcados.
+Limites
+Declarado não é apurado
+Os Tribunais de Contas (dos estados ou, na BA, GO e PA, dos municípios) podem glosar despesas declaradas como MDE. O percentual apurado pode ser menor que o declarado; foi o que a tese observou em Santo André com o TCE-SP.
+Antes de 2020 o valor que faltou é uma estimativa feita com a base reconstruída (acima). Quando a receita não foi declarada, o painel mostra o percentual mas não estima o valor (—).
+Até 2020 o Fundeb podia deixar no máximo 5% para o ano seguinte e exigia 60% para o magistério; desde 2021 os limites são 10% e 70% (Lei 14.113/2020). O painel aplica a regra de cada ano.
+Um ano só entra no painel quando ao menos 85% dos municípios do país têm dados, para que os totais sejam comparáveis. Na prática, a cobertura passa de 97% em todos os anos de 2008 a 2025; a página de dados mostra os números exatos.
+Limpeza da base: declarações com 0% em MDE e nenhum outro dado são formulários vazios e contam como “não declarou”; investimento por aluno abaixo de R$ 100 ou acima de R$ 200 mil é descartado como erro de preenchimento. Fernando de Noronha (PE) é distrito estadual, sem orçamento municipal, e fica fora da contagem.
+Valores atípicos são marcados, não apagados, e continuam nos totais e medianas: percentual em MDE abaixo de 18% ou acima de 45%; valor por aluno muito acima (mais de 2,5 vezes) ou abaixo (menos de 0,4 vez) do padrão do próprio município, comparado à mediana nacional de cada ano; e receita de impostos que salta ou cai mais de 2,5 vezes em relação aos anos vizinhos (o valor em R$ que faltou fica duvidoso). Costumam ser erros de declaração; confira na fonte antes de citar.
+Municípios criados depois de 2008: Mojuí dos Campos (PA, instalado em 2013), Pescaria Brava (SC, instalado em 2013), Balneário Rincão (SC, instalado em 2013), Pinto Bandeira (RS, instalado em 2013), Paraíso das Águas (MS, instalado em 2013) e Boa Esperança do Norte (MT, instalado em 2025). Nos anos anteriores eles não existiam: aparecem como “não existia”, não como “não declarou”, e ficam fora do total de municípios daqueles anos.
+Governos estaduais: os dados abertos do SIOPE não trazem a declaração do governo de Minas Gerais em 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2025 (nem de Rondônia em 2010; Amapá em 2010; Rio Grande do Sul em 2018, 2019). Nesses anos o painel mostra “sem dado” para o estado.
+Quando um município ficou abaixo de 25% mas não declarou a receita daquele ano, o valor que faltou não é estimado: os totais em R$ aparecem como “ao menos” ou “não estimado”.
+Retificações enviadas depois da coleta podem não estar refletidas até a próxima atualização.
+Cumprir 25% não significa educação de qualidade. A tese defende o Custo Aluno-Qualidade (CAQ) como referência de quanto deveria ser gasto. Uma comparação com o CAQ está no roadmap.
+Versão e como citar
+
+Versão dos dados 2026-10-07.586603bb: arquivos do SIOPE extraídos em 07/10/2026. Os dados derivados estão sob a licença CC BY 4.0. Cite as fontes originais (FNDE/SIOPE, Tesouro Nacional/SICONFI e IBGE) e o Radar MDE como forma de acesso; a página de dados tem a referência pronta em ABNT e BibTeX.
+
+Próximos passos
+Alertas por e-mail quando um município acompanhado publicar novo relatório.
+Valores corrigidos pela inflação (IPCA) ao lado dos nominais.
+Conferir o gasto por aluno com as matrículas do Censo Escolar/INEP e comparar com o CAQ.
+Percentual apurado pelos Tribunais de Contas ao lado do declarado.
+Cruzamento com o Tesouro (SICONFI) e percentual em saúde para todos os estados.
+Nesta página
+Origem
+O que é medido
+De onde vêm os dados
+Indicadores do SIOPE
+Do Brasil ao município
+Cálculos
+Limites
+Versão e como citar
+Próximos passos
+Baixar os dados
+Radar MDE · Brasil
+
+Dados: FNDE/SIOPE (indicadores e receitas declarados pelos municípios e estados, 2008 em diante), Tesouro Nacional/SICONFI (RREO, Anexo 14, municípios de SP) e IBGE (territórios, malhas e população). Inspirado em Silva, A. Z. (2021), O financiamento da Educação Básica no Brasil contemporâneo, UNINOVE. Ferramenta independente, sem vínculo com órgãos públicos.
+
+Dados extraídos em 07/10/2026 · versão 2026-10-07.586603bb · licença CC BY 4.0
+
+Painel
+Explorar
+Acompanhando
+Dados
+Metodologia

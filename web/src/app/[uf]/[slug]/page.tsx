@@ -1,6 +1,6 @@
 import { CircleAlert, ExternalLink, Info, MessageSquareText, TriangleAlert } from "lucide-react";
 import type { Metadata } from "next";
-import { notFound, permanentRedirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import ActionKit from "@/components/ActionKit";
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -90,11 +90,8 @@ export async function generateMetadata({ params }: PageProps<"/[uf]/[slug]">): P
 export default async function CityPage({ params }: PageProps<"/[uf]/[slug]">) {
   const { uf, slug } = await params;
   const c = resolve(uf, slug);
-  if (!c) {
-    const other = getCity(uf.toLowerCase(), slug.toLowerCase());
-    if (other) permanentRedirect(cityPath(other.uf, other.slug));
-    notFound();
-  }
+  // mixed-case URLs are redirected to lowercase in src/proxy.ts, before they reach the render cache
+  if (!c) notFound();
   return <CityContent c={c} />;
 }
 

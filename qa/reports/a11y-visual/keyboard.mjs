@@ -1,7 +1,7 @@
 import { chromium } from 'playwright';
 const route=process.argv[2]||'/'; const N=+(process.argv[3]||80); const w=+(process.argv[4]||1280);
 const b=await chromium.launch(); const ctx=await b.newContext({viewport:{width:w,height:800}}); const p=await ctx.newPage();
-await p.goto('http://localhost:3210'+route,{waitUntil:'networkidle',timeout:120000}); await p.waitForTimeout(500);
+await p.goto((process.env.BASE||'http://localhost:3210')+route,{waitUntil:'networkidle',timeout:120000}); await p.waitForTimeout(500);
 const out=[];
 for(let i=0;i<N;i++){
  await p.keyboard.press('Tab'); await p.waitForTimeout(60);

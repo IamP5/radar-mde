@@ -1,0 +1,20 @@
+
+== year
+PASS  year: default is 2025
+PASS  year: click 2015 sets ?ano=2015  — ?ano=2015
+PASS  year: headline updates to 2015
+PASS  year: survives reload  — 2015
+PASS  year: ArrowLeft -> 2014
+PASS  year: Home -> 2008
+PASS  year: prev button disabled at 2008
+PASS  year: ArrowLeft at 2008 stays
+PASS  year: End -> 2025 and ?ano removed
+PASS  year: next button disabled at 2025
+PASS  year: prev button -> 2024
+PASS  year: ?ano=1999 falls back to 2025
+PASS  year: ?ano=abc falls back to 2025
+PASS  year: ?ano=2015.5 falls back to 2025
+PASS  year: ?ano= falls back to 2025
+PASS  year: ?ano=2030 falls back to 2025
+PASS  year: ?ano=2012 deep link
+PASS  year: drill to UF keeps ?ano  — http://localhost:3210/sp?ano=2012 2012

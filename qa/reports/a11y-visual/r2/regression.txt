@@ -1,0 +1,167 @@
+== axe (wcag2a, wcag2aa, wcag21aa, wcag22aa) ==
+light /                    rules=0 nodes=0 
+light /regiao/sudeste      rules=0 nodes=0 
+light /sp                  rules=0 nodes=0 
+light /sp/santo-andre      rules=0 nodes=0 
+light /explorar            rules=0 nodes=0 
+light /acompanhar          rules=0 nodes=0 
+light /dados               rules=0 nodes=0 
+light /sobre               rules=0 nodes=0 
+light /rota-inexistente    rules=0 nodes=0 
+dark  /                    rules=0 nodes=0 
+dark  /regiao/sudeste      rules=0 nodes=0 
+dark  /sp                  rules=0 nodes=0 
+dark  /sp/santo-andre      rules=0 nodes=0 
+dark  /explorar            rules=0 nodes=0 
+dark  /acompanhar          rules=0 nodes=0 
+dark  /dados               rules=0 nodes=0 
+dark  /sobre               rules=0 nodes=0 
+dark  /rota-inexistente    rules=0 nodes=0 
+
+== horizontal overflow / small targets ==
+light  320 /                    ok  smallTargets=47
+light  320 /regiao/sudeste      ok  smallTargets=6
+light  320 /sp                  ok  smallTargets=61
+light  320 /sp/santo-andre      ok  smallTargets=17
+light  320 /explorar            ok  smallTargets=27
+light  320 /acompanhar          ok  smallTargets=2
+light  320 /dados               ok  smallTargets=14
+light  320 /sobre               ok  smallTargets=2
+light  320 /rota-inexistente    ok  smallTargets=2
+light  375 /                    ok  smallTargets=44
+light  375 /regiao/sudeste      ok  smallTargets=6
+light  375 /sp                  ok  smallTargets=61
+light  375 /sp/santo-andre      ok  smallTargets=17
+light  375 /explorar            ok  smallTargets=27
+light  375 /acompanhar          ok  smallTargets=2
+light  375 /dados               ok  smallTargets=14
+light  375 /sobre               ok  smallTargets=2
+light  375 /rota-inexistente    ok  smallTargets=2
+light  414 /                    ok  smallTargets=41
+light  414 /regiao/sudeste      ok  smallTargets=6
+light  414 /sp                  ok  smallTargets=61
+light  414 /sp/santo-andre      ok  smallTargets=17
+light  414 /explorar            ok  smallTargets=27
+light  414 /acompanhar          ok  smallTargets=2
+light  414 /dados               ok  smallTargets=14
+light  414 /sobre               ok  smallTargets=2
+light  414 /rota-inexistente    ok  smallTargets=2
+light  768 /                    ok  smallTargets=37
+light  768 /regiao/sudeste      ok  smallTargets=6
+light  768 /sp                  ok  smallTargets=62
+light  768 /sp/santo-andre      ok  smallTargets=17
+light  768 /explorar            ok  smallTargets=27
+light  768 /acompanhar          ok  smallTargets=2
+light  768 /dados               ok  smallTargets=14
+light  768 /sobre               ok  smallTargets=2
+light  768 /rota-inexistente    ok  smallTargets=2
+light 1024 /                    ok  smallTargets=40
+light 1024 /regiao/sudeste      ok  smallTargets=6
+light 1024 /sp                  ok  smallTargets=62
+light 1024 /sp/santo-andre      ok  smallTargets=17
+light 1024 /explorar            ok  smallTargets=27
+light 1024 /acompanhar          ok  smallTargets=2
+light 1024 /dados               ok  smallTargets=14
+light 1024 /sobre               ok  smallTargets=3
+light 1024 /rota-inexistente    ok  smallTargets=2
+light 1280 /                    ok  smallTargets=37
+light 1280 /regiao/sudeste      ok  smallTargets=6
+light 1280 /sp                  ok  smallTargets=62
+light 1280 /sp/santo-andre      ok  smallTargets=17
+light 1280 /explorar            ok  smallTargets=27
+light 1280 /acompanhar          ok  smallTargets=2
+light 1280 /dados               ok  smallTargets=14
+light 1280 /sobre               ok  smallTargets=3
+light 1280 /rota-inexistente    ok  smallTargets=2
+light 1440 /                    ok  smallTargets=37
+light 1440 /regiao/sudeste      ok  smallTargets=6
+light 1440 /sp                  ok  smallTargets=62
+light 1440 /sp/santo-andre      ok  smallTargets=17
+light 1440 /explorar            ok  smallTargets=27
+light 1440 /acompanhar          ok  smallTargets=2
+light 1440 /dados               ok  smallTargets=14
+light 1440 /sobre               ok  smallTargets=3
+light 1440 /rota-inexistente    ok  smallTargets=2
+light 1920 /                    ok  smallTargets=37
+light 1920 /regiao/sudeste      ok  smallTargets=6
+light 1920 /sp                  ok  smallTargets=62
+light 1920 /sp/santo-andre      ok  smallTargets=2
+light 1920 /explorar            ok  smallTargets=27
+light 1920 /acompanhar          ok  smallTargets=2
+light 1920 /dados               ok  smallTargets=14
+light 1920 /sobre               ok  smallTargets=3
+light 1920 /rota-inexistente    ok  smallTargets=2
+dark   320 /                    ok  smallTargets=47
+dark   320 /regiao/sudeste      ok  smallTargets=6
+dark   320 /sp                  ok  smallTargets=61
+dark   320 /sp/santo-andre      ok  smallTargets=2
+dark   320 /explorar            ok  smallTargets=27
+dark   320 /acompanhar          ok  smallTargets=2
+dark   320 /dados               ok  smallTargets=14
+dark   320 /sobre               ok  smallTargets=2
+dark   320 /rota-inexistente    ok  smallTargets=2
+dark   375 /                    ok  smallTargets=44
+dark   375 /regiao/sudeste      ok  smallTargets=6
+dark   375 /sp                  ok  smallTargets=61
+dark   375 /sp/santo-andre      ok  smallTargets=2
+dark   375 /explorar            ok  smallTargets=27
+dark   375 /acompanhar          ok  smallTargets=2
+dark   375 /dados               ok  smallTargets=14
+dark   375 /sobre               ok  smallTargets=2
+dark   375 /rota-inexistente    ok  smallTargets=2
+dark   414 /                    ok  smallTargets=41
+dark   414 /regiao/sudeste      ok  smallTargets=6
+dark   414 /sp                  ok  smallTargets=61
+dark   414 /sp/santo-andre      ok  smallTargets=2
+dark   414 /explorar            ok  smallTargets=27
+dark   414 /acompanhar          ok  smallTargets=2
+dark   414 /dados               ok  smallTargets=14
+dark   414 /sobre               ok  smallTargets=2
+dark   414 /rota-inexistente    ok  smallTargets=2
+dark   768 /                    ok  smallTargets=37
+dark   768 /regiao/sudeste      ok  smallTargets=6
+dark   768 /sp                  ok  smallTargets=62
+dark   768 /sp/santo-andre      ok  smallTargets=2
+dark   768 /explorar            ok  smallTargets=27
+dark   768 /acompanhar          ok  smallTargets=2
+dark   768 /dados               ok  smallTargets=14
+dark   768 /sobre               ok  smallTargets=2
+dark   768 /rota-inexistente    ok  smallTargets=2
+dark  1024 /                    ok  smallTargets=40
+dark  1024 /regiao/sudeste      ok  smallTargets=6
+dark  1024 /sp                  ok  smallTargets=62
+dark  1024 /sp/santo-andre      ok  smallTargets=2
+dark  1024 /explorar            ok  smallTargets=27
+dark  1024 /acompanhar          ok  smallTargets=2
+dark  1024 /dados               ok  smallTargets=14
+dark  1024 /sobre               ok  smallTargets=3
+dark  1024 /rota-inexistente    ok  smallTargets=2
+dark  1280 /                    ok  smallTargets=37
+dark  1280 /regiao/sudeste      ok  smallTargets=6
+dark  1280 /sp                  ok  smallTargets=62
+dark  1280 /sp/santo-andre      ok  smallTargets=2
+dark  1280 /explorar            ok  smallTargets=27
+dark  1280 /acompanhar          ok  smallTargets=2
+dark  1280 /dados               ok  smallTargets=14
+dark  1280 /sobre               ok  smallTargets=3
+dark  1280 /rota-inexistente    ok  smallTargets=2
+dark  1440 /                    ok  smallTargets=37
+dark  1440 /regiao/sudeste      ok  smallTargets=6
+dark  1440 /sp                  ok  smallTargets=62
+dark  1440 /sp/santo-andre      ok  smallTargets=2
+dark  1440 /explorar            ok  smallTargets=27
+dark  1440 /acompanhar          ok  smallTargets=2
+dark  1440 /dados               ok  smallTargets=14
+dark  1440 /sobre               ok  smallTargets=3
+dark  1440 /rota-inexistente    ok  smallTargets=2
+dark  1920 /                    ok  smallTargets=37
+dark  1920 /regiao/sudeste      ok  smallTargets=6
+dark  1920 /sp                  ok  smallTargets=62
+dark  1920 /sp/santo-andre      ok  smallTargets=2
+dark  1920 /explorar            ok  smallTargets=27
+dark  1920 /acompanhar          ok  smallTargets=2
+dark  1920 /dados               ok  smallTargets=14
+dark  1920 /sobre               ok  smallTargets=3
+dark  1920 /rota-inexistente    ok  smallTargets=2
+
+failing checks: 0  (details: /Users/tuba/Dev/projects/radar-mde/qa/reports/a11y-visual/results.json)

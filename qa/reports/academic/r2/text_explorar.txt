@@ -1,0 +1,273 @@
+Pular para o conteúdo
+Radar MDE
+BR
+Painel
+Explorar
+Acompanhando
+Dados
+Metodologia
+Buscar município…
+⌘K
+Explorar municípios
+Os 5.570 municípios em uma tabela: filtre por região, estado, porte e situação, ordene qualquer coluna, compare 2008–2025 e exporte o recorte em CSV.
+Exercício
+2025
+Região
+UF
+População
+Situação em 2025
+Reincidentes
+424
+Capitais
+27
+Copiar link
+Exportar CSV
+5.570 de 5.570 municípios
+Municípios
+5.570
+todos do país
+Abaixo de 25% em 2025
+23
+0,4% dos que declararam
+Faltou aplicar (estimativa)
+R$ 150,1 mi
+dos quais R$ 122 mi em valores atípicos
+MDE mediana
+27,1%
+5.560 declararam
+População
+213,3 mi
+732.269 em municípios abaixo
+Municípios
+Indicadores de 2025. Clique no cabeçalho para ordenar; a série mostra 2008–2025.
+< 22%
+22–25%
+25–26%
+26–30%
+≥ 30%
+não declarou
+Municípios filtrados, indicadores de 2025
+Município
+	
+População
+	
+MDE em 2025
+	
+vs 2024
+	
+Situação
+	
+Fundeb pessoal
+	
+R$ por aluno
+	
+Faltou
+	
+Anos < 25%
+	2008–2025
+
+Piaçabuçu
+AL
+Maceió
+	16.192	
+(valor atípico, possível erro de declaração)
+5,63%
+(abaixo do mínimo)
+	−19,5	
+Abaixo	48,55%	R$ 10.225	R$ 10,7 mi	1	
+
+
+Chapada da Natividade
+TO
+Palmas
+	3.176	
+(valor atípico, possível erro de declaração)
+11,01%
+(abaixo do mínimo)
+	−14,0	
+Abaixo	53,76%	R$ 19.407	R$ 3,2 mi	1	
+
+
+Magalhães Barata
+PA
+Castanhal
+	8.439	
+(valor atípico, possível erro de declaração)
+14,21%
+(abaixo do mínimo)
+	−17,0	
+Abaixo	76,12%	R$ 16.047	R$ 9,6 mi	1	
+
+
+Cubati
+PB
+Campina Grande
+	7.842	
+(valor atípico, possível erro de declaração)
+14,89%
+(abaixo do mínimo)
+	−4,2	
+Abaixo	71,64%	R$ 15.064	R$ 2,9 mi	3	
+
+
+Brejo da Madre de Deus
+PE
+Caruaru
+	51.308	
+(valor atípico, possível erro de declaração)
+14,97%
+(abaixo do mínimo)
+	−10,8	
+Abaixo	78,33%	R$ 11.537	R$ 11,2 mi	2	
+
+
+Volta Redonda
+RJ
+Volta Redonda - Barra Mansa
+	279.971	
+(valor atípico, possível erro de declaração)
+16,63%
+(abaixo do mínimo)
+	−8,5	
+Abaixo	73,39%	R$ 10.195	R$ 84,4 mi	5	
+
+
+Tenente Ananias
+RN
+Mossoró
+	10.610	18,78%
+(abaixo do mínimo)
+	−0,1	
+Abaixo	54,69%	R$ 13.211	R$ 2,1 mi	5	
+
+
+Praia Norte
+TO
+Araguaína
+	9.552	19,78%
+(abaixo do mínimo)
+	−2,0	
+Abaixo	60,92%	R$ 13.191	R$ 1 mi	3	
+
+
+Centro Novo do Maranhão
+MA
+Santa Inês - Bacabal
+	16.477	19,84%
+(abaixo do mínimo)
+	−3,1	
+Abaixo	63,40%	R$ 15.563	R$ 2,3 mi	2	
+
+
+Lagoa da Confusão
+TO
+Palmas
+	16.629	19,91%
+(abaixo do mínimo)
+	−0,8	
+Abaixo	85,76%	R$ 12.833	R$ 3,1 mi	4	
+
+
+Marechal Thaumaturgo
+AC
+Cruzeiro do Sul
+	18.057	20,31%
+(abaixo do mínimo)
+	+3,9	
+Abaixo	74,20%	R$ 12.608	R$ 1,8 mi	6	
+
+
+Porto Walter
+AC
+Cruzeiro do Sul
+	11.333	20,49%
+(abaixo do mínimo)
+	−5,1	
+Abaixo	99,69%	R$ 12.207	R$ 1,2 mi	2	
+
+
+Rodrigues Alves
+AC
+Cruzeiro do Sul
+	15.560	20,85%
+(abaixo do mínimo)
+	−5,7	
+Abaixo	89,15%	R$ 13.165	R$ 1,6 mi	2	
+
+
+São José de Mipibu
+RN
+Natal
+	50.053	20,89%
+(abaixo do mínimo)
+	+0,3	
+Abaixo	70,70%	R$ 13.329	R$ 4,9 mi	3	
+
+
+Pirambu
+SE
+Aracaju
+	8.021	21,03%
+(abaixo do mínimo)
+	−2,7	
+Abaixo	93,03%	R$ 13.312	R$ 1,2 mi	2	
+
+
+Custódia
+PE
+Caruaru
+	39.609	21,93%
+(abaixo do mínimo)
+	−5,6	
+Abaixo	92,04%	R$ 12.654	R$ 3 mi	1	
+
+
+Luís Gomes
+RN
+Mossoró
+	9.271	22,03%
+(abaixo do mínimo)
+	−3,2	
+Abaixo	74,28%	R$ 17.194	R$ 956 mil	3	
+
+
+Paranã
+TO
+Gurupi
+	10.877	22,53%
+(abaixo do mínimo)
+	−10,6	
+Abaixo	85,58%	R$ 20.123	R$ 943 mil	1	
+
+
+Montanhas
+RN
+Natal
+	11.785	22,54%
+(abaixo do mínimo)
+	−0,2	
+Abaixo	93,64%	R$ 12.256	R$ 817 mil	3	
+
+
+Jordão
+AC
+Cruzeiro do Sul
+	9.884	23,69%
+(abaixo do mínimo)
+	−1,7	
+Abaixo	72,36%	R$ 14.524	R$ 305 mil	4	
+
+
+5.570 municípios · role a tabela para ver todos
+= valor atípico, possível erro de declaração
+Radar MDE · Brasil
+
+Dados: FNDE/SIOPE (indicadores e receitas declarados pelos municípios e estados, 2008 em diante), Tesouro Nacional/SICONFI (RREO, Anexo 14, municípios de SP) e IBGE (territórios, malhas e população). Inspirado em Silva, A. Z. (2021), O financiamento da Educação Básica no Brasil contemporâneo, UNINOVE. Ferramenta independente, sem vínculo com órgãos públicos.
+
+Dados extraídos em 07/10/2026 · versão 2026-10-07.586603bb · licença CC BY 4.0
+
+Painel
+Explorar
+Acompanhando
+Dados
+Metodologia

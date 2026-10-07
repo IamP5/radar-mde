@@ -5,7 +5,7 @@ import { chromium } from 'playwright';
 import AxeBuilder from '@axe-core/playwright';
 import fs from 'node:fs';
 const args = process.argv.slice(2);
-const BASE = args.includes('--base') ? args[args.indexOf('--base') + 1] : 'http://localhost:3210';
+const BASE = args.includes('--base') ? args[args.indexOf('--base') + 1] : (process.env.BASE||'http://localhost:3210');
 const QUICK = args.includes('--quick');
 const ROUTES = ['/', '/regiao/sudeste', '/sp', '/sp/santo-andre', '/explorar', '/acompanhar', '/dados', '/sobre', '/rota-inexistente'];
 const THEMES = ['light', 'dark'];

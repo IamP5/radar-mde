@@ -1,0 +1,314 @@
+
+===== / {
+ "title": "Radar MDE · Brasil",
+ "lang": "pt-BR",
+ "hs": [
+  "1 A educação recebe o que a Constituição manda?",
+  "2 Mapa · Brasil",
+  "2 Por região",
+  "2 Evolução 2008–2025",
+  "2 Todos os estados",
+  "2 Distribuição dos municípios · 2025",
+  "2 Maiores déficits acumulados até 2025",
+  "2 Ranking dos estados · 2025"
+ ],
+ "lm": [
+  "header",
+  "nav \"Principal\"",
+  "nav \"Principal\"",
+  "main",
+  "section \"Indicadores de 2025\"",
+  "header",
+  "header",
+  "header",
+  "header",
+  "header",
+  "header",
+  "header",
+  "footer"
+ ],
+ "svgs": [
+  "- hidden=true label=\"Indicadores de 2025\" w=235 paths=2 focusable=0",
+  "- hidden=true label=\"Indicadores de 2025\" w=235 paths=2 focusable=0",
+  "- hidden=true label=\"Indicadores de 2025\" w=235 paths=2 focusable=0",
+  "- hidden=true label=\"Indicadores de 2025\" w=235 paths=2 focusable=0",
+  "- hidden=true label=\"Indicadores de 2025\" w=235 paths=2 focusable=0",
+  "group hidden=false label=\"Mapa do Brasil por estado, 2025: % de municípios abaixo de 25%. Use Ta\" w=688 paths=27 focusable=27",
+  "- hidden=true label=\"Norte: 2% dos municípios abaixo de 25% em 2025\" w=410 paths=2 focusable=0",
+  "- hidden=true label=\"Nordeste: 0,6% dos municípios abaixo de 25% em 2025\" w=410 paths=2 focusable=0",
+  "- hidden=true label=\"Centro-Oeste: 0,2% dos municípios abaixo de 25% em 2025\" w=410 paths=2 focusable=0",
+  "- hidden=true label=\"Sudeste: 0,1% dos municípios abaixo de 25% em 2025\" w=410 paths=2 focusable=0",
+  "- hidden=true label=\"Sul: 0,1% dos municípios abaixo de 25% em 2025\" w=410 paths=2 focusable=0",
+  "- hidden=true label=\"% de municípios abaixo de 25% por ano, Brasil. Setas esquerda e direit\" w=1198 paths=7 focusable=17",
+  "- hidden=true label=\"Rondônia: 0% dos municípios abaixo de 25% em 2025\" w=206 paths=2 focusable=0",
+  "- hidden=true label=\"Acre: 18% dos municípios abaixo de 25% em 2025\" w=206 paths=2 focusable=0",
+  "- hidden=true label=\"Amazonas: 0% dos municípios abaixo de 25% em 2025\" w=206 paths=2 focusable=0",
+  "- hidden=true label=\"Roraima: 0% dos municípios abaixo de 25% em 2025\" w=206 paths=2 focusable=0",
+  "- hidden=true label=\"Pará: 0,7% dos municípios abaixo de 25% em 2025\" w=206 paths=2 focusable=0",
+  "- hidden=true label=\"Amapá: 0% dos municípios abaixo de 25% em 2025\" w=206 paths=2 focusable=0",
+  "- hidden=true label=\"Tocantins: 2,9% dos municípios abaixo de 25% em 2025\" w=206 paths=2 focusable=0",
+  "- hidden=true label=\"Maranhão: 0,5% dos municípios abaixo de 25% em 2025\" w=206 paths=2 focusable=0",
+  "- hidden=true label=\"Piauí: 0% dos municípios abaixo de 25% em 2025\" w=206 paths=2 focusable=0",
+  "- hidden=true label=\"Ceará: 0% dos municípios abaixo de 25% em 2025\" w=206 paths=2 focusable=0",
+  "- hidden=true label=\"Rio Grande do Norte: 2,4% dos municípios abaixo de 25% em 2025\" w=206 paths=2 focusable=0",
+  "- hidden=true label=\"Paraíba: 0,4% dos municípios abaixo de 25% em 2025\" w=206 paths=2 focusable=0",
+  "- hidden=true label=\"Pernambuco: 1,1% dos municípios abaixo de 25% em 2025\" w=206 paths=2 focusable=0",
+  "- hidden=true label=\"Alagoas: 1% dos municípios abaixo de 25% em 2025\" w=206 paths=2 focusable=0",
+  "- hidden=true label=\"Sergipe: 1,3% dos municípios abaixo de 25% em 2025\" w=206 paths=2 focusable=0",
+  "- hidden=true label=\"Bahia: 0% dos municípios abaixo de 25% em 2025\" w=206 paths=2 focusable=0",
+  "- hidden=true label=\"Minas Gerais: 0% dos municípios abaixo de 25% em 2025\" w=206 paths=2 focusable=0",
+  "- hidden=true label=\"Espírito Santo: 0% dos municípios abaixo de 25% em 2025\" w=206 paths=2 focusable=0",
+  "- hidden=true label=\"Rio de Janeiro: 1,1% dos municípios abaixo de 25% em 2025\" w=206 paths=2 focusable=0",
+  "- hidden=true label=\"São Paulo: 0,2% dos municípios abaixo de 25% em 2025\" w=206 paths=2 focusable=0",
+  "- hidden=true label=\"Paraná: 0,3% dos municípios abaixo de 25% em 2025\" w=206 paths=2 focusable=0",
+  "- hidden=true label=\"Santa Catarina: 0% dos municípios abaixo de 25% em 2025\" w=206 paths=2 focusable=0",
+  "- hidden=true label=\"Rio Grande do Sul: 0% dos municípios abaixo de 25% em 2025\" w=206 paths=2 focusable=0",
+  "- hidden=true label=\"Mato Grosso do Sul: 0% dos municípios abaixo de 25% em 2025\" w=206 paths=2 focusable=0",
+  "- hidden=true label=\"Mato Grosso: 0,7% dos municípios abaixo de 25% em 2025\" w=206 paths=2 focusable=0",
+  "- hidden=true label=\"Goiás: 0% dos municípios abaixo de 25% em 2025\" w=206 paths=2 focusable=0",
+  "- hidden=true label=\"Distrito Federal: 0% dos municípios abaixo de 25% em 2025\" w=206 paths=2 focusable=0",
+  "- hidden=true label=\"\" w=771 paths=29 focusable=12"
+ ],
+ "live": [
+  "status live=polite \"Exibindo 2025: 23 de 5.560 municípios abaixo de 25\""
+ ],
+ "unnamed": [],
+ "tables": [
+  "caption=true rows=28 th=9"
+ ],
+ "titleAttrOnly": 58
+}
+
+===== /regiao/sudeste {
+ "title": "Região Sudeste · Radar MDE",
+ "lang": "pt-BR",
+ "hs": [
+  "1 Região Sudeste",
+  "2 Mapa · Região Sudeste",
+  "2 Estados da região",
+  "2 Evolução 2008–2025",
+  "2 Distribuição dos municípios · 2025",
+  "2 Maiores déficits acumulados até 2025",
+  "2 Ranking dos estados · 2025"
+ ],
+ "lm": [
+  "header",
+  "nav \"Principal\"",
+  "nav \"Principal\"",
+  "main",
+  "nav \"Navegação territorial\"",
+  "nav \"Regiões\"",
+  "section \"Indicadores de 2025\"",
+  "header",
+  "header",
+  "header",
+  "header",
+  "header",
+  "header",
+  "footer"
+ ],
+ "svgs": [
+  "- hidden=true label=\"Indicadores de 2025\" w=235 paths=2 focusable=0",
+  "- hidden=true label=\"Indicadores de 2025\" w=235 paths=2 focusable=0",
+  "- hidden=true label=\"Indicadores de 2025\" w=235 paths=2 focusable=0",
+  "- hidden=true label=\"Indicadores de 2025\" w=235 paths=2 focusable=0",
+  "- hidden=true label=\"Indicadores de 2025\" w=235 paths=2 focusable=0",
+  "img hidden=false label=\"Mapa da região Sudeste por município, 2025: % da receita de impostos a\" w=688 paths=1670 focusable=0",
+  "- hidden=true label=\"Minas Gerais: 0% dos municípios abaixo de 25% em 2025\" w=188 paths=2 focusable=0",
+  "- hidden=true label=\"Espírito Santo: 0% dos municípios abaixo de 25% em 2025\" w=188 paths=2 focusable=0",
+  "- hidden=true label=\"Rio de Janeiro: 1,1% dos municípios abaixo de 25% em 2025\" w=188 paths=2 focusable=0",
+  "- hidden=true label=\"São Paulo: 0,2% dos municípios abaixo de 25% em 2025\" w=188 paths=2 focusable=0",
+  "- hidden=true label=\"% de municípios abaixo de 25% por ano, Região Sudeste. Setas esquerda \" w=1198 paths=3 focusable=12",
+  "- hidden=true label=\"\" w=771 paths=20 focusable=12"
+ ],
+ "live": [
+  "status live=polite \"Exibindo 2025: 2 de 1.662 municípios abaixo de 25%\""
+ ],
+ "unnamed": [],
+ "tables": [
+  "caption=true rows=5 th=9"
+ ],
+ "titleAttrOnly": 28
+}
+
+===== /sp {
+ "title": "São Paulo · Radar MDE",
+ "lang": "pt-BR",
+ "hs": [
+  "1 São Paulo",
+  "2 Mapa de 2025",
+  "2 Municípios abaixo dos 25%, por ano",
+  "2 Distribuição em 2025",
+  "2 São Paulo frente à região e ao país",
+  "2 Maiores déficits acumulados até 2025",
+  "2 Todos os municípios"
+ ],
+ "lm": [
+  "header",
+  "nav \"Principal\"",
+  "nav \"Principal\"",
+  "main",
+  "nav \"Navegação territorial\"",
+  "section \"Indicadores de 2025\"",
+  "header",
+  "header",
+  "header",
+  "header",
+  "header",
+  "header",
+  "footer"
+ ],
+ "svgs": [
+  "img hidden=false label=\"Mapa dos municípios de São Paulo: % da receita de impostos aplicado em\" w=688 paths=645 focusable=0",
+  "- hidden=true label=\"Número de municípios abaixo de 25% por ano. Setas esquerda e direita m\" w=436 paths=16 focusable=12",
+  "- hidden=true label=\"\" w=436 paths=19 focusable=12",
+  "- hidden=true label=\"Percentual de municípios abaixo de 25%: São Paulo, região Sudeste e Br\" w=771 paths=3 focusable=12"
+ ],
+ "live": [
+  "status live=polite \"Exibindo 2025: 1 de 640 municípios abaixo de 25%, \"",
+  "status live=polite \"645 municípios\""
+ ],
+ "unnamed": [],
+ "tables": [
+  "caption=true rows=51 th=8"
+ ],
+ "titleAttrOnly": 6
+}
+
+===== /sp/santo-andre {
+ "title": "Página não encontrada · Radar MDE",
+ "lang": "pt-BR",
+ "hs": [],
+ "lm": [
+  "header",
+  "nav \"Principal\"",
+  "nav \"Principal\"",
+  "main",
+  "footer"
+ ],
+ "svgs": [],
+ "live": [],
+ "unnamed": [],
+ "tables": [],
+ "titleAttrOnly": 0
+}
+
+===== /explorar {
+ "title": "Explorar municípios · Radar MDE",
+ "lang": "pt-BR",
+ "hs": [
+  "1 Explorar municípios",
+  "2 Municípios"
+ ],
+ "lm": [
+  "header",
+  "nav \"Principal\"",
+  "nav \"Principal\"",
+  "main",
+  "header",
+  "footer",
+  "footer"
+ ],
+ "svgs": [],
+ "live": [
+  "status live=null \"\"",
+  " live=polite \"5.570 de 5.570 municípios\""
+ ],
+ "unnamed": [],
+ "tables": [
+  "caption=true rows=22 th=10"
+ ],
+ "titleAttrOnly": 386
+}
+
+===== /acompanhar {
+ "title": "Acompanhando · Radar MDE",
+ "lang": "pt-BR",
+ "hs": [
+  "1 Acompanhando"
+ ],
+ "lm": [
+  "header",
+  "nav \"Principal\"",
+  "nav \"Principal\"",
+  "main",
+  "footer"
+ ],
+ "svgs": [],
+ "live": [],
+ "unnamed": [],
+ "tables": [],
+ "titleAttrOnly": 0
+}
+
+===== /dados {
+ "title": "Dados abertos · Radar MDE",
+ "lang": "pt-BR",
+ "hs": [
+  "1 Dados abertos",
+  "2 Por região e governos estaduais",
+  "2 Por estado",
+  "3 Norte",
+  "3 Nordeste",
+  "3 Centro-Oeste",
+  "3 Sudeste",
+  "3 Sul",
+  "2 Cobertura nacional por exercício",
+  "2 Dicionário",
+  "2 Como citar"
+ ],
+ "lm": [
+  "header",
+  "nav \"Principal\"",
+  "nav \"Principal\"",
+  "main",
+  "section",
+  "section",
+  "section",
+  "section",
+  "section",
+  "footer"
+ ],
+ "svgs": [],
+ "live": [],
+ "unnamed": [],
+ "tables": [
+  "caption=false rows=19 th=5",
+  "caption=false rows=30 th=2"
+ ],
+ "titleAttrOnly": 0
+}
+
+===== /sobre {
+ "title": "Metodologia · Radar MDE",
+ "lang": "pt-BR",
+ "hs": [
+  "1 Metodologia",
+  "2 Origem",
+  "2 O que é medido",
+  "2 De onde vêm os dados",
+  "2 Indicadores do SIOPE usados",
+  "2 Do Brasil ao município",
+  "2 Cálculos",
+  "2 Limites",
+  "2 Versão e como citar",
+  "2 Próximos passos"
+ ],
+ "lm": [
+  "header",
+  "nav \"Principal\"",
+  "nav \"Principal\"",
+  "main",
+  "aside \"Nesta página\"",
+  "nav",
+  "footer"
+ ],
+ "svgs": [],
+ "live": [],
+ "unnamed": [],
+ "tables": [
+  "caption=false rows=4 th=3",
+  "caption=false rows=8 th=3"
+ ],
+ "titleAttrOnly": 0
+}

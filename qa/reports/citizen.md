@@ -192,3 +192,108 @@ Cities used: Conceição do Almeida (BA, 16k inhabitants, 10,47% in 2024), Bom P
 3. **Explain every number in place** with tap-able "O que é isso?" popovers, and drop "p.p.", "mediana" and "déficit não compensado" from headline positions (CIT-05, CIT-09).
 4. **Make the kit actionable from a phone:** a chooser written in plain words, send by WhatsApp/e-mail, and a link to where to send it (CIT-06).
 5. **Respect prepaid data:** stop shipping the full 2.3 MB dataset on home and watchlist, and lazy-load maps and histograms below the fold (CIT-08). Also fix the touch-only glitches (CIT-02, CIT-03, CIT-04, CIT-11).
+
+---
+
+## Round 2 — re-validation (commit ff4a309, production build on :3299)
+
+Same personas and devices as round 1: iPhone 13 touch, plus Android 360×740 with touch, 4× CPU and about 1.6 Mbps / 150 ms. Scripts and screenshots are in `qa/reports/citizen/r2/` (`r2a.mjs` search/home, `r2b.mjs` city page, `r2c.mjs` Android/watchlist/dark, `perf.mjs`, `weight.mjs`, `zoom.mjs`). No console errors and no horizontal overflow at 360 or 390 px on any route.
+
+### Journey, round 2
+- **WhatsApp link → city page.**
+  - All four questions are now answered in the hero in about 15 s. The verdict carries the trend in plain words: "Em 2025, aplicou 25,00% … cumpriu, mas no limite. Subiu 14,5 pontos em relação a 2024 (10,47%)."
+  - "O que posso fazer?" is one tap and jumps to `#agir`.
+  - Vizinhos is still about 3 screens down, but the ranking now reads "0 aplicaram menos e 413 aplicaram mais".
+- **Home → my city.** A 44 px "Digite o nome da sua cidade" field sits above the fold (y≈434 on iPhone). Tapping it opens the palette with the input focused. Typos and abbreviations now work, there is "Ver todos os N", and the palette has a "Fechar" button.
+- **Perf, throttled phone, production build** (transferred bytes):
+
+  | Page | Transferred | Was (round 1, dev) | FCP | load | network idle |
+  |---|---|---|---|---|---|
+  | `/` | 910 KB | 4.0 MB | ~0.95 s | 2.5 s | 5.6 s |
+  | city page | 890 KB | 1.9 MB | ~0.95 s | 3.7 s | 5.4 s |
+  | `/acompanhar` | 550 KB | 3.4 MB | ~0.95 s | 1.8 s | 4.0 s |
+
+  `municipios.json` is no longer fetched on home or watchlist, and it is served with brotli.
+
+### Status of round-1 findings
+
+| ID | Status | Evidence / note |
+|---|---|---|
+| CIT-01 home search | **FIXED** | `r2/c___0.png`. The field is 358×44 and opens the palette with focus. "Baixar CSV" still comes before it visually (acceptable). |
+| CIT-02 watch star-off on touch | **FIXED** | `r2/watch_0.png`. Tap → filled star + "Acompanhando"; tap again → "Acompanhar". A status message "Removido da sua lista…" is announced. Reproduced 2× (iPhone and Android). |
+| CIT-03 "Passe o mouse/Clique" | **FIXED** | Maps and bars now say "Toque ou passe o mouse… toque de novo ou clique". A leftover "clique para fixar" remains in the `MultiLine.tsx:113` tooltip, which is not on the citizen path. |
+| CIT-04 chart focus rectangle | **FIXED** | After tapping, `activeElement` has `outline: none` (2/2 taps). `r2/chart_tap.png` |
+| CIT-05 jargon | **FIXED** | 19 dotted-underline glossary triggers on the city page (MDE, Fundeb, Déficit, Mediana, SIOPE, EC 119, pontos percentuais, região imediata, e-SIC, CACS-Fundeb, Tribunal de Contas). They open on tap and close on an outside tap. The copy is plain (`r2/glossary_mde.png`). "p.p." is replaced by "pontos". The triggers are small, see CIT-11. |
+| CIT-06 action kit | **FIXED** | Hero button jumps to `#agir`. The four options are 60 px cards with plain titles and an explanation ("Qualquer pessoa pode pedir… 20 dias"). Each has "Onde enviar" with Fala.BR and e-SIC search links, plus Copiar / WhatsApp (`api.whatsapp.com/send?text=<letter>`) / E-mail (`mailto:?subject=…&body=…`). |
+| CIT-07 search | **FIXED** | "conceicao do almeda" → "Você quis dizer… Conceição do Almeida". "sto antonio" → 38 results. "sao joao" → "Ver todos os 54 resultados", which expands to the full list. "S. Paulo" ranks the São Paulo cities only. "bom jesus go" → only Bom Jesus de Goiás. "xiquexique" → Xique-Xique. "bahia" and "para" list the states first. |
+| CIT-08 page weight | **FIXED** | Figures in the perf table above. `/acompanhar` makes no `/data/*` request. |
+| CIT-09 ranking wording | **FIXED** | "0 aplicaram menos e 413 aplicaram mais que Conceição do Almeida; 3 aplicaram o mesmo." The ordinal is now secondary text. |
+| CIT-10 non-declaring city | **FIXED** | `r2/a360_nd_city.png`. Red "Não declarou 2024 e 2025" plus "Último dado: 2023". The verdict and the WhatsApp share text start with "Não enviou ao governo federal os dados de 2024 e 2025…". The year picker defaults to 2023. |
+| CIT-11 touch targets | **PARTIAL** | Kit cards (60 px), buttons (32–44 px), Vizinhos rows and the header are improved. Still under 24 px: the inline glossary triggers (16–20 px tall, e.g. "Mediana", "pontos percentuais", "EC 119/2022"), "Voltar para 2025" (20 px), e-SIC / CACS-Fundeb / Tribunal de Contas in the kit intro (20 px), and footer links. Inline text links are exempt from WCAG 2.5.8, but on a phone the 16 px glossary words are hard to hit. Add `py-1` / an `after:` hit-area expansion. |
+| CIT-12 nav clipped | **FIXED** | Mobile nav reads "Painel · Explorar · Salvos · Dados · Método" and fits at 360 px. See CIT-19 for the naming inconsistency. |
+| CIT-13 Esc / no close | **FIXED** | A "Fechar" button (69×36) closes the palette. |
+| CIT-14 watchlist on mobile | **FIXED** | `r2/a360_acompanhar.png`. One card per city with a badge, "N anos abaixo de 25%", an 18-year grid of colored cells, and remove (×). |
+
+**Totals:** 13 FIXED · 1 PARTIAL · 0 NOT FIXED · 0 REGRESSED among the round-1 findings. CIT-15 below is a new regression introduced in this round.
+
+### New findings (round 2)
+
+#### CIT-15: Chart y-axis labels clipped; "80%" reads as "30%"
+- **Severity:** minor · **Type:** bug (regression) · **URL:** any city page, the Fundeb and MDE charts
+- **Steps:** Open `/ba/conceicao-do-almeida` on a 390 or 360 px phone and look at "% do Fundeb pago aos profissionais".
+- **Expected:** Full tick labels: 50%, 60%, 70%, 80%, 90%.
+- **Actual:** The first digit is cut off. Tick text starts at x=31 while the SVG starts at x=33, so "80%" looks like "30%" and "65%" like "35%". The MDE chart has the same 2 px clip but it is less visible. Reproduced on 2 cities × 2 devices.
+- **Evidence:** `r2/zoom_fundeb_conceicao-do-almeida.png`, `r2/a360_fundeb_chart.png`, `r2/zoom.mjs` output
+- **Suspected cause:** `web/src/components/TrendChart.tsx:64`. `yWidth = max(36, chars*7.5+14)` underestimates the tabular-figure width plus tick margin (it changed with the ACA y-axis fix).
+- **Fix:** Use about 8.5 px per character (+16), or measure with canvas `measureText`. Alternatively add `overflow: visible` on the SVG and `margin.left: 4`.
+
+#### CIT-16: The WhatsApp link preview points to `localhost:3210` unless `NEXT_PUBLIC_SITE_URL` is set
+- **Severity:** major (deploy risk) · **Type:** bug/config · **URL:** every page's `<head>`
+- **Actual:** In the production build on :3299, the meta tags are `og:url = http://localhost:3210/ba/conceicao-do-almeida` and `og:image = http://localhost:3210/ba/conceicao-do-almeida/opengraph-image?…`. If the deploy forgets the env var, every WhatsApp share shows no image or preview, and that is this persona's main entry point. The OG image itself renders well: 1200×630, ~55 KB, with name, %, status pill and an 18-year bar strip (`r2/og__*.png`).
+- **Root cause:** `web/src/lib/site.ts:2`, which falls back to a hard-coded `http://localhost:3210`.
+- **Fix:** Fall back to `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` (or `VERCEL_URL`) before localhost. Optionally fail the build in production when no public origin is resolvable.
+
+#### CIT-17: The "Subiu/caiu X pontos" trend line compares against a value the page flags as atypical
+- **Severity:** minor · **Type:** content · **URL:** `/ba/conceicao-do-almeida` (2025 view); also `og:description` and the share text
+- **Actual:** The hero, share text and OG description say "Subiu 14,5 pontos em relação a 2024 (10,47%)". The same page marks 2024 as "Valor atípico… pode ser erro de declaração". A parent forwarding this would report a 14.5-point jump that probably never happened.
+- **Root cause:** The verdict builder in `web/src/app/[uf]/[slug]/` (`city-year.tsx` / `page.tsx`) does not check the `atipico` flag on the comparison year.
+- **Fix:** When the previous year is atypical, compare with the last non-atypical year, or hedge. Proposed copy: **"O valor declarado em 2024 (10,47%) é atípico; em relação a 2023 (26,40%), ficou 1,4 ponto abaixo."**
+
+#### CIT-18: The OG image draws very low years as an almost-empty stub
+- **Severity:** polish · **Type:** UI · **URL:** `/ba/conceicao-do-almeida/opengraph-image`
+- **Actual:** The bar strip has a non-zero baseline. The 2024 value (10,47%) is drawn as a thin red line at the bottom, which reads like "no data" (non-declared years look similar: pale stubs).
+- **Evidence:** `r2/og__ba_conceicao-do-almeida_opengraph-image.png`, `r2/og__rn_porto-do-mangue_opengraph-image.png`
+- **Fix:** Use a zero baseline, or give a below-floor value a visible minimum height with the value labelled, e.g. "10,5%". Distinguish "não declarou" with a hatched or outline bar.
+
+#### CIT-19: Inconsistent names for the same feature
+- **Severity:** polish · **Type:** content
+- **Actual:** The nav says "Salvos". The page H1, the button state and the footer say "Acompanhando" / "Acompanhar". The nav says "Método" while the footer says "Metodologia". A low-literacy user may not connect "Salvos" with the "Acompanhar" button.
+- **Root cause:** `web/src/components/kit/nav-items.ts`, the footer in `web/src/app/layout.tsx`, `web/src/app/acompanhar/page.tsx`.
+- **Fix:** Pick one wording. Either use "Salvos" everywhere (button "Salvar" / "Salvo"), or keep "Acompanhar" and use the short nav label "Seguindo".
+
+#### CIT-20: Data use on phones: route prefetch and uncached geometry
+- **Severity:** polish · **Type:** perf · **URL:** `/`, city pages
+- **Actual:**
+  - The city page prefetches `/ba?_rsc` (76 KB), and home prefetches other routes' RSC (e.g. `/to?_rsc` 30 KB) just because links are in view.
+  - `/geo/br.topo.json` (1 MB raw, 273 KB on the wire) is served with `Cache-Control: public, max-age=0`, so it is revalidated on every visit.
+- **Fix:**
+  - Set `prefetch={false}` (or prefetch on hover/tap only) for breadcrumb and map-list links. You can also respect `navigator.connection.saveData`.
+  - Serve `/geo/*` with long immutable caching and versioned URLs, as already done for `indice.json?v=`.
+  - Consider a lighter states-only topology for the home "Estados" map.
+
+#### CIT-21: The kit's e-mail body is about 4,000 characters
+- **Severity:** polish · **Type:** UX · **URL:** `#agir` → E-mail
+- **Actual:** The `mailto:` href is about 4,000 characters. Some Android mail intents and webmail handlers truncate long `mailto` bodies (around 2,000 characters). The WhatsApp text is about 2,300 characters, which is fine.
+- **Fix:** If `href.length > 1800`, fall back to copying the body to the clipboard and opening `mailto:?subject=` with a toast: **"Texto copiado — cole no corpo do e-mail."**
+
+#### CIT-22: Watchlist grid does not mark atypical years
+- **Severity:** polish · **Type:** UI · **URL:** `/acompanhar`
+- **Actual:** Conceição do Almeida's 2024 shows as a solid red "10,5" cell, with none of the "atípico" marking the city page uses.
+- **Fix:** Add a ⚠ corner or dashed border to the cell and an `aria-label` / `title` of "valor atípico".
+
+### Top remaining items for this persona
+1. **CIT-16:** set `NEXT_PUBLIC_SITE_URL` or a Vercel fallback, or WhatsApp previews break in production.
+2. **CIT-15:** clipped y-axis digits ("80%" → "30%") on the city charts.
+3. **CIT-17:** trend sentence built on an atypical year, which also propagates into the share text and OG description.
+4. **CIT-11:** small glossary hit areas.
+5. **CIT-19:** "Salvos" vs "Acompanhar" naming.

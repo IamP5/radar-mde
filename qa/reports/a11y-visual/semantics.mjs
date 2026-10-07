@@ -2,7 +2,7 @@ import { chromium } from 'playwright';
 const ROUTES=['/','/regiao/sudeste','/sp','/sp/santo-andre','/explorar','/acompanhar','/dados','/sobre'];
 const b=await chromium.launch(); const ctx=await b.newContext({viewport:{width:1280,height:900}}); const p=await ctx.newPage();
 for(const r of ROUTES){
- await p.goto('http://localhost:3210'+r,{waitUntil:'networkidle',timeout:120000}); await p.waitForTimeout(500);
+ await p.goto((process.env.BASE||'http://localhost:3210')+r,{waitUntil:'networkidle',timeout:120000}); await p.waitForTimeout(500);
  const info=await p.evaluate(()=>{
   const vis=e=>{const s=getComputedStyle(e);return s.display!=='none'&&s.visibility!=='hidden'};
   const hs=[...document.querySelectorAll('h1,h2,h3,h4,h5,h6')].filter(vis).map(h=>h.tagName[1]+' '+h.textContent.trim().slice(0,50));

@@ -1,0 +1,1325 @@
+{
+ "axe": {
+  "light /": [],
+  "light /regiao/sudeste": [],
+  "light /sp": [],
+  "light /sp/santo-andre": [],
+  "light /explorar": [],
+  "light /acompanhar": [],
+  "light /dados": [],
+  "light /sobre": [],
+  "light /rota-inexistente": [],
+  "dark /": [],
+  "dark /regiao/sudeste": [],
+  "dark /sp": [],
+  "dark /sp/santo-andre": [],
+  "dark /explorar": [],
+  "dark /acompanhar": [],
+  "dark /dados": [],
+  "dark /sobre": [],
+  "dark /rota-inexistente": []
+ },
+ "overflow": [
+  {
+   "theme": "light",
+   "w": 320,
+   "r": "/",
+   "vw": 320,
+   "sw": 320,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "path \"Acre: 4 de 22 municípios abaix\" 34x19",
+    "path \"Amapá: 0 de 16 municípios abai\" 23x26",
+    "path \"Tocantins: 4 de 139 municípios\" 23x39",
+    "path \"Ceará: 0 de 184 municípios aba\" 19x23",
+    "path \"Rio Grande do Norte: 4 de 165 \" 17x10",
+    "path \"Paraíba: 1 de 223 municípios a\" 18x11",
+    "path \"Alagoas: 1 de 102 municípios a\" 14x8",
+    "path \"Sergipe: 1 de 75 municípios ab\" 9x10",
+    "path \"Espírito Santo: 0 de 78 municí\" 10x17",
+    "path \"Rio de Janeiro: 1 de 91 municí\" 18x13",
+    "path \"Paraná: 1 de 399 municípios ab\" 30x21"
+   ],
+   "nSmall": 47
+  },
+  {
+   "theme": "light",
+   "w": 320,
+   "r": "/regiao/sudeste",
+   "vw": 320,
+   "sw": 320,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Rio de Janeiro\" 87x20",
+    "a \"São Paulo\" 61x20",
+    "a \"Minas Gerais\" 78x20",
+    "a \"Espírito Santo\" 85x20",
+    "a \"Radar MDE · Brasil\" 288x20"
+   ],
+   "nSmall": 6
+  },
+  {
+   "theme": "light",
+   "w": 320,
+   "r": "/sp",
+   "vw": 320,
+   "sw": 320,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "input \"\" 1x1",
+    "a \"Iaras\" 165x20",
+    "a \"Magda\" 165x20",
+    "a \"Presidente Alves\" 165x20",
+    "a \"Engenheiro Coelho\" 165x20",
+    "a \"São Manuel\" 165x20",
+    "a \"Itapecerica da Serra\" 165x20",
+    "a \"Santo André\" 165x20",
+    "a \"Cajobi\" 165x20",
+    "span \"O relatório ao Tesouro informa\" 9x16",
+    "a \"Taubaté\" 165x20"
+   ],
+   "nSmall": 61
+  },
+  {
+   "theme": "light",
+   "w": 320,
+   "r": "/sp/santo-andre",
+   "vw": 320,
+   "sw": 320,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "button \"Região imediata: o que é?\" 95x20",
+    "button \"MDE: o que é?\" 28x20",
+    "button \"Mediana: o que é?\" 47x16",
+    "button \"Fundeb: o que é?\" 45x20",
+    "button \"Déficit: o que é?\" 38x20",
+    "button \"SIOPE: o que é?\" 38x20",
+    "button \"EC 119/2022: o que é?\" 76x20",
+    "button \"pontos percentuais: o que é?\" 105x16",
+    "button \"mediana: o que é?\" 47x16",
+    "button \"região imediata: o que é?\" 91x20",
+    "button \"e-SIC: o que é?\" 34x20"
+   ],
+   "nSmall": 17
+  },
+  {
+   "theme": "light",
+   "w": 320,
+   "r": "/explorar",
+   "vw": 320,
+   "sw": 320,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "input \"\" 1x1",
+    "a \"Piaçabuçu\" 122x20",
+    "a \"Chapada da Natividade\" 122x20",
+    "a \"Magalhães Barata\" 122x20",
+    "a \"Cubati\" 122x20",
+    "a \"Brejo da Madre de Deus\" 122x20",
+    "a \"Volta Redonda\" 122x20",
+    "a \"Tenente Ananias\" 122x20",
+    "a \"Praia Norte\" 122x20",
+    "a \"Centro Novo do Maranhão\" 122x20",
+    "a \"Lagoa da Confusão\" 122x20"
+   ],
+   "nSmall": 27
+  },
+  {
+   "theme": "light",
+   "w": 320,
+   "r": "/acompanhar",
+   "vw": 320,
+   "sw": 320,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Radar MDE · Brasil\" 288x20"
+   ],
+   "nSmall": 2
+  },
+  {
+   "theme": "light",
+   "w": 320,
+   "r": "/dados",
+   "vw": 320,
+   "sw": 320,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Região Norte\" 216x20",
+    "a \"Região Norte: CSV para Excel B\" 38x20",
+    "a \"Região Nordeste\" 216x20",
+    "a \"Região Nordeste: CSV para Exce\" 38x20",
+    "a \"Região Centro-Oeste\" 216x20",
+    "a \"Região Centro-Oeste: CSV para \" 38x20",
+    "a \"Região Sudeste\" 216x20",
+    "a \"Região Sudeste: CSV para Excel\" 38x20",
+    "a \"Região Sul\" 216x20",
+    "a \"Região Sul: CSV para Excel Bra\" 38x20",
+    "a \"Governos estaduais\" 216x20"
+   ],
+   "nSmall": 14
+  },
+  {
+   "theme": "light",
+   "w": 320,
+   "r": "/sobre",
+   "vw": 320,
+   "sw": 320,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Radar MDE · Brasil\" 288x20"
+   ],
+   "nSmall": 2
+  },
+  {
+   "theme": "light",
+   "w": 320,
+   "r": "/rota-inexistente",
+   "vw": 320,
+   "sw": 320,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Radar MDE · Brasil\" 288x20"
+   ],
+   "nSmall": 2
+  },
+  {
+   "theme": "light",
+   "w": 768,
+   "r": "/",
+   "vw": 768,
+   "sw": 768,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "path \"Alagoas: 1 de 102 municípios a\" 38x21",
+    "path \"Sergipe: 1 de 75 municípios ab\" 23x26",
+    "path \"Distrito Federal: 0 de 1 munic\" 12x7",
+    "a \"NorteNorte\" 31x16",
+    "a \"NordesteNordeste\" 50x16",
+    "a \"Centro-OesteCentro-Oeste\" 75x16",
+    "a \"SudesteSudeste\" 45x16",
+    "a \"SulSul\" 18x16",
+    "a \"Acre\" 30x20",
+    "a \"Tocantins\" 63x20",
+    "a \"Rio Grande do Norte\" 132x20"
+   ],
+   "nSmall": 37
+  },
+  {
+   "theme": "light",
+   "w": 768,
+   "r": "/regiao/sudeste",
+   "vw": 768,
+   "sw": 768,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Rio de Janeiro\" 94x20",
+    "a \"São Paulo\" 66x20",
+    "a \"Minas Gerais\" 85x20",
+    "a \"Espírito Santo\" 92x20",
+    "a \"Radar MDE · Brasil\" 401x20"
+   ],
+   "nSmall": 6
+  },
+  {
+   "theme": "light",
+   "w": 768,
+   "r": "/sp",
+   "vw": 768,
+   "sw": 768,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Região Sudeste\" 111x20",
+    "input \"\" 1x1",
+    "a \"Iaras\" 165x20",
+    "a \"Magda\" 165x20",
+    "a \"Presidente Alves\" 165x20",
+    "a \"Engenheiro Coelho\" 165x20",
+    "a \"São Manuel\" 165x20",
+    "a \"Itapecerica da Serra\" 165x20",
+    "a \"Santo André\" 165x20",
+    "a \"Cajobi\" 165x20",
+    "span \"O relatório ao Tesouro informa\" 9x16"
+   ],
+   "nSmall": 62
+  },
+  {
+   "theme": "light",
+   "w": 768,
+   "r": "/sp/santo-andre",
+   "vw": 768,
+   "sw": 768,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "button \"Região imediata: o que é?\" 95x20",
+    "button \"MDE: o que é?\" 28x20",
+    "button \"Mediana: o que é?\" 47x16",
+    "button \"Fundeb: o que é?\" 45x20",
+    "button \"Déficit: o que é?\" 38x20",
+    "button \"SIOPE: o que é?\" 38x20",
+    "button \"EC 119/2022: o que é?\" 76x20",
+    "button \"pontos percentuais: o que é?\" 105x16",
+    "button \"mediana: o que é?\" 47x16",
+    "button \"região imediata: o que é?\" 91x20",
+    "button \"e-SIC: o que é?\" 34x20"
+   ],
+   "nSmall": 17
+  },
+  {
+   "theme": "light",
+   "w": 768,
+   "r": "/explorar",
+   "vw": 768,
+   "sw": 768,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "input \"\" 1x1",
+    "a \"Piaçabuçu\" 189x20",
+    "a \"Chapada da Natividade\" 189x20",
+    "a \"Magalhães Barata\" 189x20",
+    "a \"Cubati\" 189x20",
+    "a \"Brejo da Madre de Deus\" 189x20",
+    "a \"Volta Redonda\" 189x20",
+    "a \"Tenente Ananias\" 189x20",
+    "a \"Praia Norte\" 189x20",
+    "a \"Centro Novo do Maranhão\" 189x20",
+    "a \"Lagoa da Confusão\" 189x20"
+   ],
+   "nSmall": 27
+  },
+  {
+   "theme": "light",
+   "w": 768,
+   "r": "/acompanhar",
+   "vw": 768,
+   "sw": 768,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Radar MDE · Brasil\" 401x20"
+   ],
+   "nSmall": 2
+  },
+  {
+   "theme": "light",
+   "w": 768,
+   "r": "/dados",
+   "vw": 768,
+   "sw": 768,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Região Norte\" 284x20",
+    "a \"Região Norte: CSV para Excel B\" 38x20",
+    "a \"Região Nordeste\" 284x20",
+    "a \"Região Nordeste: CSV para Exce\" 38x20",
+    "a \"Região Centro-Oeste\" 284x20",
+    "a \"Região Centro-Oeste: CSV para \" 38x20",
+    "a \"Região Sudeste\" 284x20",
+    "a \"Região Sudeste: CSV para Excel\" 38x20",
+    "a \"Região Sul\" 284x20",
+    "a \"Região Sul: CSV para Excel Bra\" 38x20",
+    "a \"Governos estaduais\" 284x20"
+   ],
+   "nSmall": 14
+  },
+  {
+   "theme": "light",
+   "w": 768,
+   "r": "/sobre",
+   "vw": 768,
+   "sw": 768,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Radar MDE · Brasil\" 401x20"
+   ],
+   "nSmall": 2
+  },
+  {
+   "theme": "light",
+   "w": 768,
+   "r": "/rota-inexistente",
+   "vw": 768,
+   "sw": 768,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Radar MDE · Brasil\" 401x20"
+   ],
+   "nSmall": 2
+  },
+  {
+   "theme": "light",
+   "w": 1440,
+   "r": "/",
+   "vw": 1440,
+   "sw": 1440,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "path \"Alagoas: 1 de 102 municípios a\" 39x21",
+    "path \"Sergipe: 1 de 75 municípios ab\" 23x26",
+    "path \"Distrito Federal: 0 de 1 munic\" 12x7",
+    "a \"NorteNorte\" 31x16",
+    "a \"NordesteNordeste\" 50x16",
+    "a \"Centro-OesteCentro-Oeste\" 75x16",
+    "a \"SudesteSudeste\" 45x16",
+    "a \"SulSul\" 18x16",
+    "a \"Acre\" 30x20",
+    "a \"Tocantins\" 63x20",
+    "a \"Rio Grande do Norte\" 132x20"
+   ],
+   "nSmall": 37
+  },
+  {
+   "theme": "light",
+   "w": 1440,
+   "r": "/regiao/sudeste",
+   "vw": 1440,
+   "sw": 1440,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Rio de Janeiro\" 94x20",
+    "a \"São Paulo\" 66x20",
+    "a \"Minas Gerais\" 85x20",
+    "a \"Espírito Santo\" 92x20",
+    "a \"Radar MDE · Brasil\" 700x20"
+   ],
+   "nSmall": 6
+  },
+  {
+   "theme": "light",
+   "w": 1440,
+   "r": "/sp",
+   "vw": 1440,
+   "sw": 1440,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Região Sudeste\" 111x20",
+    "input \"\" 1x1",
+    "a \"Iaras\" 216x20",
+    "a \"Magda\" 216x20",
+    "a \"Presidente Alves\" 216x20",
+    "a \"Engenheiro Coelho\" 216x20",
+    "a \"São Manuel\" 216x20",
+    "a \"Itapecerica da Serra\" 216x20",
+    "a \"Santo André\" 216x20",
+    "a \"Cajobi\" 216x20",
+    "span \"O relatório ao Tesouro informa\" 9x16"
+   ],
+   "nSmall": 62
+  },
+  {
+   "theme": "light",
+   "w": 1440,
+   "r": "/sp/santo-andre",
+   "vw": 1440,
+   "sw": 1440,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "button \"Região imediata: o que é?\" 95x20",
+    "button \"MDE: o que é?\" 28x20",
+    "button \"Mediana: o que é?\" 47x16",
+    "button \"Fundeb: o que é?\" 45x20",
+    "button \"Déficit: o que é?\" 38x20",
+    "button \"SIOPE: o que é?\" 38x20",
+    "button \"EC 119/2022: o que é?\" 76x20",
+    "button \"pontos percentuais: o que é?\" 105x16",
+    "button \"mediana: o que é?\" 47x16",
+    "button \"região imediata: o que é?\" 91x20",
+    "button \"e-SIC: o que é?\" 34x20"
+   ],
+   "nSmall": 17
+  },
+  {
+   "theme": "light",
+   "w": 1440,
+   "r": "/explorar",
+   "vw": 1440,
+   "sw": 1440,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "input \"\" 1x1",
+    "a \"Piaçabuçu\" 190x20",
+    "a \"Chapada da Natividade\" 190x20",
+    "a \"Magalhães Barata\" 190x20",
+    "a \"Cubati\" 190x20",
+    "a \"Brejo da Madre de Deus\" 190x20",
+    "a \"Volta Redonda\" 190x20",
+    "a \"Tenente Ananias\" 190x20",
+    "a \"Praia Norte\" 190x20",
+    "a \"Centro Novo do Maranhão\" 190x20",
+    "a \"Lagoa da Confusão\" 190x20"
+   ],
+   "nSmall": 27
+  },
+  {
+   "theme": "light",
+   "w": 1440,
+   "r": "/acompanhar",
+   "vw": 1440,
+   "sw": 1440,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Radar MDE · Brasil\" 700x20"
+   ],
+   "nSmall": 2
+  },
+  {
+   "theme": "light",
+   "w": 1440,
+   "r": "/dados",
+   "vw": 1440,
+   "sw": 1440,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Região Norte\" 179x20",
+    "a \"Região Norte: CSV para Excel B\" 38x20",
+    "a \"Região Nordeste\" 179x20",
+    "a \"Região Nordeste: CSV para Exce\" 38x20",
+    "a \"Região Centro-Oeste\" 179x20",
+    "a \"Região Centro-Oeste: CSV para \" 38x20",
+    "a \"Região Sudeste\" 179x20",
+    "a \"Região Sudeste: CSV para Excel\" 38x20",
+    "a \"Região Sul\" 179x20",
+    "a \"Região Sul: CSV para Excel Bra\" 38x20",
+    "a \"Governos estaduais\" 179x20"
+   ],
+   "nSmall": 14
+  },
+  {
+   "theme": "light",
+   "w": 1440,
+   "r": "/sobre",
+   "vw": 1440,
+   "sw": 1440,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Baixar os dados\" 112x20",
+    "a \"Radar MDE · Brasil\" 700x20"
+   ],
+   "nSmall": 3
+  },
+  {
+   "theme": "light",
+   "w": 1440,
+   "r": "/rota-inexistente",
+   "vw": 1440,
+   "sw": 1440,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Radar MDE · Brasil\" 700x20"
+   ],
+   "nSmall": 2
+  },
+  {
+   "theme": "dark",
+   "w": 320,
+   "r": "/",
+   "vw": 320,
+   "sw": 320,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "path \"Acre: 4 de 22 municípios abaix\" 34x19",
+    "path \"Amapá: 0 de 16 municípios abai\" 23x26",
+    "path \"Tocantins: 4 de 139 municípios\" 23x39",
+    "path \"Ceará: 0 de 184 municípios aba\" 19x23",
+    "path \"Rio Grande do Norte: 4 de 165 \" 17x10",
+    "path \"Paraíba: 1 de 223 municípios a\" 18x11",
+    "path \"Alagoas: 1 de 102 municípios a\" 14x8",
+    "path \"Sergipe: 1 de 75 municípios ab\" 9x10",
+    "path \"Espírito Santo: 0 de 78 municí\" 10x17",
+    "path \"Rio de Janeiro: 1 de 91 municí\" 18x13",
+    "path \"Paraná: 1 de 399 municípios ab\" 30x21"
+   ],
+   "nSmall": 47
+  },
+  {
+   "theme": "dark",
+   "w": 320,
+   "r": "/regiao/sudeste",
+   "vw": 320,
+   "sw": 320,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Rio de Janeiro\" 87x20",
+    "a \"São Paulo\" 61x20",
+    "a \"Minas Gerais\" 78x20",
+    "a \"Espírito Santo\" 85x20",
+    "a \"Radar MDE · Brasil\" 288x20"
+   ],
+   "nSmall": 6
+  },
+  {
+   "theme": "dark",
+   "w": 320,
+   "r": "/sp",
+   "vw": 320,
+   "sw": 320,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "input \"\" 1x1",
+    "a \"Iaras\" 165x20",
+    "a \"Magda\" 165x20",
+    "a \"Presidente Alves\" 165x20",
+    "a \"Engenheiro Coelho\" 165x20",
+    "a \"São Manuel\" 165x20",
+    "a \"Itapecerica da Serra\" 165x20",
+    "a \"Santo André\" 165x20",
+    "a \"Cajobi\" 165x20",
+    "span \"O relatório ao Tesouro informa\" 9x16",
+    "a \"Taubaté\" 165x20"
+   ],
+   "nSmall": 61
+  },
+  {
+   "theme": "dark",
+   "w": 320,
+   "r": "/sp/santo-andre",
+   "vw": 320,
+   "sw": 320,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "button \"Região imediata: o que é?\" 95x20",
+    "button \"MDE: o que é?\" 28x20",
+    "button \"Mediana: o que é?\" 47x16",
+    "button \"Fundeb: o que é?\" 45x20",
+    "button \"Déficit: o que é?\" 38x20",
+    "button \"SIOPE: o que é?\" 38x20",
+    "button \"EC 119/2022: o que é?\" 76x20",
+    "button \"pontos percentuais: o que é?\" 105x16",
+    "button \"mediana: o que é?\" 47x16",
+    "button \"região imediata: o que é?\" 91x20",
+    "button \"e-SIC: o que é?\" 34x20"
+   ],
+   "nSmall": 17
+  },
+  {
+   "theme": "dark",
+   "w": 320,
+   "r": "/explorar",
+   "vw": 320,
+   "sw": 320,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "input \"\" 1x1",
+    "a \"Piaçabuçu\" 122x20",
+    "a \"Chapada da Natividade\" 122x20",
+    "a \"Magalhães Barata\" 122x20",
+    "a \"Cubati\" 122x20",
+    "a \"Brejo da Madre de Deus\" 122x20",
+    "a \"Volta Redonda\" 122x20",
+    "a \"Tenente Ananias\" 122x20",
+    "a \"Praia Norte\" 122x20",
+    "a \"Centro Novo do Maranhão\" 122x20",
+    "a \"Lagoa da Confusão\" 122x20"
+   ],
+   "nSmall": 27
+  },
+  {
+   "theme": "dark",
+   "w": 320,
+   "r": "/acompanhar",
+   "vw": 320,
+   "sw": 320,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Radar MDE · Brasil\" 288x20"
+   ],
+   "nSmall": 2
+  },
+  {
+   "theme": "dark",
+   "w": 320,
+   "r": "/dados",
+   "vw": 320,
+   "sw": 320,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Região Norte\" 216x20",
+    "a \"Região Norte: CSV para Excel B\" 38x20",
+    "a \"Região Nordeste\" 216x20",
+    "a \"Região Nordeste: CSV para Exce\" 38x20",
+    "a \"Região Centro-Oeste\" 216x20",
+    "a \"Região Centro-Oeste: CSV para \" 38x20",
+    "a \"Região Sudeste\" 216x20",
+    "a \"Região Sudeste: CSV para Excel\" 38x20",
+    "a \"Região Sul\" 216x20",
+    "a \"Região Sul: CSV para Excel Bra\" 38x20",
+    "a \"Governos estaduais\" 216x20"
+   ],
+   "nSmall": 14
+  },
+  {
+   "theme": "dark",
+   "w": 320,
+   "r": "/sobre",
+   "vw": 320,
+   "sw": 320,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Radar MDE · Brasil\" 288x20"
+   ],
+   "nSmall": 2
+  },
+  {
+   "theme": "dark",
+   "w": 320,
+   "r": "/rota-inexistente",
+   "vw": 320,
+   "sw": 320,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Radar MDE · Brasil\" 288x20"
+   ],
+   "nSmall": 2
+  },
+  {
+   "theme": "dark",
+   "w": 768,
+   "r": "/",
+   "vw": 768,
+   "sw": 768,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "path \"Alagoas: 1 de 102 municípios a\" 38x21",
+    "path \"Sergipe: 1 de 75 municípios ab\" 23x26",
+    "path \"Distrito Federal: 0 de 1 munic\" 12x7",
+    "a \"NorteNorte\" 31x16",
+    "a \"NordesteNordeste\" 50x16",
+    "a \"Centro-OesteCentro-Oeste\" 75x16",
+    "a \"SudesteSudeste\" 45x16",
+    "a \"SulSul\" 18x16",
+    "a \"Acre\" 30x20",
+    "a \"Tocantins\" 63x20",
+    "a \"Rio Grande do Norte\" 132x20"
+   ],
+   "nSmall": 37
+  },
+  {
+   "theme": "dark",
+   "w": 768,
+   "r": "/regiao/sudeste",
+   "vw": 768,
+   "sw": 768,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Rio de Janeiro\" 94x20",
+    "a \"São Paulo\" 66x20",
+    "a \"Minas Gerais\" 85x20",
+    "a \"Espírito Santo\" 92x20",
+    "a \"Radar MDE · Brasil\" 401x20"
+   ],
+   "nSmall": 6
+  },
+  {
+   "theme": "dark",
+   "w": 768,
+   "r": "/sp",
+   "vw": 768,
+   "sw": 768,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Região Sudeste\" 111x20",
+    "input \"\" 1x1",
+    "a \"Iaras\" 165x20",
+    "a \"Magda\" 165x20",
+    "a \"Presidente Alves\" 165x20",
+    "a \"Engenheiro Coelho\" 165x20",
+    "a \"São Manuel\" 165x20",
+    "a \"Itapecerica da Serra\" 165x20",
+    "a \"Santo André\" 165x20",
+    "a \"Cajobi\" 165x20",
+    "span \"O relatório ao Tesouro informa\" 9x16"
+   ],
+   "nSmall": 62
+  },
+  {
+   "theme": "dark",
+   "w": 768,
+   "r": "/sp/santo-andre",
+   "vw": 768,
+   "sw": 768,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "button \"Região imediata: o que é?\" 95x20",
+    "button \"MDE: o que é?\" 28x20",
+    "button \"Mediana: o que é?\" 47x16",
+    "button \"Fundeb: o que é?\" 45x20",
+    "button \"Déficit: o que é?\" 38x20",
+    "button \"SIOPE: o que é?\" 38x20",
+    "button \"EC 119/2022: o que é?\" 76x20",
+    "button \"pontos percentuais: o que é?\" 105x16",
+    "button \"mediana: o que é?\" 47x16",
+    "button \"região imediata: o que é?\" 91x20",
+    "button \"e-SIC: o que é?\" 34x20"
+   ],
+   "nSmall": 17
+  },
+  {
+   "theme": "dark",
+   "w": 768,
+   "r": "/explorar",
+   "vw": 768,
+   "sw": 768,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "input \"\" 1x1",
+    "a \"Piaçabuçu\" 189x20",
+    "a \"Chapada da Natividade\" 189x20",
+    "a \"Magalhães Barata\" 189x20",
+    "a \"Cubati\" 189x20",
+    "a \"Brejo da Madre de Deus\" 189x20",
+    "a \"Volta Redonda\" 189x20",
+    "a \"Tenente Ananias\" 189x20",
+    "a \"Praia Norte\" 189x20",
+    "a \"Centro Novo do Maranhão\" 189x20",
+    "a \"Lagoa da Confusão\" 189x20"
+   ],
+   "nSmall": 27
+  },
+  {
+   "theme": "dark",
+   "w": 768,
+   "r": "/acompanhar",
+   "vw": 768,
+   "sw": 768,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Radar MDE · Brasil\" 401x20"
+   ],
+   "nSmall": 2
+  },
+  {
+   "theme": "dark",
+   "w": 768,
+   "r": "/dados",
+   "vw": 768,
+   "sw": 768,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Região Norte\" 284x20",
+    "a \"Região Norte: CSV para Excel B\" 38x20",
+    "a \"Região Nordeste\" 284x20",
+    "a \"Região Nordeste: CSV para Exce\" 38x20",
+    "a \"Região Centro-Oeste\" 284x20",
+    "a \"Região Centro-Oeste: CSV para \" 38x20",
+    "a \"Região Sudeste\" 284x20",
+    "a \"Região Sudeste: CSV para Excel\" 38x20",
+    "a \"Região Sul\" 284x20",
+    "a \"Região Sul: CSV para Excel Bra\" 38x20",
+    "a \"Governos estaduais\" 284x20"
+   ],
+   "nSmall": 14
+  },
+  {
+   "theme": "dark",
+   "w": 768,
+   "r": "/sobre",
+   "vw": 768,
+   "sw": 768,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Radar MDE · Brasil\" 401x20"
+   ],
+   "nSmall": 2
+  },
+  {
+   "theme": "dark",
+   "w": 768,
+   "r": "/rota-inexistente",
+   "vw": 768,
+   "sw": 768,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Radar MDE · Brasil\" 401x20"
+   ],
+   "nSmall": 2
+  },
+  {
+   "theme": "dark",
+   "w": 1440,
+   "r": "/",
+   "vw": 1440,
+   "sw": 1440,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "path \"Alagoas: 1 de 102 municípios a\" 39x21",
+    "path \"Sergipe: 1 de 75 municípios ab\" 23x26",
+    "path \"Distrito Federal: 0 de 1 munic\" 12x7",
+    "a \"NorteNorte\" 31x16",
+    "a \"NordesteNordeste\" 50x16",
+    "a \"Centro-OesteCentro-Oeste\" 75x16",
+    "a \"SudesteSudeste\" 45x16",
+    "a \"SulSul\" 18x16",
+    "a \"Acre\" 30x20",
+    "a \"Tocantins\" 63x20",
+    "a \"Rio Grande do Norte\" 132x20"
+   ],
+   "nSmall": 37
+  },
+  {
+   "theme": "dark",
+   "w": 1440,
+   "r": "/regiao/sudeste",
+   "vw": 1440,
+   "sw": 1440,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Rio de Janeiro\" 94x20",
+    "a \"São Paulo\" 66x20",
+    "a \"Minas Gerais\" 85x20",
+    "a \"Espírito Santo\" 92x20",
+    "a \"Radar MDE · Brasil\" 700x20"
+   ],
+   "nSmall": 6
+  },
+  {
+   "theme": "dark",
+   "w": 1440,
+   "r": "/sp",
+   "vw": 1440,
+   "sw": 1440,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Região Sudeste\" 111x20",
+    "input \"\" 1x1",
+    "a \"Iaras\" 216x20",
+    "a \"Magda\" 216x20",
+    "a \"Presidente Alves\" 216x20",
+    "a \"Engenheiro Coelho\" 216x20",
+    "a \"São Manuel\" 216x20",
+    "a \"Itapecerica da Serra\" 216x20",
+    "a \"Santo André\" 216x20",
+    "a \"Cajobi\" 216x20",
+    "span \"O relatório ao Tesouro informa\" 9x16"
+   ],
+   "nSmall": 62
+  },
+  {
+   "theme": "dark",
+   "w": 1440,
+   "r": "/sp/santo-andre",
+   "vw": 1440,
+   "sw": 1440,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "button \"Região imediata: o que é?\" 95x20",
+    "button \"MDE: o que é?\" 28x20",
+    "button \"Mediana: o que é?\" 47x16",
+    "button \"Fundeb: o que é?\" 45x20",
+    "button \"Déficit: o que é?\" 38x20",
+    "button \"SIOPE: o que é?\" 38x20",
+    "button \"EC 119/2022: o que é?\" 76x20",
+    "button \"pontos percentuais: o que é?\" 105x16",
+    "button \"mediana: o que é?\" 47x16",
+    "button \"região imediata: o que é?\" 91x20",
+    "button \"e-SIC: o que é?\" 34x20"
+   ],
+   "nSmall": 17
+  },
+  {
+   "theme": "dark",
+   "w": 1440,
+   "r": "/explorar",
+   "vw": 1440,
+   "sw": 1440,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "input \"\" 1x1",
+    "a \"Piaçabuçu\" 190x20",
+    "a \"Chapada da Natividade\" 190x20",
+    "a \"Magalhães Barata\" 190x20",
+    "a \"Cubati\" 190x20",
+    "a \"Brejo da Madre de Deus\" 190x20",
+    "a \"Volta Redonda\" 190x20",
+    "a \"Tenente Ananias\" 190x20",
+    "a \"Praia Norte\" 190x20",
+    "a \"Centro Novo do Maranhão\" 190x20",
+    "a \"Lagoa da Confusão\" 190x20"
+   ],
+   "nSmall": 27
+  },
+  {
+   "theme": "dark",
+   "w": 1440,
+   "r": "/acompanhar",
+   "vw": 1440,
+   "sw": 1440,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Radar MDE · Brasil\" 700x20"
+   ],
+   "nSmall": 2
+  },
+  {
+   "theme": "dark",
+   "w": 1440,
+   "r": "/dados",
+   "vw": 1440,
+   "sw": 1440,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Região Norte\" 179x20",
+    "a \"Região Norte: CSV para Excel B\" 38x20",
+    "a \"Região Nordeste\" 179x20",
+    "a \"Região Nordeste: CSV para Exce\" 38x20",
+    "a \"Região Centro-Oeste\" 179x20",
+    "a \"Região Centro-Oeste: CSV para \" 38x20",
+    "a \"Região Sudeste\" 179x20",
+    "a \"Região Sudeste: CSV para Excel\" 38x20",
+    "a \"Região Sul\" 179x20",
+    "a \"Região Sul: CSV para Excel Bra\" 38x20",
+    "a \"Governos estaduais\" 179x20"
+   ],
+   "nSmall": 14
+  },
+  {
+   "theme": "dark",
+   "w": 1440,
+   "r": "/sobre",
+   "vw": 1440,
+   "sw": 1440,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Baixar os dados\" 112x20",
+    "a \"Radar MDE · Brasil\" 700x20"
+   ],
+   "nSmall": 3
+  },
+  {
+   "theme": "dark",
+   "w": 1440,
+   "r": "/rota-inexistente",
+   "vw": 1440,
+   "sw": 1440,
+   "off": [],
+   "small": [
+    "a \"Pular para o conteúdo\" 1x1",
+    "a \"Radar MDE · Brasil\" 700x20"
+   ],
+   "nSmall": 2
+  }
+ ],
+ "targets": {
+  "320 /": [
+   "a \"Pular para o conteúdo\" 1x1",
+   "path \"Acre: 4 de 22 municípios abaix\" 34x19",
+   "path \"Amapá: 0 de 16 municípios abai\" 23x26",
+   "path \"Tocantins: 4 de 139 municípios\" 23x39",
+   "path \"Ceará: 0 de 184 municípios aba\" 19x23",
+   "path \"Rio Grande do Norte: 4 de 165 \" 17x10",
+   "path \"Paraíba: 1 de 223 municípios a\" 18x11",
+   "path \"Alagoas: 1 de 102 municípios a\" 14x8",
+   "path \"Sergipe: 1 de 75 municípios ab\" 9x10",
+   "path \"Espírito Santo: 0 de 78 municí\" 10x17",
+   "path \"Rio de Janeiro: 1 de 91 municí\" 18x13",
+   "path \"Paraná: 1 de 399 municípios ab\" 30x21"
+  ],
+  "320 /regiao/sudeste": [
+   "a \"Pular para o conteúdo\" 1x1",
+   "a \"Rio de Janeiro\" 87x20",
+   "a \"São Paulo\" 61x20",
+   "a \"Minas Gerais\" 78x20",
+   "a \"Espírito Santo\" 85x20",
+   "a \"Radar MDE · Brasil\" 288x20"
+  ],
+  "320 /sp": [
+   "a \"Pular para o conteúdo\" 1x1",
+   "input \"\" 1x1",
+   "a \"Iaras\" 165x20",
+   "a \"Magda\" 165x20",
+   "a \"Presidente Alves\" 165x20",
+   "a \"Engenheiro Coelho\" 165x20",
+   "a \"São Manuel\" 165x20",
+   "a \"Itapecerica da Serra\" 165x20",
+   "a \"Santo André\" 165x20",
+   "a \"Cajobi\" 165x20",
+   "span \"O relatório ao Tesouro informa\" 9x16",
+   "a \"Taubaté\" 165x20"
+  ],
+  "320 /sp/santo-andre": [
+   "a \"Pular para o conteúdo\" 1x1",
+   "button \"Região imediata: o que é?\" 95x20",
+   "button \"MDE: o que é?\" 28x20",
+   "button \"Mediana: o que é?\" 47x16",
+   "button \"Fundeb: o que é?\" 45x20",
+   "button \"Déficit: o que é?\" 38x20",
+   "button \"SIOPE: o que é?\" 38x20",
+   "button \"EC 119/2022: o que é?\" 76x20",
+   "button \"pontos percentuais: o que é?\" 105x16",
+   "button \"mediana: o que é?\" 47x16",
+   "button \"região imediata: o que é?\" 91x20",
+   "button \"e-SIC: o que é?\" 34x20"
+  ],
+  "320 /explorar": [
+   "a \"Pular para o conteúdo\" 1x1",
+   "input \"\" 1x1",
+   "a \"Piaçabuçu\" 122x20",
+   "a \"Chapada da Natividade\" 122x20",
+   "a \"Magalhães Barata\" 122x20",
+   "a \"Cubati\" 122x20",
+   "a \"Brejo da Madre de Deus\" 122x20",
+   "a \"Volta Redonda\" 122x20",
+   "a \"Tenente Ananias\" 122x20",
+   "a \"Praia Norte\" 122x20",
+   "a \"Centro Novo do Maranhão\" 122x20",
+   "a \"Lagoa da Confusão\" 122x20"
+  ],
+  "320 /acompanhar": [
+   "a \"Pular para o conteúdo\" 1x1",
+   "a \"Radar MDE · Brasil\" 288x20"
+  ],
+  "320 /dados": [
+   "a \"Pular para o conteúdo\" 1x1",
+   "a \"Região Norte\" 216x20",
+   "a \"Região Norte: CSV para Excel B\" 38x20",
+   "a \"Região Nordeste\" 216x20",
+   "a \"Região Nordeste: CSV para Exce\" 38x20",
+   "a \"Região Centro-Oeste\" 216x20",
+   "a \"Região Centro-Oeste: CSV para \" 38x20",
+   "a \"Região Sudeste\" 216x20",
+   "a \"Região Sudeste: CSV para Excel\" 38x20",
+   "a \"Região Sul\" 216x20",
+   "a \"Região Sul: CSV para Excel Bra\" 38x20",
+   "a \"Governos estaduais\" 216x20"
+  ],
+  "320 /sobre": [
+   "a \"Pular para o conteúdo\" 1x1",
+   "a \"Radar MDE · Brasil\" 288x20"
+  ],
+  "320 /rota-inexistente": [
+   "a \"Pular para o conteúdo\" 1x1",
+   "a \"Radar MDE · Brasil\" 288x20"
+  ],
+  "768 /": [
+   "a \"Pular para o conteúdo\" 1x1",
+   "path \"Alagoas: 1 de 102 municípios a\" 38x21",
+   "path \"Sergipe: 1 de 75 municípios ab\" 23x26",
+   "path \"Distrito Federal: 0 de 1 munic\" 12x7",
+   "a \"NorteNorte\" 31x16",
+   "a \"NordesteNordeste\" 50x16",
+   "a \"Centro-OesteCentro-Oeste\" 75x16",
+   "a \"SudesteSudeste\" 45x16",
+   "a \"SulSul\" 18x16",
+   "a \"Acre\" 30x20",
+   "a \"Tocantins\" 63x20",
+   "a \"Rio Grande do Norte\" 132x20"
+  ],
+  "768 /regiao/sudeste": [
+   "a \"Pular para o conteúdo\" 1x1",
+   "a \"Rio de Janeiro\" 94x20",
+   "a \"São Paulo\" 66x20",
+   "a \"Minas Gerais\" 85x20",
+   "a \"Espírito Santo\" 92x20",
+   "a \"Radar MDE · Brasil\" 401x20"
+  ],
+  "768 /sp": [
+   "a \"Pular para o conteúdo\" 1x1",
+   "a \"Região Sudeste\" 111x20",
+   "input \"\" 1x1",
+   "a \"Iaras\" 165x20",
+   "a \"Magda\" 165x20",
+   "a \"Presidente Alves\" 165x20",
+   "a \"Engenheiro Coelho\" 165x20",
+   "a \"São Manuel\" 165x20",
+   "a \"Itapecerica da Serra\" 165x20",
+   "a \"Santo André\" 165x20",
+   "a \"Cajobi\" 165x20",
+   "span \"O relatório ao Tesouro informa\" 9x16"
+  ],
+  "768 /sp/santo-andre": [
+   "a \"Pular para o conteúdo\" 1x1",
+   "button \"Região imediata: o que é?\" 95x20",
+   "button \"MDE: o que é?\" 28x20",
+   "button \"Mediana: o que é?\" 47x16",
+   "button \"Fundeb: o que é?\" 45x20",
+   "button \"Déficit: o que é?\" 38x20",
+   "button \"SIOPE: o que é?\" 38x20",
+   "button \"EC 119/2022: o que é?\" 76x20",
+   "button \"pontos percentuais: o que é?\" 105x16",
+   "button \"mediana: o que é?\" 47x16",
+   "button \"região imediata: o que é?\" 91x20",
+   "button \"e-SIC: o que é?\" 34x20"
+  ],
+  "768 /explorar": [
+   "a \"Pular para o conteúdo\" 1x1",
+   "input \"\" 1x1",
+   "a \"Piaçabuçu\" 189x20",
+   "a \"Chapada da Natividade\" 189x20",
+   "a \"Magalhães Barata\" 189x20",
+   "a \"Cubati\" 189x20",
+   "a \"Brejo da Madre de Deus\" 189x20",
+   "a \"Volta Redonda\" 189x20",
+   "a \"Tenente Ananias\" 189x20",
+   "a \"Praia Norte\" 189x20",
+   "a \"Centro Novo do Maranhão\" 189x20",
+   "a \"Lagoa da Confusão\" 189x20"
+  ],
+  "768 /acompanhar": [
+   "a \"Pular para o conteúdo\" 1x1",
+   "a \"Radar MDE · Brasil\" 401x20"
+  ],
+  "768 /dados": [
+   "a \"Pular para o conteúdo\" 1x1",
+   "a \"Região Norte\" 284x20",
+   "a \"Região Norte: CSV para Excel B\" 38x20",
+   "a \"Região Nordeste\" 284x20",
+   "a \"Região Nordeste: CSV para Exce\" 38x20",
+   "a \"Região Centro-Oeste\" 284x20",
+   "a \"Região Centro-Oeste: CSV para \" 38x20",
+   "a \"Região Sudeste\" 284x20",
+   "a \"Região Sudeste: CSV para Excel\" 38x20",
+   "a \"Região Sul\" 284x20",
+   "a \"Região Sul: CSV para Excel Bra\" 38x20",
+   "a \"Governos estaduais\" 284x20"
+  ],
+  "768 /sobre": [
+   "a \"Pular para o conteúdo\" 1x1",
+   "a \"Radar MDE · Brasil\" 401x20"
+  ],
+  "768 /rota-inexistente": [
+   "a \"Pular para o conteúdo\" 1x1",
+   "a \"Radar MDE · Brasil\" 401x20"
+  ],
+  "1440 /": [
+   "a \"Pular para o conteúdo\" 1x1",
+   "path \"Alagoas: 1 de 102 municípios a\" 39x21",
+   "path \"Sergipe: 1 de 75 municípios ab\" 23x26",
+   "path \"Distrito Federal: 0 de 1 munic\" 12x7",
+   "a \"NorteNorte\" 31x16",
+   "a \"NordesteNordeste\" 50x16",
+   "a \"Centro-OesteCentro-Oeste\" 75x16",
+   "a \"SudesteSudeste\" 45x16",
+   "a \"SulSul\" 18x16",
+   "a \"Acre\" 30x20",
+   "a \"Tocantins\" 63x20",
+   "a \"Rio Grande do Norte\" 132x20"
+  ],
+  "1440 /regiao/sudeste": [
+   "a \"Pular para o conteúdo\" 1x1",
+   "a \"Rio de Janeiro\" 94x20",
+   "a \"São Paulo\" 66x20",
+   "a \"Minas Gerais\" 85x20",
+   "a \"Espírito Santo\" 92x20",
+   "a \"Radar MDE · Brasil\" 700x20"
+  ],
+  "1440 /sp": [
+   "a \"Pular para o conteúdo\" 1x1",
+   "a \"Região Sudeste\" 111x20",
+   "input \"\" 1x1",
+   "a \"Iaras\" 216x20",
+   "a \"Magda\" 216x20",
+   "a \"Presidente Alves\" 216x20",
+   "a \"Engenheiro Coelho\" 216x20",
+   "a \"São Manuel\" 216x20",
+   "a \"Itapecerica da Serra\" 216x20",
+   "a \"Santo André\" 216x20",
+   "a \"Cajobi\" 216x20",
+   "span \"O relatório ao Tesouro informa\" 9x16"
+  ],
+  "1440 /sp/santo-andre": [
+   "a \"Pular para o conteúdo\" 1x1",
+   "button \"Região imediata: o que é?\" 95x20",
+   "button \"MDE: o que é?\" 28x20",
+   "button \"Mediana: o que é?\" 47x16",
+   "button \"Fundeb: o que é?\" 45x20",
+   "button \"Déficit: o que é?\" 38x20",
+   "button \"SIOPE: o que é?\" 38x20",
+   "button \"EC 119/2022: o que é?\" 76x20",
+   "button \"pontos percentuais: o que é?\" 105x16",
+   "button \"mediana: o que é?\" 47x16",
+   "button \"região imediata: o que é?\" 91x20",
+   "button \"e-SIC: o que é?\" 34x20"
+  ],
+  "1440 /explorar": [
+   "a \"Pular para o conteúdo\" 1x1",
+   "input \"\" 1x1",
+   "a \"Piaçabuçu\" 190x20",
+   "a \"Chapada da Natividade\" 190x20",
+   "a \"Magalhães Barata\" 190x20",
+   "a \"Cubati\" 190x20",
+   "a \"Brejo da Madre de Deus\" 190x20",
+   "a \"Volta Redonda\" 190x20",
+   "a \"Tenente Ananias\" 190x20",
+   "a \"Praia Norte\" 190x20",
+   "a \"Centro Novo do Maranhão\" 190x20",
+   "a \"Lagoa da Confusão\" 190x20"
+  ],
+  "1440 /acompanhar": [
+   "a \"Pular para o conteúdo\" 1x1",
+   "a \"Radar MDE · Brasil\" 700x20"
+  ],
+  "1440 /dados": [
+   "a \"Pular para o conteúdo\" 1x1",
+   "a \"Região Norte\" 179x20",
+   "a \"Região Norte: CSV para Excel B\" 38x20",
+   "a \"Região Nordeste\" 179x20",
+   "a \"Região Nordeste: CSV para Exce\" 38x20",
+   "a \"Região Centro-Oeste\" 179x20",
+   "a \"Região Centro-Oeste: CSV para \" 38x20",
+   "a \"Região Sudeste\" 179x20",
+   "a \"Região Sudeste: CSV para Excel\" 38x20",
+   "a \"Região Sul\" 179x20",
+   "a \"Região Sul: CSV para Excel Bra\" 38x20",
+   "a \"Governos estaduais\" 179x20"
+  ],
+  "1440 /sobre": [
+   "a \"Pular para o conteúdo\" 1x1",
+   "a \"Baixar os dados\" 112x20",
+   "a \"Radar MDE · Brasil\" 700x20"
+  ],
+  "1440 /rota-inexistente": [
+   "a \"Pular para o conteúdo\" 1x1",
+   "a \"Radar MDE · Brasil\" 700x20"
+  ]
+ }
+}

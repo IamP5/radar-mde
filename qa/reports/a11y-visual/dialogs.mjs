@@ -1,8 +1,8 @@
 import { chromium } from 'playwright';
 const b=await chromium.launch(); const p=await (await b.newContext({viewport:{width:1280,height:800}})).newPage();
-const S=new URL('./shots/',import.meta.url).pathname;
+const S=new URL('./'+(process.env.SHOTDIR||'shots')+'/',import.meta.url).pathname;
 const act=()=>p.evaluate(()=>{const e=document.activeElement;return `${e.tagName.toLowerCase()}[${e.getAttribute('role')||''}] "${(e.getAttribute('aria-label')||e.getAttribute('placeholder')||e.textContent||'').trim().slice(0,40)}" inDialog=${!!e.closest('[role=dialog]')}`});
-await p.goto('http://localhost:3210/',{waitUntil:'networkidle'}); await p.waitForTimeout(500);
+await p.goto((process.env.BASE||'http://localhost:3210')+'/',{waitUntil:'networkidle'}); await p.waitForTimeout(500);
 // skip link
 await p.keyboard.press('Tab'); await p.screenshot({path:S+'k-skiplink.png',clip:{x:0,y:0,width:500,height:120}});
 await p.keyboard.press('Enter'); await p.waitForTimeout(200); console.log('after skip:',await act(), 'hash', await p.evaluate(()=>location.hash));
@@ -19,7 +19,7 @@ for(let i=0;i<12;i++){await p.keyboard.press('Tab');} console.log('after 12 tabs
 await p.keyboard.press('Escape'); await p.waitForTimeout(300); console.log('after Esc:',await act(), 'dialogs', await p.locator('[role=dialog]').count());
 // theme toggle via keyboard
 // segmented radiogroup arrows
-await p.goto('http://localhost:3210/sp',{waitUntil:'networkidle'}); await p.waitForTimeout(500);
+await p.goto((process.env.BASE||'http://localhost:3210')+'/sp',{waitUntil:'networkidle'}); await p.waitForTimeout(500);
 const r=p.locator('[role=radiogroup] [role=radio][aria-checked=true]').nth(1); await r.focus(); console.log('focused',await act());
 await p.keyboard.press('ArrowRight'); await p.waitForTimeout(200); console.log('after →',await act());
 // Select (combobox) in /sp filters
@@ -32,7 +32,7 @@ console.log('popover open focus:',await act()); await p.screenshot({path:S+'k-tr
 for(let i=0;i<40;i++) await p.keyboard.press('Tab'); console.log('after 40 tabs:',await act());
 await p.keyboard.press('Escape'); await p.waitForTimeout(300); console.log('after esc:',await act());
 // santo andre share / watch
-await p.goto('http://localhost:3210/sp/santo-andre',{waitUntil:'networkidle'}); await p.waitForTimeout(500);
+await p.goto((process.env.BASE||'http://localhost:3210')+'/sp/santo-andre',{waitUntil:'networkidle'}); await p.waitForTimeout(500);
 const sh=p.getByRole('button',{name:'Compartilhar'}); await sh.focus(); await p.keyboard.press('Enter'); await p.waitForTimeout(400); console.log('share menu:',await act(), await p.locator('[role=menu]').count());
 await p.screenshot({path:S+'k-share.png',clip:{x:0,y:0,width:1280,height:500}});
 await p.keyboard.press('Escape'); await p.waitForTimeout(300); console.log('after esc:',await act());

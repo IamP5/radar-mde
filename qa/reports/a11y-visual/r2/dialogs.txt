@@ -1,0 +1,39 @@
+after skip: a[] "Explorar" inDialog=false hash 
+next tab after skip: a[] "AcompanhandoSalvos" inDialog=false
+palette open via Meta+K: 1 input[combobox] "Buscar município, estado ou região…" inDialog=true
+dialog {
+  label: 'base-ui-_r_u_',
+  modal: null,
+  title: 'Buscar município, estado ou região'
+}
+combobox {
+  listbox: true,
+  opts: 9,
+  activedesc: null,
+  controls: 'radix-_r_10_',
+  expanded: 'true',
+  live: [ '76 resultados, mostrando 8' ]
+}
+after 12 tabs in palette: a[] "MetodologiaMétodo" inDialog=false
+after Esc: a[] "AcompanhandoSalvos" inDialog=false dialogs 0
+focused button[radio] "MDE" inDialog=false
+after → button[radio] "Fundeb" inDialog=false
+select open div[option] "Todas as regiões" inDialog=false 1
+select after esc button[combobox] "Região intermediária (IBGE)" inDialog=false
+popover open focus: a[menuitem] "Minas GeraisMG" inDialog=false
+after 40 tabs: a[] "Lorena" inDialog=false
+after esc: a[] "Lorena" inDialog=false
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+locator.focus: Timeout 30000ms exceeded.
+Call log:
+  - waiting for getByRole('button', { name: 'Compartilhar' })
+
+    at /Users/tuba/Dev/projects/radar-mde/qa/reports/a11y-visual/dialogs.mjs:36:64 {
+  log: [ "  - waiting for getByRole('button', { name: 'Compartilhar' })" ],
+  name: 'TimeoutError'
+}
+
+Node.js v24.20.0

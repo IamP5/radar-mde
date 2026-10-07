@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound, permanentRedirect, redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Compass, Download } from "lucide-react";
 import Link from "next/link";
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -30,10 +30,9 @@ export async function generateMetadata({ params }: PageProps<"/[uf]">): Promise<
 
 export default async function Page({ params }: PageProps<"/[uf]">) {
   const { uf: raw } = await params;
-  const u = getUf(raw);
+  // "/SP" → "/sp" happens in src/proxy.ts; here only the canonical lowercase form resolves
+  const u = raw === raw.toLowerCase() ? getUf(raw) : undefined;
   if (!u) notFound();
-  // "/SP" → "/sp": one canonical address per state
-  if (raw !== raw.toLowerCase()) permanentRedirect(`/${raw.toLowerCase()}`);
   // The Distrito Federal has a single "municipality" (Brasília): its page is the dashboard
   if (u.uf === "DF") redirect(`/df/${citiesOf("DF")[0].slug}`);
   const cities = citiesOf(u.uf);

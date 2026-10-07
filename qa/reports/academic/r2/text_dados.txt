@@ -1,0 +1,340 @@
+Pular para o conteúdo
+Radar MDE
+BR
+Painel
+Explorar
+Acompanhando
+Dados
+Metodologia
+Buscar município…
+⌘K
+Dados abertos
+Toda a base usada no painel, um registro por município e ano (2008–2025). Use à vontade em reportagens, pesquisas e conselhos (licença CC BY 4.0), citando as fontes originais.
+CSV · Brasil inteiro
+Excel Brasil
+JSON compacto
+Municípios
+5.570
+um arquivo por UF, região ou o país inteiro
+Exercícios
+18
+2008 a 2025
+Cobertura em 2025
+99,8%
+5.560 com dados de MDE
+Extraído em
+07/10/2026
+versão 2026-10-07.586603bb
+Formato dos arquivos
+
+CSV padrão: UTF-8 com BOM, vírgula como separador e ponto decimal (padrão internacional, para R, Stata, Python e Google Planilhas). Excel Brasil: ponto e vírgula como separador e vírgula decimal, abre direto em colunas no Excel em português. Valores em R$ são nominais (sem correção pela inflação). Célula vazia = sem dado ou não estimável, nunca zero.
+
+# R
+d <- readr::read_csv("radar-mde-brasil.csv")
+# Stata
+import delimited "radar-mde-brasil.csv", encoding(utf8) clear
+# Python
+d = pandas.read_csv("radar-mde-brasil.csv", encoding="utf-8-sig")
+Por região e governos estaduais
+
+Mesmas colunas do arquivo do Brasil, só com os municípios da região. O arquivo de estados traz a declaração de cada governo estadual (e do Distrito Federal).
+
+Região Norte
+Excel
+Região Nordeste
+Excel
+Região Centro-Oeste
+Excel
+Região Sudeste
+Excel
+Região Sul
+Excel
+Governos estaduais
+Excel
+Por estado
+
+CSV com todas as colunas do dicionário abaixo (para a versão Excel Brasil, acrescente “-excel” ao endereço, ex.: /dados/csv/sp-excel). A barra mostra a cobertura de 2025: municípios com dados de MDE sobre o total.
+
+Norte
+RO
+Rondônia
+Baixar CSV
+x
+52 mun. · 100%
+AC
+Acre
+Baixar CSV
+x
+22 mun. · 100%
+AM
+Amazonas
+Baixar CSV
+x
+62 mun. · 100%
+RR
+Roraima
+Baixar CSV
+x
+15 mun. · 100%
+PA
+Pará
+Baixar CSV
+x
+144 mun. · 100%
+AP
+Amapá
+Baixar CSV
+x
+16 mun. · 100%
+TO
+Tocantins
+Baixar CSV
+x
+139 mun. · 100%
+Nordeste
+MA
+Maranhão
+Baixar CSV
+x
+217 mun. · 100%
+PI
+Piauí
+Baixar CSV
+x
+224 mun. · 100%
+CE
+Ceará
+Baixar CSV
+x
+184 mun. · 100%
+RN
+Rio Grande do Norte
+Baixar CSV
+x
+167 mun. · 98,8%
+PB
+Paraíba
+Baixar CSV
+x
+223 mun. · 100%
+PE
+Pernambuco
+Baixar CSV
+x
+184 mun. · 100%
+AL
+Alagoas
+Baixar CSV
+x
+102 mun. · 100%
+SE
+Sergipe
+Baixar CSV
+x
+75 mun. · 100%
+BA
+Bahia
+Baixar CSV
+x
+417 mun. · 100%
+Centro-Oeste
+MS
+Mato Grosso do Sul
+Baixar CSV
+x
+79 mun. · 100%
+MT
+Mato Grosso
+Baixar CSV
+x
+142 mun. · 99,3%
+GO
+Goiás
+Baixar CSV
+x
+246 mun. · 100%
+DF
+Distrito Federal
+Baixar CSV
+x
+1 mun. · 100%
+Sudeste
+MG
+Minas Gerais
+Baixar CSV
+x
+853 mun. · 100%
+ES
+Espírito Santo
+Baixar CSV
+x
+78 mun. · 100%
+RJ
+Rio de Janeiro
+Baixar CSV
+x
+92 mun. · 98,9%
+SP
+São Paulo
+Baixar CSV
+x
+645 mun. · 99,2%
+Sul
+PR
+Paraná
+Baixar CSV
+x
+399 mun. · 100%
+SC
+Santa Catarina
+Baixar CSV
+x
+295 mun. · 99,7%
+RS
+Rio Grande do Sul
+Baixar CSV
+x
+497 mun. · 100%
+Cobertura nacional por exercício
+
+Um ano só entra no painel quando ao menos 85% dos municípios do país têm dados. O total de cada ano conta só os municípios que já existiam.
+
+Ano	Municípios	Com dados de MDE	Não declararam	Cobertura
+2025	5.570	5.560	10	
+x
+99,8%
+
+2024	5.569	5.565	4	
+x
+99,9%
+
+2023	5.569	5.567	2	
+x
+100%
+
+2022	5.569	5.567	2	
+x
+100%
+
+2021	5.569	5.567	2	
+x
+100%
+
+2020	5.569	5.547	22	
+x
+99,6%
+
+2019	5.569	5.556	13	
+x
+99,8%
+
+2018	5.569	5.560	9	
+x
+99,8%
+
+2017	5.569	5.564	5	
+x
+99,9%
+
+2016	5.569	5.473	96	
+x
+98,3%
+
+2015	5.569	5.513	56	
+x
+99%
+
+2014	5.569	5.544	25	
+x
+99,6%
+
+2013	5.569	5.550	19	
+x
+99,7%
+
+2012	5.564	5.427	137	
+x
+97,5%
+
+2011	5.564	5.492	72	
+x
+98,7%
+
+2010	5.564	5.537	27	
+x
+99,5%
+
+2009	5.564	5.539	25	
+x
+99,6%
+
+2008	5.564	5.506	58	
+x
+99%
+Dicionário
+
+Colunas dos arquivos CSV, na ordem em que aparecem. A exportação do Explorar usa os mesmos nomes e códigos, com parte das colunas. Valores em R$ são nominais.
+
+Campo	Descrição
+ibge	Código IBGE (7 dígitos no município; 2 dígitos no arquivo de estados)
+municipio	Nome do município (no arquivo de estados: nome do estado)
+uf	Sigla da UF
+regiao	Região do país
+regiao_intermediaria	Região geográfica intermediária (IBGE)
+regiao_imediata	Região geográfica imediata (IBGE)
+capital	1 = capital do estado (ou Brasília); 0 = não
+populacao	População: uma única estimativa (ver ano em /sobre), repetida em todos os anos
+ano	Exercício (ano do orçamento)
+envio	declarou | nao_declarou: se o ente enviou a declaração ao SIOPE no ano
+situacao_mde	cumpriu (26% ou mais) | limite (25% a 26%) | abaixo (menos de 25%) | nao_declarou | sem_dado
+mde_pct	% da receita de impostos aplicado em MDE, declarado ao SIOPE (indicador 1.1)
+delta_mde_pp	Diferença do % em MDE em relação ao ano anterior, em pontos percentuais (vazio sem os dois anos)
+mde_aplicado_rs	R$ aplicados em MDE, valores nominais. Declarado (indicador 8.2) desde 2020; estimado (receita × %) quando aplicado_estimado = 1
+aplicado_estimado	1 = mde_aplicado_rs foi estimado pelo Radar (receita × %), não declarado; 0 = declarado
+receita_impostos_rs	Receita de impostos e transferências que serve de base para os 25%, R$ nominais
+base_origem	Como a receita foi obtida: siope_8.1 (mínimo de 25% ÷ 0,25) | siope_8.2 (aplicado ÷ %) | receitas_siope (soma das receitas declaradas) | siconfi
+faltou_rs	R$ nominais que faltaram para chegar a 25% (0 = cumpriu; vazio = não estimável: sem declaração ou sem receita)
+fundeb_pessoal_pct	% do Fundeb pago aos profissionais da educação (indicador 1.2)
+fundeb_minimo_pct	Mínimo legal do Fundeb para profissionais: 60% até 2020, 70% desde 2021
+fundeb_nao_usado_pct	% do Fundeb deixado para o ano seguinte (indicador 1.4)
+fundeb_nao_usado_max_pct	Máximo permitido de Fundeb não usado: 5% até 2020, 10% desde 2021
+por_aluno_rs	R$ nominais por aluno (indicador 4.9; o número de alunos é o declarado pelo ente ao SIOPE)
+educacao_pct_despesa_total	% da despesa total do ente que foi para a educação (indicador 2.8)
+saude_pct	% aplicado em saúde (SICONFI; só alguns municípios de SP)
+mde_pct_siconfi	% em MDE segundo o Tesouro (SICONFI), quando difere do SIOPE em 1 p.p. ou mais (só SP)
+pandemia_ec119	1 = 2020 ou 2021: a EC 119/2022 dispensa punição se a diferença for compensada até 2023
+atipico	Valores atípicos, possível erro de declaração: mde (% fora de 18–45) | aluno (por aluno fora do padrão do ente) | base (receita destoa dos anos vizinhos), separados por |
+fonte	siope | siconfi: sistema de onde veio o %
+Municípios criados depois de 2008
+Mojuí dos Campos (PA, 2013), Pescaria Brava (SC, 2013), Balneário Rincão (SC, 2013), Pinto Bandeira (RS, 2013), Paraíso das Águas (MS, 2013) e Boa Esperança do Norte (MT, 2025) não têm registro nos anos anteriores à instalação: não existiam, então não entram como “não declarou” nem no total de municípios daqueles anos.
+Brasília e Fernando de Noronha
+Brasília (DF) usa a declaração do Distrito Federal, que acumula competências de estado e município. Fernando de Noronha (PE) é distrito estadual, sem orçamento municipal, e fica fora da contagem.
+Lacunas dos governos estaduais
+Os dados abertos do SIOPE não trazem declaração de MDE destes governos estaduais nestes anos: Rondônia (2010); Amapá (2010); Minas Gerais (2016–2023, 2025); Rio Grande do Sul (2018–2019). Nesses anos o painel mostra “sem dado” para o governo do estado.
+Como citar
+
+Cite as fontes originais (FNDE/SIOPE, Tesouro Nacional/SICONFI, IBGE) e o Radar MDE como forma de acesso. Os dados derivados estão sob a licença CC BY 4.0.
+
+ABNT
+RADAR MDE · BRASIL. Aplicação em manutenção e desenvolvimento do ensino nos municípios brasileiros, 2008–2025. Base de dados, versão 2026-10-07.586603bb. Dados de FNDE/SIOPE, Tesouro Nacional/SICONFI e IBGE. Licença CC BY 4.0. Disponível em: [endereço do Radar MDE]/dados. Acesso em: dd mmm. aaaa.
+BibTeX
+@misc{radarmde2026,
+  title        = {Radar MDE · Brasil: aplicação em MDE nos municípios brasileiros, 2008--2025},
+  year         = {2026},
+  note         = {Base de dados, versão 2026-10-07.586603bb. Fontes: FNDE/SIOPE, Tesouro Nacional/SICONFI, IBGE. Licença CC BY 4.0},
+  howpublished = {\url{[endereço do Radar MDE]/dados}}
+}
+
+Versão dos dados 2026-10-07.586603bb: arquivos do SIOPE extraídos em 07/10/2026, base gerada em 07/10/2026. População: SICONFI/Tesouro (cadastro de entes, exercício 2026), estimativa IBGE, a mesma para todos os anos. Licença: CC BY 4.0.
+
+Radar MDE · Brasil
+
+Dados: FNDE/SIOPE (indicadores e receitas declarados pelos municípios e estados, 2008 em diante), Tesouro Nacional/SICONFI (RREO, Anexo 14, municípios de SP) e IBGE (territórios, malhas e população). Inspirado em Silva, A. Z. (2021), O financiamento da Educação Básica no Brasil contemporâneo, UNINOVE. Ferramenta independente, sem vínculo com órgãos públicos.
+
+Dados extraídos em 07/10/2026 · versão 2026-10-07.586603bb · licença CC BY 4.0
+
+Painel
+Explorar
+Acompanhando
+Dados
+Metodologia

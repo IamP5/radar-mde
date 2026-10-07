@@ -1,7 +1,7 @@
 import { ArrowRight, Download } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound, permanentRedirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { PageHeader } from "@/components/kit/page-header";
 import TerritoryDashboard from "@/components/territory/TerritoryDashboard";
@@ -31,12 +31,8 @@ export async function generateMetadata({ params }: PageProps<"/regiao/[slug]">):
 export default async function Page({ params }: PageProps<"/regiao/[slug]">) {
   const { slug } = await params;
   const r = getRegionBySlug(slug);
-  if (!r) {
-    // "/regiao/Sul" → "/regiao/sul"
-    const lower = getRegionBySlug(slug.toLowerCase());
-    if (lower) permanentRedirect(regionPath(lower.key));
-    notFound();
-  }
+  // "/regiao/Sul" → "/regiao/sul" happens in src/proxy.ts
+  if (!r) notFound();
   const scope = { level: "region" as const, region: r.key };
   const cities = citiesIn(scope);
   const rows = rowsIn(scope);
