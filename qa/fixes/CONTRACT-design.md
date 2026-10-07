@@ -96,3 +96,27 @@ import { ChartActions } from "@/components/kit/chart-actions";
   split, and a Panel header stays with its body. Numeric table cells (`text-right` / `tnum`) never wrap (GOV-22, VIS-10).
 - Dark `--bin-4` is now `#2468bd` (white text 5.5:1, A11Y-19).
 - `Segmented` and `StatusBadge` use `min-h-*` and rem sizes so they grow with text zoom (A11Y-15).
+
+## Wave 3 · `ChartActions` additions
+- **`legend?: ChartLegendItem[]`**: drawn under the chart in the PNG/SVG, as a wrapped row of marker + label.
+  ```ts
+  type ChartLegendItem = { label: string; color: string; kind?: "line" | "swatch" | "dot" | "ring" | "hatch"; dash?: string | boolean };
+  // e.g. [{ label: "Santo André", color: "var(--series-1)" },
+  //       { label: "Mediana SP", color: "var(--series-2)", dash: "1 3" },
+  //       { label: "mínimo 25%", color: "var(--foreground)", dash: true },
+  //       { label: "fora do padrão", color: "var(--warning)", kind: "ring" }]
+  // maps: bins.map(b => ({ label: b.label, color: b.color, kind: "swatch" })) + { label: "Não declarou", color: "var(--critical)", kind: "hatch" }
+  ```
+  - `color` may be any CSS color, including `var(--x)` or `color-mix()`. It is resolved against the panel, so it
+    follows the theme.
+  - Without `legend`, the Panel's on-screen legend is collected automatically: each `li` outside the chart svg whose
+    first marker is `aria-hidden` (a span swatch or line, or a small svg line/circle) followed by its text.
+    Pass `legend={[]}` for no legend.
+- **Footer** is never clipped: "Fonte: … Radar MDE · Brasil." is on one line, then the page URL on its own line,
+  wrapped at `/ ? & =`, then `note`, all wrapped to the image width. Long titles wrap too.
+- **URL / citation origin** comes from `currentPageUrl()` in `@/lib/site` (W4). That is SITE_URL when configured,
+  otherwise `window.location.origin`, so it is never `localhost:3000`. `PrintMeta` uses the same helper.
+- **CSV numbers** are rounded to at most 4 decimals before serialising (`28.244999999999997` → `28.245`). Callers can
+  still round to 2 decimals themselves.
+- **"Compartilhar imagem…"** is the first item on touch devices (`pointer: coarse`) when `navigator.canShare({files})`
+  is true. It calls `navigator.share({ files: [png], title, text: citation })`. It isn't shown on desktop.

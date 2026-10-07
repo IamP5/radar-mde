@@ -2,7 +2,7 @@
 
 import { TriangleAlert } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useUrlParam } from "./useUrlParam";
 import { Panel } from "@/components/kit/panel";
 import { Segmented } from "@/components/kit/segmented";
 import { withYear } from "@/components/YearPicker";
@@ -22,7 +22,7 @@ const lastYears = (ys: number[]) => `${ys.length > 4 ? "…, " : ""}${ys.slice(-
 export function DeficitPanel({
   nominal, real, years, year, initialYear, className, compact,
 }: { nominal: Deficit[]; real: Deficit[]; years: number[]; year: number; initialYear: number; className?: string; compact?: boolean }) {
-  const [mode, setMode] = useState<"nom" | "real">("nom");
+  const [mode, setMode] = useUrlParam<"nom" | "real">("valores", { nom: "nominal", real: "ipca" }, "nom");
   const list = mode === "real" ? real : nominal;
   const last = years[years.length - 1];
   return (

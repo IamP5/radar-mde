@@ -360,6 +360,14 @@ function CityContent({ c }: { c: City }) {
                   <ChartActions
                     title={`% da receita de impostos aplicado em MDE — ${who}, ${span}`}
                     filename={[c.uf.toLowerCase(), c.slug, "mde"]}
+                    legend={[
+                      { label: c.name, color: "var(--series-1)" },
+                      { label: "mínimo 25%", color: "var(--foreground)", dash: "4 4" },
+                      ...(single ? [] : [{ label: `Mediana ${c.uf}`, color: "var(--series-2)", dash: "2 3" }]),
+                      { label: "Mediana Brasil", color: "var(--ink)", dash: "2 3" },
+                      ...(f.below.length ? [{ label: "abaixo de 25%", color: "var(--critical)", kind: "dot" as const }] : []),
+                      ...(f.atypMde.length ? [{ label: `fora do padrão (${listYears(f.atypMde)})`, color: "var(--warning)", kind: "ring" as const }] : []),
+                    ]}
                     note={`Linha tracejada: mínimo de 25%. Medianas: ${single ? "" : `${c.uf} e `}Brasil.`}
                     csv={{
                       columns: ["ano", "mde_pct", "fora_do_padrao", ...(single ? [] : ["mediana_uf_pct"]), "mediana_brasil_pct", "minimo_pct"],
@@ -453,6 +461,10 @@ function CityContent({ c }: { c: City }) {
                   <ChartActions
                     title={`% do Fundeb pago aos profissionais da educação — ${who}, ${span}`}
                     filename={[c.uf.toLowerCase(), c.slug, "fundeb"]}
+                    legend={[
+                      { label: `${c.name} — Fundeb`, color: "var(--series-1)" },
+                      { label: "mínimo legal", color: "var(--foreground)", dash: "4 4" },
+                    ]}
                     note="Mínimo legal: 60% até 2020; 70% desde 2021."
                     csv={{
                       columns: ["ano", "fundeb_profissionais_pct", "minimo_pct"],
@@ -470,6 +482,10 @@ function CityContent({ c }: { c: City }) {
                   <ChartActions
                     title={`Investimento por aluno (R$/ano, nominal) — ${who}, ${span}`}
                     filename={[c.uf.toLowerCase(), c.slug, "por-aluno"]}
+                    legend={[
+                      { label: `${c.name} — por aluno`, color: "var(--series-1)" },
+                      ...(f.atypAluno.length ? [{ label: `fora do padrão (${listYears(f.atypAluno)})`, color: "var(--warning)", kind: "ring" as const }] : []),
+                    ]}
                     note="Valores nominais, sem correção pela inflação."
                     csv={{
                       columns: ["ano", "por_aluno_rs", "fora_do_padrao"],

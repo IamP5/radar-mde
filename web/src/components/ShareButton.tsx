@@ -3,6 +3,7 @@
 import { Check, Link2, MessageCircle, Share, Share2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { absoluteUrl } from "@/lib/site";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 /** Share menu (link keeps ?ano=): copy link (with inline "copiado" feedback), WhatsApp, and the native sheet where available. */
@@ -21,7 +22,7 @@ export default function ShareButton({ text, path }: { text: string; path: string
   // keep the selected year (?ano=, mirrored by useYear) so the link opens on the same exercise
   const url = () => {
     const ano = new URLSearchParams(window.location.search).get("ano");
-    return `${window.location.origin}${path}${ano && /^\d{4}$/.test(ano) ? `?ano=${ano}` : ""}`;
+    return absoluteUrl(`${path}${ano && /^\d{4}$/.test(ano) ? `?ano=${ano}` : ""}`);
   };
   const copy = async () => {
     try {

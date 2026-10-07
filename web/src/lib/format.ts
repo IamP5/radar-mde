@@ -67,7 +67,11 @@ export const brl = (v: number) =>
 
 export function brlShort(v: number) {
   const a = Math.abs(v);
-  if (a >= 1e9) return `R$ ${(v / 1e9).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} bi`;
+  if (a >= 1e9) {
+    // 3 significant figures, so IPCA corrections on large totals stay visible ("R$ 1,03 bi", "R$ 14,2 bi")
+    const d = a < 1e10 ? 2 : a < 1e11 ? 1 : 0;
+    return `R$ ${(v / 1e9).toLocaleString("pt-BR", { maximumFractionDigits: d })} bi`;
+  }
   if (a >= 1e6) return `R$ ${(v / 1e6).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} mi`;
   if (a >= 1e3) return `R$ ${(v / 1e3).toLocaleString("pt-BR", { maximumFractionDigits: 0 })} mil`;
   return brl(v);

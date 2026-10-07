@@ -111,7 +111,9 @@ Flags remain `atip?: ("mde"|"aluno"|"base")[]` on year records and the `Row.atip
   Persistent low application (Volta Redonda 12–17%, Cuiabá 2021 16%) is **not** flagged anymore.
 - `aluno`: per-student < 0,4× or > 2,5× the municipality's own typical level (relative to the national median of each
   year), **or** a year-over-year jump > 2,5× (or drop below 0,4×) that is not a return to the level of two years
-  before, **or** > 8× the national median of the year.
+  before, **or** > 8× the national median of the year, **or** (wave 3, ACA-23) a one-year spike/dip that reverts:
+  > 2× or < 0,5× both neighbouring years, or a 2,5× jump into or out of the year while the years before and after
+  are at the same level (0,4–2,5×). Now 643 per-student flags; no unflagged year-over-year jump > 2,5× remains.
 - `base`: revenue base < 0,4× or > 2,5× the median of the ±2 neighbouring years (unchanged).
 - New record field `atipImpl?: 1` = at least one flag is physically implausible (MDE < 5% or > 60%, per-student > 8×
   the national median). New `Row.atip` bit **8** = implausible. Helper `isImplausible(r: Row, yi)`.

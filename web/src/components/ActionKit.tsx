@@ -81,8 +81,14 @@ export default function ActionKit({ templates }: { templates: Template[] }) {
 
 type Status = "idle" | "copied" | "manual" | "mail";
 
+/** Phones and tablets paste with a long press, not Ctrl+V (CIT-25); read at click time, never during render. */
+const isTouch = () => typeof window !== "undefined" && window.matchMedia?.("(pointer: coarse)").matches;
+const PASTE_TOUCH = "toque e segure e escolha Colar";
+const PASTE_KEYS = "Ctrl+V ou ⌘+V";
+
 function Letter({ t, text, edited, onChange, onReset }: { t: Template; text: string; edited: boolean; onChange: (v: string) => void; onReset: () => void }) {
   const [status, setStatus] = useState<Status>("idle");
+  const [touch, setTouch] = useState(false);
   const area = useRef<HTMLTextAreaElement>(null);
   useEffect(() => {
     if (status !== "copied") return;
@@ -101,7 +107,7 @@ function Letter({ t, text, edited, onChange, onReset }: { t: Template; text: str
   };
   // mail clients truncate long mailto: URLs (~2.000 chars): the full letter goes to the clipboard, the body only says so
   const mail = `mailto:?subject=${encodeURIComponent(t.subject)}&body=${encodeURIComponent(
-    "(O texto completo foi copiado pelo Radar MDE: cole aqui com Ctrl+V ou ⌘+V.)\n\n",
+    "(O texto completo foi copiado pelo Radar MDE. Cole aqui: no celular, toque e segure e escolha Colar; no computador, Ctrl+V ou ⌘+V.)\n\n",
   )}`;
   const wa = `https://wa.me/?text=${encodeURIComponent(text)}`;
   const link = "inline-flex min-h-6 items-center gap-1 text-brand-ink hover:underline";
@@ -133,7 +139,10 @@ function Letter({ t, text, edited, onChange, onReset }: { t: Template; text: str
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <Button variant={status === "copied" ? "outline" : "default"} onClick={async () => setStatus((await copy()) ? "copied" : "manual")}>
+        <Button variant={status === "copied" ? "outline" : "default"} onClick={async () => {
+            setTouch(isTouch());
+            setStatus((await copy()) ? "copied" : "manual");
+          }}>
           {status === "copied" ? <Check className="text-good-ink" /> : <Copy />}
           {status === "copied" ? "Copiado" : "Copiar texto"}
         </Button>
@@ -146,6 +155,7 @@ function Letter({ t, text, edited, onChange, onReset }: { t: Template; text: str
           render={<a href={mail} />}
           nativeButton={false}
           onClick={() => {
+            setTouch(isTouch());
             void copy().then((ok) => setStatus(ok ? "mail" : "manual"));
           }}
         >
@@ -171,11 +181,13 @@ function Letter({ t, text, edited, onChange, onReset }: { t: Template; text: str
       />
       <p id={`${t.id}-hint`} className="text-xs text-muted-foreground" role="status" aria-live="polite">
         {status === "manual"
-          ? "Texto selecionado: use Ctrl+C (ou ⌘+C) para copiar."
+          ? touch
+            ? "Texto selecionado: toque e segure sobre ele e escolha Copiar."
+            : "Texto selecionado: use Ctrl+C (ou ⌘+C) para copiar."
           : status === "copied"
-            ? "Texto copiado. Cole no e-mail, no sistema e-SIC ou num documento."
+            ? `Texto copiado. Cole no e-mail, no sistema e-SIC ou num documento (${touch ? PASTE_TOUCH : PASTE_KEYS}).`
             : status === "mail"
-              ? "Texto copiado: no e-mail que abriu, cole no corpo da mensagem (Ctrl+V ou ⌘+V)."
+              ? `Texto copiado: no e-mail que abriu, cole no corpo da mensagem (${touch ? PASTE_TOUCH : PASTE_KEYS}).`
               : "Você pode editar o texto aqui; as edições ficam guardadas ao trocar de carta. Revise os dados antes de enviar. Nada é enviado pelo Radar."}
       </p>
     </div>

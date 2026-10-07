@@ -1,0 +1,16 @@
+import { chromium } from "playwright";
+const b = await chromium.launch();
+const ctx = await b.newContext({ acceptDownloads: true, permissions: ["clipboard-read","clipboard-write"] });
+const p = await ctx.newPage(); const errs=[]; p.on("pageerror", e=>errs.push(e.message.slice(0,200)));
+await p.goto("http://localhost:3210/rj/cabo-frio", { waitUntil: "networkidle" });
+await p.locator("section").filter({ has: p.getByRole("heading", { name: /receita de impostos aplicado/ }) }).last().getByRole("button").last().click();
+const [dl] = await Promise.all([p.waitForEvent("download"), p.getByRole("menuitem", { name: /PNG/ }).click()]);
+await dl.saveAs("fixes/w2/shots/export-cabo-mde.png");
+await p.getByRole("button", { name: "Compartilhar" }).click();
+await p.getByRole("menuitem", { name: "Copiar link" }).click(); await p.waitForTimeout(300);
+console.log("share:", await p.evaluate(() => navigator.clipboard.readText()));
+const t = await b.newContext({ viewport:{width:390,height:844}, hasTouch:true, isMobile:true, permissions: ["clipboard-read","clipboard-write"] });
+const tp = await t.newPage(); await tp.goto("http://localhost:3210/sp/buri", { waitUntil: "networkidle" });
+await tp.getByRole("button", { name: "Copiar texto" }).tap(); await tp.waitForTimeout(300);
+console.log("touch hint:", await tp.locator("[role=tabpanel] [role=status]:visible").innerText());
+console.log(errs); await b.close();

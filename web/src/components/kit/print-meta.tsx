@@ -1,9 +1,10 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { currentPageUrl } from "@/lib/site";
 
 const noop = () => () => {};
-const read = () => `${window.location.origin}${window.location.pathname}${window.location.search}`;
+const read = () => currentPageUrl();
 
 /** Print-only line under the page title: where the page lives and when it was printed (GOV-07). */
 export function PrintMeta() {

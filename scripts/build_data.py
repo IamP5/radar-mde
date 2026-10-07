@@ -220,7 +220,9 @@ def flag_atypical(entities):
            Persistent low application is real under-application and is NOT flagged.
     aluno: per-student, relative to the national median of the year, < 0.4x or > 2.5x the entity's own typical
            level (median over its years); or a year-over-year jump > 2.5x / drop < 0.4x that is not a return to
-           the level of two years before; or > 8x the national median (implausible).
+           the level of two years before; or a one-year spike that reverts (> 2x or < 0.5x both neighbouring
+           years, or a 2.5x jump into or out of the year while the years before and after are at the same level);
+           or > 8x the national median (implausible).
     base:  tax-revenue base < 0.4x or > 2.5x the median of the entity's neighbouring years (±2)."""
     nat = {}
     for y in YEARS:
@@ -250,9 +252,15 @@ def flag_atypical(entities):
             if y in rel:
                 prev, prev2 = alu.get(y - 1), alu.get(y - 2)
                 jump = prev and out(alu[y] / prev) and not (prev2 and not out(alu[y] / prev2))
+                # one-year spike that reverts (ACA-23): > 2x or < 0.5x both neighbours, or a 2.5x jump from the
+                # previous year followed by a return to that level the next year
+                nxt = alu.get(y + 1)
+                spike = prev and nxt and ((alu[y] > 2 * prev and alu[y] > 2 * nxt) or (alu[y] < 0.5 * prev and alu[y] < 0.5 * nxt))
+                # a jump into y or out of y (2.5x) where the year before and after are at the same level
+                spike = spike or (prev and nxt and (out(alu[y] / prev) or out(nxt / alu[y])) and not out(nxt / prev))
                 if rel[y] > 8:
                     f.append("aluno"); impl = True
-                elif (own and out(rel[y] / own)) or jump:
+                elif (own and out(rel[y] / own)) or jump or spike:
                     f.append("aluno")
             if y in base:
                 md = around(base, y)

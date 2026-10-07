@@ -283,7 +283,9 @@ export default function Page() {
                 <li>
                   <strong>Por aluno</strong>: valor muito acima (mais de 2,5 vezes) ou abaixo (menos de 0,4 vez) do nível habitual do
                   município (comparado à mediana nacional de cada ano), ou um salto de mais de 2,5 vezes (ou queda para menos de 0,4 vez)
-                  em relação ao ano anterior que não seja a volta ao nível de dois anos antes.
+                  em relação ao ano anterior que não seja a volta ao nível de dois anos antes. Também é marcado o pico (ou vale) de um
+                  ano só: valor mais de 2 vezes acima (ou abaixo da metade) dos dois anos vizinhos, ou um salto de 2,5 vezes para dentro
+                  ou para fora do ano quando o ano anterior e o seguinte estão no mesmo nível.
                 </li>
                 <li>
                   <strong>Receita de impostos</strong>: 2,5 vezes acima ou abaixo da mediana dos anos vizinhos (o valor em R$ que faltou

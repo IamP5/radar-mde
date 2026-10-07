@@ -1,11 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, type ReactNode } from "react";
+import { useUrlParam } from "./useUrlParam";
+
 import Choropleth, { Legend, prewarmMap } from "@/components/Choropleth";
 import { Segmented } from "@/components/kit/segmented";
 import { StatusDot, type StatusKind } from "@/components/kit/status";
 import { withYear } from "@/components/YearPicker";
+import { ChartActions, type ChartLegendItem } from "@/components/kit/chart-actions";
+import { NO_DATA_COLOR } from "@/lib/bins";
 import { BINS, METRICS, SHARE_BINS, colorOf, funBins, isBelowBin, quintileBins, type Bin, type MetricKey } from "@/lib/bins";
 import { MDE_MIN, int, pct } from "@/lib/format";
 import { UFS, cityPath, ufPath } from "@/lib/geo";
@@ -34,6 +38,10 @@ type Props = {
   tableId?: string;
   /** link to the same municipalities as a table */
   explorerHref: string;
+  /** "Brasil" / "Região Sul", for export titles */
+  scopeLabel: string;
+  /** file-name scope, e.g. "brasil" */
+  fileScope: string;
   /** restrict to these UFs (region view) */
   ufCodes?: number[];
   ariaScope: string;
@@ -48,14 +56,18 @@ const Row = ({ k, v, className }: { k: string; v: ReactNode; className?: string 
 
 const belowKeys = (b: Bin) => /^(b1|b2|f1|f2)$/.test(b.key);
 
-export default function TerritoryMap({ ufs, years, year, initialYear, rows, rowsError, onNeedRows, defaultMode, ufCodes, ariaScope, tableId, explorerHref }: Props) {
-  const [mode, setModeState] = useState<"uf" | "mun">(defaultMode);
+export default function TerritoryMap({ ufs, years, year, initialYear, rows, rowsError, onNeedRows, defaultMode, ufCodes, ariaScope, tableId, explorerHref, scopeLabel, fileScope }: Props) {
+  // JOR-26: map level and metric live in the URL (?mapa=estados|municipios, ?indicador=…)
+  const [mode, setModeState] = useUrlParam<"uf" | "mun">("mapa", { uf: "estados", mun: "municipios" }, defaultMode);
   const setMode = (m: "uf" | "mun") => {
     if (m === "mun") onNeedRows();
     setModeState(m);
   };
-  const [metric, setMetric] = useState<MetricKey>("mde");
-  const [ufMetric, setUfMetric] = useState<UfMetric>("share");
+  useEffect(() => {
+    if (mode === "mun") onNeedRows();
+  }, [mode, onNeedRows]);
+  const [metric, setMetric] = useUrlParam<MetricKey>("indicador", { mde: "mde", fun: "fundeb", aluno: "aluno" }, "mde");
+  const [ufMetric, setUfMetric] = useUrlParam<UfMetric>("estados", { share: "abaixo", median: "mediana", gov: "governo" }, "share");
   const yi = years.indexOf(year);
   // until the municipal rows arrive, keep drawing states
   const eff: "uf" | "mun" = mode === "mun" && rows ? "mun" : "uf";
@@ -171,6 +183,36 @@ export default function TerritoryMap({ ufs, years, year, initialYear, rows, rows
   );
 
   const showMun = mode === "mun";
+  const exportMetric = eff === "uf" ? UF_METRICS.find((m) => m.key === ufMetric)!.label : METRICS.find((m) => m.key === metric)!.label;
+  const legendBins = eff === "uf" ? ufBins : munBins;
+  const outlines = eff === "mun" ? metric !== "aluno" : ufMetric !== "share";
+  const exportLegend: ChartLegendItem[] = [
+    ...legendBins.map((b) => ({ label: b.label, color: b.color, kind: "swatch" as const })),
+    ...(eff === "mun" && metric === "mde" ? [{ label: "Não declarou", color: "var(--critical)", kind: "hatch" as const }] : []),
+    { label: "Sem dados", color: NO_DATA_COLOR, kind: "swatch" },
+    ...(outlines ? [{ label: "Contorno vermelho: abaixo do mínimo legal", color: "var(--critical-ink)", kind: "ring" as const }] : []),
+  ];
+  const exportCsv =
+    eff === "uf"
+      ? {
+          columns: ["uf", "estado", "ano", "municipios_abaixo_25", "municipios_declararam", "abaixo_pct", "mde_mediana_pct", "governo_estadual_mde_pct", "nao_declararam"],
+          rows: ufs.map((u) => {
+            const st = u.stats[yi];
+            const sh = belowShare(st);
+            return {
+              uf: u.uf, estado: u.name, ano: year, municipios_abaixo_25: st.below, municipios_declararam: st.reported,
+              abaixo_pct: sh == null ? null : Math.round(sh * 100) / 100, mde_mediana_pct: st.median, governo_estadual_mde_pct: u.gov[yi], nao_declararam: st.nd,
+            };
+          }),
+        }
+      : {
+          columns: ["ibge", "municipio", "uf", "ano", metric === "mde" ? "mde_pct" : metric === "fun" ? "fundeb_pessoal_pct" : "por_aluno_rs", "nao_declarou"],
+          rows: (ufCodes ? (rows ?? []).filter((r) => ufCodes.includes(Math.floor(r.id / 100000))) : rows ?? []).map((r) => ({
+            ibge: r.id, municipio: r.name, uf: r.uf, ano: year,
+            [metric === "mde" ? "mde_pct" : metric === "fun" ? "fundeb_pessoal_pct" : "por_aluno_rs"]: r[metric][yi],
+            nao_declarou: r.nd[yi] ? 1 : 0,
+          })),
+        };
   const mapHeight = ufCodes ? 520 : 600;
   const warm = () => {
     if (mode === "mun") return;
@@ -209,6 +251,17 @@ export default function TerritoryMap({ ufs, years, year, initialYear, rows, rows
             {rowsError ? "Falha ao carregar os municípios." : "Carregando 5.570 municípios…"}
           </span>
         )}
+        <span className="ml-auto">
+          <ChartActions
+            // JOR-24: the title names the metric, the level and the year; the legend is drawn into the image
+            title={`${exportMetric} por ${eff === "uf" ? "estado" : "município"} · ${scopeLabel} · ${year}`}
+            filename={[fileScope, "mapa", eff === "uf" ? ufMetric : metric, year]}
+            svgSelector="svg[role=img], svg[role=group]"
+            note={eff === "mun" && metric === "aluno" ? "Valores nominais" : undefined}
+            legend={exportLegend}
+            csv={exportCsv}
+          />
+        </span>
       </div>
       <Choropleth
         src="br"

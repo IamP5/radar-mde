@@ -15,8 +15,9 @@ import { cn } from "@/lib/utils";
 import { PANDEMIC_YEARS, brlShort, funMin, int, pct, share } from "@/lib/format";
 import { UFS, getRegion, regionPath, ufPath, type RegionKey } from "@/lib/geo";
 import { ChartActions } from "@/components/kit/chart-actions";
-import { histLabel } from "@/lib/bins";
+import { BINS, histLabel } from "@/lib/bins";
 import { InfoTip, ShortfallInfo } from "./InfoTip";
+import { useUrlParam } from "./useUrlParam";
 import { delta, fmtPct0, fmtPp, relChange } from "./delta";
 import { alignRows, belowShare, loadAllRows, shortfallKnown, shortfallLabel, type Deficit, type RegionSummary, type Row, type Stats, type UfSummary } from "@/lib/rows";
 import TerritoryMap from "./TerritoryMap";
@@ -105,7 +106,7 @@ export default function TerritoryDashboard({ region, years, initialYear, stats, 
   const [yearNow, setYear] = useYear(years, initialYear);
   // the picker answers at once; the dashboard (charts, map, tables) follows as a low-priority render (INP)
   const year = useDeferredValue(yearNow);
-  const [trend, setTrend] = useState<TrendKey>("share");
+  const [trend, setTrend] = useUrlParam<TrendKey>("serie", { share: "abaixo", short: "faltou", median: "mediana" }, "share");
   const tabs = useRef<HTMLDivElement>(null);
   const [all, setAll] = useState<Row[] | null>(null);
   const [rowsError, setRowsError] = useState(false);
@@ -324,22 +325,6 @@ export default function TerritoryDashboard({ region, years, initialYear, stats, 
             action={
               <span className="flex items-center gap-2">
                 <span className="rounded-md border px-1.5 py-0.5 font-mono text-xs text-muted-foreground">{year}</span>
-                <ChartActions
-                  title={`Mapa · ${scopeLabel} · ${year}`}
-                  filename={[region ? getRegion(region).slug : "brasil", "mapa", year]}
-                  svgSelector="svg[aria-describedby], svg[role=img], svg[role=group]"
-                  csv={{
-                    columns: ["uf", "estado", "ano", "municipios_abaixo_25", "municipios_declararam", "abaixo_pct", "mde_mediana_pct", "governo_estadual_mde_pct", "nao_declararam"],
-                    rows: ufs.map((u) => {
-                      const st = u.stats[yi];
-                      const sh = belowShare(st);
-                      return {
-                        uf: u.uf, estado: u.name, ano: year, municipios_abaixo_25: st.below, municipios_declararam: st.reported,
-                        abaixo_pct: sh == null ? null : Math.round(sh * 100) / 100, mde_mediana_pct: st.median, governo_estadual_mde_pct: u.gov[yi], nao_declararam: st.nd,
-                      };
-                    }),
-                  }}
-                />
               </span>
             }
           >
@@ -355,6 +340,8 @@ export default function TerritoryDashboard({ region, years, initialYear, stats, 
               ufCodes={ufCodes}
               ariaScope={region ? `da região ${getRegion(region).name}` : "do Brasil"}
               tableId="ranking-estados"
+              scopeLabel={scopeLabel}
+              fileScope={region ? getRegion(region).slug : "brasil"}
               explorerHref={explorerHref}
             />
           </Panel>
@@ -385,6 +372,7 @@ export default function TerritoryDashboard({ region, years, initialYear, stats, 
               filename={[region ? getRegion(region).slug : "brasil", "evolucao", trend]}
               svgSelector=".recharts-surface"
               note={trend === "short" ? "Estimativa, valores nominais" : undefined}
+              legend={trendSeries.map((x) => ({ label: x.label, color: x.color, dash: x.dash ?? (x.emphasis ? "6 3" : undefined) }))}
               csv={{
                 columns: ["ano", ...trendSeries.map((x) => x.label)],
                 rows: years.map((y, i) => ({ ano: y, ...Object.fromEntries(trendSeries.map((x) => [x.label, x.values[i] == null ? null : Math.round(x.values[i]! * 100) / 100])) })),
@@ -458,6 +446,7 @@ export default function TerritoryDashboard({ region, years, initialYear, stats, 
               <ChartActions
                 title={`Distribuição do % aplicado em MDE, ${scopeLabel}, ${year}`}
                 filename={[region ? getRegion(region).slug : "brasil", "distribuicao", year]}
+                legend={BINS.map((b) => ({ label: `MDE ${b.label}`, color: b.color, kind: "swatch" as const }))}
                 svgSelector=".recharts-surface"
                 csv={{ columns: ["faixa_mde", "municipios"], rows: hist[yi].map((n, i) => ({ faixa_mde: histLabel(i), municipios: n })) }}
               />

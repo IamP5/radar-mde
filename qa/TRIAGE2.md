@@ -71,3 +71,20 @@ VIS-12 page-header actions `shrink-0` squeezes title (wrap actions below title w
 A11Y-15 px→rem regression in kit/global (200% default font size check on /sp/santo-andre header);
 GOV-22 print: Fundeb chart axis cut, half-empty first page (break rules); chart-actions kit component (above) first;
 A11Y-05 leftover in kit components (bars/tracks forced-colors); any token requests in qa/fixes/REQUESTS.md.
+
+# Wave 3 (small, from "## Round 3" sections)
+- W5: ChartActions — export draws a legend (new optional `legend: {label, color, dash?}[]` prop, plus auto-collect from
+  Recharts legend/series names when absent) and wraps/never clips the source URL footer (CIT-23, JOR-24, GOV-29, ACA-24);
+  CSV numbers rounded (max 4 decimals, no float artefacts: CIT-24, JOR-25); citation/footers use `window.location.origin`
+  on the client when SITE_URL is a localhost fallback (ACA-22, JOR-23 — coordinate with W4's lib/site.ts helper).
+  On touch devices offer "Compartilhar imagem" via navigator.share({files}) when supported (CIT-26).
+- W4: `lib/site.ts` exports a client-safe `siteUrl()` that returns `window.location.origin` in the browser when no
+  explicit/Vercel URL is configured (ACA-22/JOR-23); tell W5.
+- W3: pass `legend` + metric-explicit titles to ChartActions on maps (title names the metric + year; legend = bins) and
+  multi-line charts (JOR-24); IPCA toggle, trend tab and map mode in the URL (JOR-26); GOV-27 option order ("Qualquer
+  histórico" first — use an array, not object keys); GOV-28 print the full filtered table (no 50-row cap in print; hide
+  filter controls; repeated header keeps labels).
+- W2: pass `legend` to ChartActions (city vs UF median vs Brasil median, fora do padrão marker); CIT-25 paste hint
+  device-aware ("toque e segure para colar" on touch).
+- W1: ACA-23 flag one-year per-student spikes that revert (compare with both neighbours); CIT-27/ACA-24 money formatting:
+  billions with 2 significant decimals ("R$ 1,03 bi") in `lib/format.ts` brlShort (W1 owns format.ts for this).

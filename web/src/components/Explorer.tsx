@@ -22,6 +22,7 @@ import { ROW_CSV_COLUMNS, ROW_CSV_COLUMNS_FIN, csvFilename, downloadCsv, rowCsvR
 import { MDE_MIN, PANDEMIC_YEARS, POP_BANDS, brlShort, funMin, int, normKey, pct, popBand, share } from "@/lib/format";
 import { REGIONS, UFS, cityPath, getRegion, getRegionBySlug, getUf, type RegionKey } from "@/lib/geo";
 import { aggregate, atipNote, atipOf, deltaPp, existedIn, isImplausible, loadAllRows, loadFinance, shortfallLabel, timesBelow, type Row } from "@/lib/rows";
+import { currentPageUrl } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 type Situation = "all" | "below" | "edge" | "ok" | "nd" | "missing" | "fun" | "both";
@@ -416,11 +417,11 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
   const copyLink = async () => {
     writeView({ q, regiao, uf, porte, sit, rec, capital, sort });
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      await navigator.clipboard.writeText(currentPageUrl());
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      window.prompt("Copie o link:", window.location.href);
+      window.prompt("Copie o link:", currentPageUrl());
     }
   };
 
