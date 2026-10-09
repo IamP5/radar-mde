@@ -1,0 +1,9 @@
+{
+  "name": "control-radar-mde",
+  "private": true,
+  "type": "module",
+  "description": "Agent-facing control CLI for driving a local Radar MDE dev server.",
+  "dependencies": {
+    "playwright": "1.63.0"
+  }
+}

@@ -5,6 +5,7 @@
 /data/priority.json
 __pycache__/
 /qa/node_modules/
+/scripts/control/node_modules/
 /qa/reports/**/*.png
 /qa/reports/**/*.csv
 /qa/reports/**/*.pdf
