@@ -1,5 +1,6 @@
 import { YEARS, allCities, citiesIn, citiesOf, stateGov } from "@/lib/data";
 import { CITY_CSV_COLUMNS, STATE_CSV_COLUMNS, cityCsvRecords, stateCsvRecords, toCsv } from "@/lib/csv";
+import { cityStages, govStages } from "@/lib/etapas";
 import { REGIONS, UFS, getRegionBySlug, getUf } from "@/lib/geo";
 import { compressed } from "@/app/data/compressed";
 
@@ -26,14 +27,14 @@ function build(raw: string): string | null {
   if (id === "estados") {
     const recs = UFS.flatMap((u) => {
       const g = stateGov(u.uf);
-      return g ? stateCsvRecords(g, YEARS) : [];
+      return g ? stateCsvRecords(g, YEARS, govStages(u.uf)) : [];
     });
     text = toCsv(STATE_CSV_COLUMNS, recs, { excel });
   } else {
     const region = id.startsWith("regiao-") ? getRegionBySlug(id.slice("regiao-".length)) : undefined;
     const cities =
       id === "brasil" ? allCities() : region ? citiesIn({ level: "region", region: region.key }) : getUf(id) ? citiesOf(id) : null;
-    if (cities) text = toCsv(CITY_CSV_COLUMNS, cities.flatMap((c) => cityCsvRecords(c, YEARS)), { excel });
+    if (cities) text = toCsv(CITY_CSV_COLUMNS, cities.flatMap((c) => cityCsvRecords(c, YEARS, cityStages(c.id))), { excel });
   }
   return text;
 }

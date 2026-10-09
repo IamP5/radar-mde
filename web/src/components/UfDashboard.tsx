@@ -25,6 +25,8 @@ import { BINS, METRICS, binColor, colorOf, funBins, histCounts, histLabel, isBel
 import { MDE_MIN, PANDEMIC_YEARS, POP_BANDS, brlShort, funMin, int, normKey, pct, share } from "@/lib/format";
 import { cityPath, getRegion, getUf, ofUf, type RegionKey } from "@/lib/geo";
 import { atipNote, atipOf, belowShare, isAtip, isImplausible, shortfallKnown, shortfallLabel, timesBelow, type BalanceItem, type Deficit, type PeriodBalance, type Row, type Stats } from "@/lib/rows";
+import type { MedianMap } from "@/lib/etapas-fields";
+import { StageMedians } from "./territory/StageMedians";
 import { cn } from "@/lib/utils";
 import { fromColumns, type Columns } from "./territory/pack";
 import { ShortfallInfo } from "./territory/InfoTip";
@@ -48,6 +50,9 @@ type Props = {
   deficitsReal: Deficit[];
   balanceTotal: PeriodBalance;
   balanceItems: BalanceItem[];
+  /** UF stage medians, compared with Brasil inside the panel. */
+  stages: MedianMap;
+  stagesBrasil: MedianMap;
 };
 
 type SortKey = "name" | "pop" | "mde" | "fun" | "short" | "reinc" | "aluno";
@@ -108,7 +113,7 @@ function rowStatus(r: Row, yi: number, year: number): { kind: StatusKind; label:
   return { kind: "ok", label: "Cumpre" };
 }
 
-export default function UfDashboard({ uf, years, initialYear, rows: packed, stats, regionStats, brStats, gov, deficits, deficitsReal, balanceTotal, balanceItems }: Props) {
+export default function UfDashboard({ uf, years, initialYear, rows: packed, stats, regionStats, brStats, gov, deficits, deficitsReal, balanceTotal, balanceItems, stages, stagesBrasil }: Props) {
   const rows = useMemo(() => fromColumns(packed), [packed]);
   const [yearNow, setYear] = useYear(years, initialYear);
   // the picker answers at once; the dashboard (charts, map, tables) follows as a low-priority render (INP)
@@ -401,6 +406,8 @@ export default function UfDashboard({ uf, years, initialYear, rows: packed, stat
             context={gov.fun[yi] != null ? `Fundeb em salários: ${pct(gov.fun[yi], 1)}` : undefined}
           />
         </section>
+
+        <StageMedians year={year} scope={stages} brasil={stagesBrasil} />
 
         <section className="grid gap-6 lg:grid-cols-5">
           <Panel

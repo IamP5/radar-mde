@@ -9,6 +9,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { histCounts } from "@/lib/bins";
 import { csvHref } from "@/lib/csv";
 import { YEARS, brStats, scopeBalance, ufBalances, citiesIn, defaultYear, int, regionStats, rowsIn, topDeficits, ufSummaries } from "@/lib/data";
+import { stageMedians } from "@/lib/etapas";
 import { REGIONS, getRegionBySlug, regionPath } from "@/lib/geo";
 import { cn } from "@/lib/utils";
 
@@ -97,6 +98,8 @@ export default async function Page({ params }: PageProps<"/regiao/[slug]">) {
         balanceTotal={scopeBalance(scope)}
         balanceGroups={[{ key: "uf", label: "Estados", noun: "Estado", items: ufBalances(r.ufs) }]}
         hist={YEARS.map((_, i) => histCounts(rows.map((x) => x.mde[i])))}
+        stages={stageMedians({ level: "reg", reg: r.key })}
+        stagesBrasil={stageMedians({ level: "br" })}
       />
     </>
   );

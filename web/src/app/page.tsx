@@ -6,6 +6,7 @@ import { SearchButton } from "@/components/SearchPalette";
 import TerritoryDashboard from "@/components/territory/TerritoryDashboard";
 import { buttonVariants } from "@/components/ui/button";
 import { YEARS, brBalance, brStats, regionBalances, ufBalances, defaultYear, int, regionSummaries, rowsIn, topDeficits, ufSummaries } from "@/lib/data";
+import { stageMedians } from "@/lib/etapas";
 import { histCounts } from "@/lib/bins";
 
 export const metadata: Metadata = { alternates: { canonical: "/" } };
@@ -68,6 +69,7 @@ export default function Home() {
           { key: "uf", label: "Estados", noun: "Estado", items: ufBalances() },
         ]}
         hist={YEARS.map((_, i) => histCounts(rows.map((r) => r.mde[i])))}
+        stages={stageMedians({ level: "br" })}
       />
     </>
   );

@@ -55,9 +55,9 @@ export default function MultiLine({ years, series, selected, onSelect, fmt, aria
   const { ticks, domain } = niceTicks(min, Math.max(min + 1, ...all));
   const byKey = new Map(series.map((s) => [s.key, s]));
 
-  const last = years.length - 1;
+  const at = selected != null && years.includes(selected) ? years.indexOf(selected) : years.length - 1;
   const summary = series
-    .map((s) => (s.values[last] == null ? null : `${s.label} ${fmt(s.values[last]!)}`))
+    .map((s) => (s.values[at] == null ? null : `${s.label} ${fmt(s.values[at]!)}`))
     .filter(Boolean)
     .join("; ");
 
@@ -71,7 +71,7 @@ export default function MultiLine({ years, series, selected, onSelect, fmt, aria
       className="rounded-md"
     >
       <p className="sr-only">
-        {ariaLabel}. Em {years[last]}: {summary}.
+        {ariaLabel}. Em {years[at]}: {summary || "sem dado"}.
       </p>
       <style>
         {series
