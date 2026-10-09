@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Agent entrypoint for the Radar MDE verification CLI.
+set -euo pipefail
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+exec node "$DIR/control/cli.mjs" "$@"
