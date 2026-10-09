@@ -23,9 +23,9 @@ Preconditions:
 - `./scripts/control-radar-mde doctor` reports `ok: true` for this run.
 
 - **Open Nordeste.** Run `./scripts/control-radar-mde browser open /regiao/nordeste`. The URL path is `/regiao/nordeste`. A level-1 heading named `Região Nordeste` is visible.
-- **Switch to Norte.** Run `./scripts/control-radar-mde browser click --role link --name "Norte" --exact --within-role navigation --within-name "Regiões"`. The URL path is `/regiao/norte`. A level-1 heading named `Região Norte` is visible.
+- **Switch to Norte.** Run `./scripts/control-radar-mde browser click --role link --name "Norte" --exact --within-role navigation --within-name "Regiões"`. Run `./scripts/control-radar-mde browser wait --url-includes "/regiao/norte" --timeout 90000`. The URL path is `/regiao/norte`. A level-1 heading named `Região Norte` is visible.
 - **Download the region.** Run `./scripts/control-radar-mde browser click --role link --name "Baixar CSV da região" --download region/norte.csv`. `download.bytes` is greater than zero. The file's first line contains `municipio`.
-- **Open the filtered table.** Run `./scripts/control-radar-mde browser click --role link --name "Explorar municípios"`. The URL path is `/explorar` and the query contains `regiao=norte`.
+- **Open the filtered table.** Run `./scripts/control-radar-mde browser click --role link --name "Explorar municípios"`. Run `./scripts/control-radar-mde browser wait --url-includes "/explorar?regiao=norte" --timeout 90000`. The URL path is `/explorar` and the query contains `regiao=norte`.
 - **Proof.** Run `./scripts/control-radar-mde browser screenshot --full-page --path region/norte-table.png` and `./scripts/control-radar-mde browser snapshot --aria --path region/norte-table.aria.txt`. The screenshot shows the Radar MDE header. The table is the explorer, with the Norte filter in the address.
 
 ## Gotchas

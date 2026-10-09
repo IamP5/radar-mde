@@ -25,7 +25,7 @@ Preconditions:
 
 - **Open the page.** Run `./scripts/control-radar-mde browser open /sobre`. The URL path is `/sobre`. A level-1 heading named `Metodologia` is visible.
 - **Jump to Cálculos.** Run `./scripts/control-radar-mde browser click --role link --name "Cálculos" --within-role complementary --within-name "Nesta página"`. The URL hash is `#calculos`. A level-2 heading named `Cálculos` is visible.
-- **Open the data page.** Run `./scripts/control-radar-mde browser click --role link --name "Baixar os dados" --within-role complementary --within-name "Nesta página"`. The URL path is `/dados`. A level-1 heading named `Dados abertos` is visible.
+- **Open the data page.** Run `./scripts/control-radar-mde browser click --role link --name "Baixar os dados" --within-role complementary --within-name "Nesta página"`. Run `./scripts/control-radar-mde browser wait --url-includes "/dados" --timeout 90000`. The URL path is `/dados`. A level-1 heading named `Dados abertos` is visible.
 - **Research link.** Run `./scripts/control-radar-mde browser open /sobre`. Run `./scripts/control-radar-mde browser find --role link --name-regex "financiamento da Educação Básica"`. The count is 1. Do not open it; it leaves Radar MDE.
 - **Proof.** Run `./scripts/control-radar-mde browser screenshot --full-page --path methodology/origem.png` and `./scripts/control-radar-mde browser snapshot --aria --path methodology/origem.aria.txt`. The screenshot shows the Radar MDE header and `Metodologia`.
 

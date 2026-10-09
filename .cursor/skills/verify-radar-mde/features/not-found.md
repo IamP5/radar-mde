@@ -24,7 +24,7 @@ Preconditions:
 - `./scripts/control-radar-mde doctor` reports `ok: true` for this run.
 
 - **Unknown path.** Run `./scripts/control-radar-mde browser open /caminho-inexistente`. The JSON `status` is 404. A level-1 heading named `Página não encontrada` is visible. The text `404` is visible.
-- **Shortcut.** Run `./scripts/control-radar-mde browser click --role link --name-regex "Tabela com os 5.570"`. The URL path is `/explorar`. A level-1 heading named `Explorar municípios` is visible.
+- **Shortcut.** Run `./scripts/control-radar-mde browser click --role link --name-regex "Tabela com os 5.570"`. Run `./scripts/control-radar-mde browser wait --url-includes "/explorar" --timeout 90000`. The URL path is `/explorar`. A level-1 heading named `Explorar municípios` is visible.
 - **Unknown city.** Run `./scripts/control-radar-mde browser open /sp/nao-existe-cidade`. A level-1 heading named `Página não encontrada` is visible.
 - **Unknown region.** Run `./scripts/control-radar-mde browser open /regiao/atlantida`. The JSON `status` is 404. A level-1 heading named `Página não encontrada` is visible.
 - **Proof.** Run `./scripts/control-radar-mde browser screenshot --path not-found/region.png` and `./scripts/control-radar-mde browser snapshot --aria --path not-found/region.aria.txt`. The screenshot shows the Radar MDE header and `Página não encontrada`.
