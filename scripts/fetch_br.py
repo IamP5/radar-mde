@@ -18,7 +18,11 @@ IBGE = "https://servicodados.ibge.gov.br/api"
 UFS = ["RO", "AC", "AM", "RR", "PA", "AP", "TO", "MA", "PI", "CE", "RN", "PB", "PE", "AL", "SE", "BA",
        "MG", "ES", "RJ", "SP", "PR", "SC", "RS", "MS", "MT", "GO", "DF"]
 THREADS = int(os.environ.get("THREADS", "6"))
-KEEP = {"1.1", "1.2", "1.4", "2.8", "4.8", "4.9", "4.1", "4.2", "4.10", "7.2", "7.3", "8.1", "8.2"}
+KEEP = {
+    "1.1", "1.2", "1.4", "2.8", "4.8", "4.9", "4.1", "4.2", "4.10", "7.2", "7.3", "8.1", "8.2",
+    # Stage and modality indicators written to etapas.json (not cities.json).
+    "4.14", "4.15", "4.5", "4.6", "2.1", "2.2", "2.4", "2.5", "2.9", "2.10",
+}
 CODES = {
     "4,11,10,00,00,00",  # impostos (IPTU, ISS, ITBI, IRRF)
     "4,19,11,00,00,00",  # multas e juros de mora dos tributos

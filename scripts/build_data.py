@@ -4,7 +4,7 @@ Inputs (see fetch_br.py): data/raw/br/{ibge_municipios,entes}.json, siope_<UF>_<
 siope_receita_<UF>_<year>.json. SICONFI annex 14 files (data/raw/a14_*.json, São Paulo only) add the
 Treasury cross-check and health %, where present.
 """
-import hashlib, json, os, re, statistics, unicodedata
+import hashlib, json, math, os, re, statistics, unicodedata
 from collections import defaultdict
 from datetime import date
 
@@ -32,6 +32,15 @@ BRASILIA = 5300108
 INSTALLED = {1504752: 2013, 4212650: 2013, 4220000: 2013, 5006275: 2013, 4314548: 2013, 5101837: 2025}
 # IBGE label typos in regiões intermediárias/imediatas
 LABEL_FIX = {"Juíz de Fora": "Juiz de Fora"}
+# Pair of web/src/lib/etapas-fields.ts STAGE_FIELDS (id, siope, kind). Keep the two lists the same.
+INDICATORS = [
+    ("cre", "4.14", "money"), ("pre", "4.15", "money"), ("ei", "4.1", "money"), ("ef", "4.2", "money"),
+    ("eja", "4.5", "money"), ("ee", "4.6", "money"),
+    ("shEi", "2.4", "percent"), ("shEf", "2.5", "percent"), ("fuEi", "2.1", "percent"), ("fuEf", "2.2", "percent"),
+    ("mer", "2.9", "percent"), ("mat", "2.10", "money"), ("prof", "4.10", "money"),
+]
+INDICATOR_BY_CODE = {code: (fid, kind) for fid, code, kind in INDICATORS}
+MONEY_FIELDS = [fid for fid, _, kind in INDICATORS if kind == "money"]
 
 
 def slug(s):
@@ -51,11 +60,6 @@ def metric(items, prefix):
             elif col.startswith("Valor Apurado"):
                 out["val"] = r["valor"]
     return out if "pct" in out else None
-
-
-ibge = json.load(open(os.path.join(BR, "ibge_municipios.json")))
-pop = {e["cod_ibge"]: e["populacao"] for e in json.load(open(os.path.join(BR, "entes.json")))}
-pop[BRASILIA] = pop.get(53, 0)  # SICONFI lists the Distrito Federal as a single "D" entity
 
 
 def load_siope():
@@ -92,10 +96,6 @@ def load_receita():
                 except (TypeError, ValueError):
                     pass
     return out
-
-
-siope, seen = load_siope()
-receita = load_receita()
 
 
 def siconfi(cod, y):
@@ -143,73 +143,6 @@ def record(si, rec_base, y, sc=None):
             rec["alt"] = round(sc["mde"]["pct"], 2)  # Treasury figure disagrees with SIOPE
     return rec
 
-
-cities = []
-coverage = {uf: {y: 0 for y in YEARS} for uf in UFS}
-NORONHA = 2605459  # state district (PE), not a municipality: no budget of its own to declare
-for m in sorted(ibge, key=lambda m: m["id"]):
-    cod = m["id"]
-    if cod == NORONHA:
-        continue
-    uf = UF_BY_CODE[cod // 100000]
-    ri = m.get("regiao-imediata") or {}
-    since = INSTALLED.get(cod)
-    years = {}
-    for y in YEARS:
-        if since and y < since:
-            continue  # the municipality did not exist yet
-        sc, simp = siconfi(cod, y)
-        key = f"UF:DF" if cod == BRASILIA else cod // 10
-        si = siope.get((key, y))
-        if si and si.get("1.1", 0) > 0:  # 0% filings are empty placeholders, not real declarations
-            rec = record(si, receita.get((cod // 10, y), 0), y, sc)
-        elif sc and sc["mde"]:
-            mde = sc["mde"]
-            rec = {"s": "ok", "src": "siconfi", "mde": round(mde["pct"], 2), "mdeV": round(mde.get("val", 0))}
-            if mde["pct"] > 0 and mde.get("val"):
-                rec["base"], rec["baseSrc"] = round(mde["val"] / mde["pct"] * 100), "siconfi"
-            if sc["fun"]:
-                rec["fun"] = round(sc["fun"]["pct"], 2)
-                rec["funMin"] = sc["fun"].get("min") or (70 if y >= 2021 else 60)
-        elif y in seen[uf] or simp:
-            rec = {"s": "nd"}  # nothing declared for this year
-        else:
-            continue  # not collected
-        if sc and sc["sau"] and rec.get("s") == "ok":
-            rec["sau"] = round(sc["sau"]["pct"], 2)
-        if rec.get("mde") is not None:
-            coverage[uf][y] += 1
-        years[y] = rec
-    inter, imediata = (ri.get("regiao-intermediaria") or {}).get("nome"), ri.get("nome")
-    city = {
-        "id": cod, "name": m["nome"], "slug": slug(m["nome"]), "uf": uf, "pop": pop.get(cod, 0),
-        "inter": LABEL_FIX.get(inter, inter), "imediata": LABEL_FIX.get(imediata, imediata),
-        "capital": False, "years": years,
-    }
-    if since:
-        city["since"] = since
-    cities.append(city)
-
-# capitals: SICONFI flags them in `entes`
-caps = {e["cod_ibge"] for e in json.load(open(os.path.join(BR, "entes.json"))) if str(e["capital"]).strip() == "1"}
-for c in cities:
-    c["capital"] = c["id"] in caps or c["id"] == BRASILIA
-
-for uf in UFS:
-    s = [c["slug"] for c in cities if c["uf"] == uf]
-    assert len(set(s)) == len(s), f"slug collision in {uf}"
-
-# State governments (SIOPE "Estadual"): the 25% rule applies to them as well
-states = []
-for uf, (code, name, reg) in UFS.items():
-    years = {}
-    for y in YEARS:
-        si = siope.get((f"UF:{uf}", y))
-        if si and si.get("1.1", 0) > 0:
-            years[y] = record(si, 0, y)
-        elif y in seen[uf]:
-            years[y] = {"s": "nd"}
-    states.append({"uf": uf, "code": code, "name": name, "region": reg, "years": years})
 
 
 def flag_atypical(entities):
@@ -272,52 +205,384 @@ def flag_atypical(entities):
                     r["atipImpl"] = 1
 
 
-flag_atypical(cities)
-flag_atypical(states)
 
-cities_txt = json.dumps(cities, ensure_ascii=False, separators=(",", ":"))
-states_txt = json.dumps(states, ensure_ascii=False, separators=(",", ":"))
-open(os.path.join(OUT, "cities.json"), "w").write(cities_txt)
-open(os.path.join(OUT, "states.json"), "w").write(states_txt)
+# Per-student stages and teachers use the same R$ 100–200.000 band as indicator 4.9.
+# Material (2.10) has a national median near R$ 34, so that floor would drop most cities. Cap it at R$ 5.000.
+# Education-spending shares cannot pass 100%. Fundeb shares can, the same way indicator 1.2 can, up to 200%.
+FUNDEB_FIELDS = {"fuEi", "fuEf"}
+SHARE_FIELDS = {"shEi", "shEf", "mer"}
+STUDENT_FIELDS = {"cre", "pre", "ei", "ef", "eja", "ee", "prof"}
 
-n = len(cities)
-total = {y: sum(coverage[uf][y] for uf in UFS) for y in YEARS}
-# municipalities that existed in each year (denominator for coverage)
-n_by_year = {y: sum(1 for c in cities if c.get("since", 0) <= y) for y in YEARS}
-# Publish a year once the national picture is close to complete, so totals are comparable across years
-complete = [y for y in YEARS if total[y] >= 0.85 * n_by_year[y]]
-# Raw SIOPE files are downloaded by fetch_br.py; their newest modification date is the extraction date
-siope_files = [os.path.join(BR, f) for f in os.listdir(BR) if f.startswith("siope_")]
-extracted = date.fromtimestamp(max(os.path.getmtime(f) for f in siope_files)).isoformat()
-updated = date.today().isoformat()
-digest = hashlib.sha1((cities_txt + states_txt).encode()).hexdigest()[:8]
-version = f"{updated}.{digest}"
-pop_year = max((e.get("exercicio") or 0) for e in json.load(open(os.path.join(BR, "entes.json")))) or None
-# IPCA deflators: annual average of the monthly index (IBGE SIDRA 1737/2266), to R$ of the latest published year
-ipca_raw = json.load(open(os.path.join(BR, "ipca_1737.json")))
-avg = {}
-for y in YEARS:
-    months = [v for k, v in ipca_raw["index"].items() if k.startswith(str(y))]
-    assert len(months) == 12, f"IPCA incomplete for {y}"
-    avg[y] = sum(months) / 12
-ipca_base = complete[-1]
-ipca = {"base": ipca_base, "factor": {str(y): round(avg[ipca_base] / avg[y], 6) for y in YEARS},
-        "source": ipca_raw["source"], "fetched": ipca_raw["fetched"],
-        "method": "média anual do número-índice do IPCA; fator = média do ano-base ÷ média do ano"}
-# health (SICONFI annex 14, SP only so far): which UFs have any value
-health_by_uf = defaultdict(int)
-for c in cities:
-    if any(r.get("sau") is not None for r in c["years"].values()):
-        health_by_uf[c["uf"]] += 1
-json.dump({"years": complete, "updated": updated, "extracted": extracted, "version": version,
-           "popYear": pop_year, "popSource": f"SICONFI/Tesouro (cadastro de entes, exercício {pop_year}), estimativa IBGE",
-           "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/deed.pt_BR",
-           "installed": {str(k): v for k, v in INSTALLED.items()}, "nByYear": n_by_year,
-           "ipca": ipca, "health": {"ufs": sorted(health_by_uf), "cities": dict(health_by_uf)},
-           "coverage": total, "coverageUf": coverage}, open(os.path.join(OUT, "meta.json"), "w"), ensure_ascii=False)
-# small client-safe file (bundled into client code): data version, IPCA deflators, UFs with health data
-json.dump({"v": version, "ipca": ipca, "healthUfs": sorted(health_by_uf)}, open(os.path.join(OUT, "version.json"), "w"),
-          ensure_ascii=False)
-print("cities", n, "coverage(mde) by year", total)
-print("published years", complete)
-print("size MB", os.path.getsize(os.path.join(OUT, "cities.json")) / 1e6)
+
+def keep_stage(fid, raw):
+    try:
+        v = float(raw)
+    except (TypeError, ValueError):
+        return None
+    if not math.isfinite(v) or v <= 0:
+        return None
+    if fid == "mat":
+        if v > 5_000:
+            return None
+        kept = round(v, 2)
+        return kept or None
+    if fid in STUDENT_FIELDS:
+        if v < 100 or v > 200_000:
+            return None
+        return int(round(v))
+    if fid in FUNDEB_FIELDS:
+        if v > 200:
+            return None
+        return round(v, 2)
+    if fid in SHARE_FIELDS:
+        if v > 100:
+            return None
+        return round(v, 2)
+    return None
+
+
+def apply_money_flags(year_maps, field, nat):
+    """Same relative rule as flag_atypical's aluno branch, one money field at a time.
+    nat is the municipal median. State governments are judged against it and are not in it."""
+    out = lambda r, lo=0.4, hi=2.5: not lo <= r <= hi
+    for ys in year_maps:
+        alu = {y: cell[field] for y, cell in ys.items() if field in cell}
+        rel = {y: v / nat[y] for y, v in alu.items() if nat.get(y)}
+        own = statistics.median(list(rel.values())) if len(rel) >= 4 else None
+        for y, cell in ys.items():
+            if y not in rel:
+                continue
+            prev, prev2 = alu.get(y - 1), alu.get(y - 2)
+            jump = prev and out(alu[y] / prev) and not (prev2 and not out(alu[y] / prev2))
+            nxt = alu.get(y + 1)
+            spike = prev and nxt and ((alu[y] > 2 * prev and alu[y] > 2 * nxt) or (alu[y] < 0.5 * prev and alu[y] < 0.5 * nxt))
+            spike = spike or (prev and nxt and (out(alu[y] / prev) or out(nxt / alu[y])) and not out(nxt / prev))
+            impl = rel[y] > 8
+            if impl or (own and out(rel[y] / own)) or jump or spike:
+                cell.setdefault("atip", []).append(field)
+                if impl:
+                    cell.setdefault("impl", []).append(field)
+
+
+def check_field_pair():
+    path = os.path.join(ROOT, "web", "src", "lib", "etapas-fields.ts")
+    found = re.findall(r'id:\s*"(\w+)",\s*siope:\s*"([^"]+)",\s*kind:\s*"(money|percent)"', open(path, encoding="utf-8").read())
+    expect = [(fid, code, kind) for fid, code, kind in INDICATORS]
+    if found != expect:
+        raise SystemExit(f"etapas field pair mismatch\n ts {found}\n py {expect}")
+
+
+def siope_present():
+    found = {}
+    for uf in UFS:
+        years = [y for y in YEARS if os.path.exists(os.path.join(BR, f"siope_{uf}_{y}.json"))]
+        if years:
+            found[uf] = years
+    return found
+
+
+def receita_covers(present):
+    """True when every UF-year from 2008 through 2020 that has a siope file also has a receita file."""
+    for uf, years in present.items():
+        for y in years:
+            if 2008 <= y <= 2020 and not os.path.exists(os.path.join(BR, f"siope_receita_{uf}_{y}.json")):
+                return False
+    return True
+
+
+def write_etapas():
+    """Municipal and state-government stage indicators. Reads cities.json. Does not rewrite it."""
+    check_field_pair()
+    cities_path = os.path.join(OUT, "cities.json")
+    meta = json.load(open(cities_path, encoding="utf-8"))
+    uf_of, since, by_code = {}, {}, {}
+    for c in meta:
+        cid = c["id"]
+        uf_of[cid] = c["uf"]
+        if c.get("since"):
+            since[cid] = c["since"]
+        if cid == BRASILIA:
+            continue  # no municipal SIOPE row; the city reads UF:DF below
+        code = cid // 10
+        if code in by_code:
+            raise SystemExit(f"duplicate siope code {code}")
+        by_code[code] = cid
+
+    city_years = {}
+    gov_years = {uf: {} for uf in UFS}
+    field_years = {fid: set() for fid, _, _ in INDICATORS}
+
+    def put(store, year, fid, value):
+        store.setdefault(year, {})[fid] = value
+        field_years[fid].add(year)
+
+    def installed(cid, year):
+        s = since.get(cid)
+        return not (s and year < s)
+
+    for uf in UFS:
+        for y in YEARS:
+            path = os.path.join(BR, f"siope_{uf}_{y}.json")
+            if not os.path.exists(path):
+                continue
+            for r in json.load(open(path)):
+                spec = INDICATOR_BY_CODE.get(r.get("COD_EXIB"))
+                if not spec:
+                    continue
+                fid, kind = spec
+                value = keep_stage(fid, r.get("VAL_INDI"))
+                if value is None:
+                    continue
+                if r.get("TIPO") == "Municipal":
+                    try:
+                        code = int(r["COD_MUNI"])
+                    except (TypeError, ValueError):
+                        continue
+                    cid = by_code.get(code)
+                    if cid is None or not installed(cid, y):
+                        continue
+                    put(city_years.setdefault(cid, {}), y, fid, value)
+                else:
+                    put(gov_years[uf], y, fid, value)
+                    # Brasília is the DF government declaration. The city row is the median voter, not a second one.
+                    if uf == "DF" and installed(BRASILIA, y):
+                        put(city_years.setdefault(BRASILIA, {}), y, fid, value)
+
+    for fid in MONEY_FIELDS:
+        buckets = {}
+        for years in city_years.values():
+            for y, cell in years.items():
+                if fid in cell:
+                    buckets.setdefault(y, []).append(cell[fid])
+        nat = {y: statistics.median(vals) for y, vals in buckets.items() if vals}
+        apply_money_flags(list(city_years.values()), fid, nat)
+        apply_money_flags(list(gov_years.values()), fid, nat)
+
+    def pack_years(years):
+        out = {}
+        for y in sorted(years):
+            src = years[y]
+            cell = {fid: src[fid] for fid, _, _ in INDICATORS if fid in src}
+            if not cell:
+                continue
+            if src.get("atip"):
+                cell["atip"] = src["atip"]
+            if src.get("impl"):
+                cell["impl"] = src["impl"]
+            out[str(y)] = cell
+        return out
+
+    cities_out = {}
+    for cid in sorted(city_years):
+        packed = pack_years(city_years[cid])
+        if packed:
+            cities_out[str(cid)] = packed
+    gov_out = {}
+    for uf in UFS:
+        packed = pack_years(gov_years[uf])
+        if packed:
+            gov_out[uf] = packed
+
+    def pack_medians(bucket):
+        out = {}
+        for y in sorted(bucket):
+            cell = {}
+            for fid, _, kind in INDICATORS:
+                vals = bucket[y].get(fid) or []
+                if not vals:
+                    continue
+                med = statistics.median(vals)
+                cell[fid] = round(med, 2) if fid == "mat" else (int(round(med)) if kind == "money" else round(med, 2))
+                cell[fid + "N"] = len(vals)
+            if cell:
+                out[str(y)] = cell
+        return out
+
+    br, uf_b, reg_b = {}, {uf: {} for uf in UFS}, {reg: {} for reg in ("N", "NE", "SE", "S", "CO")}
+    for cid, years in city_years.items():
+        uf = uf_of[cid]
+        reg = UFS[uf][2]
+        for y, cell in years.items():
+            for fid, _, _ in INDICATORS:
+                if fid not in cell:
+                    continue
+                br.setdefault(y, {}).setdefault(fid, []).append(cell[fid])
+                uf_b[uf].setdefault(y, {}).setdefault(fid, []).append(cell[fid])
+                reg_b[reg].setdefault(y, {}).setdefault(fid, []).append(cell[fid])
+
+    doc = {
+        "fields": [{"id": fid, "siope": code, "kind": kind, "years": sorted(field_years[fid])} for fid, code, kind in INDICATORS],
+        "cities": cities_out,
+        "gov": gov_out,
+        "medians": {
+            "br": pack_medians(br),
+            "uf": {uf: pack_medians(uf_b[uf]) for uf in UFS},
+            "reg": {reg: pack_medians(reg_b[reg]) for reg in ("N", "NE", "SE", "S", "CO")},
+        },
+    }
+    path = os.path.join(OUT, "etapas.json")
+    text = json.dumps(doc, ensure_ascii=False, separators=(",", ":"))
+    open(path, "w", encoding="utf-8").write(text)
+    loaded = json.loads(text)
+    sa = loaded["cities"]["3547809"]["2023"]
+    print("etapas.json MB", os.path.getsize(path) / 1e6)
+    print(json.dumps(sa, ensure_ascii=False))
+    assert sa["cre"] == 15257
+    assert sa["pre"] == 15759
+    assert sa["ei"] == 15497
+    assert sa["ef"] == 16666
+    assert sa["eja"] == 15351
+    assert sa["shEi"] == 40.02
+    assert sa["shEf"] == 47.49
+    assert sa["fuEi"] == 46.97
+    assert sa["fuEf"] == 48.23
+    assert sa["mat"] == 144.04
+    assert sa["prof"] == 6048
+    assert "ee" not in sa and "mer" not in sa
+    n = sum(1 for c in loaded["cities"].values() if "cre" in c.get("2023", {}))
+    assert loaded["medians"]["br"]["2023"]["creN"] == n
+    cre_years = next(f["years"] for f in loaded["fields"] if f["id"] == "cre")
+    assert cre_years == sorted(set(cre_years))
+    print("field years", {f["id"]: f["years"] for f in loaded["fields"]})
+
+
+def build_published():
+    ibge = json.load(open(os.path.join(BR, "ibge_municipios.json")))
+    pop = {e["cod_ibge"]: e["populacao"] for e in json.load(open(os.path.join(BR, "entes.json")))}
+    pop[BRASILIA] = pop.get(53, 0)  # SICONFI lists the Distrito Federal as a single "D" entity
+    siope, seen = load_siope()
+    receita = load_receita()
+
+    cities = []
+    coverage = {uf: {y: 0 for y in YEARS} for uf in UFS}
+    NORONHA = 2605459  # state district (PE), not a municipality: no budget of its own to declare
+    for m in sorted(ibge, key=lambda m: m["id"]):
+        cod = m["id"]
+        if cod == NORONHA:
+            continue
+        uf = UF_BY_CODE[cod // 100000]
+        ri = m.get("regiao-imediata") or {}
+        since = INSTALLED.get(cod)
+        years = {}
+        for y in YEARS:
+            if since and y < since:
+                continue  # the municipality did not exist yet
+            sc, simp = siconfi(cod, y)
+            key = f"UF:DF" if cod == BRASILIA else cod // 10
+            si = siope.get((key, y))
+            if si and si.get("1.1", 0) > 0:  # 0% filings are empty placeholders, not real declarations
+                rec = record(si, receita.get((cod // 10, y), 0), y, sc)
+            elif sc and sc["mde"]:
+                mde = sc["mde"]
+                rec = {"s": "ok", "src": "siconfi", "mde": round(mde["pct"], 2), "mdeV": round(mde.get("val", 0))}
+                if mde["pct"] > 0 and mde.get("val"):
+                    rec["base"], rec["baseSrc"] = round(mde["val"] / mde["pct"] * 100), "siconfi"
+                if sc["fun"]:
+                    rec["fun"] = round(sc["fun"]["pct"], 2)
+                    rec["funMin"] = sc["fun"].get("min") or (70 if y >= 2021 else 60)
+            elif y in seen[uf] or simp:
+                rec = {"s": "nd"}  # nothing declared for this year
+            else:
+                continue  # not collected
+            if sc and sc["sau"] and rec.get("s") == "ok":
+                rec["sau"] = round(sc["sau"]["pct"], 2)
+            if rec.get("mde") is not None:
+                coverage[uf][y] += 1
+            years[y] = rec
+        inter, imediata = (ri.get("regiao-intermediaria") or {}).get("nome"), ri.get("nome")
+        city = {
+            "id": cod, "name": m["nome"], "slug": slug(m["nome"]), "uf": uf, "pop": pop.get(cod, 0),
+            "inter": LABEL_FIX.get(inter, inter), "imediata": LABEL_FIX.get(imediata, imediata),
+            "capital": False, "years": years,
+        }
+        if since:
+            city["since"] = since
+        cities.append(city)
+
+    # capitals: SICONFI flags them in `entes`
+    caps = {e["cod_ibge"] for e in json.load(open(os.path.join(BR, "entes.json"))) if str(e["capital"]).strip() == "1"}
+    for c in cities:
+        c["capital"] = c["id"] in caps or c["id"] == BRASILIA
+
+    for uf in UFS:
+        s = [c["slug"] for c in cities if c["uf"] == uf]
+        assert len(set(s)) == len(s), f"slug collision in {uf}"
+
+    # State governments (SIOPE "Estadual"): the 25% rule applies to them as well
+    states = []
+    for uf, (code, name, reg) in UFS.items():
+        years = {}
+        for y in YEARS:
+            si = siope.get((f"UF:{uf}", y))
+            if si and si.get("1.1", 0) > 0:
+                years[y] = record(si, 0, y)
+            elif y in seen[uf]:
+                years[y] = {"s": "nd"}
+        states.append({"uf": uf, "code": code, "name": name, "region": reg, "years": years})
+
+    flag_atypical(cities)
+    flag_atypical(states)
+
+    cities_txt = json.dumps(cities, ensure_ascii=False, separators=(",", ":"))
+    states_txt = json.dumps(states, ensure_ascii=False, separators=(",", ":"))
+    open(os.path.join(OUT, "cities.json"), "w").write(cities_txt)
+    open(os.path.join(OUT, "states.json"), "w").write(states_txt)
+
+    n = len(cities)
+    total = {y: sum(coverage[uf][y] for uf in UFS) for y in YEARS}
+    # municipalities that existed in each year (denominator for coverage)
+    n_by_year = {y: sum(1 for c in cities if c.get("since", 0) <= y) for y in YEARS}
+    # Publish a year once the national picture is close to complete, so totals are comparable across years
+    complete = [y for y in YEARS if total[y] >= 0.85 * n_by_year[y]]
+    # Raw SIOPE files are downloaded by fetch_br.py; their newest modification date is the extraction date
+    siope_files = [os.path.join(BR, f) for f in os.listdir(BR) if f.startswith("siope_")]
+    extracted = date.fromtimestamp(max(os.path.getmtime(f) for f in siope_files)).isoformat()
+    updated = date.today().isoformat()
+    etapas_path = os.path.join(OUT, "etapas.json")
+    etapas_txt = open(etapas_path, encoding="utf-8").read() if os.path.exists(etapas_path) else ""
+    digest = hashlib.sha1((cities_txt + states_txt + etapas_txt).encode()).hexdigest()[:8]
+    version = f"{updated}.{digest}"
+    pop_year = max((e.get("exercicio") or 0) for e in json.load(open(os.path.join(BR, "entes.json")))) or None
+    # IPCA deflators: annual average of the monthly index (IBGE SIDRA 1737/2266), to R$ of the latest published year
+    ipca_raw = json.load(open(os.path.join(BR, "ipca_1737.json")))
+    avg = {}
+    for y in YEARS:
+        months = [v for k, v in ipca_raw["index"].items() if k.startswith(str(y))]
+        assert len(months) == 12, f"IPCA incomplete for {y}"
+        avg[y] = sum(months) / 12
+    ipca_base = complete[-1]
+    ipca = {"base": ipca_base, "factor": {str(y): round(avg[ipca_base] / avg[y], 6) for y in YEARS},
+            "source": ipca_raw["source"], "fetched": ipca_raw["fetched"],
+            "method": "média anual do número-índice do IPCA; fator = média do ano-base ÷ média do ano"}
+    # health (SICONFI annex 14, SP only so far): which UFs have any value
+    health_by_uf = defaultdict(int)
+    for c in cities:
+        if any(r.get("sau") is not None for r in c["years"].values()):
+            health_by_uf[c["uf"]] += 1
+    json.dump({"years": complete, "updated": updated, "extracted": extracted, "version": version,
+               "popYear": pop_year, "popSource": f"SICONFI/Tesouro (cadastro de entes, exercício {pop_year}), estimativa IBGE",
+               "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/deed.pt_BR",
+               "installed": {str(k): v for k, v in INSTALLED.items()}, "nByYear": n_by_year,
+               "ipca": ipca, "health": {"ufs": sorted(health_by_uf), "cities": dict(health_by_uf)},
+               "coverage": total, "coverageUf": coverage}, open(os.path.join(OUT, "meta.json"), "w"), ensure_ascii=False)
+    # small client-safe file (bundled into client code): data version, IPCA deflators, UFs with health data
+    json.dump({"v": version, "ipca": ipca, "healthUfs": sorted(health_by_uf)}, open(os.path.join(OUT, "version.json"), "w"),
+              ensure_ascii=False)
+    print("cities", n, "coverage(mde) by year", total)
+    print("published years", complete)
+    print("size MB", os.path.getsize(os.path.join(OUT, "cities.json")) / 1e6)
+
+
+def main():
+    cities_path = os.path.join(OUT, "cities.json")
+    before = os.path.getsize(cities_path)
+    write_etapas()
+    if receita_covers(siope_present()):
+        build_published()
+    else:
+        after = os.path.getsize(cities_path)
+        assert after == before, (before, after)
+
+
+if __name__ == "__main__":
+    main()
