@@ -1,7 +1,4 @@
-/**
- * Pair of scripts/build_data.py INDICATORS (id, siope, kind). Keep the two lists the same.
- * Client-safe: no server-only import and no etapas.json.
- */
+/** Client-safe: no server-only import and no etapas.json. */
 import { pct, brl } from "./format";
 import { toReal } from "./rows";
 
@@ -30,13 +27,9 @@ export const STAGE_PERCENT = STAGE_FIELDS.filter((f): f is Extract<StageField, {
 
 export const STAGE_BY_ID = Object.fromEntries(STAGE_FIELDS.map((f) => [f.id, f])) as { [K in StageId]: Extract<StageField, { id: K }> };
 
-/** Per-student stage series on the city page (not the spending shares). */
 export const STAGE_PER_STUDENT = ["cre", "pre", "ei", "ef", "eja", "ee"] as const satisfies readonly StageId[];
-/** Chart series. More than three, so the chart also dashes them. */
 export const STAGE_CHART = ["cre", "pre", "ef", "eja", "ee"] as const satisfies readonly StageId[];
-/** Compact figures under the per-student stats. */
 export const STAGE_QUIET = ["fuEi", "fuEf", "mer", "mat", "prof"] as const satisfies readonly StageId[];
-/** Dashboard medians: four per-student stages and the two spending shares. */
 export const STAGE_DASHBOARD = ["cre", "pre", "ef", "eja", "shEi", "shEf"] as const satisfies readonly StageId[];
 
 export type StageCell = Partial<Record<StageId, number>> & { atip?: StageId[]; impl?: StageId[] };
@@ -51,16 +44,12 @@ export function medianN(cell: MedianYear | undefined, id: StageId): number {
   return cell?.[`${id}N`] ?? 0;
 }
 
-/** Nominal reais, or IPCA-corrected when `real`. Null stays null. Zero is not rewritten. */
 export function stageMoney(v: number | null, year: number, real: boolean): number | null {
   if (v == null) return null;
   return real ? toReal(v, year) : v;
 }
 
-/**
- * EI and EF shares of education spending. Null when either share is absent or the two sum past 100.
- * `other` is the residual and may be 0. That 0 is computed here, not stored.
- */
+/** `other` is the residual and may be 0. That 0 is computed here, not stored. */
 export function shareStack(shEi: number | null, shEf: number | null): { ei: number; ef: number; other: number } | null {
   if (shEi == null || shEf == null) return null;
   const other = Math.round((100 - shEi - shEf) * 100) / 100;

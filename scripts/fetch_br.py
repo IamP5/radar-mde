@@ -20,7 +20,6 @@ UFS = ["RO", "AC", "AM", "RR", "PA", "AP", "TO", "MA", "PI", "CE", "RN", "PB", "
 THREADS = int(os.environ.get("THREADS", "6"))
 KEEP = {
     "1.1", "1.2", "1.4", "2.8", "4.8", "4.9", "4.1", "4.2", "4.10", "7.2", "7.3", "8.1", "8.2",
-    # Stage and modality indicators written to etapas.json (not cities.json).
     "4.14", "4.15", "4.5", "4.6", "2.1", "2.2", "2.4", "2.5", "2.9", "2.10",
 }
 CODES = {

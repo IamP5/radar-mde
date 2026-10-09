@@ -32,15 +32,20 @@ BRASILIA = 5300108
 INSTALLED = {1504752: 2013, 4212650: 2013, 4220000: 2013, 5006275: 2013, 4314548: 2013, 5101837: 2025}
 # IBGE label typos in regiões intermediárias/imediatas
 LABEL_FIX = {"Juíz de Fora": "Juiz de Fora"}
-# Pair of web/src/lib/etapas-fields.ts STAGE_FIELDS (id, siope, kind). Keep the two lists the same.
-INDICATORS = [
-    ("cre", "4.14", "money"), ("pre", "4.15", "money"), ("ei", "4.1", "money"), ("ef", "4.2", "money"),
-    ("eja", "4.5", "money"), ("ee", "4.6", "money"),
-    ("shEi", "2.4", "percent"), ("shEf", "2.5", "percent"), ("fuEi", "2.1", "percent"), ("fuEf", "2.2", "percent"),
-    ("mer", "2.9", "percent"), ("mat", "2.10", "money"), ("prof", "4.10", "money"),
-]
-INDICATOR_BY_CODE = {code: (fid, kind) for fid, code, kind in INDICATORS}
-MONEY_FIELDS = [fid for fid, _, kind in INDICATORS if kind == "money"]
+def stage_fields():
+    path = os.path.join(ROOT, "web", "src", "lib", "etapas-fields.ts")
+    text = open(path, encoding="utf-8").read()
+    found = re.findall(r'\{\s*id:\s*"(\w+)",\s*siope:\s*"([^"]+)",\s*kind:\s*"(money|percent)"', text)
+    if not found or len(found) != text.count("siope:"):
+        raise SystemExit(f"could not read stage fields from {path}")
+    return found
+
+
+STAGE_FIELDS = stage_fields()
+STAGE_BY_CODE = {code: (fid, kind) for fid, code, kind in STAGE_FIELDS}
+MONEY_FIELDS = [fid for fid, _, kind in STAGE_FIELDS if kind == "money"]
+# Outside this band a per-student figure is a filing error (R$ 5, R$ 514 mil).
+PER_ALUNO_LO, PER_ALUNO_HI = 100, 200_000
 
 
 def slug(s):
@@ -130,7 +135,7 @@ def record(si, rec_base, y, sc=None):
         rec["funLeft"] = round(si["1.4"], 2)
     if si.get("2.8"):
         rec["eduShare"] = round(si["2.8"], 2)
-    if si.get("4.9") and 100 <= si["4.9"] <= 200_000:  # outside this band it's a filing error (R$ 5, R$ 514 mil)
+    if si.get("4.9") and PER_ALUNO_LO <= si["4.9"] <= PER_ALUNO_HI:
         rec["perAluno"] = round(si["4.9"])
     if rec.get("mdeV") and rec.get("base") and abs(rec["mdeV"] / rec["base"] * 100 - rec["mde"]) > 1:
         # R$ applied contradicts the declared % (the % is SIOPE's official figure): fall back to the estimate
@@ -166,13 +171,11 @@ def flag_atypical(entities):
         nb = [vals[z] for z in range(y - 2, y + 3) if z != y and z in vals]
         return statistics.median(nb) if len(nb) >= 2 else None
 
-    out = lambda r, lo=0.4, hi=2.5: not lo <= r <= hi
     for e in entities:
         ys = e["years"]
         mde = {y: r["mde"] for y, r in ys.items() if r.get("mde") is not None}
         alu = {y: r["perAluno"] for y, r in ys.items() if r.get("perAluno")}
-        rel = {y: v / nat[y] for y, v in alu.items() if nat[y]}
-        own = statistics.median(rel.values()) if len(rel) >= 4 else None
+        aluno_flags = per_aluno_outliers(alu, nat)
         base = {y: r["base"] for y, r in ys.items() if r.get("base")}
         for y, r in ys.items():
             f, impl = [], False
@@ -182,22 +185,13 @@ def flag_atypical(entities):
                     f.append("mde"); impl = True
                 elif md is not None and abs(v - md) >= 10 and (v < 15 or v > 40):
                     f.append("mde")
-            if y in rel:
-                prev, prev2 = alu.get(y - 1), alu.get(y - 2)
-                jump = prev and out(alu[y] / prev) and not (prev2 and not out(alu[y] / prev2))
-                # one-year spike that reverts (ACA-23): > 2x or < 0.5x both neighbours, or a 2.5x jump from the
-                # previous year followed by a return to that level the next year
-                nxt = alu.get(y + 1)
-                spike = prev and nxt and ((alu[y] > 2 * prev and alu[y] > 2 * nxt) or (alu[y] < 0.5 * prev and alu[y] < 0.5 * nxt))
-                # a jump into y or out of y (2.5x) where the year before and after are at the same level
-                spike = spike or (prev and nxt and (out(alu[y] / prev) or out(nxt / alu[y])) and not out(nxt / prev))
-                if rel[y] > 8:
-                    f.append("aluno"); impl = True
-                elif (own and out(rel[y] / own)) or jump or spike:
-                    f.append("aluno")
+            if y in aluno_flags:
+                f.append("aluno")
+                if aluno_flags[y]:
+                    impl = True
             if y in base:
                 md = around(base, y)
-                if md and out(base[y] / md):
+                if md and ratio_out(base[y] / md):
                     f.append("base")
             if f:
                 r["atip"] = f
@@ -206,12 +200,34 @@ def flag_atypical(entities):
 
 
 
-# Per-student stages and teachers use the same R$ 100–200.000 band as indicator 4.9.
 # Material (2.10) has a national median near R$ 34, so that floor would drop most cities. Cap it at R$ 5.000.
 # Education-spending shares cannot pass 100%. Fundeb shares can, the same way indicator 1.2 can, up to 200%.
 FUNDEB_FIELDS = {"fuEi", "fuEf"}
 SHARE_FIELDS = {"shEi", "shEf", "mer"}
 STUDENT_FIELDS = {"cre", "pre", "ei", "ef", "eja", "ee", "prof"}
+
+
+def ratio_out(r, lo=0.4, hi=2.5):
+    return not lo <= r <= hi
+
+
+def per_aluno_outliers(values, municipal_median):
+    rel = {y: v / municipal_median[y] for y, v in values.items() if municipal_median.get(y)}
+    own = statistics.median(list(rel.values())) if len(rel) >= 4 else None
+    flagged = {}
+    for y in rel:
+        prev, prev2 = values.get(y - 1), values.get(y - 2)
+        jump = prev and ratio_out(values[y] / prev) and not (prev2 and not ratio_out(values[y] / prev2))
+        # one-year spike that reverts (ACA-23): > 2x or < 0.5x both neighbours, or a 2.5x jump from the
+        # previous year followed by a return to that level the next year
+        nxt = values.get(y + 1)
+        spike = prev and nxt and ((values[y] > 2 * prev and values[y] > 2 * nxt) or (values[y] < 0.5 * prev and values[y] < 0.5 * nxt))
+        # a jump into y or out of y (2.5x) where the year before and after are at the same level
+        spike = spike or (prev and nxt and (ratio_out(values[y] / prev) or ratio_out(nxt / values[y])) and not ratio_out(nxt / prev))
+        implausible = rel[y] > 8
+        if implausible or (own and ratio_out(rel[y] / own)) or jump or spike:
+            flagged[y] = implausible
+    return flagged
 
 
 def keep_stage(fid, raw):
@@ -227,7 +243,7 @@ def keep_stage(fid, raw):
         kept = round(v, 2)
         return kept or None
     if fid in STUDENT_FIELDS:
-        if v < 100 or v > 200_000:
+        if v < PER_ALUNO_LO or v > PER_ALUNO_HI:
             return None
         return int(round(v))
     if fid in FUNDEB_FIELDS:
@@ -241,35 +257,14 @@ def keep_stage(fid, raw):
     return None
 
 
-def apply_money_flags(year_maps, field, nat):
-    """Same relative rule as flag_atypical's aluno branch, one money field at a time.
-    nat is the municipal median. State governments are judged against it and are not in it."""
-    out = lambda r, lo=0.4, hi=2.5: not lo <= r <= hi
+def mark_per_aluno(year_maps, field, municipal_median):
     for ys in year_maps:
-        alu = {y: cell[field] for y, cell in ys.items() if field in cell}
-        rel = {y: v / nat[y] for y, v in alu.items() if nat.get(y)}
-        own = statistics.median(list(rel.values())) if len(rel) >= 4 else None
-        for y, cell in ys.items():
-            if y not in rel:
-                continue
-            prev, prev2 = alu.get(y - 1), alu.get(y - 2)
-            jump = prev and out(alu[y] / prev) and not (prev2 and not out(alu[y] / prev2))
-            nxt = alu.get(y + 1)
-            spike = prev and nxt and ((alu[y] > 2 * prev and alu[y] > 2 * nxt) or (alu[y] < 0.5 * prev and alu[y] < 0.5 * nxt))
-            spike = spike or (prev and nxt and (out(alu[y] / prev) or out(nxt / alu[y])) and not out(nxt / prev))
-            impl = rel[y] > 8
-            if impl or (own and out(rel[y] / own)) or jump or spike:
-                cell.setdefault("atip", []).append(field)
-                if impl:
-                    cell.setdefault("impl", []).append(field)
-
-
-def check_field_pair():
-    path = os.path.join(ROOT, "web", "src", "lib", "etapas-fields.ts")
-    found = re.findall(r'id:\s*"(\w+)",\s*siope:\s*"([^"]+)",\s*kind:\s*"(money|percent)"', open(path, encoding="utf-8").read())
-    expect = [(fid, code, kind) for fid, code, kind in INDICATORS]
-    if found != expect:
-        raise SystemExit(f"etapas field pair mismatch\n ts {found}\n py {expect}")
+        values = {y: cell[field] for y, cell in ys.items() if field in cell}
+        for y, implausible in per_aluno_outliers(values, municipal_median).items():
+            cell = ys[y]
+            cell.setdefault("atip", []).append(field)
+            if implausible:
+                cell.setdefault("impl", []).append(field)
 
 
 def siope_present():
@@ -282,7 +277,6 @@ def siope_present():
 
 
 def receita_covers(present):
-    """True when every UF-year from 2008 through 2020 that has a siope file also has a receita file."""
     for uf, years in present.items():
         for y in years:
             if 2008 <= y <= 2020 and not os.path.exists(os.path.join(BR, f"siope_receita_{uf}_{y}.json")):
@@ -291,8 +285,6 @@ def receita_covers(present):
 
 
 def write_etapas():
-    """Municipal and state-government stage indicators. Reads cities.json. Does not rewrite it."""
-    check_field_pair()
     cities_path = os.path.join(OUT, "cities.json")
     meta = json.load(open(cities_path, encoding="utf-8"))
     uf_of, since, by_code = {}, {}, {}
@@ -310,7 +302,7 @@ def write_etapas():
 
     city_years = {}
     gov_years = {uf: {} for uf in UFS}
-    field_years = {fid: set() for fid, _, _ in INDICATORS}
+    field_years = {fid: set() for fid, _, _ in STAGE_FIELDS}
 
     def put(store, year, fid, value):
         store.setdefault(year, {})[fid] = value
@@ -326,7 +318,7 @@ def write_etapas():
             if not os.path.exists(path):
                 continue
             for r in json.load(open(path)):
-                spec = INDICATOR_BY_CODE.get(r.get("COD_EXIB"))
+                spec = STAGE_BY_CODE.get(r.get("COD_EXIB"))
                 if not spec:
                     continue
                 fid, kind = spec
@@ -344,7 +336,6 @@ def write_etapas():
                     put(city_years.setdefault(cid, {}), y, fid, value)
                 else:
                     put(gov_years[uf], y, fid, value)
-                    # Brasília is the DF government declaration. The city row is the median voter, not a second one.
                     if uf == "DF" and installed(BRASILIA, y):
                         put(city_years.setdefault(BRASILIA, {}), y, fid, value)
 
@@ -354,15 +345,15 @@ def write_etapas():
             for y, cell in years.items():
                 if fid in cell:
                     buckets.setdefault(y, []).append(cell[fid])
-        nat = {y: statistics.median(vals) for y, vals in buckets.items() if vals}
-        apply_money_flags(list(city_years.values()), fid, nat)
-        apply_money_flags(list(gov_years.values()), fid, nat)
+        municipal_median = {y: statistics.median(vals) for y, vals in buckets.items() if vals}
+        mark_per_aluno(list(city_years.values()), fid, municipal_median)
+        mark_per_aluno(list(gov_years.values()), fid, municipal_median)
 
     def pack_years(years):
         out = {}
         for y in sorted(years):
             src = years[y]
-            cell = {fid: src[fid] for fid, _, _ in INDICATORS if fid in src}
+            cell = {fid: src[fid] for fid, _, _ in STAGE_FIELDS if fid in src}
             if not cell:
                 continue
             if src.get("atip"):
@@ -387,7 +378,7 @@ def write_etapas():
         out = {}
         for y in sorted(bucket):
             cell = {}
-            for fid, _, kind in INDICATORS:
+            for fid, _, kind in STAGE_FIELDS:
                 vals = bucket[y].get(fid) or []
                 if not vals:
                     continue
@@ -403,7 +394,7 @@ def write_etapas():
         uf = uf_of[cid]
         reg = UFS[uf][2]
         for y, cell in years.items():
-            for fid, _, _ in INDICATORS:
+            for fid, _, _ in STAGE_FIELDS:
                 if fid not in cell:
                     continue
                 br.setdefault(y, {}).setdefault(fid, []).append(cell[fid])
@@ -411,7 +402,7 @@ def write_etapas():
                 reg_b[reg].setdefault(y, {}).setdefault(fid, []).append(cell[fid])
 
     doc = {
-        "fields": [{"id": fid, "siope": code, "kind": kind, "years": sorted(field_years[fid])} for fid, code, kind in INDICATORS],
+        "fields": [{"id": fid, "siope": code, "kind": kind, "years": sorted(field_years[fid])} for fid, code, kind in STAGE_FIELDS],
         "cities": cities_out,
         "gov": gov_out,
         "medians": {

@@ -32,7 +32,7 @@ function file(): EtapasFile {
   return o;
 }
 
-/** Year map for one municipality. Brasília is stored on the city id (the DF declaration). */
+/** Brasília is stored on the city id (the DF declaration). */
 export function cityStages(id: number): StageYearMap {
   return file().cities[String(id)] ?? {};
 }
@@ -57,7 +57,6 @@ export type ExplorerStages = {
   rows: Record<string, { cre: (number | null)[]; ef: (number | null)[]; eja: (number | null)[] }>;
 };
 
-/** Creche, fundamental and EJA aligned to one year list, for the explorer table. */
 export function explorerStages(): ExplorerStages {
   const f = file();
   const want = new Set(["cre", "ef", "eja"]);
