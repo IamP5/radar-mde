@@ -41,6 +41,7 @@ Preconditions:
 
 - `Voltar para` followed by the year appears only after the selected year is not the one the page opened on. On the opening year the line says the charts show the whole series, and `Próximo ano` is disabled.
 - `Salvar` sits next to `Compartilhar`. This recipe does not press it.
+- `Simular o custo da qualidade` opens the municipal quality-cost simulation. That flow is the Radar CAQM recipe.
 - `Comparação com a pesquisa` is on Santo André because that is the city in the research. Another city does not show that heading.
 - The header control for the selected year is a button (`Dados brutos de <year> no SIOPE`). The click stays on the city page. `outbound` records the `fnde.gov.br` url. The year-by-year table repeats a link of a similar name for every year, so a link search is not one match. Those table links are not this step.
 - Two cities are named Santo André. This recipe uses the address `/sp/santo-andre`.

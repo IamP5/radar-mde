@@ -46,6 +46,7 @@ H1 title + one paragraph, then exactly four H2s: `Sub-features` (short IDs, one 
 - [State page](./state.md) covers a state's year, municipality search, map indicator, CSV, and the Distrito Federal redirect.
 - [Region page](./region.md) covers switching region, the region CSV, and opening that region's table.
 - [Municipality page](./municipality.md) covers a city's year, indicators, charts, rank, neighbors, source link, and the Santo André research note.
+- [Radar CAQM](./caqm.md) covers the citizen quality-cost simulation, a parameter change, and the printable proposal.
 - [Action letters](./letters.md) covers the four ready-to-send letters, the signature fields, and copying the text.
 - [Glossary](./glossary.md) covers the dotted terms that open a short definition.
 - [Share a link](./share.md) covers Compartilhar and Copiar link, including the selected year.

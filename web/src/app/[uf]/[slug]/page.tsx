@@ -1,5 +1,6 @@
 import { CircleAlert, ExternalLink, Info, MessageSquareText, TriangleAlert } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import ActionKit from "@/components/ActionKit";
@@ -306,6 +307,9 @@ function CityContent({ c }: { c: City }) {
             </Button>
             <Button variant="outline" render={<a href="#agir" />} nativeButton={false} className="print:hidden">
               <MessageSquareText className="text-muted-foreground" />O que posso fazer?
+            </Button>
+            <Button variant="outline" render={<Link href={`/${c.uf.toLowerCase()}/${c.slug}/caqm`} />} nativeButton={false}>
+              Simular o custo da qualidade
             </Button>
             <WatchButton id={`${c.uf.toLowerCase()}/${c.slug}`} />
             <HeaderShare />
