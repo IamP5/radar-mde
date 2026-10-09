@@ -20,7 +20,7 @@ Land the seams before the surfaces that depend on them.
 
 1. Topic search can start on `main`. None of the four pull requests edit `web/src/lib/search.ts`.
 2. In parallel, add the citation record from [note 1](01-letters-share-citation.md). It is a type and a formatter. [Note 4](04-researcher-rigor.md) appends Silva 2021 to that list.
-3. In parallel, write the TCE-SP fetch script and check it against Santo André. Do not edit `web/src/lib/csv.ts` or the city page until [#6](https://github.com/IamP5/radar-mde/pull/6) has settled the CSV columns. [#4](https://github.com/IamP5/radar-mde/pull/4) also adds Fundeb columns in that same export.
+3. In parallel, write the TCE-SP fetch script and check it against Santo André. Do not edit `web/src/lib/csv.ts` or the city page until both [#4](https://github.com/IamP5/radar-mde/pull/4) and [#6](https://github.com/IamP5/radar-mde/pull/6) have settled the CSV columns. Both branches add columns to that export.
 4. Map layers and the neutral ranking caption wait for [#6](https://github.com/IamP5/radar-mde/pull/6) (stage fields) and [#4](https://github.com/IamP5/radar-mde/pull/4) (the Fundeb map). Do not build a second top-up map.
 5. The letter paragraph and the WhatsApp line wait for `quoteSentence` and for [#7](https://github.com/IamP5/radar-mde/pull/7), which rewrites `web/src/lib/templates.ts`.
 6. The waiting-list field waits for [#5](https://github.com/IamP5/radar-mde/pull/5), which already has the Santo André button for 7,116. The letter checkbox waits for the letter paragraph.
@@ -30,7 +30,7 @@ What can run in parallel now:
 
 - Topic search, the citation type, and the TCE-SP fetch script.
 - After [#5](https://github.com/IamP5/radar-mde/pull/5) and [#6](https://github.com/IamP5/radar-mde/pull/6) merge, the waiting-list field and the map sidecar can proceed together.
-- The letter paragraph and the census mix both touch the citation. The typed source list is the shared seam. They should not edit `citation()` at the same time.
+- The letter paragraph and the Silva 2021 line both append to the citation record. They should not edit `citation()` at the same time. The census mix does not. It waits on the INEP zip and sits on [#5](https://github.com/IamP5/radar-mde/pull/5).
 
 ## Sources checked from this machine
 
@@ -39,7 +39,7 @@ Downloads were issued from this VM on 9 Oct 2026. A catalog page is not treated 
 | Source | What happened |
 | --- | --- |
 | Thesis PDF, Silva 2021, UNINOVE | `https://bibliotecatede.uninove.br/bitstream/tede/2464/2/Adriana%20Zanini%20da%20Silva.pdf` returned 200, `application/pdf`, 5,614,012 bytes. |
-| FNDE VAAT CSV, Portaria MEC/MF nº 5, 29 Apr 2026 | The URL in `scripts/fetch_fundeb.py` on the #4 branch returned 200, 385,776 bytes. Santo André (SP), IBGE 3547809, VAAT 13.914,20, complementação `-`, IEI 0%. Santo André (PB), IBGE 2513851, VAAT 7.259,40, complementação 507.683,95, IEI 52,09%. VAAT-MIN in that file is 8.024,31. |
+| FNDE VAAT CSV, Portaria MEC/MF nº 5, 29 Apr 2026 | The URL in `scripts/fetch_fundeb.py` on the #4 branch returned 200, 385,776 bytes, latin-1. The title row says the complementação is for Fundeb in 2025. Santo André (SP), IBGE 3547809, VAAT 13.914,20, complementação `-`, IEI 0%. Santo André (PB), IBGE 2513851, VAAT 7.259,40, complementação 507.683,95, IEI 52,09%. VAAT-MIN in that file is 8.024,31. |
 | SIOPE OData | `Indicadores_Siope` for 2023, period 6, UF `SP`, `COD_MUNI` 354780 (six digits, no check digit), returned Municipal Santo André. Indicator 4.14 is 15257.01, 4.5 is 15351.42, 2.4 is 40.02. |
 | TCE-SP Audesp | Catalog `https://transparencia.tce.sp.gov.br/conjunto-de-dados` returned 200. `resultado_analises_audesp.zip` returned 200, `application/zip`, 480,158 bytes. The CSV has 6,440 rows, 644 municipalities, years 2016 to 2025. IBGE 3550308 (capital) is absent. |
 | INEP synopsis catalog | `https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/sinopses-estatisticas/educacao-basica` returned 200 and lists `sinopse_estatistica_censo_escolar_2024.zip` (also 2023 and 2025). `download.inep.gov.br` did not complete a file transfer from this VM (`SSL_ERROR_SYSCALL`, including with certificate checks disabled). Sheet names inside the zip were not read. |

@@ -14,7 +14,7 @@ The Dados citation names FNDE/SIOPE, SICONFI, and IBGE. Silva 2021 is the study 
 
 The academic report recomputed the Santo André thesis table and asked for indicator codes, a citation, and a census denominator (ACA recommendations on methodology and on per-pupil cross-check). A researcher who exports the CSV today can compare SIOPE with SICONFI for some São Paulo rows and cannot compare SIOPE with TCE-SP.
 
-The thesis series and the Audesp file are not the same series. For Santo André, "Despesa Empenhada Ensino (%)" in the Audesp CSV is 0.25875 in 2016 (25.88%), 0.25827 in 2017 (25.83%), 0.26378 in 2018 (26.38%), and 0.25923 in 2019 (25.92%). `thesis.ts` has 21.87, 25.25, 26.37, and 25.92 for those years. 2019 matches at two decimals. 2016 does not. Fundeb professionals in the same Audesp file are about 80.62% in 2016, which matches thesis figure 40. The education column must not be labeled figure 42.
+The thesis series and the Audesp file are not the same series. For Santo André, "Despesa Empenhada Ensino (%)" in the Audesp CSV is 0.25875 in 2016 (25.88%), 0.25827 in 2017 (25.83%), 0.26378 in 2018 (26.38%), and 0.25923 in 2019 (25.92%). `thesis.ts` has 21.87, 25.25, 26.37, and 25.92 for those years. 2019 matches at two decimals. 2018 differs by one hundredth (26.38 against 26.37). 2017 and 2016 do not match. Fundeb professionals in the same Audesp file are 80.62% in 2016, the same number `thesis.ts` stores for figure 40. That thesis field is commented as SIOPE/Inep, not as the audit court, so the match is a shared number, not a shared label. The education column must not be labeled figure 42. The SIOPE percent on the city page is a third series. In `cities.json`, Santo André 2019 is 25.35 and 2023 is 25.99.
 
 The journalist needs the citation to name the study when the chart is the thesis comparison, and to keep FNDE as the source when the chart is SIOPE.
 
@@ -66,7 +66,7 @@ This is the recommendation. A later change fills `EnrolmentByStage` from the syn
 
 Option B for the court column and the citation. Option E for the mix.
 
-The fetch script may land before the CSV edit. The column lands after [#6](https://github.com/IamP5/radar-mde/pull/6) stops moving `csv.ts`.
+The fetch script may land before the CSV edit. The column lands after both [#4](https://github.com/IamP5/radar-mde/pull/4) and [#6](https://github.com/IamP5/radar-mde/pull/6) have stopped moving `csv.ts`.
 
 ## Data sources
 
@@ -115,7 +115,7 @@ Append `silva2021` only when the view quotes `thesis.ts` or the council sheet's 
 
 ## Risks and blast radius
 
-[#4](https://github.com/IamP5/radar-mde/pull/4) and [#6](https://github.com/IamP5/radar-mde/pull/6) both extend the CSV schema, `build_data.py`, the Dados page, and the city header. Add `mde_pct_tce_sp` in one of those schema edits, or after both have merged. A third parallel edit of `CSV_COLUMNS` will drop a column.
+[#4](https://github.com/IamP5/radar-mde/pull/4) and [#6](https://github.com/IamP5/radar-mde/pull/6) both extend the CSV schema, `build_data.py`, the Dados page, and the city header. Add `mde_pct_tce_sp` only after both have merged. A third edit of `CSV_COLUMNS` while either branch is still open will drop a column.
 
 [#7](https://github.com/IamP5/radar-mde/pull/7) must keep the figure-42 label on the thesis series. This column is a different measurement. Showing only the Audesp number on Santo André would hide the series the thesis discusses.
 

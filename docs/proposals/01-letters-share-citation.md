@@ -36,7 +36,7 @@ Years stay attached to the publication they come from. Creche reais are 2023. Th
 
 WhatsApp from the city header can read:
 
-"Santo André (SP), 2023: 25,92% da receita em educação. Creche: R$ 15.257 por aluno (SIOPE 4.14). Fundeb 2025: acima do piso, sem complementação da União. Veja no Radar MDE:"
+"Santo André (SP), 2023: 25,99% da receita em educação. Creche: R$ 15.257 por aluno (SIOPE 4.14). Fundeb 2025: acima do piso, sem complementação da União. Veja no Radar MDE:"
 
 The citation for that creche figure can read:
 
