@@ -42,7 +42,38 @@ test("help names every command and the app", () => {
   assert.match(res.stdout, /Radar MDE/);
   for (const name of commandNames) assert.match(res.stdout, new RegExp(`\\b${name}\\b`));
   assert.match(run(["browser", "--help"]).stdout, /--name-regex/);
+  assert.match(run(["browser", "--help"]).stdout, /--url-includes/);
   assert.match(run(["cleanup", "--help"]).stdout, /--dry-run/);
+});
+
+test("subcommand help is specific and still names dry-run on writes", () => {
+  const click = run(["browser", "click", "--help"]);
+  assert.equal(click.status, 0);
+  assert.match(click.stdout, /--download/);
+  assert.match(click.stdout, /download\.bytes/);
+  const watch = run(["seed", "watch", "clear", "--help"]);
+  assert.equal(watch.status, 0);
+  assert.match(watch.stdout, /--dry-run/);
+  assert.match(watch.stdout, /wrote/);
+  const http = run(["http", "get", "--help"]);
+  assert.equal(http.status, 0);
+  assert.match(http.stdout, /\/dados\/csv\/sp/);
+  assert.doesNotMatch(http.stdout, /Start next dev/);
+});
+
+test("unknown http subcommand says to use get, before any server", () => {
+  const res = run(["http", "post", "/explorar"], { RADAR_VERIFY_RUN_ID: "" });
+  assert.equal(res.status, 1);
+  assert.equal(res.json.ok, false);
+  assert.match(res.json.hint, /http get/);
+  assert.match(res.json.hint, /--help/);
+});
+
+test("a bad --timeout names the flag and does not start a server", () => {
+  const res = run(["launch", "--timeout", "nope"]);
+  assert.equal(res.status, 1);
+  assert.match(res.json.error, /--timeout/);
+  assert.match(res.json.hint, /--timeout 180000/);
 });
 
 test("unknown command tells the agent what to run", () => {

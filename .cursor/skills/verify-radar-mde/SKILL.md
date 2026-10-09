@@ -15,13 +15,25 @@ There is no login and no server database. Figures come from JSON already in `web
 
 ## Launch
 
-Install once if `web/node_modules` or `scripts/control/node_modules` is missing:
+### Cloud agent
+
+This repository's saved Cursor cloud environment runs the same steps as `scripts/cloud-agent-install.sh` before it snapshots: `npm ci` in `web/`, `npm ci` in `scripts/control/`, then Playwright's Chromium and the system libraries that browser needs. An agent that boots from that snapshot already has `web/node_modules`, `scripts/control/node_modules`, and Chromium under `~/.cache/ms-playwright`. The dev server is not started at boot. Skip the install and start here:
 
 ```bash
-npm install --prefix web
-npm install --prefix scripts/control
-npm exec --prefix scripts/control -- playwright install chromium
+./scripts/control-radar-mde launch
 ```
+
+Stdout is JSON. Export `RADAR_VERIFY_RUN_ID` from `runId`, then run `doctor`, then the feature recipe. Run `cleanup` when the recipe is done so the next command can use `web/.next`.
+
+If `web/node_modules/next` is missing, or a browser command says Chromium is not installed (a branch changed a lockfile, or this VM did not boot from the snapshot), run `bash scripts/cloud-agent-install.sh` once and then launch. Do not start `next dev` by hand.
+
+### When dependencies are missing
+
+```bash
+bash scripts/cloud-agent-install.sh
+```
+
+That script is idempotent. It uses `npm ci` (the lockfile, not a floating install) and installs Chromium for the user who will run the CLI.
 
 Start the server and wait until the home page identifies itself:
 

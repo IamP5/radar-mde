@@ -370,7 +370,7 @@ try {
   failStart(
     message,
     missing
-      ? "Install the browser with: cd scripts/control && npx playwright install chromium. Then retry the browser command."
+      ? "Chromium is not installed for this user. From the repo root run bash scripts/cloud-agent-install.sh, then retry the browser command."
       : "Read scripts/control state browser.log for this run. Fix the browser launch error, then retry. Do not start a second Chromium against the same profile directory.",
   );
 }

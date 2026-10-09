@@ -150,6 +150,8 @@ async function launch(flags) {
       "Omit --host. The verification server listens on 127.0.0.1 only.",
     );
   }
+  // Reject a bad timeout before spawning next, so a typo does not leave a server behind.
+  const timeout = numberFlag(flags, "timeout", 180_000);
   const requestedId = flags["run-id"] && flags["run-id"] !== true ? String(flags["run-id"]) : "";
   const runId = assertRunId(requestedId || `v${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`);
   const running = liveRuns();
@@ -170,7 +172,7 @@ async function launch(flags) {
   if (!fs.existsSync(nextBin)) {
     throw new CliError(
       "Next.js is not installed in web/.",
-      "Run npm install in the web directory, then control-radar-mde launch again. The site does not need API keys.",
+      "From the repo root run bash scripts/cloud-agent-install.sh, then control-radar-mde launch again. The site does not need API keys.",
     );
   }
 
@@ -223,7 +225,6 @@ async function launch(flags) {
   };
   writeJson(paths.stateFile, state);
 
-  const timeout = numberFlag(flags, "timeout", 180_000);
   const deadline = Date.now() + timeout;
   let last = "no response yet";
   while (Date.now() < deadline) {
@@ -340,7 +341,7 @@ async function ensureDaemon(state, headed) {
   const tail = readTail(paths.daemonLog, 30).join("\n");
   throw new CliError(
     "The browser daemon did not become ready.",
-    `Install Chromium if the log asks for it: cd scripts/control && npx playwright install chromium\n${tail}`,
+    `From the repo root run bash scripts/cloud-agent-install.sh (npm ci plus Playwright Chromium), then retry.\n${tail}`,
   );
 }
 
@@ -482,6 +483,12 @@ async function seed(positionals, flags, state) {
 
 /** @param {string[]} positionals @param {Record<string, string | boolean>} flags @param {any} state */
 async function httpGet(positionals, flags, state) {
+  if (positionals[1] !== "get") {
+    throw new CliError(
+      `Unknown http subcommand ${JSON.stringify(positionals[1] || "")}.`,
+      "http only has get. Example: control-radar-mde http get /dados/csv/sp --save sp.csv. Do not pass another host.",
+    );
+  }
   const report = await inspect(state);
   if (!report.ok) throw new CliError("Refusing to request a server that failed doctor.", report.hint, 2, { checks: report.checks });
   const reqPath = positionals[2] || stringFlag(flags, "path");
@@ -662,7 +669,12 @@ export async function main(argv) {
     if (command === "launch") payload = await launch(flags);
     else if (command === "cleanup") payload = await cleanup(flags);
     else if (command === "evidence") payload = evidence(positionals, runIdFrom(flags));
-    else {
+    else if (command === "http" && positionals[1] !== "get") {
+      throw new CliError(
+        `Unknown http subcommand ${JSON.stringify(positionals[1] || "")}.`,
+        "http only has get. Example: control-radar-mde http get /dados/csv/sp --save sp.csv. Run control-radar-mde http get --help.",
+      );
+    } else {
       const runId = runIdFrom(flags);
       const paths = runPaths(runId);
       const state = loadState(paths.stateFile);

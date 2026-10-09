@@ -10,7 +10,7 @@ in the same checkout is refused. Two checkouts can run side by side on different
 
 Usage:
   control-radar-mde <command> [subcommand] [flags]
-  control-radar-mde <command> --help
+  control-radar-mde <command> [subcommand] --help
 
 Commands:
   launch      Start next dev on 127.0.0.1 and wait until the home page says Radar MDE
@@ -89,13 +89,16 @@ Subcommands:
                            Write localStorage and reload. Honors --dry-run.
 
 Target flags (click, fill, wait, find, text, snapshot):
-  --role <role>            ARIA role: button, link, tab, radio, option, dialog, heading, searchbox, combobox, menuitem
+  --role <role>            ARIA role: button, link, tab, radio, option, dialog, heading, searchbox, combobox, menuitem, status
   --name <text>            Case-insensitive substring of the accessible name
   --name-regex <re>        Regular expression (case-insensitive) when several controls share a word
   --exact                  Accessible name must match --name in full
   --level <n>              Heading level, with --role heading
   --placeholder <text>     Input placeholder
   --label <text>           Label text
+  --text <text>            With wait: visible text
+  --text-regex <re>        With wait: visible text matching a regex
+  --url-includes <text>    With wait: return when the current URL contains this
   --within-role <role>     Scope to one visible ancestor (navigation, dialog, region)
   --within-name <text>     Accessible name of that ancestor
   --include-hidden         Also match display:none duplicates
@@ -165,6 +168,119 @@ Verify a dry-run by running doctor afterwards; the server must still be healthy.
 `,
 };
 
+const SUBCOMMANDS = {
+  "browser open": `control-radar-mde browser open <path>
+
+Opens a path on this run's origin. Example: browser open /explorar or browser open "/mapa#sp".
+The returned JSON includes the final url, document title, and HTTP status.
+`,
+  "browser click": `control-radar-mde browser click — click one visible control
+
+Flags:
+  --role <role>            Required with --name, unless --placeholder or --label is set
+  --name <text>            Case-insensitive substring of the accessible name
+  --name-regex <re>        When several controls share a word
+  --exact                  Full accessible name
+  --download <path>        Wait for the file this click downloads and save it under evidence
+  --force                  Click even when pointer-events is none
+  --within-role <role>     Scope to one ancestor
+  --within-name <text>     Accessible name of that ancestor
+  --timeout <ms>           Default 15000
+
+JSON includes the url after the click. With --download it also includes download.path,
+download.suggestedFilename, and download.bytes. Read that file to check CSV contents.
+If more than one control matches, the command lists names and does not click.
+`,
+  "browser fill": `control-radar-mde browser fill — replace one field's value
+
+Flags:
+  --role <role>     searchbox or combobox
+  --name <text>     Accessible name
+  --value <text>    Required. The new field value.
+
+Name filters in Explorar write the URL after a short pause. Follow fill with
+browser wait --url-includes q= before asserting the table.
+`,
+  "browser press": `control-radar-mde browser press --key <key>
+
+Playwright key name. Example: browser press --key Control+k opens search.
+"/" also opens search unless focus is already in a field.
+`,
+  "browser wait": `control-radar-mde browser wait — wait for a role, text, or URL
+
+Flags:
+  --role <role> --name <text>     One visible control
+  --text <text>                   Visible text
+  --text-regex <re>               Visible text matching a regex
+  --url-includes <text>           Current URL contains this fragment
+  --timeout <ms>                  Default 15000
+
+Example: browser wait --role dialog --name "Buscar município, estado ou região"
+`,
+  "browser find": `control-radar-mde browser find — list matches, do not click
+
+Same target flags as click. JSON includes count and samples. Use it when a click
+refuses because more than one control matched.
+`,
+  "browser text": `control-radar-mde browser text — accessible text of the one match
+
+Same target flags as click. Refuses when the count is not one.
+`,
+  "browser snapshot": `control-radar-mde browser snapshot --aria --path <file>
+
+Writes an ARIA snapshot. A relative --path stays inside the evidence directory.
+A path with .. is rejected. Add --role and --name to snapshot one control.
+`,
+  "browser screenshot": `control-radar-mde browser screenshot --path <file> [--full-page]
+
+Writes a PNG. A relative --path stays inside the evidence directory.
+`,
+  "browser url": `control-radar-mde browser url
+
+Prints the current URL and document title. Read-only.
+`,
+  "browser clipboard": `control-radar-mde browser clipboard
+
+Reads navigator.clipboard. Click Copiar link first.
+`,
+  "browser storage": `control-radar-mde browser storage — localStorage in this run's profile
+
+Subcommands:
+  storage get --key <k>
+  storage set --key <k> --value <v> [--dry-run]
+
+--dry-run reports from and to and sets wrote to false. Confirm with storage get:
+the stored value is still from. Prefer seed watch for radar-mde:watch.
+`,
+  "seed watch": `control-radar-mde seed watch — the saved-municipality list
+
+Subcommands:
+  seed watch list
+  seed watch add --id sp/santo-andre
+  seed watch remove --id sp/santo-andre
+  seed watch clear
+
+add, remove, and clear accept --dry-run. Dry-run sets wrote to false and reports
+from and to. Run seed watch list afterwards and confirm the ids still match from.
+A fresh launch starts from an empty profile.
+`,
+  "http get": `control-radar-mde http get <path> [--save <file>]
+
+GET a path on this run's origin, such as /sp/santo-andre or /dados/csv/sp.
+Other hosts are rejected. --save writes the body under the evidence directory
+when the path is relative. JSON includes status, url, content type, bytes, and
+a short text preview. http has no other subcommand.
+`,
+  "evidence path": `control-radar-mde evidence path
+
+Prints the absolute evidence directory. cleanup does not delete it.
+`,
+  "evidence list": `control-radar-mde evidence list
+
+Lists proof files and sizes. Still works after cleanup.
+`,
+};
+
 /** @param {string[]} positionals */
 export function helpFor(positionals) {
   const cmd = positionals[0];
@@ -173,7 +289,13 @@ export function helpFor(positionals) {
   if (!text) {
     return `${ROOT}\nUnknown command ${JSON.stringify(cmd)}. Use one of: ${Object.keys(COMMANDS).join(", ")}.\n`;
   }
-  return text;
+  const sub = positionals[1];
+  if (!sub) return text;
+  const two = SUBCOMMANDS[`${cmd} ${sub}`];
+  const three = positionals[2] ? SUBCOMMANDS[`${cmd} ${sub} ${positionals[2]}`] : undefined;
+  if (three) return three;
+  if (two) return two;
+  return `${text}\nNo separate help for ${JSON.stringify(positionals.slice(1).join(" "))}. The subcommands are listed above.\n`;
 }
 
 export const commandNames = Object.keys(COMMANDS);
