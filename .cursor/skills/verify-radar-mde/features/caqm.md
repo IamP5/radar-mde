@@ -21,7 +21,7 @@ Preconditions:
 
 - `./scripts/control-radar-mde doctor` reports `ok: true` for this run.
 
-- **Open from the city.** Run `./scripts/control-radar-mde browser open /sp/santo-andre`. Run `./scripts/control-radar-mde browser click --role link --name "Simular o CAQM"`. The URL path is `/sp/santo-andre/caqm`. A level-1 heading named `CAQM de Santo André` is visible.
+- **Open from the city.** Run `./scripts/control-radar-mde browser open /sp/santo-andre`. Run `./scripts/control-radar-mde browser click --role button --name "Simular o CAQM"`. The URL path is `/sp/santo-andre/caqm`. A level-1 heading named `CAQM de Santo André` is visible.
 - **Seeded cost.** Run `./scripts/control-radar-mde browser wait --text "311.202.603"`. The result region `Resultado da simulação` is visible.
 - **Change a parameter.** Run `./scripts/control-radar-mde browser fill --role textbox --name "Alunos por turma na creche" --value "12"`. Run `./scripts/control-radar-mde browser wait --text "366.794.866"`. The address contains `cc=12`.
 - **Proof of the edit.** Run `./scripts/control-radar-mde browser screenshot --path caqm/santo-andre.png` and `./scripts/control-radar-mde browser snapshot --aria --path caqm/santo-andre.aria.txt`.
@@ -36,4 +36,5 @@ Preconditions:
 - Two cities are named Santo André. This recipe uses `/sp/santo-andre` and the heading `CAQM de Santo André`.
 - `311.202.603` is the default cost for Santo André in the latest exercise with data. `366.794.866` is the same scenario with 12 students per creche class. A rebuilt dataset can move the implicit enrolment and these figures.
 - The creche field is a text box. Fill replaces the whole value.
+- `Simular o CAQM` is an anchor. Base UI exposes it as a button, and the click still follows the href.
 - Print hides the parameter fields and the buttons. The proposal heading and the parameter list stay. The print screenshot is taken with the browser in print media, outside this click path, and saved next to these files.
