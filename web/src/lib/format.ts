@@ -56,6 +56,9 @@ export const STATUS_LABEL: Record<Status, string> = {
 /** Values far from the usual 25–40% band are often filing errors; flag them instead of asserting. */
 export const isAtypical = (v: number | null | undefined) => v != null && (v < 18 || v > 45);
 
+/** R$ that 25% of a tax base comes to. */
+export const requiredMde = (base: number) => (MDE_MIN / 100) * base;
+
 /** R$ above (+) or below (−) the 25% minimum in one year. Null without a declared % or a tax base. */
 export function mdeBalance(r: YearRecord | undefined): number | null {
   return r?.mde != null && r.base != null ? ((r.mde - MDE_MIN) / 100) * r.base : null;
