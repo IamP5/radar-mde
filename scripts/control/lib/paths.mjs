@@ -68,6 +68,7 @@ export function runPaths(runId) {
     readyFile: path.join(stateDir, "daemon.ready"),
     lockFile: path.join(stateDir, "daemon.lock"),
     pageUrlFile: path.join(stateDir, "page-url.txt"),
+    viewportFile: path.join(stateDir, "viewport.json"),
   };
 }
 
