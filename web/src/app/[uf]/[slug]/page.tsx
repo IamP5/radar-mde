@@ -301,6 +301,9 @@ function CityContent({ c }: { c: City }) {
         description={<HeaderStatus belowCount={f.below.length} />}
         actions={
           <>
+            <Button variant="outline" render={<a href="#fundeb" />} nativeButton={false} className="print:hidden">
+              Complementação da União
+            </Button>
             <Button variant="outline" render={<a href="#agir" />} nativeButton={false} className="print:hidden">
               <MessageSquareText className="text-muted-foreground" />O que posso fazer?
             </Button>

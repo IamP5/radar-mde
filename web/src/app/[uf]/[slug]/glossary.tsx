@@ -64,11 +64,15 @@ export const GLOSSARY = {
   },
   iei: {
     term: "IEI",
-    text: "Indicador de educação infantil: o percentual da complementação-VAAT que o ente deve aplicar na educação infantil. Sem complementação, o percentual publicado é zero.",
+    text: "Indicador de educação infantil: o percentual da complementação da União que deve ir para creches e pré-escolas. Não é a fila de espera nem o gasto total da rede com educação infantil. Sem complementação, o percentual publicado é zero.",
+  },
+  comp: {
+    term: "Complementação da União",
+    text: "Dinheiro que a União envia à rede quando o valor por aluno fica abaixo do piso nacional. O valor mostrado é o total da rede no exercício, não um valor por aluno e não é o Fundeb inteiro.",
   },
   vaar: {
     term: "VAAR",
-    text: "Complementação da União ligada a resultados e à redução de desigualdades. Só entra quem a publicação oficial lista como rede beneficiária. Não estar na lista não é um julgamento do painel.",
+    text: "Outra complementação da União, ligada a resultados e à redução de desigualdades. Só entra quem a publicação oficial lista como rede beneficiária. Não estar na lista não é uma punição nem um julgamento do painel.",
   },
 } as const;
 export type GlossaryKey = keyof typeof GLOSSARY;

@@ -249,9 +249,9 @@ d = pandas.read_csv("radar-mde-brasil.csv", encoding="utf-8-sig")`}</Code>
           <li className="flex items-center gap-2 rounded-lg border bg-card p-3 text-sm">
             <a href={csvHref("fundeb")} download className="flex min-w-0 flex-1 items-center gap-2 font-medium hover:underline">
               <Download className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
-              <span className="truncate">Complementação VAAT e VAAR</span>
+              <span className="truncate">Por município: piso, VAAT e complementação</span>
             </a>
-            <a href={csvHref("fundeb", true)} download className="shrink-0 rounded-sm px-1 py-0.5 text-xs text-muted-foreground hover:text-foreground hover:underline" aria-label="Complementação VAAT e VAAR: CSV para Excel Brasil">
+            <a href={csvHref("fundeb", true)} download className="shrink-0 rounded-sm px-1 py-0.5 text-xs text-muted-foreground hover:text-foreground hover:underline" aria-label="Por município: piso, VAAT e complementação: CSV para Excel Brasil">
               Excel
             </a>
           </li>

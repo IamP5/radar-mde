@@ -14,8 +14,8 @@ const RECEIVE = "var(--bin-5)";
 const NONE = "var(--bin-3)";
 
 const BINS: Bin[] = [
-  { key: "recebe", label: "Recebe complementação", color: RECEIVE, test: (v) => v === 2 },
-  { key: "nao", label: "Não recebe", color: NONE, test: (v) => v === 1 },
+  { key: "recebe", label: "Recebe da União", color: RECEIVE, test: (v) => v === 2 },
+  { key: "nao", label: "Não recebe da União", color: NONE, test: (v) => v === 1 },
 ];
 
 export function FundebMap({
@@ -46,8 +46,8 @@ export function FundebMap({
   return (
     <Panel
       id="fundeb-mapa"
-      title={`Quem recebe a complementação VAAT · ${scopeLabel}`}
-      description="Municípios cuja rede fica abaixo do VAAT-MIN e recebe a complementação da União neste exercício. Valores nominais da portaria."
+      title={`Quem recebe complementação da União · ${scopeLabel}`}
+      description="A complementação VAAT é o dinheiro que a União envia quando o valor por aluno fica abaixo do piso nacional (VAAT-MIN). O mapa marca quem recebe esse acréscimo. Valores nominais da portaria."
       action={
         <Segmented
           ariaLabel="Exercício da complementação VAAT"
@@ -75,7 +75,7 @@ export function FundebMap({
       {summary ? (
         <>
           <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-3">
-            <Stat label="Recebem complementação" value={int(summary.nReceive)} sub={`de ${int(summary.nKnown)} com VAAT publicado`} />
+            <Stat label="Recebem da União" value={int(summary.nReceive)} sub={`de ${int(summary.nKnown)} com valor por aluno publicado`} />
             <Stat label="Parcela" value={share(summary.nReceive, summary.nKnown)} sub="dos municípios com dado" />
             <Stat className="col-span-2 lg:col-span-1" label="Total da complementação" value={brlShort(summary.total)} sub={`piso ${brlCents(summary.floor)} por aluno`} />
           </div>
@@ -94,7 +94,7 @@ export function FundebMap({
             label={(id) => {
               const p = places.get(id);
               if (!p) return "";
-              const status = p.mark === "2" ? "recebe complementação VAAT" : p.mark === "1" ? "não recebe complementação VAAT" : "sem dado";
+              const status = p.mark === "2" ? "recebe complementação da União" : p.mark === "1" ? "não recebe complementação da União" : "sem dado";
               return `${p.name}: ${status}`;
             }}
             href={(id) => {
@@ -106,13 +106,13 @@ export function FundebMap({
               if (!p || p.mark === "0") return <div className="text-muted-foreground">sem dado</div>;
               return (
                 <>
-                  <div className="font-semibold">{p.mark === "2" ? "Recebe complementação" : "Não recebe complementação"}</div>
+                  <div className="font-semibold">{p.mark === "2" ? "Recebe complementação da União" : "Não recebe complementação da União"}</div>
                   <div className="text-muted-foreground">{p.name}</div>
                 </>
               );
             }}
           />
-          <Legend title={`Complementação VAAT em ${shown}`} bins={BINS} />
+          <Legend title={`Complementação da União em ${shown}`} bins={BINS} />
         </>
       ) : (
         <p className="text-sm text-foreground">sem dado</p>

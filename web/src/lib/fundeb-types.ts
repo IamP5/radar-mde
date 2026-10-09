@@ -64,7 +64,7 @@ export const FUNDEB_CSV_COLUMNS: { key: string; label: string }[] = [
 ];
 
 export function fundebSentence(cell: FundebCell, floor: number): string {
-  if (cell.comp > 0) return "Abaixo do mínimo. A complementação da União eleva o VAAT até o piso.";
-  if (cell.vaat + 0.001 < floor) return "Abaixo do mínimo, sem complementação nesta publicação.";
-  return "acima do mínimo, não recebe complementação";
+  if (cell.comp > 0) return "Abaixo do piso nacional. A União complementa a rede até esse piso.";
+  if (cell.vaat + 0.001 < floor) return "Abaixo do piso nacional, sem complementação da União nesta publicação.";
+  return "Acima do piso nacional. A União não complementa esta rede.";
 }

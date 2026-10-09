@@ -19,7 +19,12 @@ export function FundebCityCard({ data, pageYear }: { data: FundebCityView; pageY
   const missing = cell == null || floor == null;
   const max = missing ? 1 : Math.max(cell.vaat, cell.vaatCom, floor, 1);
   const vaar =
-    cell == null ? "sem dado" : cell.vaar === 1 ? "Recebe complementação VAAR" : "Não recebe complementação VAAR";
+    cell == null
+      ? "sem dado"
+      : cell.vaar === 1
+        ? "esta rede está na lista oficial de beneficiárias"
+        : "esta rede não está na lista oficial de beneficiárias";
+  const yearsLabel = data.years.join(" e ");
 
   return (
     <Panel
@@ -27,9 +32,9 @@ export function FundebCityCard({ data, pageYear }: { data: FundebCityView; pageY
       title="Fundeb: quanto há por aluno e quanto vem da União"
       description={
         <>
-          O <Term k="vaat">VAAT</Term> é o quanto a rede tem por aluno, somando receitas próprias e transferências. Se fica abaixo do{" "}
-          <Term k="vaatMin">VAAT-MIN</Term>, a União complementa. Parte desse acréscimo (<Term k="iei">IEI</Term>) vai para a educação infantil. O{" "}
-          <Term k="vaar">VAAR</Term> é outra complementação, condicionada a critérios de gestão.
+          Quanto a rede tem por aluno e se a União manda um acréscimo para chegar ao piso. Não é o percentual do Fundeb pago aos profissionais, que aparece mais abaixo. O{" "}
+          <Term k="vaat">VAAT</Term> é esse valor por aluno. Abaixo do <Term k="vaatMin">VAAT-MIN</Term>, a União complementa. Parte desse acréscimo (
+          <Term k="iei">IEI</Term>) deve ir para creches e pré-escolas. O <Term k="vaar">VAAR</Term> é outra complementação, só para quem a publicação lista.
         </>
       }
       action={
@@ -60,8 +65,8 @@ export function FundebCityCard({ data, pageYear }: { data: FundebCityView; pageY
       }
     >
       <p className="text-sm text-foreground">
-        {missing ? "sem dado" : fundebSentence(cell, floor)}
-        {shown !== pageYear && <span className="text-muted-foreground"> O restante da página segue {pageYear}.</span>}
+        {missing ? `Sem dado para ${shown}. Há publicação para ${yearsLabel}.` : fundebSentence(cell, floor)}
+        {shown !== pageYear && !missing && <span className="text-muted-foreground"> O restante da página segue {pageYear}.</span>}
       </p>
       {!missing && (
         <div className="mt-4" role="img" aria-label={`VAAT de ${brlCents(cell.vaat)} por aluno. O VAAT-MIN nacional é ${brlCents(floor)}.`}>
@@ -76,15 +81,28 @@ export function FundebCityCard({ data, pageYear }: { data: FundebCityView; pageY
         </div>
       )}
       <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Stat label="VAAT por aluno" value={missing ? "sem dado" : brlCents(cell.vaat)} sub="antes da complementação" />
-        <Stat label="VAAT-MIN" value={floor == null ? "sem dado" : brlCents(floor)} sub="piso nacional do exercício" />
+        <Stat wrap label={<Term k="vaat">Por aluno</Term>} value={missing ? "sem dado" : brlCents(cell.vaat)} sub="antes da complementação da União" />
+        <Stat wrap label={<Term k="vaatMin">Piso nacional</Term>} value={floor == null ? "sem dado" : brlCents(floor)} sub="valor por aluno neste exercício" />
         <Stat
-          label="Complementação VAAT"
+          wrap
+          label={<Term k="comp">Complementação da União</Term>}
           value={missing ? "sem dado" : brlCents(cell.comp)}
-          sub={missing ? undefined : cell.comp > 0 ? `eleva para ${brlCents(cell.vaatCom)}` : "não recebe"}
+          sub={missing ? undefined : cell.comp > 0 ? `total da rede; o valor por aluno vai a ${brlCents(cell.vaatCom)}` : "esta rede não recebe este acréscimo"}
         />
-        <Stat label="Educação infantil (IEI)" value={missing ? "sem dado" : pct(cell.iei)} sub="da complementação" />
+        <Stat
+          wrap
+          label={<Term k="iei">Para a educação infantil</Term>}
+          value={missing ? "sem dado" : pct(cell.iei)}
+          sub={missing ? undefined : cell.comp > 0 ? "desta complementação, para creches e pré-escola" : "sem complementação, o índice publicado é zero"}
+        />
       </div>
+      {!missing && (
+        <p className="mt-3 text-sm text-foreground">
+          {cell.comp > 0
+            ? `Para uma reunião ou um ofício: a União destinou ${brlCents(cell.comp)} à rede em ${shown}, e ${pct(cell.iei)} desse valor deve ir para a educação infantil.`
+            : `Para uma reunião ou um ofício: em ${shown} a publicação não prevê complementação da União para esta rede.`}
+        </p>
+      )}
       <p className="mt-3 text-sm text-muted-foreground">
         <Term k="vaar">VAAR</Term>: {vaar}
       </p>

@@ -37,7 +37,13 @@ export default function Home() {
             >
               Digite o nome da sua cidade
             </SearchButton>
-            <p className="mt-2 text-[13px] text-muted-foreground">Veja quanto a sua prefeitura aplica em educação, ano a ano.</p>
+            <p className="mt-2 text-[13px] text-muted-foreground">
+              Veja quanto a sua prefeitura aplica em educação, ano a ano. Ou{" "}
+              <a href="#fundeb-mapa" className="font-medium text-foreground underline decoration-border underline-offset-2 hover:decoration-foreground">
+                quem recebe complementação da União
+              </a>
+              .
+            </p>
           </div>
           <div className="flex shrink-0 flex-wrap items-center gap-2 md:h-11">
             <a href="/dados/csv/brasil" download className={buttonVariants({ variant: "ghost", size: "sm" })}>
