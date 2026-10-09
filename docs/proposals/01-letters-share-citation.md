@@ -42,7 +42,7 @@ The citation for that creche figure can read:
 
 "Radar MDE (2026). Creche, R$ por aluno, Santo André (SP), 2023. URL. Fonte: FNDE/SIOPE, indicador 4.14. Acesso em 09/10/2026."
 
-CAQM scenario totals do not enter this paragraph. A council-sheet line enters only as a question already printed on the sheet, for example the creche queue question on [#7](https://github.com/IamP5/radar-mde/pull/7), and only after that pull request is merged. A waiting list typed by the reader enters only through the opt-in in [note 5](05-creche-queue.md).
+CAQM scenario totals do not enter this paragraph. A council-sheet line enters only as a question already printed on the sheet, for example the creche waiting-list question on [#7](https://github.com/IamP5/radar-mde/pull/7), and only after that pull request is merged. The letter does not gain a count the reader typed. The sheet already says it does not bring that number, and the panel does not collect one.
 
 ## Options
 

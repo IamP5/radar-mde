@@ -43,7 +43,7 @@ The topic page explains the figure in plain language and links to places that ex
 
 A second link to the explorer sort or the map layer appears only after [note 3](03-maps-rankings-quote.md) and [#6](https://github.com/IamP5/radar-mde/pull/6) exist. Until then the page does not point at a missing route.
 
-"fila" and "fila de creche" open the waiting-list topic. The page says there is no national file on this panel, points at [note 5](05-creche-queue.md) once that field exists, and does not open Filadélfia.
+"fila" and "fila de creche" open a topic that says the panel has no sourced municipal waiting list. After [#7](https://github.com/IamP5/radar-mde/pull/7), the page points at the Ficha do Conselho question, which already says the sheet does not bring that number. The page does not offer a box to type a count. It does not open Filadélfia.
 
 "conselho" and "cacs" open a topic that explains the CACS-Fundeb letter and, after [#7](https://github.com/IamP5/radar-mde/pull/7), how to open "Ficha do conselho" from a city. "bom conselho" still opens Bom Conselho (PE), because the full query is a municipality name.
 
@@ -75,7 +75,7 @@ Alias ids to ship first: `creche`, `fila`, `conselho`, `fundeb`, `eja`, `caqm`. 
 
 ## Data sources
 
-No new download. Labels and explanations cite SIOPE indicator codes already used on the panel (4.14 for creche, 4.5 for EJA). The Fundeb topic cites Lei nº 14.113/2020 the way the letters already do. The queue topic must not state a national waiting-list total. The only waiting-list count verified in this repo is 7,116 for Santo André in 2019, from the thesis, and it is not the result for the word "fila".
+No new download. Labels and explanations cite SIOPE indicator codes already used on the panel (4.14 for creche, 4.5 for EJA). The Fundeb topic cites Lei nº 14.113/2020 the way the letters already do. The fila topic must not state a national waiting-list total and must not invite a hand-typed count. A thesis figure for one city in one year is not the answer to the query "fila".
 
 ## Types, modules, and routes
 

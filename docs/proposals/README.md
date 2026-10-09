@@ -1,6 +1,6 @@
-# Proposals for five panel improvements
+# Proposals for four panel improvements
 
-These notes specify five changes to Radar MDE. They do not change the panel. The open feature pull requests stay as they are. [#4](https://github.com/IamP5/radar-mde/pull/4) adds the Fundeb redistributivo view, [#5](https://github.com/IamP5/radar-mde/pull/5) adds Radar CAQM, [#6](https://github.com/IamP5/radar-mde/pull/6) adds spending by stage, and [#7](https://github.com/IamP5/radar-mde/pull/7) adds the Ficha do Conselho.
+These notes specify four changes to Radar MDE. They do not change the panel. The open feature pull requests stay as they are. [#4](https://github.com/IamP5/radar-mde/pull/4) adds the Fundeb redistributivo view, [#5](https://github.com/IamP5/radar-mde/pull/5) adds Radar CAQM, [#6](https://github.com/IamP5/radar-mde/pull/6) adds spending by stage, and [#7](https://github.com/IamP5/radar-mde/pull/7) adds the Ficha do Conselho.
 
 The work was read on 9 Oct 2026. `main` was `349231d`. The feature heads were `e21b836` (#4), `69e5882` (#5), `6177d2c` (#6), and `cbb3ce8` (#7). A textual merge of each branch with `main`, and of each branch with the others, produced no conflict markers. The overlap that matters is semantic and is named in each note.
 
@@ -12,7 +12,6 @@ Personas come from the earlier UX runs and from `qa/reports/` (citizen, journali
 | [Topic search](02-topic-search.md) | A topic alias wins over a fuzzy city, and same-name cities show the state in the label. | Small |
 | [Maps, rankings, and a quotable sentence](03-maps-rankings-quote.md) | Add creche and EJA as map layers from a small sidecar, reuse the Fundeb map, and attach one neutral sentence. | Medium |
 | [Researcher rigor](04-researcher-rigor.md) | Add the TCE-SP committed-spending column beside SIOPE, cite Silva 2021 as a second reference, and keep the CAQM mix until the census zip downloads. | Medium, census blocked |
-| [Creche waiting list](05-creche-queue.md) | Store a count in this browser and in the link. Do not add a backend. | Small |
 
 ## Sequence
 
@@ -22,15 +21,22 @@ Land the seams before the surfaces that depend on them.
 2. In parallel, add the citation record from [note 1](01-letters-share-citation.md). It is a type and a formatter. [Note 4](04-researcher-rigor.md) appends Silva 2021 to that list.
 3. In parallel, write the TCE-SP fetch script and check it against Santo André. Do not edit `web/src/lib/csv.ts` or the city page until both [#4](https://github.com/IamP5/radar-mde/pull/4) and [#6](https://github.com/IamP5/radar-mde/pull/6) have settled the CSV columns. Both branches add columns to that export.
 4. Map layers and the neutral ranking caption wait for [#6](https://github.com/IamP5/radar-mde/pull/6) (stage fields) and [#4](https://github.com/IamP5/radar-mde/pull/4) (the Fundeb map). Do not build a second top-up map.
-5. The letter paragraph and the WhatsApp line wait for `quoteSentence` and for [#7](https://github.com/IamP5/radar-mde/pull/7), which rewrites `web/src/lib/templates.ts`.
-6. The waiting-list field waits for [#5](https://github.com/IamP5/radar-mde/pull/5), which already has the Santo André button for 7,116. The letter checkbox waits for the letter paragraph.
-7. Replacing the CAQM mix waits on a machine that can unzip the INEP file. It does not block the other four notes. It sits on [#5](https://github.com/IamP5/radar-mde/pull/5).
+5. The letter paragraph and the WhatsApp line wait for `quoteSentence` and for [#7](https://github.com/IamP5/radar-mde/pull/7), which rewrites `web/src/lib/templates.ts`. The council sheet keeps the creche waiting-list question it already prints. That question is not a new field and does not wait on another note.
+6. Replacing the CAQM mix waits on a machine that can unzip the INEP file. It does not block the other notes. It sits on [#5](https://github.com/IamP5/radar-mde/pull/5).
 
 What can run in parallel now:
 
 - Topic search, the citation type, and the TCE-SP fetch script.
-- After [#5](https://github.com/IamP5/radar-mde/pull/5) and [#6](https://github.com/IamP5/radar-mde/pull/6) merge, the waiting-list field and the map sidecar can proceed together.
+- After [#6](https://github.com/IamP5/radar-mde/pull/6) merges, the map sidecar can proceed. It does not depend on [#5](https://github.com/IamP5/radar-mde/pull/5).
 - The letter paragraph and the Silva 2021 line both append to the citation record. They should not edit `citation()` at the same time. The census mix does not. It waits on the INEP zip and sits on [#5](https://github.com/IamP5/radar-mde/pull/5).
+
+## Dropped
+
+A fifth note proposed a creche waiting list typed in the browser, with no official source. It was rejected. A count entered by hand conflicts with the panel rule of showing only sourced public data. The Ficha do Conselho on [#7](https://github.com/IamP5/radar-mde/pull/7) keeps the question it already asks.
+
+"Quantas crianças estão na fila de espera por vaga em creche, e qual é o plano para atendê-las? Esta ficha não traz esse número."
+
+That sentence stays a question. It does not gain a field, a `localStorage` key, or a `?fila=` parameter. No national municipal waiting-list file was downloaded from this machine, so the notes do not invent one.
 
 ## Sources checked from this machine
 
@@ -55,7 +61,7 @@ Search behavior was checked by bundling `web/src/lib/search.ts` and running it o
 
 The task was framed as a design deliverable. Done means these files exist, each option was compared, and every source above was fetched or recorded as a failed fetch. The runtime of the panel does not change in this pull request.
 
-Experience-first set the journeys. Exhaust-the-design-space required two or three options in each note before a recommendation. Model-the-domain produced the types (`Briefing`, `Topic`, `Quote`, `Audesp` column, `FilaEntry`). Foundational-thinking kept a letter, a search hit, a ranking, an audit figure, and a waiting list as different objects. Blast-radius checked the four open branches. Architect placed the shared types at the seams those branches already touch. Prove-it-works is the verification section in each note, aimed at `verify-radar-mde` when the change is built. Sequence-verifiable-units is the order above.
+Experience-first set the journeys. Exhaust-the-design-space required two or three options in each note before a recommendation. Model-the-domain produced the types (`Briefing`, `Topic`, `Quote`, `Audesp` column). Foundational-thinking kept a letter, a search hit, a ranking, and an audit figure as different objects, and kept an unsourced waiting-list count out of the panel. Blast-radius checked the four open branches. Architect placed the shared types at the seams those branches already touch. Prove-it-works is the verification section in each note, aimed at `verify-radar-mde` when the change is built. Sequence-verifiable-units is the order above.
 
 An arena of extra models was not used to draft competing implementations. The comparison the reader needs is the options section in each note.
 
@@ -68,4 +74,3 @@ Low-fidelity screens, not the product.
 - [Search for creche](mockups/search-creche.png)
 - [Two cities named Santo André](mockups/search-homonyms.png)
 - [Neutral ranking and quotable sentence](mockups/ranking-quote.png)
-- [Waiting list and letter opt-in](mockups/fila-carta.png)
