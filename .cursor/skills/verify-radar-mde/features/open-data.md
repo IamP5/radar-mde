@@ -16,7 +16,7 @@ Dados abertos is the download page for the whole base: Brazil, one region, one s
 - Choose `Dados` in the header or the footer.
 - Open `/dados`.
 - On the national panel, choose `Baixar CSV`.
-- On a state or region page, choose that place's `Baixar CSV`.
+- On a state page, choose `Baixar CSV`. On a region page, choose `Baixar CSV da região`.
 - From Metodologia, choose `Baixar os dados`.
 
 ## Driving it with control-radar-mde
@@ -40,4 +40,4 @@ Preconditions:
 - `JSON compacto` opens the JSON in the browser instead of saving a spreadsheet. Prove the file with `http get`, and use `find` for the link.
 - `Baixar CSV` on the national panel is the Brazil file. A state page has its own `Baixar CSV` for that state. This recipe uses the panel link and the São Paulo card on `/dados`.
 - The explorer's `Exportar CSV` is a different menu (the filtered rows). It is not this page.
-- Region files on `/dados` are named `Região Norte` and so on, with a separate `Excel` link whose name ends in `CSV para Excel Brasil`. The region-page recipe covers the button on the region page itself.
+- Region files on `/dados` are named `Região Norte` and so on, with a separate `Excel` link whose name ends in `CSV para Excel Brasil`. The region-page recipe covers the link `Baixar CSV da região`.

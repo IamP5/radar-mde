@@ -44,4 +44,4 @@ Preconditions:
 - `Buscar município` is the table field on the state page. The header search button has a longer name. Do not fill the palette.
 - `/df` does not stay on a state table. It opens Brasília, the only municipality in the Distrito Federal. The level-1 heading's accessible name is `Brasília (Distrito Federal)`, plus the DF badge. `--name "Brasília"` matches. `--exact` does not.
 - `Ano anterior` is disabled on the first published year. The page opens on a later year, so one step back is available.
-- The population option's accessible name includes a count after the label. Match `Mais de 500 mil`, not the count.
+- The population option's accessible name is the band only, such as `Mais de 500 mil`. It does not include a count.
