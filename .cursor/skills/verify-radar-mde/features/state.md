@@ -34,13 +34,13 @@ Preconditions:
 - **Population band.** Run `./scripts/control-radar-mde browser click --role combobox --name "População"`. Run `./scripts/control-radar-mde browser click --role option --name-regex "Mais de 500 mil"`. The URL contains `porte=p5`.
 - **Fundeb on the state map.** Run `./scripts/control-radar-mde browser click --role radio --name "Fundeb" --within-role radiogroup --within-name "Indicador do mapa"`. The URL contains `indicador=fundeb`.
 - **Download the state.** Run `./scripts/control-radar-mde browser click --role button --name "Baixar CSV" --download state/sp.csv`. `download.bytes` is greater than zero. The file's first line contains `municipio`.
-- **Open the filtered national table.** Run `./scripts/control-radar-mde browser click --role button --name "Explorar" --exact`. Then `./scripts/control-radar-mde browser wait --url-includes "/explorar?uf=SP" --timeout 90000`. The URL path is `/explorar` and the query contains `uf=SP`.
+- **Open the filtered national table.** Run `./scripts/control-radar-mde browser click --role button --name "Explorar" --exact --expect-nav --timeout 90000`. The click's JSON `url` path is `/explorar`, the query contains `uf=SP`, and `navigated` is true.
 - **Distrito Federal.** Run `./scripts/control-radar-mde browser open /df`. The URL path is `/df/brasilia`. A level-1 heading named `Brasília` is visible.
 - **Proof.** Run `./scripts/control-radar-mde browser screenshot --path state/brasilia.png` and `./scripts/control-radar-mde browser snapshot --aria --path state/brasilia.aria.txt`. The screenshot shows the Radar MDE header and `Brasília`.
 
 ## Gotchas
 
-- The header and the footer expose a link named `Explorar`. The state page's own control is a button named `Explorar`. Use `--role button` and `--exact`. `Baixar CSV` on this page is a button, not a link.
+- The header and the footer expose a link named `Explorar`. The state page's own control is a button named `Explorar`. Use `--role button`, `--exact`, and `--expect-nav` so the click waits for `/explorar` inside `--timeout`. `Baixar CSV` on this page is a button, not a link.
 - `Buscar município` is the table field on the state page. The header search button has a longer name. Do not fill the palette.
 - `/df` does not stay on a state table. It opens Brasília, the only municipality in the Distrito Federal.
 - `Ano anterior` is disabled on the first published year. The page opens on a later year, so one step back is available.

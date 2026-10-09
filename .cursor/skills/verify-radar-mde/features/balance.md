@@ -28,13 +28,13 @@ Preconditions:
 - **States, then back to regions.** Run `./scripts/control-radar-mde browser click --role radio --name "Estados" --within-role radiogroup --within-name "Nível" --within-exact`. Run `./scripts/control-radar-mde browser click --role radio --name "Regiões" --within-role radiogroup --within-name "Nível" --within-exact`.
 - **Sort A–Z.** Run `./scripts/control-radar-mde browser click --role radio --name "A–Z" --within-role radiogroup --within-name "Ordem"`.
 - **Read the explanation.** Run `./scripts/control-radar-mde browser click --role button --name "Como o saldo é calculado"`. Run `./scripts/control-radar-mde browser wait --text "Para cada município e cada ano"`. Run `./scripts/control-radar-mde browser press --key Escape`.
-- **Open Nordeste.** Run `./scripts/control-radar-mde browser click --role link --name "Nordeste" --within-role list --within-name "Regiões: saldo"`. Run `./scripts/control-radar-mde browser wait --url-includes "/regiao/nordeste" --timeout 90000`. The URL path is `/regiao/nordeste`. Run `./scripts/control-radar-mde browser wait --role heading --name "Região Nordeste" --exact --level 1`.
+- **Open Nordeste.** Run `./scripts/control-radar-mde browser click --role link --name "Nordeste" --within-role list --within-name "Regiões: saldo" --timeout 90000`. The click's JSON `url` path is `/regiao/nordeste` and `navigated` is true. Run `./scripts/control-radar-mde browser wait --role heading --name "Região Nordeste" --exact --level 1`.
 - **Proof.** Run `./scripts/control-radar-mde browser screenshot --path balance/nordeste.png` and `./scripts/control-radar-mde browser snapshot --aria --path balance/nordeste.aria.txt`. The screenshot shows the Radar MDE header and `Região Nordeste`.
 
 ## Gotchas
 
 - Region cards higher on the panel are links whose names start with `Nordeste:`. The balance row is a link named `Nordeste` inside the list whose name starts with `Regiões: saldo`. Scope the click to that list.
-- The map also has a radiogroup whose name starts with `Nível` (`Nível do mapa`) and a radio named `Estados`. `--within-name "Nível"` matches both. `--within-exact` keeps the balance group, whose whole name is `Nível`. That flag is accepted by the CLI and is missing from `browser --help`.
+- The map also has a radiogroup whose name starts with `Nível` (`Nível do mapa`) and a radio named `Estados`. `--within-name "Nível"` matches both. `--within-exact` keeps the balance group, whose whole name is `Nível`.
 - `Corrigido (IPCA)` writes `valores=ipca` into the address. `Nominal` removes it.
 - On a state page the rows are municipalities and there is no Regiões / Estados switch. This recipe uses the national panel.
 - The sort and the group are not written into the address. The proof is the selected radio and the list that follows.

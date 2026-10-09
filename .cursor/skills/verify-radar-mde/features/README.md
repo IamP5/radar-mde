@@ -16,7 +16,7 @@ This directory is the maintained source for verifying the user-facing behavior o
 - Prefer ARIA roles and accessible names over CSS selectors or DOM position.
 - Treat every command as literal. Run them from the repo root with `RADAR_VERIFY_RUN_ID` set.
 - Run browser actions through `./scripts/control-radar-mde browser`.
-- The viewport is 1440×900. Commands skip controls that are not visible.
+- The viewport starts at 1440×900. Commands skip controls that are not visible. A recipe that calls `browser viewport` sets `--preset desktop` again before it ends.
 - Restore a seeded watchlist after a mutation. Do not remove proof artifacts during cleanup.
 
 ## Proof and skip reporting

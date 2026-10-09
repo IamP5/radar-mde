@@ -23,8 +23,8 @@ Preconditions:
 
 - `./scripts/control-radar-mde doctor` reports `ok: true` for this run.
 
-- **Unknown path.** Run `./scripts/control-radar-mde browser open /caminho-inexistente`. The JSON `status` is 404. A level-1 heading named `Página não encontrada` is visible. The text `404` is visible.
-- **Shortcut.** Run `./scripts/control-radar-mde browser click --role link --name-regex "Tabela com os 5.570"`. Run `./scripts/control-radar-mde browser wait --url-includes "/explorar" --timeout 90000`. The URL path is `/explorar`. A level-1 heading named `Explorar municípios` is visible.
+- **Unknown path.** Run `./scripts/control-radar-mde browser open /caminho-inexistente`. The JSON `status` is 404. A level-1 heading named `Página não encontrada` is visible. The text `404` is visible. Run `./scripts/control-radar-mde http get /caminho-inexistente`. The JSON `status` is 404, `ok` is true, and the command exits 0.
+- **Shortcut.** Run `./scripts/control-radar-mde browser click --role link --name-regex "Tabela com os 5.570" --timeout 90000`. The click's JSON `url` path is `/explorar` and `navigated` is true. A level-1 heading named `Explorar municípios` is visible.
 - **Unknown city.** Run `./scripts/control-radar-mde browser open /sp/nao-existe-cidade`. A level-1 heading named `Página não encontrada` is visible.
 - **Unknown region.** Run `./scripts/control-radar-mde browser open /regiao/atlantida`. The JSON `status` is 404. A level-1 heading named `Página não encontrada` is visible.
 - **Proof.** Run `./scripts/control-radar-mde browser screenshot --path not-found/region.png` and `./scripts/control-radar-mde browser snapshot --aria --path not-found/region.aria.txt`. The screenshot shows the Radar MDE header and `Página não encontrada`.
@@ -34,4 +34,4 @@ Preconditions:
 - The header link `Explorar` and the shortcut on this page are different. The shortcut's name contains `Tabela com os 5.570 municípios`. Matching only `Explorar` hits the header or the footer as well.
 - Search from this page uses the same palette as the header. A query with no match is the recent-searches recipe (`search-miss`), not this one.
 - `/df` is not a missing page. It opens Brasília.
-- `http get` on an unknown path returns status 404 and then exits as a failure, so it is not a step in this recipe. The status on `browser open` is the proof.
+- `http get` on an unknown path exits 0 with `status` 404. Assert `status`. `--fail-on-status` would exit 1, and this recipe does not pass it.
