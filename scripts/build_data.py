@@ -309,12 +309,17 @@ health_by_uf = defaultdict(int)
 for c in cities:
     if any(r.get("sau") is not None for r in c["years"].values()):
         health_by_uf[c["uf"]] += 1
-json.dump({"years": complete, "updated": updated, "extracted": extracted, "version": version,
-           "popYear": pop_year, "popSource": f"SICONFI/Tesouro (cadastro de entes, exercício {pop_year}), estimativa IBGE",
-           "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/deed.pt_BR",
-           "installed": {str(k): v for k, v in INSTALLED.items()}, "nByYear": n_by_year,
-           "ipca": ipca, "health": {"ufs": sorted(health_by_uf), "cities": dict(health_by_uf)},
-           "coverage": total, "coverageUf": coverage}, open(os.path.join(OUT, "meta.json"), "w"), ensure_ascii=False)
+meta_doc = {"years": complete, "updated": updated, "extracted": extracted, "version": version,
+            "popYear": pop_year, "popSource": f"SICONFI/Tesouro (cadastro de entes, exercício {pop_year}), estimativa IBGE",
+            "license": "CC BY 4.0", "licenseUrl": "https://creativecommons.org/licenses/by/4.0/deed.pt_BR",
+            "installed": {str(k): v for k, v in INSTALLED.items()}, "nByYear": n_by_year,
+            "ipca": ipca, "health": {"ufs": sorted(health_by_uf), "cities": dict(health_by_uf)},
+            "coverage": total, "coverageUf": coverage}
+fundeb_path = os.path.join(OUT, "fundeb.json")
+if os.path.exists(fundeb_path):
+    fj = json.load(open(fundeb_path, encoding="utf-8"))
+    meta_doc["fundeb"] = {"years": fj["years"], "floor": fj["floor"], "publications": fj["publications"]}
+json.dump(meta_doc, open(os.path.join(OUT, "meta.json"), "w"), ensure_ascii=False)
 # small client-safe file (bundled into client code): data version, IPCA deflators, UFs with health data
 json.dump({"v": version, "ipca": ipca, "healthUfs": sorted(health_by_uf)}, open(os.path.join(OUT, "version.json"), "w"),
           ensure_ascii=False)

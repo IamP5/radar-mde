@@ -1,9 +1,10 @@
 import { YEARS, allCities, citiesIn, citiesOf, stateGov } from "@/lib/data";
 import { CITY_CSV_COLUMNS, STATE_CSV_COLUMNS, cityCsvRecords, stateCsvRecords, toCsv } from "@/lib/csv";
+import { FUNDEB_CSV_COLUMNS, fundebCsvRecords } from "@/lib/fundeb";
 import { REGIONS, UFS, getRegionBySlug, getUf } from "@/lib/geo";
 import { compressed } from "@/app/data/compressed";
 
-const IDS = ["brasil", "estados", ...REGIONS.map((r) => `regiao-${r.slug}`), ...UFS.map((u) => u.uf.toLowerCase())];
+const IDS = ["brasil", "estados", "fundeb", ...REGIONS.map((r) => `regiao-${r.slug}`), ...UFS.map((u) => u.uf.toLowerCase())];
 
 /**
  * One line per municipality and year: /dados/csv/brasil, /<uf>, /regiao-<slug>; state governments: /estados.
@@ -23,7 +24,9 @@ function build(raw: string): string | null {
   const excel = raw.endsWith("-excel");
   const id = excel ? raw.slice(0, -"-excel".length) : raw;
   let text: string | null = null;
-  if (id === "estados") {
+  if (id === "fundeb") {
+    text = toCsv(FUNDEB_CSV_COLUMNS.map((c) => c.key), fundebCsvRecords(), { excel });
+  } else if (id === "estados") {
     const recs = UFS.flatMap((u) => {
       const g = stateGov(u.uf);
       return g ? stateCsvRecords(g, YEARS) : [];

@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { PageBody, PageHeader } from "@/components/kit/page-header";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { META, YEARS, allCities, dateBR, int, stateGov } from "@/lib/data";
+import { fundebFile } from "@/lib/fundeb";
 import { UFS } from "@/lib/geo";
 import { cn } from "@/lib/utils";
 
@@ -159,6 +160,28 @@ export default function Page() {
             <strong>População</strong>: uma única estimativa, do {META.popSource}, usada em todos os anos. Totais como “moram nesses
             municípios” em anos antigos usam a população de hoje.
           </p>
+
+          <h3 className="text-base font-semibold">Complementação da União no Fundeb</h3>
+          <p>
+            Desde a Lei 14.113/2020 (arts. 5, 13 e 16), a União complementa redes cujo valor anual total por aluno (VAAT) fica abaixo de um piso
+            nacional (VAAT-MIN). Uma parcela dessa complementação (IEI) deve ir para a educação infantil. Outra parcela (VAAR) só aparece para as
+            redes que a publicação oficial lista como beneficiárias. Os números são os da portaria, em reais nominais do exercício, sem correção pelo
+            IPCA. Um município ausente do arquivo aparece como “sem dado”.
+          </p>
+          <ul>
+            {fundebFile().years.map((y) => {
+              const pub = fundebFile().publications[String(y)];
+              return (
+                <li key={y}>
+                  {y}: {pub.label}, {pub.portaria}.{" "}
+                  <a href={pub.page} target="_blank" rel="noreferrer">
+                    Fonte no FNDE
+                  </a>
+                  {pub.note ? ` ${pub.note}` : ""}
+                </li>
+              );
+            })}
+          </ul>
 
           <h2 id="indicadores">Indicadores do SIOPE usados</h2>
           <p>
