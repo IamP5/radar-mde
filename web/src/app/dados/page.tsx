@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { CSV_COLUMNS, csvHref } from "@/lib/csv";
+import { FUNDEB_CSV_COLUMNS } from "@/lib/fundeb-types";
+import { fundebFile } from "@/lib/fundeb";
 import { SITE_URL } from "@/lib/site";
 import { Citations } from "./cite";
 import { META, YEARS, allCities, brStats, dateBR, int, stateGov, ufStats } from "@/lib/data";
@@ -236,6 +238,56 @@ d = pandas.read_csv("radar-mde-brasil.csv", encoding="utf-8-sig")`}</Code>
             </TableBody>
           </Table>
         </Panel>
+
+        <H2
+          id="fundeb"
+          description="Um registro por município e exercício com VAAT, VAAT-MIN, complementação da União, IEI e VAAR. Valores nominais da portaria, sem correção pelo IPCA. Célula só existe quando o FNDE publicou o município."
+        >
+          Fundeb redistributivo
+        </H2>
+        <ul className="grid max-w-3xl grid-cols-1 gap-2 sm:grid-cols-2">
+          <li className="flex items-center gap-2 rounded-lg border bg-card p-3 text-sm">
+            <a href={csvHref("fundeb")} download className="flex min-w-0 flex-1 items-center gap-2 font-medium hover:underline">
+              <Download className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
+              <span className="truncate">Complementação VAAT e VAAR</span>
+            </a>
+            <a href={csvHref("fundeb", true)} download className="shrink-0 rounded-sm px-1 py-0.5 text-xs text-muted-foreground hover:text-foreground hover:underline" aria-label="Complementação VAAT e VAAR: CSV para Excel Brasil">
+              Excel
+            </a>
+          </li>
+        </ul>
+        <Panel divided className="max-w-3xl">
+          <Table>
+            <TableCaption className="sr-only">Dicionário do CSV do Fundeb</TableCaption>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead scope="col" className={`${head} w-56`}>Campo</TableHead>
+                <TableHead scope="col" className={head}>Descrição</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {FUNDEB_CSV_COLUMNS.map(({ key: k, label: d }) => (
+                <TableRow key={k} className="hover:bg-accent/60">
+                  <TableCell className="px-4 py-3 align-top font-mono text-[12.5px] whitespace-normal text-foreground">{k}</TableCell>
+                  <TableCell className="px-4 py-3 text-[13.5px] leading-[22px] whitespace-normal text-muted-foreground">{d}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Panel>
+        <div className="max-w-3xl space-y-2 text-sm text-muted-foreground">
+          {fundebFile().years.map((y) => {
+            const pub = fundebFile().publications[String(y)];
+            return (
+              <p key={y}>
+                {y}: {pub.label}, {pub.portaria}. VAAT-MIN {fundebFile().floor[String(y)].toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}.{" "}
+                <a href={pub.page} className="font-medium text-brand-ink underline-offset-2 hover:underline" target="_blank" rel="noreferrer">
+                  Página no FNDE para {y}
+                </a>
+              </p>
+            );
+          })}
+        </div>
 
         <H2 id="dicionario" description="Colunas dos arquivos CSV, na ordem em que aparecem. A exportação do Explorar usa os mesmos nomes e códigos, com parte das colunas. Valores em R$ são nominais.">
           Dicionário

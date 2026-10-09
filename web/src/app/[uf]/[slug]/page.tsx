@@ -40,12 +40,14 @@ import {
 } from "@/lib/data";
 import { cityPath, getRegion, getUf, ofUf } from "@/lib/geo";
 import { buildTemplates, cityFacts, emAnos, inUf, listYears } from "@/lib/templates";
+import { fundebCityView } from "@/lib/fundeb";
 import { THESIS_SANTO_ANDRE, THESIS_SANTO_ANDRE_ID, THESIS_URL } from "@/lib/thesis";
 import { cn } from "@/lib/utils";
 import {
   AtypicalCallout,
   CityYearProvider,
   DistributionPanel,
+  FundebCityPanel,
   HeaderShare,
   HeaderSource,
   HeaderStatus,
@@ -325,6 +327,7 @@ function CityContent({ c }: { c: City }) {
       <YearBar />
 
       <PageBody>
+        <FundebCityPanel data={fundebCityView(c.id)} />
         {!hasAny ? (
           <EmptyState title="Sem dados de aplicação em educação" className="bg-card">
             {f.notDelivered.length

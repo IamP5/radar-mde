@@ -26,6 +26,8 @@ import { MDE_MIN, PANDEMIC_YEARS, POP_BANDS, brlShort, funMin, int, normKey, pct
 import { cityPath, getRegion, getUf, ofUf, type RegionKey } from "@/lib/geo";
 import { atipNote, atipOf, belowShare, isAtip, isImplausible, shortfallKnown, shortfallLabel, timesBelow, type BalanceItem, type Deficit, type PeriodBalance, type Row, type Stats } from "@/lib/rows";
 import { cn } from "@/lib/utils";
+import { FundebMap } from "@/components/FundebMap";
+import type { FundebMapPayload } from "@/lib/fundeb-types";
 import { fromColumns, type Columns } from "./territory/pack";
 import { ShortfallInfo } from "./territory/InfoTip";
 import { delta, fmtPct0, fmtPp, relChange } from "./territory/delta";
@@ -48,6 +50,7 @@ type Props = {
   deficitsReal: Deficit[];
   balanceTotal: PeriodBalance;
   balanceItems: BalanceItem[];
+  fundeb: FundebMapPayload;
 };
 
 type SortKey = "name" | "pop" | "mde" | "fun" | "short" | "reinc" | "aluno";
@@ -108,7 +111,7 @@ function rowStatus(r: Row, yi: number, year: number): { kind: StatusKind; label:
   return { kind: "ok", label: "Cumpre" };
 }
 
-export default function UfDashboard({ uf, years, initialYear, rows: packed, stats, regionStats, brStats, gov, deficits, deficitsReal, balanceTotal, balanceItems }: Props) {
+export default function UfDashboard({ uf, years, initialYear, rows: packed, stats, regionStats, brStats, gov, deficits, deficitsReal, balanceTotal, balanceItems, fundeb }: Props) {
   const rows = useMemo(() => fromColumns(packed), [packed]);
   const [yearNow, setYear] = useYear(years, initialYear);
   // the picker answers at once; the dashboard (charts, map, tables) follows as a low-priority render (INP)
@@ -509,6 +512,8 @@ export default function UfDashboard({ uf, years, initialYear, rows: packed, stat
             </Panel>
           </div>
         </section>
+
+        <FundebMap pageYear={year} data={fundeb} src={uf} scopeLabel={info.name} />
 
         <section className="grid gap-6 lg:grid-cols-3">
           <Panel

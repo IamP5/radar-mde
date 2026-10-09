@@ -54,6 +54,22 @@ export const GLOSSARY = {
     term: "Não declarou",
     text: "O município não enviou os dados do ano ao SIOPE nem ao Tesouro. Sem eles não dá para saber quanto foi para a educação, e a falta de envio é, por si só, um problema de transparência.",
   },
+  vaat: {
+    term: "VAAT",
+    text: "Valor anual total por aluno: o quanto a rede de ensino tem disponível por estudante, somando impostos, transferências e o Fundeb, antes da complementação da União que nivela o piso.",
+  },
+  vaatMin: {
+    term: "VAAT-MIN",
+    text: "Piso nacional do VAAT naquele exercício. Redes abaixo dele recebem complementação da União até alcançar esse valor por aluno (Lei 14.113/2020, art. 16).",
+  },
+  iei: {
+    term: "IEI",
+    text: "Indicador de educação infantil: o percentual da complementação-VAAT que o ente deve aplicar na educação infantil. Sem complementação, o percentual publicado é zero.",
+  },
+  vaar: {
+    term: "VAAR",
+    text: "Complementação da União ligada a resultados e à redução de desigualdades. Só entra quem a publicação oficial lista como rede beneficiária. Não estar na lista não é um julgamento do painel.",
+  },
 } as const;
 export type GlossaryKey = keyof typeof GLOSSARY;
 

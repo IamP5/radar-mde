@@ -5,7 +5,8 @@ import { PageHeader } from "@/components/kit/page-header";
 import { SearchButton } from "@/components/SearchPalette";
 import TerritoryDashboard from "@/components/territory/TerritoryDashboard";
 import { buttonVariants } from "@/components/ui/button";
-import { YEARS, brBalance, brStats, regionBalances, ufBalances, defaultYear, int, regionSummaries, rowsIn, topDeficits, ufSummaries } from "@/lib/data";
+import { YEARS, allCities, brBalance, brStats, regionBalances, ufBalances, defaultYear, int, regionSummaries, rowsIn, topDeficits, ufSummaries } from "@/lib/data";
+import { fundebMap } from "@/lib/fundeb";
 import { histCounts } from "@/lib/bins";
 
 export const metadata: Metadata = { alternates: { canonical: "/" } };
@@ -68,6 +69,7 @@ export default function Home() {
           { key: "uf", label: "Estados", noun: "Estado", items: ufBalances() },
         ]}
         hist={YEARS.map((_, i) => histCounts(rows.map((r) => r.mde[i])))}
+        fundeb={fundebMap(allCities())}
       />
     </>
   );

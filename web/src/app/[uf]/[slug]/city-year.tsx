@@ -20,6 +20,8 @@ import { MDE_MIN, brl, brlShort, brlSigned, pct, siconfiUrl, siopeUrl } from "@/
 import { cityPath } from "@/lib/geo";
 import { ATIP_IMPL_LABEL, ATIP_LABEL, IPCA_BASE } from "@/lib/rows";
 import { cn } from "@/lib/utils";
+import { FundebCityCard } from "@/components/FundebCityCard";
+import type { FundebCityView } from "@/lib/fundeb-types";
 import { Term } from "./glossary";
 import { type CityYearData, type Rank, type YearPoint, comparison, listYears, pts, summary } from "./verdict";
 
@@ -125,6 +127,11 @@ export function HeaderSource() {
 }
 
 /* ---------------------------------------------------------------- year bar */
+
+export function FundebCityPanel({ data }: { data: FundebCityView }) {
+  const { year } = useCity();
+  return <FundebCityCard data={data} pageYear={year} />;
+}
 
 export function YearBar() {
   const { d, year, setYear } = useCity();
