@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<title>Rascunho: fila de creche</title>
+<style>
+  body { margin: 0; background: #f4f1ea; font: 16px/1.4 "Segoe UI", sans-serif; color: #1c1915; }
+  .frame { width: 880px; margin: 24px auto; background: #fff; border: 1px solid #d9d3c7; }
+  .banner { background: #efe6d2; padding: 8px 16px; font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; }
+  header { padding: 14px 16px; border-bottom: 1px solid #eee; font-weight: 700; }
+  section { padding: 16px 20px 8px; }
+  h2 { font-size: 16px; margin: 0 0 8px; }
+  label { display: block; font-size: 14px; margin-top: 8px; }
+  input[type="text"] { width: 160px; padding: 8px; border: 1px solid #1c1915; font-size: 16px; }
+  .help { font-size: 13px; color: #3f3a33; max-width: 520px; }
+  .preset { font-size: 14px; margin: 12px 0; }
+  .letter { margin: 8px 20px 20px; padding: 12px; border: 1px solid #d9d3c7; font-size: 14px; }
+</style>
+</head>
+<body>
+  <div class="frame">
+    <div class="banner">Rascunho de proposta, não é o painel</div>
+    <header>Radar MDE · Santo André (SP)</header>
+    <section>
+      <h2>Fila de creche informada por você</h2>
+      <label for="fila">Crianças na fila</label>
+      <input id="fila" type="text" value="1200" />
+      <p class="help">Este número fica só neste navegador. O Radar não envia e não guarda em servidor.</p>
+      <p class="preset">Usar 7.116, a fila de 2019 citada na pesquisa de Santo André. Não é a fila de hoje.</p>
+    </section>
+    <section>
+      <h2>O que você pode fazer</h2>
+      <label><input type="checkbox" /> Incluir na carta a fila que eu informei (não é dado oficial)</label>
+    </section>
+    <div class="letter">A carta só recebe a fila se a caixa estiver marcada. O número entra como informado por quem escreve, não como dado do SIOPE.</div>
+  </div>
+</body>
+</html>

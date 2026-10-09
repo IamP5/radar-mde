@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<title>Rascunho: frase e ordenação</title>
+<style>
+  body { margin: 0; background: #f4f1ea; font: 16px/1.4 "Segoe UI", sans-serif; color: #1c1915; }
+  .frame { width: 880px; margin: 24px auto; background: #fff; border: 1px solid #d9d3c7; }
+  .banner { background: #efe6d2; padding: 8px 16px; font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; }
+  header { padding: 14px 16px; border-bottom: 1px solid #eee; font-weight: 700; }
+  .tabs { display: flex; gap: 8px; padding: 16px; }
+  .tab { border: 1px solid #1c1915; padding: 6px 10px; background: #fff; }
+  .tab.on { background: #1c1915; color: #fff; }
+  .caption { margin: 0 16px 12px; font-size: 14px; }
+  table { width: calc(100% - 32px); margin: 0 16px 16px; border-collapse: collapse; }
+  th, td { text-align: left; padding: 8px; border-bottom: 1px solid #eee; font-size: 14px; }
+  .quote { margin: 8px 16px 20px; padding: 12px; background: #f7f4ee; border-left: 4px solid #1c1915; }
+  button { margin: 8px 16px 20px; padding: 8px 12px; background: #fff; border: 1px solid #1c1915; }
+</style>
+</head>
+<body>
+  <div class="frame">
+    <div class="banner">Rascunho de proposta, não é o painel</div>
+    <header>Radar MDE</header>
+    <div class="tabs">
+      <span class="tab">% em educação</span>
+      <span class="tab">Fundeb</span>
+      <span class="tab on">Creche</span>
+      <span class="tab">EJA</span>
+    </div>
+    <p class="caption">Ordenado pelo R$ por aluno de creche declarado em 2023. A ordem não avalia qualidade.</p>
+    <table>
+      <thead><tr><th>Município</th><th>R$ por aluno de creche</th></tr></thead>
+      <tbody>
+        <tr><td>Santo André (SP)</td><td>15.257</td></tr>
+        <tr><td>Exemplo com sem dado</td><td>sem dado</td></tr>
+      </tbody>
+    </table>
+    <div class="quote">Em 2023, Santo André (SP) declarou R$ 15.257 por aluno de creche ao SIOPE (indicador 4.14). Fonte: FNDE/SIOPE.</div>
+    <button type="button">Copiar frase</button>
+  </div>
+</body>
+</html>
