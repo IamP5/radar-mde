@@ -31,7 +31,7 @@ Preconditions:
 - **Read the stored list.** Run `./scripts/control-radar-mde browser storage get --key radar-mde:watch`. The value contains `sp/santo-andre`.
 - **Proof of the list.** Run `./scripts/control-radar-mde browser screenshot --full-page --path save-municipality/list.png` and `./scripts/control-radar-mde browser snapshot --aria --path save-municipality/list.aria.txt`.
 - **Dry-run does not clear.** Run `./scripts/control-radar-mde seed watch clear --dry-run`. `wrote` is false and `to` is `[]`. Run `./scripts/control-radar-mde seed watch list`. `ids` still contains `sp/santo-andre`.
-- **Remove the fixture.** Run `./scripts/control-radar-mde browser click --role button --name "Remover Santo André dos salvos"`. The page shows `Nenhum município salvo`. `./scripts/control-radar-mde browser storage get --key radar-mde:watch` is `[]`.
+- **Remove the fixture.** Run `./scripts/control-radar-mde browser wait --role button --name "Remover Santo André dos salvos"`. Then `./scripts/control-radar-mde browser click --role button --name "Remover Santo André dos salvos"`. The page shows `Nenhum município salvo`. `./scripts/control-radar-mde browser storage get --key radar-mde:watch` is `[]`.
 
 ## Gotchas
 
@@ -40,3 +40,4 @@ Preconditions:
 - A screen-reader status says `Salvo em Municípios salvos (só neste navegador).` and is cleared after a few seconds. It is not a visible control. The durable on-screen confirmation is the pressed button named `Salvo`.
 - Take the screenshots before `Remover`. Removal restores the empty baseline; it is not the proof of the save.
 - Two cities are named Santo André. The option regex must require `SP`.
+- The Salvos list loads its figures after the page appears. On a cold first visit, `Remover Santo André dos salvos` can be missing for a moment; wait for it before clicking.

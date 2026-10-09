@@ -9,6 +9,10 @@ const BOOL = new Set([
   "include-hidden",
   "force",
   "aria",
+  "expect-nav",
+  "clear",
+  "fail-on-status",
+  "within-exact",
 ]);
 
 /**
@@ -30,12 +34,6 @@ export function parseArgs(argv) {
       continue;
     }
     const body = token.slice(2);
-    if (!body) {
-      throw new CliError(
-        "Empty flag.",
-        "Flags look like --port 4173 or --dry-run. Run control-radar-mde --help.",
-      );
-    }
     const eq = body.indexOf("=");
     if (eq !== -1) {
       flags[body.slice(0, eq)] = body.slice(eq + 1);

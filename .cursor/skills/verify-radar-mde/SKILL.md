@@ -17,7 +17,7 @@ There is no login and no server database. Figures come from JSON already in `web
 
 ### Cloud agent
 
-This repository's saved Cursor cloud environment runs the same steps as `scripts/cloud-agent-install.sh` before it snapshots: `npm ci` in `web/`, `npm ci` in `scripts/control/`, then Playwright's Chromium and the system libraries that browser needs. An agent that boots from that snapshot already has `web/node_modules`, `scripts/control/node_modules`, and Chromium under `~/.cache/ms-playwright`. The dev server is not started at boot. Skip the install and start here:
+The saved Cursor cloud environment's install command must be exactly `bash scripts/cloud-agent-install.sh`. That script is the only copy of the install steps: `npm ci` in `web/`, `npm ci` in `scripts/control/`, Playwright's Chromium, and, only when Chromium cannot start, its system libraries (`sudo -n`, never a password prompt). The environment has no start command. An agent that boots from that snapshot already has `web/node_modules`, `scripts/control/node_modules`, and Chromium under `~/.cache/ms-playwright`. The dev server is not started at boot. Skip the install and start here:
 
 ```bash
 ./scripts/control-radar-mde launch
@@ -25,7 +25,7 @@ This repository's saved Cursor cloud environment runs the same steps as `scripts
 
 Stdout is JSON. Export `RADAR_VERIFY_RUN_ID` from `runId`, then run `doctor`, then the feature recipe. Run `cleanup` when the recipe is done so the next command can use `web/.next`.
 
-If `web/node_modules/next` is missing, or a browser command says Chromium is not installed (a branch changed a lockfile, or this VM did not boot from the snapshot), run `bash scripts/cloud-agent-install.sh` once and then launch. Do not start `next dev` by hand.
+If `web/node_modules/next` is missing (a branch changed a lockfile, or this VM did not boot from the snapshot), run `bash scripts/cloud-agent-install.sh` once and then launch. If only Chromium is missing, run `npx --prefix scripts/control playwright install chromium`. The install script refuses to run while a verification run in this checkout is live, because `npm ci` replaces `node_modules` under the server; run `cleanup` first. Do not start `next dev` by hand.
 
 ### When dependencies are missing
 
@@ -33,7 +33,7 @@ If `web/node_modules/next` is missing, or a browser command says Chromium is not
 bash scripts/cloud-agent-install.sh
 ```
 
-That script is idempotent. It uses `npm ci` (the lockfile, not a floating install) and installs Chromium for the user who will run the CLI.
+That script is safe to re-run. It uses `npm ci` (the lockfile, not a floating install), installs Chromium for the user who will run the CLI, and skips `apt` when Chromium already starts, so a re-run works offline.
 
 Start the server and wait until the home page identifies itself:
 
@@ -68,7 +68,11 @@ Read-only. Require `ok: true` and every flag in `checks` true before driving:
 
 ## Drive
 
-Drive from the recipes in `features/`. Every browser command goes through `./scripts/control-radar-mde browser`, which keeps one Chromium (Playwright over CDP) open for the run. Viewport is 1440×900, locale `pt-BR`, color scheme light. Clicks ignore elements that are not visible, so the phone navigation (in the DOM, `display: none` at this width) is not the target.
+Drive from the recipes in `features/`. Every browser command goes through `./scripts/control-radar-mde browser`, which keeps one Chromium (Playwright over CDP) open for the run. Viewport starts at 1440×900, locale `pt-BR`, color scheme light. Clicks ignore elements that are not visible, so the phone navigation (in the DOM, `display: none` at this width) is not the target. `browser viewport --preset phone` (390×844) switches to the phone layout for the rest of the run; `--preset desktop` switches back.
+
+A click decides before it clicks whether it should navigate (a same-origin link to another path or query, or a search result). Those wait for the URL to change; every other click returns about 400 ms later. `--timeout` is one budget for the whole command. The click JSON reports `navigated`, `expectNav`, and `elapsedMs`.
+
+The browser never leaves the site. WhatsApp, `mailto:`, external links, `window.open`, and `navigator.share` are blocked and recorded: the click JSON lists them under `outbound`, and `browser outbound` prints all of them. Headless Chromium does not enter fullscreen, so `Tela cheia` cannot be proven headless.
 
 Stable handles, from the UI:
 
@@ -136,8 +140,10 @@ Run cleanup after a failed drive too, so the checkout is not left holding `web/.
 The script is executable. `node scripts/control/cli.mjs` is the same program. Tests that do not need a browser:
 
 ```bash
-node --test scripts/control/test/cli.test.mjs
+node --test scripts/control/test/*.test.mjs
 ```
+
+`browser.test.mjs` drives a small fake site through the real browser daemon and is skipped when Chromium is not installed.
 
 `seed watch add --id sp/santo-andre` is how you arrange the saved list before a recipe that starts from a non-empty baseline. A fresh launch already has an empty profile, which is the baseline for saving a city. Do not point the CLI at a human's Chrome profile.
 
