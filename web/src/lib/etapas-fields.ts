@@ -44,6 +44,26 @@ export function medianN(cell: MedianYear | undefined, id: StageId): number {
   return cell?.[`${id}N`] ?? 0;
 }
 
+export function latestMedianYear(map: MedianMap, id: StageId): number | null {
+  let best: number | null = null;
+  for (const key of Object.keys(map)) {
+    if (!medianN(map[key], id)) continue;
+    const n = Number(key);
+    if (best == null || n > best) best = n;
+  }
+  return best;
+}
+
+export function latestCityYear(city: StageYearMap, id: StageId): number | null {
+  let best: number | null = null;
+  for (const key of Object.keys(city)) {
+    if (city[key]?.[id] == null) continue;
+    const n = Number(key);
+    if (best == null || n > best) best = n;
+  }
+  return best;
+}
+
 export function stageMoney(v: number | null, year: number, real: boolean): number | null {
   if (v == null) return null;
   return real ? toReal(v, year) : v;
@@ -61,5 +81,7 @@ export function stageText(id: StageId, v: number | null, year: number, real: boo
   if (v == null) return "sem dado";
   if (STAGE_BY_ID[id].kind === "percent") return pct(v);
   const n = stageMoney(v, year, real);
-  return n == null ? "sem dado" : brl(n);
+  if (n == null) return "sem dado";
+  if (n > 0 && n < 0.5) return "menos de R$ 1";
+  return brl(n);
 }

@@ -6,22 +6,24 @@ import { cn } from "@/lib/utils";
  * actions) separated by a border when the body is a chart/table (`divided`).
  */
 export function Panel({
-  title, description, action, children, footer, className, bodyClassName, divided = false, id,
+  title, description, action, children, footer, className, bodyClassName, divided = false, id, stackAction = false,
 }: {
   title?: ReactNode; description?: ReactNode; action?: ReactNode; children?: ReactNode; footer?: ReactNode;
   className?: string; bodyClassName?: string; divided?: boolean; id?: string;
+  /** On a phone, put the actions on their own row so the title keeps the full width. */
+  stackAction?: boolean;
 }) {
   const hasHeader = title || description || action;
   const titleId = id && typeof title === "string" ? `${id}-titulo` : undefined;
   return (
     <section id={id} aria-labelledby={titleId} className={cn("min-w-0 overflow-hidden rounded-xl border bg-card text-card-foreground shadow-card", className)}>
       {hasHeader && (
-        <header className={cn("flex flex-wrap items-start justify-between gap-x-4 gap-y-3 px-4 pt-4 sm:px-5", divided ? "border-b pb-4" : "pb-1")}>
-          <div className="min-w-0 flex-1">
+        <header className={cn("flex gap-x-4 gap-y-3 px-4 pt-4 sm:px-5", stackAction ? "flex-col items-stretch sm:flex-row sm:flex-wrap sm:items-start sm:justify-between" : "flex-wrap items-start justify-between", divided ? "border-b pb-4" : "pb-1")}>
+          <div className={cn("min-w-0", stackAction ? "w-full sm:flex-1" : "flex-1")}>
             {title && <h2 id={titleId} className="text-[0.9375rem] leading-6 font-semibold tracking-[-0.01em]">{title}</h2>}
             {description && <div className="mt-0.5 text-[0.8125rem] leading-5 text-pretty text-muted-foreground">{description}</div>}
           </div>
-          {action && <div className="flex max-w-full min-w-0 flex-wrap items-center gap-2">{action}</div>}
+          {action && <div className={cn("flex max-w-full min-w-0 flex-wrap items-center gap-2", stackAction && "basis-full sm:basis-auto")}>{action}</div>}
         </header>
       )}
       <div className={cn(hasHeader && !divided ? "px-4 pt-3 pb-4 sm:px-5" : divided ? "" : "p-4 sm:p-5", bodyClassName)}>{children}</div>

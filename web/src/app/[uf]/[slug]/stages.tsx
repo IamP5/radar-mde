@@ -1,6 +1,7 @@
 "use client";
 
 import { ExternalLink } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import MultiLine from "@/components/MultiLine";
 import { ChartActions } from "@/components/kit/chart-actions";
@@ -8,9 +9,10 @@ import { Panel } from "@/components/kit/panel";
 import { Segmented } from "@/components/kit/segmented";
 import { Stat } from "@/components/kit/stat";
 import { brl, pct } from "@/lib/format";
+import { getUf } from "@/lib/geo";
 import {
-  STAGE_BY_ID, STAGE_CHART, STAGE_FIELDS, STAGE_PER_STUDENT, STAGE_QUIET,
-  medianN, stageMoney, stageRealKey, stageText, shareStack,
+  STAGE_BY_ID, STAGE_CHART, STAGE_PER_STUDENT, STAGE_QUIET,
+  latestCityYear, latestMedianYear, medianN, stageMoney, stageRealKey, stageText, shareStack,
   type MedianMap, type StageId, type StageYearMap,
 } from "@/lib/etapas-fields";
 import { IPCA_BASE } from "@/lib/rows";
@@ -19,10 +21,13 @@ import { useCitySelection } from "./city-year";
 import { Term } from "./glossary";
 
 const DASH = [undefined, "1 3.5", "5 3", "10 3 2 3", "18 4"] as const;
+const OFF_PATTERN = "valor distante do padrão deste município, confirme na fonte";
 
 function FieldLabel({ id }: { id: StageId }) {
   if (id === "cre") return <Term k="creche">Creche</Term>;
-  if (id === "eja") return <Term k="eja">EJA</Term>;
+  if (id === "pre") return <Term k="pre">Pré-escola</Term>;
+  if (id === "ef") return <Term k="fundamental">Fundamental</Term>;
+  if (id === "eja") return <Term k="eja">EJA (jovens e adultos)</Term>;
   if (id === "ee") return <Term k="ee">Educação especial</Term>;
   if (id === "fuEi") return <><Term k="fundeb">Fundeb</Term> na educação infantil</>;
   if (id === "fuEf") return <><Term k="fundeb">Fundeb</Term> no fundamental</>;
@@ -75,6 +80,7 @@ export default function StagePanel({
   const cell = city[String(year)];
   const span = `${years[0]}–${years[years.length - 1]}`;
   const who = `${name} (${uf})`;
+  const ufName = getUf(uf)?.name ?? uf;
   const series = STAGE_CHART.map((id, i) => ({
     key: id,
     label: STAGE_BY_ID[id].label,
@@ -83,15 +89,18 @@ export default function StagePanel({
     values: years.map((y) => stageMoney(city[String(y)]?.[id] ?? null, y, real)),
   }));
   const csvColumns = ["ano", ...STAGE_CHART.map((id) => (real ? stageRealKey(STAGE_BY_ID[id].csv) : STAGE_BY_ID[id].csv))];
-  const place = medianText(ufMedians, brMedians, year, real);
+  const place = medianText(ufName, ufMedians, brMedians, city, year, real);
 
   return (
     <Panel
       id="etapas"
+      className="scroll-mt-[calc(var(--header-h,3.5rem)+3.25rem)]"
+      stackAction
       title="Para onde vai o dinheiro"
       description={
         <>
-          Fonte: SIOPE. O valor por aluno usa a matrícula que o ente declarou, não o Censo Escolar.
+          Fonte: SIOPE (FNDE). O valor por aluno usa a matrícula que o município declarou, não o Censo Escolar.
+          {" "}Da época são os reais daquele ano. Corrigido pelo IPCA mostra os mesmos reais em valores de {IPCA_BASE} e não muda os percentuais. No ano mais recente os dois coincidem.
           {thesis && (
             <>
               {" "}
@@ -132,8 +141,11 @@ export default function StagePanel({
           />
         </>
       }
-      footer={`Indicadores SIOPE ${STAGE_FIELDS.map((f) => f.siope).join(", ")}. O 0 é tratado como ausente.`}
+      footer={<>O 0 é tratado como ausente. Os códigos dos indicadores estão na <Link href="/sobre" className="underline-offset-2 hover:text-foreground hover:underline">metodologia</Link>.</>}
     >
+      <p className="mb-2 text-[0.8125rem] text-muted-foreground">
+        Parte do gasto com educação. Demais etapas é o que sobra depois da educação infantil e do ensino fundamental. Não separa creche, pré-escola nem EJA.
+      </p>
       <ShareBar shEi={cell?.shEi ?? null} shEf={cell?.shEf ?? null} />
       <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-3">
         {STAGE_PER_STUDENT.map((id) => (
@@ -143,11 +155,14 @@ export default function StagePanel({
             value={stageText(id, cell?.[id] ?? null, year, real)}
             tone="neutral"
             sub={place(id)}
-            context={cell?.atip?.includes(id) ? "fora do padrão do próprio ente" : undefined}
+            context={cell?.atip?.includes(id) ? OFF_PATTERN : missingNote(id, year, city, brMedians)}
           />
         ))}
       </div>
-      <dl className="mt-4 grid gap-x-8 sm:grid-cols-2">
+      <p className="mt-4 text-[0.8125rem] text-muted-foreground">
+        Fundeb na educação infantil e Fundeb no fundamental são fatias do Fundeb, não do gasto total. Cada uma pode passar de 100% e as duas não somam 100%.
+      </p>
+      <dl className="grid gap-x-8 sm:grid-cols-2">
         {STAGE_QUIET.map((id) => (
           <div key={id} className="flex items-baseline justify-between gap-3 border-b py-2">
             <dt className="text-[0.8125rem] text-muted-foreground">
@@ -155,7 +170,10 @@ export default function StagePanel({
             </dt>
             <dd className="text-right text-sm font-medium tnum">
               {stageText(id, cell?.[id] ?? null, year, real)}
-              {cell?.atip?.includes(id) && <div className="text-xs font-normal text-muted-foreground">fora do padrão do próprio ente</div>}
+              {cell?.atip?.includes(id) && <div className="text-xs font-normal text-muted-foreground">{OFF_PATTERN}</div>}
+              {cell?.[id] == null && missingNote(id, year, city, brMedians) && (
+                <div className="text-xs font-normal text-muted-foreground">{missingNote(id, year, city, brMedians)}</div>
+              )}
             </dd>
           </div>
         ))}
@@ -175,11 +193,40 @@ export default function StagePanel({
   );
 }
 
-function medianText(ufMedians: MedianMap, brMedians: MedianMap, year: number, real: boolean) {
-  const one = (map: MedianMap, id: StageId) => {
+function side(city: number | null, other: number | null, kind: "money" | "percent"): string {
+  if (city == null || other == null) return "";
+  const c = kind === "money" ? Math.round(city) : Math.round(city * 100) / 100;
+  const o = kind === "money" ? Math.round(other) : Math.round(other * 100) / 100;
+  if (c > o) return " (acima)";
+  if (c < o) return " (abaixo)";
+  return " (igual)";
+}
+
+function missingNote(id: StageId, year: number, city: StageYearMap, br: MedianMap): string | undefined {
+  const lastCity = latestCityYear(city, id);
+  const lastBr = latestMedianYear(br, id);
+  const name = STAGE_BY_ID[id].label.toLowerCase();
+  if (!medianN(br[String(year)], id) && lastBr != null && lastBr < year) {
+    const local = lastCity != null && lastCity < year ? ` O último ano deste município é ${lastCity}.` : "";
+    return `Não há mediana de ${name} em ${year}.${local}`;
+  }
+  if (lastCity != null && lastCity < year) return `O último ano com valor neste município é ${lastCity}.`;
+  return undefined;
+}
+
+function medianText(ufName: string, ufMedians: MedianMap, brMedians: MedianMap, city: StageYearMap, year: number, real: boolean) {
+  const read = (map: MedianMap, id: StageId) => {
     const cell = map[String(year)];
-    if (!medianN(cell, id)) return "sem dado";
-    return stageText(id, cell?.[id] ?? null, year, real);
+    if (!medianN(cell, id)) return { text: "sem dado", n: null as number | null };
+    const n = cell?.[id] ?? null;
+    return { text: stageText(id, n, year, real), n: stageMoney(n, year, real) };
   };
-  return (id: StageId) => `UF ${one(ufMedians, id)} · Brasil ${one(brMedians, id)}`;
+  return (id: StageId) => {
+    const kind = STAGE_BY_ID[id].kind;
+    const here = city[String(year)]?.[id] ?? null;
+    const cityN = stageMoney(here, year, real);
+    const uf = read(ufMedians, id);
+    const br = read(brMedians, id);
+    return `mediana de ${ufName} ${uf.text}${side(cityN, uf.n, kind)} · mediana do Brasil ${br.text}${side(cityN, br.n, kind)}`;
+  };
 }

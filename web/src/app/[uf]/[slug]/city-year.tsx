@@ -215,7 +215,7 @@ export function YearKpis() {
             ? "valor fora do padrão do município — confirme na fonte"
             : p.mdeV
               ? `${p.mdeVEst ? "≈ " : ""}${brlShort(p.mdeV)} aplicados${p.mdeVEst ? " (estimado)" : ""} · R$ da época`
-              : "por ano, educação básica · R$ da época"
+              : "todas as etapas juntas, educação básica · R$ da época"
         }
       />
       <Stat
@@ -239,6 +239,12 @@ export function YearKpis() {
                 : "nada a compensar pela estimativa"
         }
       />
+      <p className="col-span-2 text-sm text-muted-foreground lg:col-span-4">
+        <a href="#etapas" className="font-medium text-brand-ink hover:underline">
+          Creche, pré-escola e as outras etapas
+        </a>{" "}
+        ficam em Para onde vai o dinheiro, mais abaixo. O cartão “Por aluno” acima junta todas as etapas.
+      </p>
     </section>
   );
 }

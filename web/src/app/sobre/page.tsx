@@ -197,7 +197,11 @@ export default function Page() {
                     <TableCell className="px-4 align-top font-mono text-[13px] text-foreground">{f.siope}</TableCell>
                     <TableCell className="px-4 align-top whitespace-normal">{f.dict.split(". O 0")[0]}</TableCell>
                     <TableCell className="px-4 align-top whitespace-normal">
-                      {f.kind === "money" ? "Gasto por etapa, por aluno" : "Participação no gasto com educação"}
+                      {f.kind === "money"
+                        ? "Gasto por etapa, por aluno"
+                        : f.id === "fuEi" || f.id === "fuEf"
+                          ? "Parte do Fundeb nesta etapa. Pode passar de 100% e não soma 100% com a outra."
+                          : "Parte do gasto total com educação"}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -205,7 +209,7 @@ export default function Page() {
             </Table>
           </div>
           <p>
-            Os valores por aluno de cada etapa usam a matrícula que o ente declarou ao SIOPE, não o Censo Escolar. O 0 é tratado como
+            Os valores por aluno de cada etapa usam a matrícula que o município declarou ao SIOPE, não o Censo Escolar. O 0 é tratado como
             ausente, assim como um valor fora da faixa esperada. O gasto por aluno das etapas fica de fora abaixo de R$ 100 ou acima de
             R$ 200.000. Material didático por aluno fica de fora acima de R$ 5.000, porque o valor típico fica perto de R$ 30. A parcela
             do Fundeb em uma etapa pode passar de 100%, como o percentual pago a profissionais, e fica de fora acima de 200%. Os

@@ -56,15 +56,23 @@ export const GLOSSARY = {
   },
   creche: {
     term: "Creche",
-    text: "Etapa da educação infantil para crianças de até 3 anos. O indicador 4.14 do SIOPE é o gasto por aluno nessa etapa, com a matrícula que o ente declarou.",
+    text: "Educação infantil para crianças de até 3 anos. O número é o gasto por aluno, com a matrícula que o município declarou.",
+  },
+  pre: {
+    term: "Pré-escola",
+    text: "Educação infantil para crianças de 4 e 5 anos. O número é o gasto por aluno, com a matrícula que o município declarou.",
+  },
+  fundamental: {
+    term: "Fundamental",
+    text: "Ensino fundamental, dos anos iniciais aos finais. O número é o gasto por aluno, com a matrícula que o município declarou.",
   },
   eja: {
     term: "EJA",
-    text: "Educação de jovens e adultos. O indicador 4.5 do SIOPE é o gasto por aluno nessa etapa, com a matrícula que o ente declarou.",
+    text: "Educação de jovens e adultos: quem não terminou a escola na idade prevista. O número é o gasto por aluno, com a matrícula que o município declarou.",
   },
   ee: {
     term: "Educação especial",
-    text: "Educação especial. O indicador 4.6 do SIOPE é o gasto por aluno nessa etapa, com a matrícula que o ente declarou. O atendimento educacional especializado (AEE) é a modalidade de atendimento.",
+    text: "Gasto por aluno com educação especial, com a matrícula que o município declarou. O atendimento educacional especializado (AEE) é outra forma de contar esse atendimento.",
   },
 } as const;
 export type GlossaryKey = keyof typeof GLOSSARY;

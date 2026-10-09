@@ -293,6 +293,13 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
   const yi = data ? data.years.indexOf(year) : -1;
   const fMin = funMin(year);
   const hasCapital = useMemo(() => !!data?.items.some((it) => it.r.capital), [data]);
+  const crecheYears = useMemo(() => {
+    if (!stages) return null;
+    return stages.years.filter((_, i) => {
+      for (const row of Object.values(stages.rows)) if (row.cre[i] != null) return true;
+      return false;
+    });
+  }, [stages]);
 
   // One pass: the filtered set plus, for each filter, counts under all the *other* filters
   const facets = useMemo<Facets>(() => {
@@ -739,6 +746,17 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
           <>
             Indicadores de {year}. Clique no cabeçalho para ordenar; a série mostra {firstYear}–{lastYear}.
             {showStages && stageError && <span className="mt-1 block">Não foi possível carregar o gasto por etapa.</span>}
+            {showStages && !stageError && (
+              <span className="mt-1 block">
+                Reais por aluno de creche, fundamental e EJA (educação de jovens e adultos). Pré-escola fica na ficha do município, não nesta tabela.
+                {crecheYears && !crecheYears.includes(year) && (
+                  <>
+                    {" "}Em {year} nenhum município tem valor de creche.
+                    {crecheYears.length > 0 && ` O último ano com valores é ${crecheYears[crecheYears.length - 1]}.`}
+                  </>
+                )}
+              </span>
+            )}
           </>
         }
         action={
@@ -755,7 +773,7 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
                 showStages ? "bg-background text-foreground" : "border-dashed text-muted-foreground hover:bg-accent hover:text-foreground",
               )}
             >
-              Mostrar gasto por etapa
+              {showStages ? "Ocultar gasto por etapa" : "Mostrar gasto por etapa"}
             </button>
             <BinLegend />
           </span>
@@ -802,9 +820,9 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
                   {th("sit", "Situação", "Ordena por gravidade: abaixo, não declarou, no limite, cumpriu", true)}
                   {th("fun", "Fundeb pessoal", `% do Fundeb pago aos profissionais da educação (mínimo ${fMin}% em ${year})`)}
                   {th("aluno", "R$ por aluno", "Valores nominais")}
-                  {showStages && th("cre", "Creche", "Valores nominais, indicador 4.14")}
-                  {showStages && th("ef", "Fundamental", "Valores nominais, indicador 4.2")}
-                  {showStages && th("eja", "EJA", "Valores nominais, indicador 4.5")}
+                  {showStages && th("cre", "Creche", "Reais por aluno de creche neste ano")}
+                  {showStages && th("ef", "Fundamental", "Reais por aluno do ensino fundamental neste ano")}
+                  {showStages && th("eja", "EJA", "Reais por aluno da educação de jovens e adultos neste ano")}
                   {th("short", "Faltou", "Quanto faltou aplicar para chegar a 25% (estimativa, valores nominais)")}
                   {th("times", REC[rec].col, rec === "u5" ? `Anos abaixo de 25% entre ${year - 4} e ${year}` : rec === "s2" || rec === "s3" ? `Maior sequência de anos seguidos abaixo de 25% até ${year}` : `Anos abaixo de 25% entre ${firstYear} e ${lastYear}`)}
                   <TableHead scope="col" className={cn(stickyHead, "pr-4 text-left")}>
