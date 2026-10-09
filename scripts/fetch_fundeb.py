@@ -1,14 +1,4 @@
-"""Download FNDE Fundeb VAAT and VAAR files and write web/src/data/fundeb.json.
-
-  python3 scripts/fetch_fundeb.py
-
-Raw files land in data/raw/br/fundeb/ (gitignored). The app reads only fundeb.json.
-Cities.json is not touched. Re-running skips downloads that already exist.
-
-Exercises are the latest publication we could actually open:
-  2025: 6ª publicação, Portaria MEC/MF nº 5, de 29/04/2026 (CSV).
-  2026: 3ª publicação, Portaria MEC/MF nº 11, de 28/08/2026 (XLSX).
-The 2026 page links that publication's VAAT CSV at the 1ª publicação file
+"""The 2026 page links that publication's VAAT CSV at the 1ª publicação file
 (Portaria nº 14, de 29/12/2025). The matching XLSX is the file used here.
 2021 and 2022 return 404. 2023 and 2024 do not publish the same per-municipality
 VAAT CSV, so those exercises are left out rather than guessed.

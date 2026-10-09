@@ -1,5 +1,3 @@
-/** Fundeb redistribution shapes shared by the server loader and the client panels. */
-
 export type FundebCell = {
   /** VAAT before the Union top-up, R$ per student */
   vaat: number;
@@ -65,7 +63,6 @@ export const FUNDEB_CSV_COLUMNS: { key: string; label: string }[] = [
   { key: "portaria", label: "Portaria interministerial MEC/MF da publicação" },
 ];
 
-/** Sentence for a municipality that has a published row. */
 export function fundebSentence(cell: FundebCell, floor: number): string {
   if (cell.comp > 0) return "Abaixo do mínimo. A complementação da União eleva o VAAT até o piso.";
   if (cell.vaat + 0.001 < floor) return "Abaixo do mínimo, sem complementação nesta publicação.";

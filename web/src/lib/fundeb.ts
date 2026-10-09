@@ -1,6 +1,3 @@
-/**
- * Server-only read of web/src/data/fundeb.json (FNDE VAAT / VAAR). Not part of cities.json.
- */
 import "server-only";
 import fs from "node:fs";
 import path from "node:path";
