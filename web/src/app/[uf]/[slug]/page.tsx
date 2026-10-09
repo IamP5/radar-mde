@@ -45,6 +45,7 @@ import { cn } from "@/lib/utils";
 import {
   AtypicalCallout,
   CityYearProvider,
+  CouncilLink,
   DistributionPanel,
   HeaderShare,
   HeaderSource,
@@ -447,11 +448,12 @@ function CityContent({ c }: { c: City }) {
           title="O que você pode fazer"
           description={
             <>
-              Dados só mudam algo quando chegam a quem fiscaliza. Escolha o que quer fazer: o texto já vem preenchido com os números de {c.name}. Revise,
-              coloque seu nome e envie: um pedido pelo <Term k="esic">e-SIC</Term>, um aviso ao <Term k="cacs">CACS-Fundeb</Term>, um requerimento na Câmara ou
-              uma comunicação ao <span className="whitespace-nowrap"><Term k="tc">Tribunal de Contas</Term>.</span> Qualquer pessoa tem direito a essas informações.
+              A ficha para o conselho, neste bloco, resume o checklist, os valores e as perguntas da reunião. As cartas abaixo são textos prontos, com os números de{" "}
+              {c.name}, para quem quiser pedir informação pelo <Term k="esic">e-SIC</Term>, ao <Term k="cacs">CACS-Fundeb</Term>, na Câmara ou ao{" "}
+              <span className="whitespace-nowrap"><Term k="tc">Tribunal de Contas</Term>.</span> Revise e coloque seu nome antes de enviar.
             </>
           }
+          action={<CouncilLink />}
           divided
           bodyClassName="p-0"
         >

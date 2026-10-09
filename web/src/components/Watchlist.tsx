@@ -1,17 +1,17 @@
 "use client";
 
-import { Eye, RotateCcw, Table2, X } from "lucide-react";
+import { ClipboardList, Eye, RotateCcw, Table2, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { EmptyState, Panel } from "@/components/kit/panel";
 import { StatusBadge, type StatusKind } from "@/components/kit/status";
 import { SearchButton } from "@/components/SearchPalette";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { binColor } from "@/lib/bins";
 import { MDE_MIN, int } from "@/lib/format";
-import { cityPath } from "@/lib/geo";
+import { cityPath, councilPath } from "@/lib/geo";
 import { DATA_VERSION, atipNote, existedIn, isAtip, isImplausible, loadAllRows, timesBelow, unpackRows, type Row, type RowsFile } from "@/lib/rows";
 import { cn } from "@/lib/utils";
 import { useWatchlist } from "@/lib/watchlist";
@@ -241,6 +241,14 @@ export default function Watchlist() {
                     </span>
                   </div>
                 </div>
+                <Link
+                  href={councilPath(r.uf, r.slug)}
+                  aria-label={`Ficha para o conselho de ${r.name}`}
+                  title="Ficha para o conselho"
+                  className={buttonVariants({ variant: "ghost", size: "icon", className: "-mt-1 text-muted-foreground print:hidden" })}
+                >
+                  <ClipboardList aria-hidden />
+                </Link>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -308,17 +316,27 @@ export default function Watchlist() {
                       <YearCell v={r.mde[i]} nd={r.nd[i]} na={!existedIn(r, y)} atip={isAtip(r, i, "mde") ? atipNote(["mde"], isImplausible(r, i)) : undefined} year={y} className="w-10" />
                     </TableCell>
                   ))}
-                  <TableCell className="pr-3 pl-2 text-right sm:pr-4">
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      onClick={() => toggle(key)}
-                      aria-label={`Remover ${r.name} dos salvos`}
-                      title="Remover dos salvos"
-                      className="text-muted-foreground hover:text-critical"
-                    >
-                      <X />
-                    </Button>
+                  <TableCell className="pr-3 pl-2 sm:pr-4">
+                    <div className="flex justify-end gap-1">
+                      <Link
+                        href={councilPath(r.uf, r.slug)}
+                        aria-label={`Ficha para o conselho de ${r.name}`}
+                        title="Ficha para o conselho"
+                        className={buttonVariants({ variant: "ghost", size: "icon-sm", className: "text-muted-foreground print:hidden" })}
+                      >
+                        <ClipboardList aria-hidden />
+                      </Link>
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        onClick={() => toggle(key)}
+                        aria-label={`Remover ${r.name} dos salvos`}
+                        title="Remover dos salvos"
+                        className="text-muted-foreground hover:text-critical"
+                      >
+                        <X />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               );

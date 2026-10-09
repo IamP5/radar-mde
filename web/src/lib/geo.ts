@@ -66,9 +66,18 @@ const ARTICLE: Record<string, "do" | "da" | "de"> = {
 export const ofUf = (sigla: string) => `${ARTICLE[sigla] ?? "de"} ${getUf(sigla)!.name}`;
 export const ofRegion = (key: RegionKey) => (key === "S" ? "do Sul" : `do ${getRegion(key).name}`);
 
+export function tribunal(c: { id: number; uf: string }): { name: string; short: string } {
+  if (c.id === 3550308) return { name: "Tribunal de Contas do Município de São Paulo", short: "TCM-SP" };
+  if (c.id === 3304557) return { name: "Tribunal de Contas do Município do Rio de Janeiro", short: "TCM-RJ" };
+  if (c.uf === "DF") return { name: "Tribunal de Contas do Distrito Federal", short: "TCDF" };
+  if (["BA", "GO", "PA"].includes(c.uf)) return { name: `Tribunal de Contas dos Municípios do Estado ${ofUf(c.uf)}`, short: `TCM-${c.uf}` };
+  return { name: `Tribunal de Contas do Estado ${ofUf(c.uf)}`, short: `TCE-${c.uf}` };
+}
+
 // The Distrito Federal's only "municipality" is Brasília, whose page doubles as the DF dashboard
 export const ufPath = (sigla: string) => (sigla.toUpperCase() === "DF" ? "/df/brasilia" : `/${sigla.toLowerCase()}`);
 export const cityPath = (sigla: string, slug: string) => `/${sigla.toLowerCase()}/${slug}`;
+export const councilPath = (sigla: string, slug: string) => `${cityPath(sigla, slug)}/conselho`;
 export const regionPath = (key: RegionKey) => `/regiao/${getRegion(key).slug}`;
 
 export type Scope =

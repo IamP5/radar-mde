@@ -47,6 +47,7 @@ H1 title + one paragraph, then exactly four H2s: `Sub-features` (short IDs, one 
 - [Region page](./region.md) covers switching region, the region CSV, and opening that region's table.
 - [Municipality page](./municipality.md) covers a city's year, indicators, charts, rank, neighbors, source link, and the Santo André research note.
 - [Action letters](./letters.md) covers the four ready-to-send letters, the signature fields, and copying the text.
+- [Council sheet](./council-brief.md) covers the printable Ficha para o conselho, its two MDE sources, the questions, a year not declared, and the links from the city page and Salvos.
 - [Glossary](./glossary.md) covers the dotted terms that open a short definition.
 - [Share a link](./share.md) covers Compartilhar and Copiar link, including the selected year.
 - [Chart export](./chart-export.md) covers PNG, CSV, and the citation on a chart.

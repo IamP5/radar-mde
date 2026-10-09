@@ -474,6 +474,15 @@ svg :focus:not(:focus-visible) {
     border-top: 1px solid var(--border);
     background: none !important;
   }
+  main:has([data-council-sheet]) ~ footer {
+    display: none !important;
+  }
+  [data-council-sheet] {
+    font-size: 13px;
+  }
+  [data-council-sheet] h2 {
+    font-size: 1.05rem;
+  }
   main ~ footer > div {
     padding-block: 0.75rem !important;
     gap: 0.5rem !important;
