@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { YEARS, existedIn, getCity, latestYear } from "@/lib/data";
 import { CouncilSheetView } from "./sheet";
 
-// Same contract as the city page: params are validated above any Suspense boundary and ?ano= is applied on the client.
 // One real params object keeps the build's "must be fully static" check armed: reading searchParams here fails the
 // build, where a placeholder object would let it through.
 export const ensureStatic = "navigation";

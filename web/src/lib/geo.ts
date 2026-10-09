@@ -66,7 +66,6 @@ const ARTICLE: Record<string, "do" | "da" | "de"> = {
 export const ofUf = (sigla: string) => `${ARTICLE[sigla] ?? "de"} ${getUf(sigla)!.name}`;
 export const ofRegion = (key: RegionKey) => (key === "S" ? "do Sul" : `do ${getRegion(key).name}`);
 
-/** Court of accounts that audits a municipality: BA, GO and PA have municipal courts; the capitals of SP and RJ have their own. */
 export function tribunal(c: { id: number; uf: string }): { name: string; short: string } {
   if (c.id === 3550308) return { name: "Tribunal de Contas do Município de São Paulo", short: "TCM-SP" };
   if (c.id === 3304557) return { name: "Tribunal de Contas do Município do Rio de Janeiro", short: "TCM-RJ" };

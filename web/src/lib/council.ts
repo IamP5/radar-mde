@@ -1,9 +1,3 @@
-/**
- * Ficha para o conselho: one printable sheet per municipality and exercise. What the law asks, what each source
- * says, where the money went, five exercises of context and questions for the next meeting. Pure and client-safe,
- * so the year can change in the browser and the tests run under plain Node. Every string a person reads is built
- * here; the view only maps outcomes to badge colours.
- */
 import type { City } from "@/lib/data";
 import {
   MDE_MIN,
@@ -29,22 +23,14 @@ import { cityPath, tribunal } from "@/lib/geo";
 import { DATA_VERSION, IPCA_LABEL, atipNote, toReal, type CityYear } from "@/lib/rows";
 import { THESIS_SANTO_ANDRE, THESIS_SANTO_ANDRE_ID, THESIS_URL } from "@/lib/thesis";
 
-/** The City fields the sheet reads. A full City is assignable. */
 export type CouncilCity = Pick<City, "id" | "name" | "uf" | "slug" | "years">;
 
-/** Where one figure stands against one rule. "edge" only comes from the 25% rule. */
 export type Outcome = "met" | "edge" | "missed" | "nodata" | "notdelivered";
 
-/** Who says a figure. `short` labels the reading and the table column, `name` the source list. */
 export type Source = { short: string; name: string; href: string };
 
-/** One source's figure for one rule. A missing number reads "sem dado"; a real 0 stays 0. */
 export type Reading = { source: Source; figure: string; outcome: Outcome; badge: string };
 
-/**
- * One legal rule. `readings[0]` is the declared figure (SIOPE, or SICONFI when that was the record's source). The MDE
- * line of the selected year adds the Tesouro figure (`alt`) and then the audited one. The sheet never picks a winner.
- */
 export type RuleLine = {
   kind: "rule";
   id: "mde" | "fundebPay" | "fundebLeft" | "ec119" | "declared";
@@ -54,7 +40,6 @@ export type RuleLine = {
   note: string | null;
 };
 
-/** Atypical values are a caveat about the data, not a rule: no badge, never pass or fail. */
 export type CaveatLine = {
   kind: "caveat";
   id: "atypical";
@@ -68,10 +53,8 @@ export type ChecklistLine = RuleLine | CaveatLine;
 
 export type MoneyRow = { label: string; value: string; note: string | null };
 
-/** The selected year in R$ of that year. The gap follows the declared %, so its sign never contradicts the badge. */
 export type Money = { applied: MoneyRow; required: MoneyRow; gap: MoneyRow; basis: string; payroll: string };
 
-/** `text` alone carries the fact, so the table reads the same in black and white. */
 export type Cell = { text: string; outcome: Outcome | null };
 
 export type History = {
@@ -98,7 +81,6 @@ export type Topic =
 
 export type Question = { topic: Topic; text: string };
 
-/** `href` is null when there is nothing to open (the court of accounts). */
 export type SourceLink = { label: string; href: string | null };
 
 export type Header = { title: string; place: string; exercise: string; dataVersion: string; cityHref: string };
@@ -108,17 +90,12 @@ export type CouncilSheet = {
   checklist: readonly ChecklistLine[];
   money: Money;
   history: History;
-  /** 8 to 10: questions from the facts, then baseline ones (6 at most together), then 4 fixed ones. */
   questions: readonly Question[];
   sources: readonly SourceLink[];
 };
 
-/**
- * Everything the council sheet says about one municipality and exercise. `years` are the municipality's published
- * years in ascending order and `year` is one of them (useYear guarantees it at the URL). A year with s: "nd" or
- * missing fields still yields a whole sheet.
- */
 export function councilSheet(c: CouncilCity, years: readonly number[], year: number): CouncilSheet {
+  if (!years.includes(year)) throw new Error(`councilSheet: ${year} is not a published year`);
   const audit = AUDITS.get(c.id);
   const facts = years
     .filter((y) => y <= year)
@@ -183,12 +160,11 @@ const BADGE: Record<Outcome, string> = {
   notdelivered: STATUS_LABEL.notdelivered,
 };
 
-/** `missed` overrides the badge where "Abaixo do mínimo" would be false, such as going over a cap. */
-const reading = (source: Source, figure: string, outcome: Outcome, missed = BADGE.missed): Reading => ({
+const reading = (source: Source, figure: string, outcome: Outcome, missedBadge = BADGE.missed): Reading => ({
   source,
   figure,
   outcome,
-  badge: outcome === "missed" ? missed : BADGE[outcome],
+  badge: outcome === "missed" ? missedBadge : BADGE[outcome],
 });
 
 const shown = (v: number | null | undefined, fmt: (v: number) => string = pct) => (v == null ? "sem dado" : fmt(v));
@@ -203,7 +179,6 @@ function declaredSource(c: CouncilCity, y: number): Source {
 
 type Audit = { source: Source; mde: (y: number) => number | undefined };
 
-/** Audited MDE figures published outside SIOPE, by IBGE id, so Santo André PB never picks up the SP thesis. */
 const AUDITS: ReadonlyMap<number, Audit> = new Map([
   [
     THESIS_SANTO_ANDRE_ID,
@@ -214,7 +189,6 @@ const AUDITS: ReadonlyMap<number, Audit> = new Map([
   ],
 ]);
 
-/** One exercise of the window, computed once. The checklist, the table and the questions all read it. */
 type YearFacts = {
   year: number;
   rec: CityYear | undefined;
@@ -248,7 +222,6 @@ type Lines = {
   mde: RuleLine;
   fundebPay: RuleLine;
   fundebLeft: RuleLine;
-  /** null for a municipality installed after 2021, where EC 119 cannot apply */
   ec119: RuleLine | null;
   declared: RuleLine;
   atypical: CaveatLine;
@@ -271,7 +244,6 @@ function mdeLine(c: CouncilCity, f: YearFacts): RuleLine {
   };
 }
 
-/** The same `ec119` the letters use, over the whole series: the selected year does not change this line. */
 function ec119Line(c: CouncilCity, years: readonly number[], p: Ec119 | null): RuleLine | null {
   const span = [...PANDEMIC_YEARS].filter((y) => years.includes(y));
   if (!span.length) return null;
@@ -301,18 +273,17 @@ function ec119Line(c: CouncilCity, years: readonly number[], p: Ec119 | null): R
   return line(reading(src, figure, "nodata"), "Faltam a receita ou o percentual de algum ano entre 2020 e 2023 para estimar a compensação. Confirme na fonte.");
 }
 
-/** Window years with nothing sent (`nd`) and years sent without an MDE % (`missing`). */
 function gaps(facts: readonly YearFacts[]) {
   return {
-    nd: facts.filter((f) => f.rec?.s === "nd").map((f) => f.year),
-    missing: facts.filter((f) => f.rec?.s !== "nd" && f.rec?.mde == null).map((f) => f.year),
+    notDelivered: facts.filter((f) => f.rec?.s === "nd").map((f) => f.year),
+    withoutPercent: facts.filter((f) => f.rec?.s !== "nd" && f.rec?.mde == null).map((f) => f.year),
   };
 }
 
 function declaredLine(facts: readonly YearFacts[]): RuleLine {
   const n = facts.length;
-  const { nd, missing } = gaps(facts);
-  const sent = n - nd.length - missing.length;
+  const { notDelivered, withoutPercent } = gaps(facts);
+  const sent = n - notDelivered.length - withoutPercent.length;
   return {
     kind: "rule",
     id: "declared",
@@ -322,13 +293,13 @@ function declaredLine(facts: readonly YearFacts[]): RuleLine {
       reading(
         facts[n - 1].declared.source,
         `${sent} de ${n} ${n === 1 ? "exercício declarado" : "exercícios declarados"}`,
-        nd.length ? "notdelivered" : missing.length ? "nodata" : "met",
+        notDelivered.length ? "notdelivered" : withoutPercent.length ? "nodata" : "met",
       ),
     ],
-    note: nd.length
-      ? `Não há registro de envio dos dados de ${listYears(nd)}.`
-      : missing.length
-        ? `Não há percentual de MDE registrado para ${listYears(missing)}.`
+    note: notDelivered.length
+      ? `Não há registro de envio dos dados de ${listYears(notDelivered)}.`
+      : withoutPercent.length
+        ? `Não há percentual de MDE registrado para ${listYears(withoutPercent)}.`
         : null,
   };
 }
@@ -347,11 +318,6 @@ function atypicalLine(facts: readonly YearFacts[]): CaveatLine {
   };
 }
 
-/**
- * The gap is mdeBalance (the declared % against the base), never mdeV minus the minimum: an estimated mdeV can sit on
- * the other side of 25% from the declared %, and the badge follows the %. No R$ comes from an audited %, because the
- * Tribunal's revenue base is not in the data.
- */
 function moneyOf(sel: YearFacts, mde: RuleLine): Money {
   const { year: y, rec: r } = sel;
   const payroll =
@@ -399,10 +365,8 @@ function moneyOf(sel: YearFacts, mde: RuleLine): Money {
   };
 }
 
-/** A reading as a table cell. A year not declared says so instead of "sem dado". */
 const cell = (r: Reading): Cell => ({ text: r.outcome === "notdelivered" ? r.badge : r.figure, outcome: r.outcome });
 
-/** No Tesouro column: `alt` only exists where it disagrees, so a column of it would be mostly empty. */
 function historyOf(facts: readonly YearFacts[]): History {
   const audit = facts.find((f) => f.audited)?.audited?.source;
   return {
@@ -428,17 +392,16 @@ type Ask = (x: { lines: Lines; facts: readonly YearFacts[]; pandemic: Ec119 | nu
 
 const orList = (xs: readonly string[]) => (xs.length <= 1 ? (xs[0] ?? "") : `${xs.slice(0, -1).join(", ")} ou ${xs[xs.length - 1]}`);
 
-/** In this order, each from outcomes the checklist already decided. None compares a threshold. */
 const FROM_FACTS: readonly Ask[] = [
   ({ facts }) => {
-    const { nd, missing } = gaps(facts);
+    const { notDelivered, withoutPercent } = gaps(facts);
     const src = (ys: number[]) => facts.find((f) => f.year === ys[0])!.declared.source.short;
-    if (nd.length)
-      return { topic: "declaration", text: `Não há registro de envio ao ${src(nd)} dos dados de MDE de ${listYears(nd)}. Há previsão de envio?` };
-    if (missing.length)
+    if (notDelivered.length)
+      return { topic: "declaration", text: `Não há registro de envio ao ${src(notDelivered)} dos dados de MDE de ${listYears(notDelivered)}. Há previsão de envio?` };
+    if (withoutPercent.length)
       return {
         topic: "declaration",
-        text: `O ${src(missing)} não registra o percentual aplicado em MDE em ${listYears(missing)}. A prefeitura pode informar esse percentual?`,
+        text: `O ${src(withoutPercent)} não registra o percentual aplicado em MDE em ${listYears(withoutPercent)}. A prefeitura pode informar esse percentual?`,
       };
     return null;
   },
@@ -515,7 +478,6 @@ const FROM_FACTS: readonly Ask[] = [
   },
 ];
 
-/** Asked when no fact question took the topic. */
 const BASELINE: readonly ((y: number) => Question)[] = [
   (y) => ({
     topic: "glosas",
@@ -542,8 +504,8 @@ const STATIC: readonly Question[] = [
   },
 ];
 
-/** BASELINE alone covers four topics, so with STATIC the list runs from 8 to 10. */
-const MAX_DERIVED = 6;
+const MAX_QUESTIONS = 10;
+const MAX_DERIVED = MAX_QUESTIONS - STATIC.length;
 
 function questionsOf(lines: Lines, facts: readonly YearFacts[], pandemic: Ec119 | null): readonly Question[] {
   const year = facts[facts.length - 1].year;

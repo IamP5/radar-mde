@@ -124,7 +124,6 @@ export function HeaderSource() {
   );
 }
 
-/** Opens the printable council sheet on the year selected here. */
 export function CouncilLink() {
   const { d, year } = useCity();
   return (

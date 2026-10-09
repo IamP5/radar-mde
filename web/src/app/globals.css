@@ -474,8 +474,7 @@ svg :focus:not(:focus-visible) {
     border-top: 1px solid var(--border);
     background: none !important;
   }
-  /* a printed document already carries its URL, date and source in PrintMeta */
-  main:has([data-print-doc]) ~ footer {
+  main:has([data-council-sheet]) ~ footer {
     display: none !important;
   }
   main ~ footer > div {

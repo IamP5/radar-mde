@@ -56,10 +56,8 @@ export const STATUS_LABEL: Record<Status, string> = {
 /** Values far from the usual 25–40% band are often filing errors; flag them instead of asserting. */
 export const isAtypical = (v: number | null | undefined) => v != null && (v < 18 || v > 45);
 
-/** R$ that 25% of a tax base comes to. */
 export const requiredMde = (base: number) => (MDE_MIN / 100) * base;
 
-/** R$ above (+) or below (−) the 25% minimum in one year. Null without a declared % or a tax base. */
 export function mdeBalance(r: YearRecord | undefined): number | null {
   return r?.mde != null && r.base != null ? ((r.mde - MDE_MIN) / 100) * r.base : null;
 }
@@ -67,12 +65,10 @@ export function mdeBalance(r: YearRecord | undefined): number | null {
 /** Shortfall in R$ for one year (0 when the minimum was met). */
 export const shortfall = (r: YearRecord | undefined): number => Math.max(0, -(mdeBalance(r) ?? 0));
 
-/** EC 119/2022: years whose application above 25% may make up a 2020–2021 shortfall. */
 const EC119_MAKEUP_YEARS = [2022, 2023];
 
 export type Ec119 = { below: number[]; short: number; surplus: number; state: "compensated" | "open" | "unknown" };
 
-/** EC 119/2022 over a municipality's records. Null when neither 2020 nor 2021 is below 25%. */
 export function ec119(recs: Partial<Record<string, YearRecord>>): Ec119 | null {
   const below = [...PANDEMIC_YEARS].filter((y) => (recs[y]?.mde ?? 99) < MDE_MIN);
   if (!below.length) return null;
@@ -83,7 +79,6 @@ export function ec119(recs: Partial<Record<string, YearRecord>>): Ec119 | null {
   return { below, short, surplus, state: unknown ? "unknown" : surplus >= short ? "compensated" : "open" };
 }
 
-/** "2019", "2019 e 2021", "2016, 2019 e 2020 a 2025" (consecutive runs of 3+ collapse to "a"). */
 export function listYears(ys: readonly number[]): string {
   const runs: string[] = [];
   for (let i = 0; i < ys.length; ) {

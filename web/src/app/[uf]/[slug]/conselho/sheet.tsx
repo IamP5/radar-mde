@@ -21,7 +21,6 @@ import {
 } from "@/lib/council";
 import { cn } from "@/lib/utils";
 
-/** The view's only decision about outcomes. Badges always carry their words, so print in black and white still reads. */
 const KIND: Record<Outcome, StatusKind> = { met: "ok", edge: "edge", missed: "below", nodata: "nd", notdelivered: "below" };
 
 export function CouncilSheetView({ city, years, initial }: { city: CouncilCity; years: number[]; initial: number }) {
@@ -55,7 +54,7 @@ export function CouncilSheetView({ city, years, initial }: { city: CouncilCity; 
         }
       />
       <PageBody>
-        <article data-print-doc className="mx-auto max-w-3xl space-y-10">
+        <article data-council-sheet className="mx-auto max-w-3xl space-y-10">
           <Section id="checklist" title="Checklist legal">
             <Checklist lines={s.checklist} />
           </Section>
