@@ -1,4 +1,4 @@
-import { execFileSync, spawn } from "node:child_process";
+import { spawn } from "node:child_process";
 import fs from "node:fs";
 import net from "node:net";
 import path from "node:path";
@@ -88,19 +88,69 @@ export function descendants(root) {
   return all;
 }
 
-/** @param {number} port */
+/**
+ * PIDs with a listening TCP socket on `port`, from /proc/net/tcp and socket inodes.
+ * Does not shell out, so it works when `ss` is not installed.
+ * @param {number} port
+ */
 export function listeningPids(port) {
-  let out = "";
-  try {
-    out = execFileSync("ss", ["-H", "-ltnp", `sport = :${port}`], { encoding: "utf8" });
-  } catch (err) {
-    const stderr = err && typeof err === "object" && "stderr" in err ? String(err.stderr) : "";
+  const hex = port.toString(16).toUpperCase().padStart(4, "0");
+  const inodes = new Set();
+  let sawTable = false;
+  for (const file of ["/proc/net/tcp", "/proc/net/tcp6"]) {
+    let text = "";
+    try {
+      text = fs.readFileSync(file, "utf8");
+      sawTable = true;
+    } catch {
+      continue;
+    }
+    for (const line of text.split("\n").slice(1)) {
+      const parts = line.trim().split(/\s+/);
+      if (parts.length < 10) continue;
+      const local = parts[1];
+      const colon = local.lastIndexOf(":");
+      if (colon < 0) continue;
+      if (local.slice(colon + 1).toUpperCase() !== hex) continue;
+      if (parts[3] !== "0A") continue;
+      inodes.add(parts[9]);
+    }
+  }
+  if (!sawTable) {
     throw new CliError(
-      `Could not inspect listeners on port ${port} (${stderr.trim() || "ss failed"}).`,
-      "Install iproute2 (the ss command) and re-run control-radar-mde doctor. Do not guess which process owns the port.",
+      `Could not read /proc/net/tcp to see who owns port ${port}.`,
+      "This check needs a Linux /proc. Re-run control-radar-mde doctor on the same machine as the server. Do not guess the owner.",
     );
   }
-  return [...out.matchAll(/pid=(\d+)/g)].map((m) => Number(m[1]));
+  if (inodes.size === 0) return [];
+  /** @type {Set<number>} */
+  const pids = new Set();
+  let names = [];
+  try {
+    names = fs.readdirSync("/proc");
+  } catch {
+    return [];
+  }
+  for (const name of names) {
+    if (!/^\d+$/.test(name)) continue;
+    let fds = [];
+    try {
+      fds = fs.readdirSync(`/proc/${name}/fd`);
+    } catch {
+      continue;
+    }
+    for (const fd of fds) {
+      let target = "";
+      try {
+        target = fs.readlinkSync(`/proc/${name}/fd/${fd}`);
+      } catch {
+        continue;
+      }
+      const match = /^socket:\[(\d+)\]$/.exec(target);
+      if (match && inodes.has(match[1])) pids.add(Number(name));
+    }
+  }
+  return [...pids];
 }
 
 /**

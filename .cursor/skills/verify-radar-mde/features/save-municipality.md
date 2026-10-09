@@ -25,7 +25,7 @@ Preconditions:
 
 - **Open search from the panel.** Run `./scripts/control-radar-mde browser open /`. Run `./scripts/control-radar-mde browser click --role button --name "Digite o nome da sua cidade"`. Run `./scripts/control-radar-mde browser wait --role dialog --name "Buscar município, estado ou região"`.
 - **Find Santo André in São Paulo.** Run `./scripts/control-radar-mde browser fill --role combobox --name "Buscar" --value "santo andre"`. Run `./scripts/control-radar-mde browser click --role option --name-regex "Santo André.*SP"`. The URL path is `/sp/santo-andre`. Wait with `./scripts/control-radar-mde browser wait --role heading --name "Santo André" --level 1`.
-- **Save it.** Run `./scripts/control-radar-mde browser click --role button --name "Salvar"`. The button name becomes `Salvo`: `./scripts/control-radar-mde browser wait --role button --name "Salvo"`. A status contains `Salvo em Municípios salvos`: `./scripts/control-radar-mde browser wait --role status --name "Salvo em Municípios salvos"`.
+- **Save it.** Run `./scripts/control-radar-mde browser click --role button --name "Salvar"`. The button name becomes `Salvo` and it is pressed: `./scripts/control-radar-mde browser wait --role button --name "Salvo"`.
 - **Capture the action.** Run `./scripts/control-radar-mde browser screenshot --path save-municipality/saved-city.png` and `./scripts/control-radar-mde browser snapshot --aria --path save-municipality/saved-city.aria.txt`.
 - **Open the second view.** Run `./scripts/control-radar-mde browser click --role link --name "Salvos" --within-role navigation --within-name Principal`. The URL path is `/acompanhar`. A heading named `1 município` is visible. A link named `Santo André` is visible.
 - **Read the stored list.** Run `./scripts/control-radar-mde browser storage get --key radar-mde:watch`. The value contains `sp/santo-andre`.
@@ -37,6 +37,6 @@ Preconditions:
 
 - The header and the footer both expose a link named `Salvos`. Scope the click with `--within-role navigation --within-name Principal`.
 - Saving writes this browser profile only. Another run, or a person's own browser, stays empty. Assert `radar-mde:watch`, not a server row.
-- The status text is `Salvo em Municípios salvos (só neste navegador).` Match the shorter name `Salvo em Municípios salvos`.
+- A screen-reader status says `Salvo em Municípios salvos (só neste navegador).` and is cleared after a few seconds. It is not a visible control. The durable on-screen confirmation is the pressed button named `Salvo`.
 - Take the screenshots before `Remover`. Removal restores the empty baseline; it is not the proof of the save.
 - Two cities are named Santo André. The option regex must require `SP`.

@@ -242,7 +242,7 @@ async function handle(msg) {
     );
   }
 
-  if (op === "wait" && typeof msg.urlIncludes === "string") {
+  if (op === "wait" && typeof msg.urlIncludes === "string" && msg.urlIncludes) {
     if (!current.url().includes(msg.urlIncludes)) {
       await current.waitForURL((url) => url.toString().includes(String(msg.urlIncludes)), { timeout });
     }
@@ -313,7 +313,11 @@ async function handle(msg) {
       rememberUrl();
       return { ok: true, url: current.url(), download: { path: msg.download, suggestedFilename: download.suggestedFilename(), bytes } };
     }
+    const before = current.url();
+    // Client navigations (search → city) finish after the click event. Wait briefly so the returned URL is the destination.
+    const moved = current.waitForURL((url) => url.toString() !== before, { timeout: 8000 }).then(() => true).catch(() => false);
     await resolved.locator.click({ timeout, force: Boolean(msg.force) });
+    await Promise.race([moved, current.waitForTimeout(400)]);
     rememberUrl();
     return { ok: true, url: current.url() };
   }
