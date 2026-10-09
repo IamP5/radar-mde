@@ -3,7 +3,7 @@
  * (header, share text) so every surface says the same thing about the selected year.
  */
 import type { StatusKind } from "@/components/kit/status";
-import { MDE_MIN, PANDEMIC_YEARS, pct } from "@/lib/format";
+import { MDE_MIN, PANDEMIC_YEARS, listYears, pct } from "@/lib/format";
 import type { PeriodBalance } from "@/lib/rows";
 
 /** Status of one year: data → ok/edge/below; nd = nothing declared; none = no record; na = municipality didn't exist yet. */
@@ -57,19 +57,6 @@ export type CityYearData = {
   /** the state's municipalities (same order as citiesOf) and their MDE % in the initial year; -1 = não declarou */
   map: { ids: number[]; initial: (number | null)[] };
 };
-
-/** "2019", "2019 e 2021", "2016, 2019 e 2020 a 2025". */
-export function listYears(ys: number[]): string {
-  const runs: string[] = [];
-  for (let i = 0; i < ys.length; ) {
-    let j = i;
-    while (j + 1 < ys.length && ys[j + 1] === ys[j] + 1) j++;
-    if (j - i >= 2) runs.push(`${ys[i]} a ${ys[j]}`);
-    else for (let k = i; k <= j; k++) runs.push(String(ys[k]));
-    i = j + 1;
-  }
-  return runs.length <= 1 ? (runs[0] ?? "") : `${runs.slice(0, -1).join(", ")} e ${runs[runs.length - 1]}`;
-}
 
 export const pts = (v: number) => Math.abs(v).toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 

@@ -56,10 +56,39 @@ export const STATUS_LABEL: Record<Status, string> = {
 /** Values far from the usual 25–40% band are often filing errors; flag them instead of asserting. */
 export const isAtypical = (v: number | null | undefined) => v != null && (v < 18 || v > 45);
 
+export const requiredMde = (base: number) => (MDE_MIN / 100) * base;
+
+export function mdeBalance(r: YearRecord | undefined): number | null {
+  return r?.mde != null && r.base != null ? ((r.mde - MDE_MIN) / 100) * r.base : null;
+}
+
 /** Shortfall in R$ for one year (0 when the minimum was met). */
-export function shortfall(r: YearRecord | undefined): number {
-  if (!r || r.mde == null || r.base == null) return 0;
-  return Math.max(0, ((MDE_MIN - r.mde) / 100) * r.base);
+export const shortfall = (r: YearRecord | undefined): number => Math.max(0, -(mdeBalance(r) ?? 0));
+
+const EC119_MAKEUP_YEARS = [2022, 2023];
+
+export type Ec119 = { below: number[]; short: number; surplus: number; state: "compensated" | "open" | "unknown" };
+
+export function ec119(recs: Partial<Record<string, YearRecord>>): Ec119 | null {
+  const below = [...PANDEMIC_YEARS].filter((y) => (recs[y]?.mde ?? 99) < MDE_MIN);
+  if (!below.length) return null;
+  const short = below.reduce((s, y) => s + shortfall(recs[y]), 0);
+  const unknown =
+    below.some((y) => recs[y]?.base == null) || EC119_MAKEUP_YEARS.some((y) => recs[y]?.mde == null || recs[y]?.base == null);
+  const surplus = EC119_MAKEUP_YEARS.reduce((s, y) => s + Math.max(0, mdeBalance(recs[y]) ?? 0), 0);
+  return { below, short, surplus, state: unknown ? "unknown" : surplus >= short ? "compensated" : "open" };
+}
+
+export function listYears(ys: readonly number[]): string {
+  const runs: string[] = [];
+  for (let i = 0; i < ys.length; ) {
+    let j = i;
+    while (j + 1 < ys.length && ys[j + 1] === ys[j] + 1) j++;
+    if (j - i >= 2) runs.push(`${ys[i]} a ${ys[j]}`);
+    else for (let k = i; k <= j; k++) runs.push(String(ys[k]));
+    i = j + 1;
+  }
+  return runs.length <= 1 ? (runs[0] ?? "") : `${runs.slice(0, -1).join(", ")} e ${runs[runs.length - 1]}`;
 }
 
 export const brl = (v: number) =>

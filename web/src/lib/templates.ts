@@ -9,41 +9,23 @@ import {
   YEARS,
   brlShort,
   deficitTrail,
+  ec119,
   fundebLeftMax,
   funMin,
+  listYears,
   pct,
-  shortfall,
   yearsBelow,
 } from "./data";
-import { getUf, ofUf } from "./geo";
+import { getUf, ofUf, tribunal } from "./geo";
+
+export { listYears, tribunal };
 
 const rec = (c: City, y: number): CityYear | undefined => c.years[y];
 
-/** "2019", "2019 e 2021", "2016, 2019 e 2020 a 2025" (consecutive runs of 3+ collapse to "a"). */
-export function listYears(ys: number[]): string {
-  const runs: string[] = [];
-  for (let i = 0; i < ys.length; ) {
-    let j = i;
-    while (j + 1 < ys.length && ys[j + 1] === ys[j] + 1) j++;
-    if (j - i >= 2) runs.push(`${ys[i]} a ${ys[j]}`);
-    else for (let k = i; k <= j; k++) runs.push(String(ys[k]));
-    i = j + 1;
-  }
-  return runs.length <= 1 ? (runs[0] ?? "") : `${runs.slice(0, -1).join(", ")} e ${runs[runs.length - 1]}`;
-}
 /** "no exercício de 2021" / "nos exercícios de 2019 e 2021". */
 export const exercicios = (ys: number[]) => (ys.length === 1 ? `no exercício de ${ys[0]}` : `nos exercícios de ${listYears(ys)}`);
 /** "em 2021" / "em 2019 e 2021". */
 export const emAnos = (ys: number[]) => `em ${listYears(ys)}`;
-
-/** Court of accounts that audits a municipality: BA, GO and PA have municipal courts; the capitals of SP and RJ have their own. */
-export function tribunal(c: City): { name: string; short: string } {
-  if (c.id === 3550308) return { name: "Tribunal de Contas do Município de São Paulo", short: "TCM-SP" };
-  if (c.id === 3304557) return { name: "Tribunal de Contas do Município do Rio de Janeiro", short: "TCM-RJ" };
-  if (c.uf === "DF") return { name: "Tribunal de Contas do Distrito Federal", short: "TCDF" };
-  if (["BA", "GO", "PA"].includes(c.uf)) return { name: `Tribunal de Contas dos Municípios do Estado ${ofUf(c.uf)}`, short: `TCM-${c.uf}` };
-  return { name: `Tribunal de Contas do Estado ${ofUf(c.uf)}`, short: `TCE-${c.uf}` };
-}
 
 /**
  * Everything the declared data says about a municipality, shared by the "Sinais de alerta" panel and the
@@ -54,7 +36,8 @@ export function cityFacts(c: City) {
   const reported = existing.filter((y) => rec(c, y)?.mde != null);
   const notDelivered = existing.filter((y) => rec(c, y)?.s === "nd");
   const below = yearsBelow(c);
-  const belowPandemic = below.filter((y) => PANDEMIC_YEARS.has(y));
+  const pandemic = ec119(c.years);
+  const belowPandemic = pandemic?.below ?? [];
   // flags come from the data build (outlier against the municipality's own history, or implausible); persistent
   // low application is real under-application and is never flagged
   const atypMde = reported.filter((y) => rec(c, y)?.atip?.includes("mde"));
@@ -81,19 +64,6 @@ export function cityFacts(c: City) {
   // years after the last declared one with nothing sent (CIT-10: a city that stopped declaring)
   const stopped = last == null ? notDelivered : notDelivered.filter((y) => y > last);
   const sources = new Set(reported.map((y) => rec(c, y)?.src).filter(Boolean));
-
-  // EC 119/2022: 2020–21 shortfalls are not punishable if made up (on top of the 25%) by the end of 2023
-  let pandemic: { short: number; surplus: number; state: "compensated" | "open" | "unknown" } | null = null;
-  if (belowPandemic.length) {
-    const short = belowPandemic.reduce((s, y) => s + shortfall(rec(c, y)), 0);
-    const after = [2022, 2023].filter((y) => YEARS.includes(y));
-    const unknown = belowPandemic.some((y) => rec(c, y)?.base == null) || after.some((y) => rec(c, y)?.mde == null || rec(c, y)?.base == null);
-    const surplus = after.reduce((s, y) => {
-      const r = rec(c, y);
-      return r?.mde != null && r.base != null ? s + Math.max(0, ((r.mde - MDE_MIN) / 100) * r.base) : s;
-    }, 0);
-    pandemic = { short, surplus, state: unknown ? "unknown" : surplus >= short ? "compensated" : "open" };
-  }
   // shortfalls that still matter legally: outside the pandemic, or pandemic ones not shown to be compensated
   const seriousBelow = below.filter((y) => !PANDEMIC_YEARS.has(y) || pandemic?.state !== "compensated");
 

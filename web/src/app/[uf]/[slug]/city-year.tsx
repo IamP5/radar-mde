@@ -5,7 +5,7 @@
  * (useYear) and every island below re-renders from data already in the page. Only the state map / histogram of
  * a non-default year need the other municipalities' values, fetched once per year from ./ano/[ano].
  */
-import { ExternalLink, Info, Loader2, TriangleAlert } from "lucide-react";
+import { ClipboardList, ExternalLink, Info, Loader2, TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import CityMap, { type CityMapValue } from "@/components/CityMap";
@@ -15,15 +15,15 @@ import YearPicker, { useYear, withYear } from "@/components/YearPicker";
 import { EmptyState, Panel } from "@/components/kit/panel";
 import { Stat } from "@/components/kit/stat";
 import { StatusBadge } from "@/components/kit/status";
-import { Button } from "@/components/ui/button";
-import { MDE_MIN, brl, brlShort, brlSigned, pct, siconfiUrl, siopeUrl } from "@/lib/format";
-import { cityPath } from "@/lib/geo";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { MDE_MIN, brl, brlShort, brlSigned, listYears, pct, siconfiUrl, siopeUrl } from "@/lib/format";
+import { cityPath, councilPath } from "@/lib/geo";
 import { ATIP_IMPL_LABEL, ATIP_LABEL, IPCA_BASE } from "@/lib/rows";
 import { cn } from "@/lib/utils";
 import { FundebCityCard } from "@/components/FundebCityCard";
 import type { FundebCityView } from "@/lib/fundeb-types";
 import { Term } from "./glossary";
-import { type CityYearData, type Rank, type YearPoint, comparison, listYears, pts, summary } from "./verdict";
+import { type CityYearData, type Rank, type YearPoint, comparison, pts, summary } from "./verdict";
 
 type Ctx = {
   d: CityYearData;
@@ -128,6 +128,16 @@ export function HeaderSource() {
     >
       {name} <ExternalLink className="size-3.5" />
     </Button>
+  );
+}
+
+export function CouncilLink() {
+  const { d, year } = useCity();
+  return (
+    <Link href={withYear(councilPath(d.uf, d.slug), year, d.initial)} className={buttonVariants({ variant: "outline" })}>
+      <ClipboardList aria-hidden className="text-muted-foreground" />
+      Ficha para o conselho
+    </Link>
   );
 }
 
