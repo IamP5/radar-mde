@@ -61,3 +61,4 @@ H1 title + one paragraph, then exactly four H2s: `Sub-features` (short IDs, one 
 - [Footer and skip link](./chrome.md) covers the footer section links, the license, and Pular para o conteúdo.
 - [Phone navigation](./phone-nav.md) covers the second header bar and the short Método label.
 - [Saved year strip](./saved-series.md) covers the year cells on Salvos and Adicionar.
+- [Spending by stage](./spending-by-stage.md) covers where education spending goes on a city, on Brasil, on a region, on a state, in the explorer, and in the data dictionary.
