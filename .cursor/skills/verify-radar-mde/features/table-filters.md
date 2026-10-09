@@ -46,7 +46,7 @@ Preconditions:
 
 ## Gotchas
 
-- `Abaixo de 25%` is also the start of `Abaixo de 25% e Fundeb abaixo do mínimo`. The option regex must require digits (the count) right after `Abaixo de 25%`.
+- `Abaixo de 25%` is also the start of `Abaixo de 25% e Fundeb < 70%` (or `< 60%` through 2020). The option regex must require digits (the count) right after `Abaixo de 25%`.
 - Option names include a count. Do not use `--exact` on `Nordeste` or `5 a 20 mil`.
 - `Mais de 500 mil` together with `Abaixo de 25%` matches no municipality, and `Exportar CSV` stays disabled on an empty table. `5 a 20 mil` in the Nordeste still has rows in 2020, so the series download can run.
 - `Só <year> · CSV padrão` is the explore-municipalities recipe. This recipe downloads the item that starts with `Série`.
