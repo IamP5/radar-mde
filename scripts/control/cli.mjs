@@ -9,6 +9,7 @@ import { CliError, toPayload } from "./lib/errors.mjs";
 import { commandNames, helpFor } from "./lib/help.mjs";
 import { assertRunId, evidenceRoot, gitRevision, readJson, repoRoot, resolveEvidencePath, runIdFrom, runPaths, stateRoot, webDir, writeJson } from "./lib/paths.mjs";
 import { alive, cmdlineMatches, descendants, findFreePort, listeningPids, portFree, readTail, spawnDetached, stopProcessGroup } from "./lib/proc.mjs";
+import { resolveViewport } from "./lib/viewport.mjs";
 import { WATCH_KEY, assertWatchId, nextWatch, parseWatch } from "./lib/watch.mjs";
 
 const EXPECT_NEXT = "next/dist/bin/next";
@@ -150,6 +151,8 @@ async function launch(flags) {
       "Omit --host. The verification server listens on 127.0.0.1 only.",
     );
   }
+  // Reject a bad timeout before spawning next, so a typo does not leave a server behind.
+  const timeout = numberFlag(flags, "timeout", 180_000);
   const requestedId = flags["run-id"] && flags["run-id"] !== true ? String(flags["run-id"]) : "";
   const runId = assertRunId(requestedId || `v${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`);
   const running = liveRuns();
@@ -170,7 +173,7 @@ async function launch(flags) {
   if (!fs.existsSync(nextBin)) {
     throw new CliError(
       "Next.js is not installed in web/.",
-      "Run npm install in the web directory, then control-radar-mde launch again. The site does not need API keys.",
+      "From the repo root run bash scripts/cloud-agent-install.sh, then control-radar-mde launch again. The site does not need API keys.",
     );
   }
 
@@ -223,7 +226,6 @@ async function launch(flags) {
   };
   writeJson(paths.stateFile, state);
 
-  const timeout = numberFlag(flags, "timeout", 180_000);
   const deadline = Date.now() + timeout;
   let last = "no response yet";
   while (Date.now() < deadline) {
@@ -340,7 +342,7 @@ async function ensureDaemon(state, headed) {
   const tail = readTail(paths.daemonLog, 30).join("\n");
   throw new CliError(
     "The browser daemon did not become ready.",
-    `Install Chromium if the log asks for it: cd scripts/control && npx playwright install chromium\n${tail}`,
+    `From the repo root run bash scripts/cloud-agent-install.sh (npm ci plus Playwright Chromium), then retry.\n${tail}`,
   );
 }
 
@@ -350,10 +352,8 @@ async function browserCall(state, flags, msg) {
   const timeout = numberFlag(flags, "timeout", 15_000);
   const result = await rpc(state, { timeout, ...msg }, timeout);
   if (!result || result.ok === false) {
-    throw new CliError(result?.error || "Browser command failed.", result?.hint || "Run control-radar-mde browser --help.", 1, {
-      samples: result?.samples,
-      count: result?.count,
-    });
+    const { ok: _ok, error, hint, ...extra } = result || {};
+    throw new CliError(error || "Browser command failed.", hint || "Run control-radar-mde browser --help.", 1, extra);
   }
   return { ...result, runId: state.runId, ok: true };
 }
@@ -371,6 +371,7 @@ function targetMsg(flags) {
     selector: stringFlag(flags, "selector"),
     withinRole: stringFlag(flags, "within-role"),
     withinName: stringFlag(flags, "within-name"),
+    withinNameRegex: stringFlag(flags, "within-name-regex"),
     withinExact: Boolean(flags["within-exact"]),
     includeHidden: Boolean(flags["include-hidden"]),
     force: Boolean(flags.force),
@@ -386,6 +387,13 @@ async function browser(positionals, flags, state) {
     return browserCall(state, flags, { op: "open", path: openPath });
   }
   if (sub === "url") return browserCall(state, flags, { op: "url" });
+  if (sub === "viewport") {
+    const size = resolveViewport({ preset: stringFlag(flags, "preset"), width: stringFlag(flags, "width"), height: stringFlag(flags, "height") });
+    return browserCall(state, flags, { op: "viewport", size });
+  }
+  if (sub === "outbound") {
+    return browserCall(state, flags, { op: "outbound", since: numberFlag(flags, "since", 0), clear: Boolean(flags.clear) });
+  }
   if (sub === "press") {
     const key = stringFlag(flags, "key");
     if (!key) throw new CliError("press needs --key.", "Example: control-radar-mde browser press --key Control+k");
@@ -406,7 +414,7 @@ async function browser(positionals, flags, state) {
   }
   if (sub === "click") {
     /** @type {Record<string, unknown>} */
-    const msg = { op: "click", ...target };
+    const msg = { op: "click", ...target, expectNav: Boolean(flags["expect-nav"]) };
     if (flags.download && flags.download !== true) {
       msg.download = resolveEvidencePath(state.evidenceDir, String(flags.download));
     }
@@ -439,7 +447,7 @@ async function browser(positionals, flags, state) {
   }
   throw new CliError(
     `Unknown browser subcommand ${JSON.stringify(sub)}.`,
-    `Use one of: open, click, fill, press, wait, find, text, snapshot, screenshot, url, clipboard, storage. Run control-radar-mde browser --help.`,
+    `Use one of: open, click, fill, press, wait, find, text, snapshot, screenshot, url, viewport, outbound, clipboard, storage. Run control-radar-mde browser --help.`,
   );
 }
 
@@ -498,10 +506,12 @@ async function httpGet(positionals, flags, state) {
   const response = await fetch(url, { redirect: "follow", signal: AbortSignal.timeout(numberFlag(flags, "timeout", 60_000)) });
   const buf = Buffer.from(await response.arrayBuffer());
   /** @type {Record<string, unknown>} */
+  const failOnStatus = Boolean(flags["fail-on-status"]);
   const payload = {
-    ok: response.ok,
+    ok: failOnStatus ? response.ok : true,
     runId: state.runId,
     status: response.status,
+    statusOk: response.ok,
     url: response.url,
     contentType: response.headers.get("content-type"),
     bytes: buf.length,
@@ -517,7 +527,9 @@ async function httpGet(positionals, flags, state) {
     payload.savedTo = dest;
   }
   if (!response.ok) {
-    payload.hint = `HTTP ${response.status} from ${url.pathname}. Check the path against web/src/app. CSV files are /dados/csv/<uf> and /dados/csv/brasil.`;
+    payload.hint = failOnStatus
+      ? `HTTP ${response.status} from ${url.pathname}, and --fail-on-status was set. Check the path against web/src/app. CSV files are /dados/csv/<uf> and /dados/csv/brasil.`
+      : `HTTP ${response.status} from ${url.pathname}. The request itself succeeded, so the exit code is 0; assert on status. Add --fail-on-status to exit 1 on 4xx/5xx.`;
   }
   return payload;
 }
@@ -662,7 +674,12 @@ export async function main(argv) {
     if (command === "launch") payload = await launch(flags);
     else if (command === "cleanup") payload = await cleanup(flags);
     else if (command === "evidence") payload = evidence(positionals, runIdFrom(flags));
-    else {
+    else if (command === "http" && positionals[1] !== "get") {
+      throw new CliError(
+        `Unknown http subcommand ${JSON.stringify(positionals[1] || "")}.`,
+        "http only has get. Example: control-radar-mde http get /dados/csv/sp --save sp.csv. Run control-radar-mde http get --help.",
+      );
+    } else {
       const runId = runIdFrom(flags);
       const paths = runPaths(runId);
       const state = loadState(paths.stateFile);
