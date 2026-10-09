@@ -55,7 +55,7 @@ export type MoneyRow = { label: string; value: string; note: string | null };
 
 export type Money = { applied: MoneyRow; required: MoneyRow; gap: MoneyRow; basis: string; payroll: string };
 
-export type Cell = { text: string; outcome: Outcome | null };
+export type Cell = { text: string; outcome: Outcome | null; spoken: string | null };
 
 export type History = {
   columns: readonly string[];
@@ -83,7 +83,16 @@ export type Question = { topic: Topic; text: string };
 
 export type SourceLink = { label: string; href: string | null };
 
-export type Header = { title: string; place: string; exercise: string; dataVersion: string; cityHref: string };
+export type Header = {
+  title: string;
+  place: string;
+  exercise: string;
+  dataVersion: string;
+  cityHref: string;
+  cityLabel: string;
+  lead: string;
+  guide: string;
+};
 
 export type CouncilSheet = {
   header: Header;
@@ -133,9 +142,13 @@ export function councilSheet(c: CouncilCity, years: readonly number[], year: num
       exercise: `Exercício de ${year}`,
       dataVersion: `Dados versão ${DATA_VERSION}`,
       cityHref: `${cityPath(c.uf, c.slug)}?ano=${year}`,
+      cityLabel: `Página de ${c.name}`,
+      lead: "Resumo para a reunião: o que a lei pede, o que cada fonte registrou e perguntas para a prefeitura. O Radar não envia esta ficha a ninguém.",
+      guide:
+        "MDE é a parte da receita de impostos aplicada em educação; o mínimo legal é 25%. SIOPE é o que a prefeitura declarou ao governo federal. Quando outra fonte aparece ao lado, o número é dessa fonte. A regra do Fundeb (70% desde 2021, 60% até 2020) vale só para a remuneração dos profissionais e não substitui os 25%. A coluna por aluno está em reais corrigidos pela inflação (IPCA); os demais valores estão em reais do ano.",
     },
     checklist: [lines.mde, lines.fundebPay, lines.fundebLeft, ...(lines.ec119 ? [lines.ec119] : []), lines.declared, lines.atypical],
-    money: moneyOf(sel, lines.mde),
+    money: moneyOf(sel, lines.mde, facts),
     history: historyOf(facts),
     questions: questionsOf(lines, facts, pandemic),
     sources: [
@@ -266,10 +279,17 @@ function ec119Line(c: CouncilCity, years: readonly number[], p: Ec119 | null): R
   const src = declaredSource(c, p.below[0]);
   const noBase = p.below.some((y) => c.years[y]?.base == null);
   const figure = `${noBase ? "" : `${brlShort(p.short)} `}abaixo de ${MDE_MIN}% em ${listYears(p.below)}`;
-  const after = `Pelos dados declarados, a aplicação acima de ${MDE_MIN}% em 2022 e 2023 (${brlShort(p.surplus)})`;
+  const after =
+    p.surplus > 0
+      ? `Pelos dados declarados, a aplicação acima de ${MDE_MIN}% em 2022 e 2023 (${brlShort(p.surplus)})`
+      : `Pelos dados declarados, 2022 e 2023 não registram aplicação acima de ${MDE_MIN}%`;
   if (p.state === "compensated")
     return line(reading(src, figure, "met"), `${after} parece ter coberto essa diferença, o que cabe ao Tribunal de Contas confirmar.`);
-  if (p.state === "open") return line(reading(src, figure, "missed", "Não compensado"), `${after} não cobre essa diferença. Confirme na fonte.`);
+  if (p.state === "open")
+    return line(
+      reading(src, figure, "missed", "Não compensado"),
+      p.surplus > 0 ? `${after} não cobre essa diferença. Confirme na fonte.` : `${after}. Isso não cobre a diferença. Confirme na fonte.`,
+    );
   return line(reading(src, figure, "nodata"), "Faltam a receita ou o percentual de algum ano entre 2020 e 2023 para estimar a compensação. Confirme na fonte.");
 }
 
@@ -318,7 +338,7 @@ function atypicalLine(facts: readonly YearFacts[]): CaveatLine {
   };
 }
 
-function moneyOf(sel: YearFacts, mde: RuleLine): Money {
+function moneyOf(sel: YearFacts, mde: RuleLine, facts: readonly YearFacts[]): Money {
   const { year: y, rec: r } = sel;
   const payroll =
     `O mínimo de ${funMin(y)}% vale só para o Fundeb e trata da remuneração dos profissionais. O restante do Fundeb e os ` +
@@ -327,11 +347,13 @@ function moneyOf(sel: YearFacts, mde: RuleLine): Money {
   const label = { applied: "Aplicado em MDE", required: "Mínimo exigido", gap: "Diferença para o mínimo" };
   if (r?.s === "nd") {
     const row = (l: string): MoneyRow => ({ label: l, value: STATUS_LABEL.notdelivered, note: null });
+    const last = [...facts].reverse().find((f) => f.year !== y && f.rec?.s !== "nd" && f.rec?.mde != null);
+    const prior = last ? ` O último exercício declarado nesta ficha é ${last.year}, com ${pct(last.rec?.mde)} em MDE na tabela abaixo.` : "";
     return {
       applied: row(label.applied),
       required: row(label.required),
       gap: row(label.gap),
-      basis: `O município não declarou os dados de ${y}.`,
+      basis: `O município não declarou os dados de ${y}.${prior}`,
       payroll,
     };
   }
@@ -365,7 +387,11 @@ function moneyOf(sel: YearFacts, mde: RuleLine): Money {
   };
 }
 
-const cell = (r: Reading): Cell => ({ text: r.outcome === "notdelivered" ? r.badge : r.figure, outcome: r.outcome });
+const cell = (r: Reading): Cell => ({
+  text: r.outcome === "notdelivered" ? r.badge : r.figure,
+  outcome: r.outcome,
+  spoken: r.outcome === "missed" || r.outcome === "edge" ? r.badge : null,
+});
 
 function historyOf(facts: readonly YearFacts[]): History {
   const audit = facts.find((f) => f.audited)?.audited?.source;
@@ -376,15 +402,16 @@ function historyOf(facts: readonly YearFacts[]): History {
       selected: i === facts.length - 1,
       cells: [
         cell(f.declared),
-        ...(audit ? [f.audited ? cell(f.audited) : { text: "sem dado", outcome: null }] : []),
+        ...(audit ? [f.audited ? cell(f.audited) : { text: "sem dado", outcome: null, spoken: null }] : []),
         cell(f.fundebPay),
         {
           text: f.rec?.s === "nd" ? STATUS_LABEL.notdelivered : shown(toReal(f.rec?.perAluno, f.year), brl),
           outcome: null,
+          spoken: null,
         },
       ],
     })),
-    footnote: `* ${IPCA_LABEL}.`,
+    footnote: `* Por aluno em ${IPCA_LABEL} (inflação). Os outros valores desta ficha estão em reais do ano, sem essa correção.`,
   };
 }
 
@@ -416,13 +443,17 @@ const FROM_FACTS: readonly Ask[] = [
       .filter((h) => h.missed.length);
     if (!hits.length) return null;
     const ys = listYears(hits.map((h) => h.f.year));
-    const ask = "Que medidas foram adotadas para compensar essa diferença?";
+    const pandemicInWindow = facts.filter((f) => PANDEMIC_YEARS.has(f.year) && (f.declared.outcome === "missed" || f.audited?.outcome === "missed"));
+    const aside = pandemicInWindow.length
+      ? ` ${listYears(pandemicInWindow.map((f) => f.year))} ${pandemicInWindow.length === 1 ? "entra" : "entram"} na compensação da pandemia, não nesta lista.`
+      : "";
+    const ask = `Que medidas foram adotadas para compensar essa diferença?`;
     const declared = hits.flatMap((h) => h.missed.filter((r) => r === h.f.declared));
     const other = hits.flatMap((h) => h.missed.filter((r) => r !== h.f.declared));
-    if (!other.length) return { topic: "compensation", text: `Pelos dados declarados, a aplicação em MDE ficou abaixo de ${MDE_MIN}% em ${ys}. ${ask}` };
+    if (!other.length) return { topic: "compensation", text: `Pelos dados declarados, a aplicação em MDE ficou abaixo de ${MDE_MIN}% em ${ys}.${aside} ${ask}` };
     const shorts = [...new Set([...declared, ...other].map((r) => r.source.short))];
     const who = shorts.length > 1 ? `pelo menos uma das fontes (${orList(shorts)})` : `o ${shorts[0]}`;
-    return { topic: "compensation", text: `Em ${ys}, ${who} indica aplicação abaixo de ${MDE_MIN}% em MDE. ${ask}` };
+    return { topic: "compensation", text: `Em ${ys}, ${who} indica aplicação abaixo de ${MDE_MIN}% em MDE.${aside} ${ask}` };
   },
   ({ pandemic: p }) => {
     if (!p) return null;
@@ -447,7 +478,7 @@ const FROM_FACTS: readonly Ask[] = [
     if (!edge) return null;
     return {
       topic: "glosas",
-      text: `Em ${facts[facts.length - 1].year}, o ${edge.source.short} registra ${edge.figure}, no limite do mínimo de ${MDE_MIN}%. O Tribunal de Contas aceitou todas as despesas contadas como MDE nesse ano, ou houve glosas?`,
+      text: `Em ${facts[facts.length - 1].year}, o ${edge.source.short} registra ${edge.figure}, no limite do mínimo de ${MDE_MIN}%. O Tribunal de Contas aceitou todas as despesas contadas como MDE nesse ano, ou houve glosas (despesas não aceitas como educação)?`,
     };
   },
   ({ lines, facts }) => {
@@ -481,7 +512,7 @@ const FROM_FACTS: readonly Ask[] = [
 const BASELINE: readonly ((y: number) => Question)[] = [
   (y) => ({
     topic: "glosas",
-    text: `O parecer do Tribunal de Contas sobre as contas de ${y} apontou glosas em despesas de educação? Qual percentual foi apurado?`,
+    text: `O parecer do Tribunal de Contas sobre as contas de ${y} apontou glosas (despesas não aceitas como educação)? Qual percentual foi apurado?`,
   }),
   (y) => ({ topic: "cacs", text: `O conselho recebeu os demonstrativos do Fundeb de ${y} a tempo de analisá-los antes do envio ao SIOPE?` }),
   (y) => ({
@@ -497,10 +528,10 @@ const STATIC: readonly Question[] = [
     text: "Quais são os maiores contratos da educação, como transporte escolar, obras e serviços terceirizados, e onde podem ser consultados?",
   },
   { topic: "convenios", text: "Há convênios com creches ou outras entidades? Quanto foi repassado e como é feita a prestação de contas?" },
-  { topic: "creche", text: "Quantas crianças estão hoje na fila de espera por vaga em creche, e qual é o plano para atendê-las?" },
+  { topic: "creche", text: "Quantas crianças estão na fila de espera por vaga em creche, e qual é o plano para atendê-las? Esta ficha não traz esse número." },
   {
     topic: "schools",
-    text: "Quanto cada escola recebeu de recursos descentralizados, como o PDDE, e como a comunidade escolar acompanha esse uso?",
+    text: "Quanto cada escola recebeu de recursos descentralizados, como o PDDE (dinheiro federal enviado à escola), e como a comunidade escolar acompanha esse uso?",
   },
 ];
 

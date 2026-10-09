@@ -92,7 +92,10 @@ test("the five-year table adds the audited column and ends at the selected year"
     last.cells.map((c) => c.text),
     ["25,05%", "21,87%", "80,62%", "R$\u00a016.564"],
   );
-  assert.equal(history.footnote, "* R$ de 2025, corrigidos pelo IPCA.");
+  assert.equal(
+    history.footnote,
+    "* Por aluno em R$ de 2025, corrigidos pelo IPCA (inflação). Os outros valores desta ficha estão em reais do ano, sem essa correção.",
+  );
 });
 
 test("Tesouro joins the selected year's MDE line but never the table", () => {
@@ -125,7 +128,10 @@ test("Paulínia 2025, a year not declared, still yields the whole sheet", () => 
     [s.money.applied, s.money.required, s.money.gap].map((r) => r.value),
     ["Não declarou", "Não declarou", "Não declarou"],
   );
-  assert.equal(s.money.basis, "O município não declarou os dados de 2025.");
+  assert.equal(
+    s.money.basis,
+    "O município não declarou os dados de 2025. O último exercício declarado nesta ficha é 2024, com 32,16% em MDE na tabela abaixo.",
+  );
   assert.deepEqual(
     s.history.rows.at(-1)!.cells.map((c) => c.text),
     ["Não declarou", "Não declarou", "Não declarou"],
@@ -156,6 +162,25 @@ test("a declared 0 is a figure, not a missing value", () => {
   const s = at({ 2019: { s: "ok", mde: 0, mdeV: 0, base: 1000 } }, 2019);
   assert.deepEqual(readings(rule(s, "mde")), [["SIOPE", "0,00%", "Abaixo do mínimo"]]);
   assert.equal(s.money.applied.value, "R$\u00a00");
+});
+
+test("an EC 119 line with no surplus does not call that an application above 25%", () => {
+  const s = at(
+    {
+      2020: { s: "ok", mde: 20, base: 100_000_000 },
+      2021: { s: "ok", mde: 20, base: 100_000_000 },
+      2022: { s: "ok", mde: 24, base: 100_000_000 },
+      2023: { s: "ok", mde: 24, base: 100_000_000 },
+    },
+    2023,
+  );
+  const note = rule(s, "ec119").note ?? "";
+  assert.match(note, /2022 e 2023 não registram aplicação acima de 25%/);
+  assert.equal(note.includes("aplicação acima de 25% em 2022"), false);
+  assert.match(
+    s.questions.find((q) => q.topic === "compensation")?.text ?? "",
+    /abaixo de 25% em 2022 e 2023\. 2020 e 2021 entram na compensação da pandemia, não nesta lista/,
+  );
 });
 
 test("an EC 119 gap that 2022 and 2023 do not cover reads Não compensado", () => {

@@ -42,3 +42,5 @@ Preconditions:
 - Only Santo André SP has the TCE-SP reading. Santo André PB (`/pb/santo-andre/conselho`) has one reading per line.
 - The Salvos link has no `ano=`, so the sheet opens on the city's latest exercise.
 - `Imprimir` opens the browser's print dialog, which this CLI does not drive.
+- The sheet opens with a plain-language guide (MDE, SIOPE, Fundeb, IPCA). The link back to the city is named `Página de <município>`, not the path.
+- A year with no declaration still fills the sheet. The money block names the last declared exercise in that five-year window.

@@ -35,10 +35,11 @@ export function CouncilSheetView({ city, years, initial }: { city: CouncilCity; 
             <p>
               <span className="font-medium text-foreground">{s.header.place}</span> · {s.header.exercise} · {s.header.dataVersion}
             </p>
+            <p>{s.header.lead}</p>
+            <p className="text-[0.8125rem] leading-5">{s.header.guide}</p>
             <p className="text-[0.8125rem]">
-              Página do município:{" "}
-              <Link href={s.header.cityHref} className="text-brand-ink hover:underline">
-                {s.header.cityHref}
+              <Link href={s.header.cityHref} className="text-brand-ink hover:underline" aria-label={`Página do município, ${s.header.place}`}>
+                {s.header.cityLabel}
               </Link>
             </p>
           </>
@@ -54,7 +55,7 @@ export function CouncilSheetView({ city, years, initial }: { city: CouncilCity; 
         }
       />
       <PageBody>
-        <article data-council-sheet className="mx-auto max-w-3xl space-y-10">
+        <article data-council-sheet className="mx-auto max-w-3xl space-y-10 print:space-y-3">
           <Section id="checklist" title="Checklist legal">
             <Checklist lines={s.checklist} />
           </Section>
@@ -91,7 +92,7 @@ function Checklist({ lines }: { lines: readonly ChecklistLine[] }) {
   return (
     <ul className="divide-y border-y">
       {lines.map((l) => (
-        <li key={l.id} aria-labelledby={`linha-${l.id}`} className="space-y-1.5 py-3 break-inside-avoid">
+        <li key={l.id} aria-labelledby={`linha-${l.id}`} className="space-y-1.5 py-3 break-inside-avoid print:py-1.5">
           <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5">
             <h3 id={`linha-${l.id}`} className="font-medium">
               {l.title}
@@ -178,6 +179,7 @@ function HistoryTable({ history }: { history: History }) {
                 {row.cells.map((c, i) => (
                   <TableCell key={history.columns[i]} className={cn(c.outcome && KIND[c.outcome] === "below" && "font-medium text-critical-ink")}>
                     {c.text}
+                    {c.spoken && <p className="mt-0.5 text-[0.6875rem] font-normal leading-4 text-current/80 print:hidden">{c.spoken}</p>}
                   </TableCell>
                 ))}
               </TableRow>
@@ -185,6 +187,7 @@ function HistoryTable({ history }: { history: History }) {
           </TableBody>
         </table>
       </div>
+      <p className="text-[0.8125rem] text-muted-foreground sm:hidden print:hidden">Arraste a tabela para o lado para ver todas as colunas.</p>
       <p className="text-[0.8125rem] text-muted-foreground">{history.footnote}</p>
     </>
   );
@@ -192,7 +195,7 @@ function HistoryTable({ history }: { history: History }) {
 
 function Questions({ questions }: { questions: readonly Question[] }) {
   return (
-    <ol className="list-decimal space-y-2 pl-5 text-sm leading-6 marker:text-muted-foreground">
+    <ol className="list-decimal space-y-2 pl-5 text-sm leading-6 marker:text-muted-foreground print:space-y-1 print:leading-5">
       {questions.map((q) => (
         <li key={q.topic} className="pl-1 break-inside-avoid">
           {q.text}
