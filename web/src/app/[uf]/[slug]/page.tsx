@@ -304,7 +304,7 @@ function CityContent({ c }: { c: City }) {
               <MessageSquareText className="text-muted-foreground" />O que posso fazer?
             </Button>
             <Button variant="outline" render={<Link href={`/${c.uf.toLowerCase()}/${c.slug}/caqm`} />} nativeButton={false}>
-              Simular o CAQM
+              Simular o custo da qualidade
             </Button>
             <WatchButton id={`${c.uf.toLowerCase()}/${c.slug}`} />
             <HeaderShare />

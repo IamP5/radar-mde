@@ -42,8 +42,8 @@ export async function generateMetadata({ params }: { params: Promise<{ uf: strin
   const { uf, slug } = await params;
   const c = resolve(uf, slug);
   if (!c) return { title: "Página não encontrada" };
-  const title = `CAQM de ${c.name} (${c.uf})`;
-  const description = `Simulação cidadã do Custo Aluno-Qualidade municipal de ${c.name}. Não é o CAQ oficial.`;
+  const title = `Custo da qualidade em ${c.name} (${c.uf})`;
+  const description = `Simulação de um CAQM (Custo Aluno-Qualidade municipal) de ${c.name}. Não é o CAQ oficial.`;
   const url = `/${c.uf.toLowerCase()}/${c.slug}/caqm`;
   return {
     title,

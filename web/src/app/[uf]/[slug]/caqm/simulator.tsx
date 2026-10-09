@@ -2,7 +2,7 @@
 
 import { Printer } from "lucide-react";
 import Link from "next/link";
-import { useId, useSyncExternalStore } from "react";
+import { useId, useState, useSyncExternalStore } from "react";
 import YearPicker from "@/components/YearPicker";
 import { PageBody, PageHeader } from "@/components/kit/page-header";
 import { Panel } from "@/components/kit/panel";
@@ -10,9 +10,10 @@ import { Stat } from "@/components/kit/stat";
 import { StatusBadge } from "@/components/kit/status";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { brl, brlSigned, funMin, int, pct } from "@/lib/format";
+import { brl, funMin, int, pct } from "@/lib/format";
 import { IPCA_BASE, IPCA_LABEL, toReal } from "@/lib/rows";
 import { THESIS_URL } from "@/lib/thesis";
+import { Term } from "../glossary";
 import {
   DEFAULT_MIX,
   DEFAULT_PARAMS,
@@ -96,6 +97,11 @@ export function Simulator({ city, uf, slug, pop, initialYear, years, thesis }: P
   const floor30 = baseReal == null ? null : baseReal * 0.3;
   const gap = result && spending != null ? result.total - spending : null;
   const perNow = toReal(snap.perAluno, snap.year);
+  const mixSum = STAGES.reduce((sum, stage) => sum + scenario.mix[stage.id], 0);
+  const gapLabel = gap == null ? "Diferença contra o gasto" : gap > 0 ? "Falta para chegar ao custo" : gap < 0 ? "Gasto acima desta simulação" : "Custo igual ao gasto";
+  const gapValue = gap == null ? "sem dado" : brl(Math.abs(gap));
+  const gapSub =
+    gap == null ? "falta o gasto declarado" : gap > 0 ? "o custo simulado supera o gasto em educação" : gap < 0 ? "a conta deixa de fora funcionários e transporte" : "nesta simulação";
 
   const setParams = (patch: Partial<QualityParams>) => commit({ ...scenario, params: clampParams({ ...scenario.params, ...patch }) });
   const setMix = (id: keyof Mix, raw: string) => {
@@ -124,16 +130,16 @@ export function Simulator({ city, uf, slug, pop, initialYear, years, thesis }: P
             Voltar para {city}
           </Link>
         }
-        title={`CAQM de ${city}`}
+        title={`Custo da qualidade em ${city}`}
         description={
           <>
-            Simulação cidadã para discutir um Custo Aluno-Qualidade municipal na revisão do PME. Não é o CAQ oficial da Lei Complementar
-            220/2025, nem o cálculo do SimCAQ.
+            Simulação de um CAQM (Custo Aluno-Qualidade municipal) para a revisão do PME. Não é o CAQ oficial da Lei Complementar 220/2025, nem o cálculo do SimCAQ.
           </>
         }
         actions={
           <>
             <StatusBadge kind="info">Simulação</StatusBadge>
+            <CopyScenarioLink />
             <Button type="button" variant="outline" onClick={() => window.print()}>
               <Printer />
               Imprimir proposta
@@ -159,93 +165,27 @@ export function Simulator({ city, uf, slug, pop, initialYear, years, thesis }: P
       <div data-subbar className="sticky top-(--header-h) z-30 border-b bg-(--header-bg) backdrop-blur-md backdrop-saturate-150 print:hidden">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-2 sm:px-6">
           <YearPicker years={yearList} year={scenario.year} onChange={(year) => commit({ ...scenario, year })} />
-          <p className="text-[0.8125rem] text-muted-foreground">
+          <p className="hidden text-[0.8125rem] text-muted-foreground sm:block">
             Gasto de {scenario.year} em {IPCA_LABEL}. Parâmetros em preços de 2026.
           </p>
         </div>
       </div>
 
       <PageBody>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <Stat label={`Gasto em MDE, ${scenario.year}`} value={spending == null ? "sem dado" : brl(spending)} sub={snap.estimatedSpending ? "estimativa do painel (receita × %)" : IPCA_LABEL} />
-          <Stat label="R$ por aluno declarado" value={perNow == null ? "sem dado" : brl(perNow)} sub="SIOPE 4.9, corrigido pelo IPCA" />
-          <Stat label="Matrícula implícita" value={implied == null ? "sem dado" : int(implied)} sub="gasto em MDE ÷ R$ por aluno" />
-          <Stat label="Fundeb na remuneração" value={snap.fun == null ? "sem dado" : pct(snap.fun)} sub={`mínimo legal ${funMin(scenario.year)}%`} />
-        </div>
-
-        {!snap.existed && (
-          <p className="text-sm text-muted-foreground" role="status">
-            {city} ainda não existia em {scenario.year}. Dá para simular um custo, sem gasto declarado para comparar.
-          </p>
-        )}
-
-        <div className="print:hidden">
-          <Panel
-            title="Matrícula de partida"
-            description="O painel não traz a matrícula por etapa. O total implícito reparte o gasto declarado pelo R$ por aluno do SIOPE. Troque pelos números da secretaria."
-          >
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              <Field
-                label="Matrícula total"
-                value={enrolment == null ? "" : String(enrolment)}
-                onChange={(raw) => {
-                  const n = readNumber(raw);
-                  if (n == null || n <= 0) return;
-                  commit({ ...scenario, enrolment: { kind: "stated", total: Math.min(2_000_000, Math.round(n)) } });
-                }}
-                hint={implied == null ? "Sem R$ por aluno neste exercício: informe a matrícula." : `Implícita neste exercício: ${int(implied)}.`}
-              />
-              {STAGES.map((stage) => (
-                <Field
-                  key={stage.id}
-                  label={`Parcela em ${stage.label} (%)`}
-                  value={String(scenario.mix[stage.id])}
-                  onChange={(raw) => setMix(stage.id, raw)}
-                  hint="Ponto de partida da simulação, não é o Censo."
-                />
-              ))}
-            </div>
-            <div className="mt-4 flex flex-wrap gap-2">
-              <Button type="button" variant="outline" onClick={() => commit({ ...scenario, enrolment: { kind: "implied" } })} disabled={implied == null}>
-                Usar a matrícula implícita
-              </Button>
-              {thesis && (
-                <Button type="button" variant="outline" onClick={() => setParams({ crecheExtra: THESIS_CRECHE_QUEUE })}>
-                  Incluir a fila da creche citada na tese ({int(THESIS_CRECHE_QUEUE)}, ano 2019)
-                </Button>
-              )}
-            </div>
-          </Panel>
-        </div>
-
-        <div className="print:hidden">
-          <Panel
-            title="Parâmetros de qualidade"
-            description="Oito pontos de partida, no desenho do Padrão de Qualidade de Referência do SimCAQ. A comunidade escolar pode alterar cada um."
-          >
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Alunos por turma na creche" value={String(scenario.params.crecheClass)} onChange={(raw) => patchInt(raw, "crecheClass", setParams)} hint="PQR urbano, faixas de 10, 16, 20 e 24 alunos, com 2 docentes. O padrão 18 é a média arredondada." />
-              <Field label="Alunos por turma na pré-escola" value={String(scenario.params.preClass)} onChange={(raw) => patchInt(raw, "preClass", setParams)} hint="PQR urbano: 20 alunos e 1 docente." />
-              <Field label="Alunos por turma no fundamental" value={String(scenario.params.efClass)} onChange={(raw) => patchInt(raw, "efClass", setParams)} hint="Média do PQR urbano: 20 nos anos iniciais e 25 nos finais." />
-              <Field label="Remuneração mensal do professor" value={String(scenario.params.teacherMonthly)} onChange={(raw) => patchDecimal(raw, "teacherMonthly", setParams)} hint="Padrão R$ 7.687,01 (PQR, PNAD 1º trimestre de 2026, formação superior, 40 horas). O piso de 2026 é R$ 5.130,63." />
-              <Field label="Hora-atividade (% da jornada)" value={pctField(scenario.params.planningShare)} onChange={(raw) => patchPercent(raw, "planningShare", setParams)} hint="Lei 11.738/2008: no máximo 2/3 da jornada com os estudantes. O padrão é 1/3." />
-              <Field label="Matrículas em tempo integral (%)" value={pctField(scenario.params.fullTimeShare)} onChange={(raw) => patchPercent(raw, "fullTimeShare", setParams)} hint="PQR: 25% das matrículas. Creche e pré-escola passam de 4 para 10 horas; o fundamental, de 4 para 7. A EJA permanece em 4 horas." />
-              <Field label="Vagas a mais na creche" value={String(scenario.params.crecheExtra)} onChange={(raw) => patchInt(raw, "crecheExtra", setParams)} hint="Soma à creche, sem reduzir as outras etapas." />
-              <Field label="Materiais e manutenção (% da folha docente)" value={pctField(scenario.params.overheadShare)} onChange={(raw) => patchPercent(raw, "overheadShare", setParams)} hint="PQR: 22,5% da folha da escola para insumos e manutenção. Aqui a base é só a folha docente." />
-            </div>
-          </Panel>
-        </div>
-
-        <section aria-label="Resultado da simulação" className="space-y-3">
+        <section aria-labelledby="resultado-titulo" className="space-y-3">
+          <div>
+            <h2 id="resultado-titulo" className="text-xl font-semibold tracking-[-0.02em]">Resultado da simulação</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Simulação. Não é o CAQ oficial da Lei Complementar 220/2025, nem o cálculo do SimCAQ.</p>
+          </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4" aria-live="polite">
-            <Stat label="Custo simulado" value={result ? brl(result.total) : "sem dado"} sub="soma das etapas, preços dos parâmetros" />
-            <Stat label="R$ por aluno simulado" value={result?.perStudent == null ? "sem dado" : brl(result.perStudent)} sub={result ? `${int(result.enrolment)} matrículas` : "informe a matrícula"} />
+            <Stat label="Custo simulado" value={result ? brl(result.total) : "sem dado"} sub="soma das etapas, nos preços dos parâmetros" />
+            <Stat label="Custo por aluno" value={result?.perStudent == null ? "sem dado" : brl(result.perStudent)} sub={result ? `${int(result.enrolment)} matrículas` : "informe a matrícula"} />
+            <Stat label={gapLabel} value={gapValue} sub={gapSub} />
             <Stat
-              label="Diferença contra o gasto"
-              value={gap == null ? "sem dado" : brlSigned(gap)}
-              sub={gap == null ? "falta o gasto declarado" : gap > 0 ? "o custo simulado supera o gasto" : "o gasto supera o custo simulado"}
+              label="25% da receita de impostos"
+              value={floor25 == null ? "sem dado" : brl(floor25)}
+              sub={floor30 == null ? "mínimo constitucional" : thesis ? `meta municipal de 30%: ${brl(floor30)}` : `30% é a meta de Santo André, só como comparação: ${brl(floor30)}`}
             />
-            <Stat label="Piso de 25% da receita" value={floor25 == null ? "sem dado" : brl(floor25)} sub={floor30 == null ? "referência constitucional" : `referência de 30%: ${brl(floor30)}`} />
           </div>
 
           <Panel title="Custo por etapa" description={`Exercício de comparação: ${scenario.year}. Valores do custo em preços dos parâmetros (2026).`} divided bodyClassName="overflow-x-auto">
@@ -274,13 +214,95 @@ export function Simulator({ city, uf, slug, pop, initialYear, years, thesis }: P
           </Panel>
         </section>
 
+
+
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <Stat label={<><Term k="mde">Gasto em educação</Term>, {scenario.year}</>} value={spending == null ? "sem dado" : brl(spending)} sub={snap.estimatedSpending ? "estimativa do painel (receita × %)" : IPCA_LABEL} />
+          <Stat label="Valor por aluno declarado" value={perNow == null ? "sem dado" : brl(perNow)} sub={<><Term k="siope">SIOPE</Term>, corrigido pelo IPCA</>} />
+          <Stat label="Alunos estimados" value={implied == null ? "sem dado" : int(implied)} sub="gasto em educação ÷ valor por aluno. Não é o Censo." />
+          <Stat label={<><Term k="fundeb">Fundeb</Term> usado em salários</>} value={snap.fun == null ? "sem dado" : pct(snap.fun)} sub={`mínimo legal ${funMin(scenario.year)}%`} />
+        </div>
+
+        {!snap.existed && (
+          <p className="text-sm text-muted-foreground" role="status">
+            {city} ainda não existia em {scenario.year}. Dá para simular um custo, sem gasto declarado para comparar.
+          </p>
+        )}
+
+        <div className="print:hidden">
+          <Panel
+            title="Matrícula de partida"
+            description="O painel não traz a matrícula por etapa. A estimativa divide o gasto em educação pelo valor por aluno declarado. Troque pelos números da secretaria."
+          >
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <Field
+                label="Matrícula total"
+                value={enrolment == null ? "" : String(enrolment)}
+                onChange={(raw) => {
+                  const n = readNumber(raw);
+                  if (n == null || n <= 0) return;
+                  commit({ ...scenario, enrolment: { kind: "stated", total: Math.min(2_000_000, Math.round(n)) } });
+                }}
+                hint={implied == null ? "Sem valor por aluno neste exercício: informe a matrícula." : `Estimativa neste exercício: ${int(implied)}.`}
+              />
+              {STAGES.map((stage) => (
+                <Field
+                  key={stage.id}
+                  label={`Parcela em ${stage.label} (%)`}
+                  value={String(scenario.mix[stage.id])}
+                  onChange={(raw) => setMix(stage.id, raw)}
+                  hint="Ponto de partida da simulação, não é o Censo."
+                />
+              ))}
+            </div>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Button type="button" variant="outline" onClick={() => commit({ ...scenario, enrolment: { kind: "implied" } })} disabled={implied == null}>
+                Usar os alunos estimados
+              </Button>
+              {thesis && (
+                <Button type="button" variant="outline" onClick={() => setParams({ crecheExtra: THESIS_CRECHE_QUEUE })}>
+                  Somar a fila de creche de 2019 ({int(THESIS_CRECHE_QUEUE)} crianças)
+                </Button>
+              )}
+            </div>
+            {thesis && (
+              <p className="mt-3 text-xs leading-5 text-muted-foreground">
+                A fila de {int(THESIS_CRECHE_QUEUE)} crianças é a citada na pesquisa de Santo André para 2019. Não é a demanda de hoje.
+              </p>
+            )}
+            {Math.abs(mixSum - 100) > 0.05 && (
+              <p className="mt-4 text-sm text-muted-foreground" role="status">
+                As parcelas somam {int(Math.round(mixSum))}%. A conta reparte os alunos pela proporção entre elas.
+              </p>
+            )}
+          </Panel>
+        </div>
+
+        <div className="print:hidden">
+          <Panel
+            title="Parâmetros de qualidade"
+            description="Oito pontos de partida, no desenho do padrão nacional de referência do SimCAQ. Troque qualquer um. O resultado acima muda na hora."
+          >
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Alunos por turma na creche" value={String(scenario.params.crecheClass)} onChange={(raw) => patchInt(raw, "crecheClass", setParams)} hint="O padrão nacional, nas cidades, usa faixas de 10, 16, 20 e 24 crianças, com 2 professores. O ponto de partida 18 é a média arredondada." />
+              <Field label="Alunos por turma na pré-escola" value={String(scenario.params.preClass)} onChange={(raw) => patchInt(raw, "preClass", setParams)} hint="O padrão nacional usa 20 alunos e 1 professor." />
+              <Field label="Alunos por turma no fundamental" value={String(scenario.params.efClass)} onChange={(raw) => patchInt(raw, "efClass", setParams)} hint="O padrão nacional usa 20 alunos nos anos iniciais e 25 nos finais. O ponto de partida 22 é a média." />
+              <Field label="Remuneração mensal do professor" value={String(scenario.params.teacherMonthly)} onChange={(raw) => patchDecimal(raw, "teacherMonthly", setParams)} hint="Ponto de partida R$ 7.687,01 (IBGE, 1º trimestre de 2026, formação superior, 40 horas). O piso nacional de 2026 é R$ 5.130,63." />
+              <Field label="Tempo de planejamento (% da jornada)" value={pctField(scenario.params.planningShare)} onChange={(raw) => patchPercent(raw, "planningShare", setParams)} hint="A lei chama isso de hora-atividade. No máximo 2/3 da jornada ficam com os estudantes. O padrão é 1/3 para planejar." />
+              <Field label="Matrículas em tempo integral (%)" value={pctField(scenario.params.fullTimeShare)} onChange={(raw) => patchPercent(raw, "fullTimeShare", setParams)} hint="Ponto de partida: 25% das matrículas. Creche e pré-escola passam de 4 para 10 horas. O fundamental passa de 4 para 7. A EJA fica em 4 horas." />
+              <Field label="Vagas a mais na creche" value={String(scenario.params.crecheExtra)} onChange={(raw) => patchInt(raw, "crecheExtra", setParams)} hint="Soma à creche, sem reduzir as outras etapas." />
+              <Field label="Materiais e manutenção (% do salário dos professores)" value={pctField(scenario.params.overheadShare)} onChange={(raw) => patchPercent(raw, "overheadShare", setParams)} hint="O padrão nacional usa 22,5% da folha inteira da escola. Aqui a base é só o salário dos professores, então o valor fica menor." />
+            </div>
+          </Panel>
+        </div>
+
         <Panel id="proposta" title="Proposta para a revisão do PME">
-          <div className="print-only mb-4 text-sm">
+          <div className="mb-4 text-sm">
             <p className="font-medium">Parâmetros deste cenário</p>
             <ul className="mt-2 space-y-1">
               <li>Creche: {scenario.params.crecheClass} alunos por turma. Pré-escola: {scenario.params.preClass}. Fundamental: {scenario.params.efClass}. EJA: {classSize("eja", scenario.params)}.</li>
               <li>Remuneração mensal: {brl(scenario.params.teacherMonthly)}. Hora-atividade: {pctField(scenario.params.planningShare)}%. Tempo integral: {pctField(scenario.params.fullTimeShare)}%.</li>
-              <li>Vagas a mais na creche: {int(scenario.params.crecheExtra)}. Materiais e manutenção: {pctField(scenario.params.overheadShare)}% da folha docente.</li>
+              <li>Vagas a mais na creche: {int(scenario.params.crecheExtra)}. Materiais e manutenção: {pctField(scenario.params.overheadShare)}% do salário dos professores.</li>
               <li>
                 Reparto inicial: {STAGES.map((s) => `${s.label} ${scenario.mix[s.id]}%`).join(", ")}. Matrícula usada: {enrolment == null ? "sem dado" : int(enrolment)}.
               </li>
@@ -368,6 +390,28 @@ export function Simulator({ city, uf, slug, pop, initialYear, years, thesis }: P
         </Panel>
       </PageBody>
     </>
+  );
+}
+
+function CopyScenarioLink() {
+  const [copied, setCopied] = useState(false);
+  return (
+    <Button
+      type="button"
+      variant="outline"
+      onClick={async () => {
+        const url = window.location.href;
+        try {
+          await navigator.clipboard.writeText(url);
+          setCopied(true);
+          window.setTimeout(() => setCopied(false), 2000);
+        } catch {
+          window.prompt("Copie o link:", url);
+        }
+      }}
+    >
+      {copied ? "Link copiado" : "Copiar link"}
+    </Button>
   );
 }
 
