@@ -27,7 +27,9 @@ import { cn } from "@/lib/utils";
 
 type Situation = "all" | "below" | "edge" | "ok" | "nd" | "missing" | "fun" | "both";
 type Sit = Exclude<Situation, "all" | "fun" | "both"> | "na";
-type SortKey = "name" | "pop" | "mde" | "delta" | "sit" | "fun" | "aluno" | "short" | "times";
+type SortKey = "name" | "pop" | "mde" | "delta" | "sit" | "fun" | "aluno" | "short" | "times" | "cre" | "ef" | "eja";
+type StageKey = "cre" | "ef" | "eja";
+type StageRows = { years: number[]; rows: Record<string, { cre: (number | null)[]; ef: (number | null)[]; eja: (number | null)[] }> };
 type Sort = { key: SortKey; dir: 1 | -1 };
 type Item = { r: Row; key: string; region: RegionKey | undefined; regionSlug: string; band: string; times: number; timesX: number };
 
@@ -96,7 +98,7 @@ function situationOf(r: Row, yi: number, year: number): Sit {
   return v < MDE_MIN + 1 ? "edge" : "ok";
 }
 
-function sortValue(it: Item, k: SortKey, yi: number, year: number, rec: Rec): number | string | null {
+function sortValue(it: Item, k: SortKey, yi: number, year: number, rec: Rec, stageAt: (id: number, key: StageKey) => number | null): number | string | null {
   const r = it.r;
   switch (k) {
     case "name": return it.key;
@@ -106,6 +108,9 @@ function sortValue(it: Item, k: SortKey, yi: number, year: number, rec: Rec): nu
     case "sit": return SIT_ORDER[situationOf(r, yi, year)];
     case "fun": return r.fun[yi];
     case "aluno": return r.aluno[yi];
+    case "cre": return stageAt(r.id, "cre");
+    case "ef": return stageAt(r.id, "ef");
+    case "eja": return stageAt(r.id, "eja");
     case "short": return r.short[yi];
     case "times": return recCount(it, rec, yi);
   }
@@ -118,7 +123,9 @@ const SIT_PARAM: Record<Exclude<Situation, "all">, string> = {
 };
 const SORT_PARAM: Record<SortKey, string> = {
   name: "nome", pop: "populacao", mde: "mde", delta: "variacao", sit: "situacao", fun: "fundeb", aluno: "aluno", short: "faltou", times: "anos",
+  cre: "creche", ef: "fundamental", eja: "eja",
 };
+const isStageSort = (key: SortKey): key is StageKey => key === "cre" || key === "ef" || key === "eja";
 const DEFAULT_SORT: Sort = { key: "mde", dir: 1 };
 const defaultDir = (key: SortKey): 1 | -1 => (key === "name" || key === "mde" || key === "sit" || key === "delta" ? 1 : -1);
 const invert = <K extends string, V extends string>(m: Record<K, V>) => Object.fromEntries(Object.entries(m).map(([k, v]) => [v, k])) as Record<V, K>;
@@ -207,6 +214,9 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
   const [sort, setSort] = useState<Sort>(DEFAULT_SORT);
   const [urlRead, setUrlRead] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showStages, setShowStages] = useState(false);
+  const [stages, setStages] = useState<StageRows | null>(null);
+  const [stageError, setStageError] = useState(false);
 
   useEffect(() => {
     let live = true;
@@ -238,6 +248,7 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
     if (v.rec) setRec(v.rec);
     if (v.capital) setCapital(true);
     if (v.sort) setSort(v.sort);
+    if (v.sort && isStageSort(v.sort.key)) setShowStages(true);
     setUrlRead(true);
     // An invalid ?ano (falls back to the default year) shouldn't linger in the address bar (JOR-21)
     const ano = new URLSearchParams(window.location.search).get("ano");
@@ -249,6 +260,25 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
     /* eslint-enable react-hooks/set-state-in-effect */
     // eslint-disable-next-line react-hooks/exhaustive-deps -- once, after hydration
   }, []);
+
+  useEffect(() => {
+    if (!showStages || stages || stageError) return;
+    let live = true;
+    fetch("/data/etapas-explorer.json")
+      .then((r) => {
+        if (!r.ok) throw new Error(String(r.status));
+        return r.json() as Promise<StageRows>;
+      })
+      .then((j) => {
+        if (!live) return;
+        if (!j || !Array.isArray(j.years) || !j.rows) throw new Error("shape");
+        setStages(j);
+      })
+      .catch(() => live && setStageError(true));
+    return () => {
+      live = false;
+    };
+  }, [showStages, stages, stageError]);
 
   // …and back to the URL (debounced: typing in the name filter shouldn't spam history.replaceState)
   useEffect(() => {
@@ -305,10 +335,18 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
   }, [data, yi, year, fMin, dq, region, uf, porte, sit, rec, capital]);
   const filtered = facets.filtered;
 
+  const stageAt = useCallback((id: number, key: StageKey) => {
+    if (!stages) return null;
+    const i = stages.years.indexOf(year);
+    if (i < 0) return null;
+    const v = stages.rows[String(id)]?.[key][i];
+    return v == null ? null : v;
+  }, [stages, year]);
+
   const sorted = useMemo(() => {
     const { key, dir } = sort;
     return [...filtered].sort((a, b) => {
-      const va = sortValue(a, key, yi, year, rec), vb = sortValue(b, key, yi, year, rec);
+      const va = sortValue(a, key, yi, year, rec, stageAt), vb = sortValue(b, key, yi, year, rec, stageAt);
       // nulls last regardless of direction
       if (va == null && vb == null) return collator.compare(a.key, b.key);
       if (va == null) return 1;
@@ -316,7 +354,7 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
       const d = typeof va === "string" ? collator.compare(va, vb as string) : va - (vb as number);
       return (d || collator.compare(a.key, b.key)) * dir;
     });
-  }, [filtered, sort, yi, year, rec]);
+  }, [filtered, sort, yi, year, rec, stageAt]);
 
   const rows = useMemo(() => filtered.map((it) => it.r), [filtered]);
   const stats = useMemo(() => (yi >= 0 ? aggregate(rows, yi, year) : null), [rows, yi, year]);
@@ -347,7 +385,7 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
       el.removeEventListener("scroll", update);
       ro.disconnect();
     };
-  }, [error]);
+  }, [error, showStages]);
   // Back to the top whenever the result set or its order changes
   useEffect(() => {
     if (scroller.current) scroller.current.scrollTop = 0;
@@ -697,8 +735,31 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
       <Panel
         divided
         title="Municípios"
-        description={<>Indicadores de {year}. Clique no cabeçalho para ordenar; a série mostra {firstYear}–{lastYear}.</>}
-        action={<BinLegend />}
+        description={
+          <>
+            Indicadores de {year}. Clique no cabeçalho para ordenar; a série mostra {firstYear}–{lastYear}.
+            {showStages && stageError && <span className="mt-1 block">Não foi possível carregar o gasto por etapa.</span>}
+          </>
+        }
+        action={
+          <span className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              aria-pressed={showStages}
+              onClick={() => {
+                setShowStages((on) => !on);
+                setSort((s) => (!showStages || !isStageSort(s.key) ? s : DEFAULT_SORT));
+              }}
+              className={cn(
+                "inline-flex h-8 items-center rounded-md border px-2.5 text-[0.8125rem] font-medium",
+                showStages ? "bg-background text-foreground" : "border-dashed text-muted-foreground hover:bg-accent hover:text-foreground",
+              )}
+            >
+              Mostrar gasto por etapa
+            </button>
+            <BinLegend />
+          </span>
+        }
         footer={
           data && !error && sorted.length > 0 ? (
             <div className="flex flex-wrap items-center justify-between gap-2">
@@ -730,7 +791,7 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
             )}
             tabIndex={-1}
           >
-            <table className="w-full min-w-[1040px] caption-bottom text-sm" aria-rowcount={sorted.length + 1}>
+            <table className={cn("w-full caption-bottom text-sm", showStages ? "min-w-[1320px]" : "min-w-[1040px]")} aria-rowcount={sorted.length + 1}>
               <caption className="sr-only">Municípios filtrados, indicadores de {year}</caption>
               <TableHeader>
                 <TableRow className="border-0 hover:bg-transparent" aria-rowindex={1}>
@@ -741,6 +802,9 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
                   {th("sit", "Situação", "Ordena por gravidade: abaixo, não declarou, no limite, cumpriu", true)}
                   {th("fun", "Fundeb pessoal", `% do Fundeb pago aos profissionais da educação (mínimo ${fMin}% em ${year})`)}
                   {th("aluno", "R$ por aluno", "Valores nominais")}
+                  {showStages && th("cre", "Creche", "Valores nominais, indicador 4.14")}
+                  {showStages && th("ef", "Fundamental", "Valores nominais, indicador 4.2")}
+                  {showStages && th("eja", "EJA", "Valores nominais, indicador 4.5")}
                   {th("short", "Faltou", "Quanto faltou aplicar para chegar a 25% (estimativa, valores nominais)")}
                   {th("times", REC[rec].col, rec === "u5" ? `Anos abaixo de 25% entre ${year - 4} e ${year}` : rec === "s2" || rec === "s3" ? `Maior sequência de anos seguidos abaixo de 25% até ${year}` : `Anos abaixo de 25% entre ${firstYear} e ${lastYear}`)}
                   <TableHead scope="col" className={cn(stickyHead, "pr-4 text-left")}>
@@ -752,7 +816,7 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
                 {!data
                   ? Array.from({ length: 10 }, (_, i) => (
                       <TableRow key={i} aria-hidden className="hover:bg-transparent">
-                        {Array.from({ length: 10 }, (_, j) => (
+                        {Array.from({ length: 10 + (showStages ? 3 : 0) }, (_, j) => (
                           <TableCell key={j} className={cn("py-3", j === 0 && "pl-4", j === 1 && "max-sm:hidden")}>
                             <Skeleton className={cn("h-3.5", j === 0 ? "w-36" : j === 9 ? "w-40" : j === 4 ? "w-16" : "ml-auto w-14")} />
                           </TableCell>
@@ -773,6 +837,7 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
                           yi={yi}
                           year={year}
                           years={data.years}
+                          stages={showStages ? { cre: stageAt(it.r.id, "cre"), ef: stageAt(it.r.id, "ef"), eja: stageAt(it.r.id, "eja") } : null}
                         />
                       ))}
                       {last < sorted.length && <tr aria-hidden style={{ height: (sorted.length - last) * rowH }} />}
@@ -780,7 +845,7 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
                   )}
                 {data && !sorted.length && (
                   <TableRow className="hover:bg-transparent">
-                    <TableCell colSpan={10} className="py-14 text-center whitespace-normal">
+                    <TableCell colSpan={10 + (showStages ? 3 : 0)} className="py-14 text-center whitespace-normal">
                       <div className="text-sm font-medium">Nenhum município com esses filtros</div>
                       <div className="mt-1 text-[13px] text-muted-foreground">Remova algum filtro ou tente outro ano.</div>
                       <Button variant="outline" size="sm" className="mt-3" onClick={clear}>
@@ -894,10 +959,19 @@ function BinLegend() {
 
 const HATCH = "repeating-linear-gradient(135deg, var(--critical) 0 1px, transparent 1px 3px)";
 
+function StageMoney({ v }: { v: number | null }) {
+  return (
+    <TableCell className="px-2.5 text-right">
+      {v == null ? <span className="text-muted-foreground">sem dado</span> : <>R$ {Math.round(v).toLocaleString("pt-BR")}</>}
+    </TableCell>
+  );
+}
+
 function ExplorerRow({
-  r, times, yi, year, years, index, initialYear, ref,
+  r, times, yi, year, years, index, initialYear, stages, ref,
 }: {
   r: Row; times: number; yi: number; year: number; years: number[]; index: number; initialYear: number;
+  stages: { cre: number | null; ef: number | null; eja: number | null } | null;
   ref?: (tr: HTMLTableRowElement | null) => void;
 }) {
   const v = r.mde[yi];
@@ -962,9 +1036,16 @@ function ExplorerRow({
             R$ {Math.round(a).toLocaleString("pt-BR")}
           </span>
         ) : (
-          <span className="text-muted-foreground">—</span>
+            <span className="text-muted-foreground">—</span>
         )}
       </TableCell>
+      {stages && (
+        <>
+          <StageMoney v={stages.cre} />
+          <StageMoney v={stages.ef} />
+          <StageMoney v={stages.eja} />
+        </>
+      )}
       <TableCell className={cn("px-2.5 text-right", short ? "font-medium text-critical-ink" : "text-muted-foreground")}>
         {short == null ? <span title="Abaixo de 25%, mas sem receita declarada para estimar o valor">s/ base</span> : short > 0 ? brlShort(short) : "—"}
       </TableCell>

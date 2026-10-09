@@ -40,6 +40,7 @@ import {
 } from "@/lib/data";
 import { cityPath, getRegion, getUf, ofUf } from "@/lib/geo";
 import { buildTemplates, cityFacts, emAnos, inUf, listYears } from "@/lib/templates";
+import { cityStages, stageMedians } from "@/lib/etapas";
 import { THESIS_SANTO_ANDRE, THESIS_SANTO_ANDRE_ID, THESIS_URL } from "@/lib/thesis";
 import { cn } from "@/lib/utils";
 import {
@@ -57,6 +58,7 @@ import {
   PeriodBalanceCard,
 } from "./city-year";
 import { Term } from "./glossary";
+import StagePanel from "./stages";
 import { type CityYearData, type Rank, type St, type YearPoint, summary } from "./verdict";
 
 // The page validates its params above any Suspense boundary (so an unknown slug is a real 404, not a streamed soft
@@ -508,6 +510,17 @@ function CityContent({ c }: { c: City }) {
                 <TrendChart points={YEARS.map((y) => ({ year: y, value: c.years[y]?.perAluno ?? null }))} label="Por aluno" unit="R$" flagged={f.atypAluno} />
               </Panel>
             </section>
+
+            <StagePanel
+              name={c.name}
+              uf={c.uf}
+              slug={c.slug}
+              thesis={c.id === THESIS_SANTO_ANDRE_ID}
+              years={YEARS}
+              city={cityStages(c.id)}
+              ufMedians={stageMedians({ level: "uf", uf: c.uf })}
+              brMedians={stageMedians({ level: "br" })}
+            />
 
             {c.id === THESIS_SANTO_ANDRE_ID && <ThesisComparison c={c} />}
 

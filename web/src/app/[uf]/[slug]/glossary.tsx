@@ -54,6 +54,18 @@ export const GLOSSARY = {
     term: "Não declarou",
     text: "O município não enviou os dados do ano ao SIOPE nem ao Tesouro. Sem eles não dá para saber quanto foi para a educação, e a falta de envio é, por si só, um problema de transparência.",
   },
+  creche: {
+    term: "Creche",
+    text: "Etapa da educação infantil para crianças de até 3 anos. O indicador 4.14 do SIOPE é o gasto por aluno nessa etapa, com a matrícula que o ente declarou.",
+  },
+  eja: {
+    term: "EJA",
+    text: "Educação de jovens e adultos. O indicador 4.5 do SIOPE é o gasto por aluno nessa etapa, com a matrícula que o ente declarou.",
+  },
+  ee: {
+    term: "Educação especial",
+    text: "Educação especial. O indicador 4.6 do SIOPE é o gasto por aluno nessa etapa, com a matrícula que o ente declarou. O atendimento educacional especializado (AEE) é a modalidade de atendimento.",
+  },
 } as const;
 export type GlossaryKey = keyof typeof GLOSSARY;
 

@@ -5,6 +5,8 @@ import type { ReactNode } from "react";
 import { PageBody, PageHeader } from "@/components/kit/page-header";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { META, YEARS, allCities, dateBR, int, stateGov } from "@/lib/data";
+import { stageFieldYears } from "@/lib/etapas";
+import { STAGE_FIELDS } from "@/lib/etapas-fields";
 import { UFS } from "@/lib/geo";
 import { cn } from "@/lib/utils";
 
@@ -15,6 +17,14 @@ export const metadata: Metadata = {
 };
 
 const fmtFactor = (v: number) => v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+function yearPhrase(years: number[]) {
+  const s = [...years].sort((a, b) => a - b);
+  if (!s.length) return "em nenhum ano";
+  const contiguous = s.every((y, i) => i === 0 || y === s[i - 1] + 1);
+  if (contiguous && s.length > 1) return `de ${s[0]} a ${s[s.length - 1]}`;
+  return `em ${s.join(", ")}`;
+}
 
 /** SIOPE indicators used, with how the panel uses each one. */
 const INDICATORS: [string, string, string][] = [
@@ -182,9 +192,26 @@ export default function Page() {
                     <TableCell className="px-4 align-top whitespace-normal">{use}</TableCell>
                   </TableRow>
                 ))}
+                {STAGE_FIELDS.map((f) => (
+                  <TableRow key={f.siope} className="hover:bg-accent/60">
+                    <TableCell className="px-4 align-top font-mono text-[13px] text-foreground">{f.siope}</TableCell>
+                    <TableCell className="px-4 align-top whitespace-normal">{f.dict.split(". O 0")[0]}</TableCell>
+                    <TableCell className="px-4 align-top whitespace-normal">
+                      {f.kind === "money" ? "Gasto por etapa, por aluno" : "Participação no gasto com educação"}
+                    </TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           </div>
+          <p>
+            Os valores por aluno de cada etapa usam a matrícula que o ente declarou ao SIOPE, não o Censo Escolar. O 0 é tratado como
+            ausente, assim como um valor fora da faixa esperada. O gasto por aluno das etapas fica de fora abaixo de R$ 100 ou acima de
+            R$ 200.000. Material didático por aluno fica de fora acima de R$ 5.000, porque o valor típico fica perto de R$ 30. A parcela
+            do Fundeb em uma etapa pode passar de 100%, como o percentual pago a profissionais, e fica de fora acima de 200%. Os
+            indicadores 4.14 e 4.15 não existem nos anos mais antigos da série. Na base, 4.14 ocorre {yearPhrase(stageFieldYears("cre"))} e
+            4.15 ocorre {yearPhrase(stageFieldYears("pre"))}.
+          </p>
 
           <h2 id="niveis">Do Brasil ao município</h2>
           <ul>

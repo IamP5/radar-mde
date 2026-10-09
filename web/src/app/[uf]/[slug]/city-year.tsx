@@ -38,6 +38,11 @@ const useCity = () => {
   return c;
 };
 
+export function useCitySelection() {
+  const { year, setYear } = useCity();
+  return { year, setYear };
+}
+
 export function CityYearProvider({ data: d, children }: { data: CityYearData; children: ReactNode }) {
   const [year, setYear] = useYear(d.years, d.initial);
   const [cache, setCache] = useState(() => new Map([[d.initial, d.map.initial]]));

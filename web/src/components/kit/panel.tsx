@@ -12,12 +12,13 @@ export function Panel({
   className?: string; bodyClassName?: string; divided?: boolean; id?: string;
 }) {
   const hasHeader = title || description || action;
+  const titleId = id && typeof title === "string" ? `${id}-titulo` : undefined;
   return (
-    <section id={id} className={cn("min-w-0 overflow-hidden rounded-xl border bg-card text-card-foreground shadow-card", className)}>
+    <section id={id} aria-labelledby={titleId} className={cn("min-w-0 overflow-hidden rounded-xl border bg-card text-card-foreground shadow-card", className)}>
       {hasHeader && (
         <header className={cn("flex flex-wrap items-start justify-between gap-x-4 gap-y-3 px-4 pt-4 sm:px-5", divided ? "border-b pb-4" : "pb-1")}>
           <div className="min-w-0 flex-1">
-            {title && <h2 className="text-[0.9375rem] leading-6 font-semibold tracking-[-0.01em]">{title}</h2>}
+            {title && <h2 id={titleId} className="text-[0.9375rem] leading-6 font-semibold tracking-[-0.01em]">{title}</h2>}
             {description && <div className="mt-0.5 text-[0.8125rem] leading-5 text-pretty text-muted-foreground">{description}</div>}
           </div>
           {action && <div className="flex max-w-full min-w-0 flex-wrap items-center gap-2">{action}</div>}
