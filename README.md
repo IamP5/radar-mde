@@ -51,7 +51,9 @@ e % em saúde).
 ## Estrutura
 
 - `scripts/` — coleta (SIOPE, SICONFI, IBGE) e montagem da base.
-- `web/` — Next.js (App Router), ~5.600 páginas geradas estaticamente.
+- `web/` — Next.js (App Router), páginas estáticas. No build saem as capitais e as cidades com 200 mil habitantes ou
+  mais (~160); as demais são geradas na primeira visita e ficam em cache (ISR), o que mantém cada deploy em ~150 MB
+  em vez de ~3,5 GB.
   - `/mapa` visão imersiva (estilo apuração eleitoral): mapa em tela cheia com navegação dentro do próprio mapa
     (clique no estado → voo até ele → clique no município → ficha lateral), indicadores (% em educação, Fundeb,
     R$ por aluno corrigido pelo IPCA, anos abaixo de 25%, com ou sem 2020–21), níveis município/estado, linha do

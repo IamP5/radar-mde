@@ -59,15 +59,22 @@ import {
 import { Term } from "./glossary";
 import { type CityYearData, type Rank, type St, type YearPoint, summary } from "./verdict";
 
-// Every municipality is known at build time: the page validates its params above any Suspense boundary (so an
-// unknown slug is a real 404, not a streamed soft 404) and the whole route must stay static. The selected year
-// (?ano=) is applied on the client from data already in the page. `instant = false`: the params are read outside
-// <Suspense> on purpose (every known city is prerendered whole, so nothing actually blocks).
+// The page validates its params above any Suspense boundary (so an unknown slug is a real 404, not a streamed soft
+// 404) and the whole route must stay static. The selected year (?ano=) is applied on the client from data already in
+// the page. `instant = false`: the params are read outside <Suspense> on purpose (nothing actually blocks).
 export const ensureStatic = "navigation";
 export const instant = false;
 
+/** Cities prerendered at build: capitals and those with ≥ 200 mil habitantes (~160 pages, ~0.6 MB each). */
+const PRERENDER_POP = 200_000;
+
+// Prerendering all 5.570 cities made every deployment ~3.5 GB (Vercel stores each one in full). The rest render on
+// their first visit: `ensureStatic = "navigation"` makes that request wait for the complete static page, which is
+// then cached (ISR) for everyone after; cities nobody opens are never stored.
 export function generateStaticParams() {
-  return allCities().map((c) => ({ uf: c.uf.toLowerCase(), slug: c.slug }));
+  return allCities()
+    .filter((c) => c.capital || c.pop >= PRERENDER_POP)
+    .map((c) => ({ uf: c.uf.toLowerCase(), slug: c.slug }));
 }
 
 /** Only the canonical lowercase address resolves; other casings redirect, anything else is a 404. */
