@@ -74,6 +74,26 @@ export const GLOSSARY = {
     term: "VAAR",
     text: "Outra complementação da União, ligada a resultados e à redução de desigualdades. Só entra quem a publicação oficial lista como rede beneficiária. Não estar na lista não é uma punição nem um julgamento do painel.",
   },
+  creche: {
+    term: "Creche",
+    text: "Educação infantil para crianças de até 3 anos. O número é o gasto por aluno, com a matrícula que o município declarou.",
+  },
+  pre: {
+    term: "Pré-escola",
+    text: "Educação infantil para crianças de 4 e 5 anos. O número é o gasto por aluno, com a matrícula que o município declarou.",
+  },
+  fundamental: {
+    term: "Fundamental",
+    text: "Ensino fundamental, dos anos iniciais aos finais. O número é o gasto por aluno, com a matrícula que o município declarou.",
+  },
+  eja: {
+    term: "EJA",
+    text: "Educação de jovens e adultos: quem não terminou a escola na idade prevista. O número é o gasto por aluno, com a matrícula que o município declarou.",
+  },
+  ee: {
+    term: "Educação especial",
+    text: "Gasto por aluno com educação especial, com a matrícula que o município declarou. O atendimento educacional especializado (AEE) é outra forma de contar esse atendimento.",
+  },
 } as const;
 export type GlossaryKey = keyof typeof GLOSSARY;
 

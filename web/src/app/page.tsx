@@ -6,6 +6,7 @@ import { SearchButton } from "@/components/SearchPalette";
 import TerritoryDashboard from "@/components/territory/TerritoryDashboard";
 import { buttonVariants } from "@/components/ui/button";
 import { YEARS, allCities, brBalance, brStats, regionBalances, ufBalances, defaultYear, int, regionSummaries, rowsIn, topDeficits, ufSummaries } from "@/lib/data";
+import { stageMedians } from "@/lib/etapas";
 import { fundebMap } from "@/lib/fundeb";
 import { histCounts } from "@/lib/bins";
 
@@ -76,6 +77,7 @@ export default function Home() {
         ]}
         hist={YEARS.map((_, i) => histCounts(rows.map((r) => r.mde[i])))}
         fundeb={fundebMap(allCities())}
+        stages={stageMedians({ level: "br" })}
       />
     </>
   );

@@ -63,3 +63,4 @@ H1 title + one paragraph, then exactly four H2s: `Sub-features` (short IDs, one 
 - [Phone navigation](./phone-nav.md) covers the second header bar and the short Método label.
 - [Saved year strip](./saved-series.md) covers the year cells on Salvos and Adicionar.
 - [Fundeb redistribution](./fundeb-redistribution.md) covers VAAT against the national floor, the Union top-up, the early-childhood share, VAAR, and the map of who receives the top-up.
+- [Spending by stage](./spending-by-stage.md) covers where education spending goes on a city, on Brasil, on a region, on a state, in the explorer, and in the data dictionary.

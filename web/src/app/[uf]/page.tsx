@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/kit/page-header";
 import { Button } from "@/components/ui/button";
 import UfDashboard from "@/components/UfDashboard";
 import { YEARS, brStats, cityBalances, scopeBalance, citiesOf, defaultYear, int, regionStats, rowsIn, stateGov, topDeficits, ufStats } from "@/lib/data";
+import { stageMedians } from "@/lib/etapas";
 import { fundebMap } from "@/lib/fundeb";
 import { UFS, getRegion, getUf, ofUf } from "@/lib/geo";
 import { toColumns } from "@/components/territory/pack";
@@ -81,6 +82,8 @@ export default async function Page({ params }: PageProps<"/[uf]">) {
         balanceTotal={scopeBalance({ level: "uf", uf: u.uf })}
         balanceItems={cityBalances(u.uf)}
         fundeb={fundebMap(cities)}
+        stages={stageMedians({ level: "uf", uf: u.uf })}
+        stagesBrasil={stageMedians({ level: "br" })}
       />
     </>
   );

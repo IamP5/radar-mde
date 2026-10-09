@@ -22,7 +22,9 @@ import { useUrlParam } from "./useUrlParam";
 import { delta, fmtPct0, fmtPp, relChange } from "./delta";
 import { alignRows, belowShare, loadAllRows, shortfallKnown, shortfallLabel, type Deficit, type PeriodBalance, type RegionSummary, type Row, type Stats, type UfSummary } from "@/lib/rows";
 import { FundebMap } from "@/components/FundebMap";
+import type { MedianMap } from "@/lib/etapas-fields";
 import type { FundebMapPayload } from "@/lib/fundeb-types";
+import { StageMedians } from "./StageMedians";
 import TerritoryMap from "./TerritoryMap";
 import UfMultiples from "./UfMultiples";
 import UfTable from "./UfTable";
@@ -45,6 +47,10 @@ type Props = {
   /** MDE % histogram counts per year (`histCounts`), binned on the server */
   hist: number[][];
   fundeb: FundebMapPayload;
+  /** Stage medians for this scope (Brasil, or the region). */
+  stages: MedianMap;
+  /** Brasil medians when this is a region page. */
+  stagesBrasil?: MedianMap;
 };
 
 /** States with fewer reporting municipalities than this aren't named as "the highest share" (small-n noise). */
@@ -109,7 +115,7 @@ function Spark({ values, index, color }: { values: (number | null)[]; index: num
   );
 }
 
-export default function TerritoryDashboard({ region, years, initialYear, stats, parent, ufs, regions, deficits, deficitsReal, balanceTotal, balanceGroups, hist, fundeb }: Props) {
+export default function TerritoryDashboard({ region, years, initialYear, stats, parent, ufs, regions, deficits, deficitsReal, balanceTotal, balanceGroups, hist, fundeb, stages, stagesBrasil }: Props) {
   const [yearNow, setYear] = useYear(years, initialYear);
   // the picker answers at once; the dashboard (charts, map, tables) follows as a low-priority render (INP)
   const year = useDeferredValue(yearNow);
@@ -324,6 +330,8 @@ export default function TerritoryDashboard({ region, years, initialYear, stats, 
             spark={<Spark values={stats.map((x) => x.funBelow)} index={yi} color={red} />}
           />
         </section>
+
+        <StageMedians year={year} scope={stages} brasil={stagesBrasil} />
 
         <section className="grid gap-6 lg:grid-cols-5">
           <Panel

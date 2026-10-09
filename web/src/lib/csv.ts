@@ -3,6 +3,7 @@
  * Client-safe: no server imports (City is a type-only import).
  */
 import type { City, StateGov } from "./data";
+import { STAGE_FIELDS, STAGE_MONEY, STAGE_PERCENT, stageRealKey, type StageYearMap } from "./etapas-fields";
 import { MDE_MIN, PANDEMIC_YEARS, fundebLeftMax } from "./format";
 import { getRegion, getUf } from "./geo";
 import { IPCA_BASE, atipOf, deltaPp, ipcaFactor, isImplausible, type CityYear, type FinanceRow, type Row } from "./rows";
@@ -35,6 +36,8 @@ export const CSV_COLUMNS: { key: string; label: string }[] = [
   { key: "fundeb_nao_usado_pct", label: "% do Fundeb deixado para o ano seguinte (indicador 1.4)" },
   { key: "fundeb_nao_usado_max_pct", label: "Máximo permitido de Fundeb não usado: 5% até 2020, 10% desde 2021" },
   { key: "por_aluno_rs", label: "R$ nominais por aluno (indicador 4.9; o número de alunos é o declarado pelo ente ao SIOPE)" },
+  ...STAGE_MONEY.map((f) => ({ key: f.csv, label: f.dict })),
+  ...STAGE_PERCENT.map((f) => ({ key: f.csv, label: f.dict })),
   { key: "educacao_pct_despesa_total", label: "% da despesa total do ente que foi para a educação (indicador 2.8)" },
   { key: "saude_pct", label: "% aplicado em saúde (SICONFI; só alguns municípios de SP)" },
   { key: "mde_pct_siconfi", label: "% em MDE segundo o Tesouro (SICONFI), quando difere do SIOPE em 1 p.p. ou mais (só SP)" },
@@ -47,6 +50,10 @@ export const CSV_COLUMNS: { key: string; label: string }[] = [
   { key: "receita_impostos_rs_real", label: `receita_impostos_rs em R$ de ${IPCA_BASE} (corrigido pelo IPCA)` },
   { key: "faltou_rs_real", label: `faltou_rs em R$ de ${IPCA_BASE} (corrigido pelo IPCA)` },
   { key: "por_aluno_rs_real", label: `por_aluno_rs em R$ de ${IPCA_BASE} (corrigido pelo IPCA)` },
+  ...STAGE_MONEY.map((f) => ({
+    key: stageRealKey(f.csv),
+    label: `${f.csv} em R$ de ${IPCA_BASE} (corrigido pelo IPCA). O 0 é tratado como ausente, então a célula fica vazia.`,
+  })),
 ];
 
 const YEAR_KEYS = CSV_COLUMNS.slice(CSV_COLUMNS.findIndex((c) => c.key === "ano")).map((c) => c.key);
@@ -128,26 +135,41 @@ function realCols(y: number, mdeV: CsvValue, base: CsvValue, falt: CsvValue, alu
   };
 }
 
+function stageCols(y: number, stages: StageYearMap | undefined): CsvRecord {
+  const cell = stages?.[String(y)];
+  const out: CsvRecord = {};
+  for (const f of STAGE_FIELDS) {
+    const v = cell?.[f.id] ?? null;
+    if (f.kind === "money") {
+      out[f.csv] = v;
+      out[stageRealKey(f.csv)] = real(v, y);
+    } else {
+      out[f.csv] = v;
+    }
+  }
+  return out;
+}
+
 const regionName = (uf: string) => getRegion(getUf(uf)!.region).name;
 
 /** Full records of one municipality, one per year with data (years before installation are absent). */
-export function cityCsvRecords(c: City, years: number[]): CsvRecord[] {
+export function cityCsvRecords(c: City, years: number[], stages: StageYearMap): CsvRecord[] {
   const id: CsvRecord = {
     ibge: c.id, municipio: c.name, uf: c.uf, regiao: regionName(c.uf), regiao_intermediaria: c.inter,
     regiao_imediata: c.imediata, capital: c.capital ? 1 : 0, populacao: c.pop,
   };
   return years.flatMap((y) => {
     const r = c.years[y];
-    return r ? [{ ...id, ...yearCols(y, r, c.years[y - 1]) }] : [];
+    return r ? [{ ...id, ...yearCols(y, r, c.years[y - 1]), ...stageCols(y, stages) }] : [];
   });
 }
 
 /** Records of one state government (SIOPE "Estadual" declarations). */
-export function stateCsvRecords(s: StateGov, years: number[]): CsvRecord[] {
+export function stateCsvRecords(s: StateGov, years: number[], stages: StageYearMap): CsvRecord[] {
   const id: CsvRecord = { ibge: s.code, municipio: s.name, uf: s.uf, regiao: regionName(s.uf) };
   return years.flatMap((y) => {
     const r = s.years[y];
-    return r ? [{ ...id, ...yearCols(y, r, s.years[y - 1]) }] : [];
+    return r ? [{ ...id, ...yearCols(y, r, s.years[y - 1]), ...stageCols(y, stages) }] : [];
   });
 }
 
