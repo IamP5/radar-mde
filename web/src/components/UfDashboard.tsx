@@ -1,5 +1,6 @@
 "use client";
 
+import { BalancePanel } from "./territory/BalancePanel";
 import { DeficitPanel } from "./territory/DeficitPanel";
 import { ArrowDown, ArrowRight, ArrowUp, ChevronsUpDown, Info, Search, TriangleAlert, X } from "lucide-react";
 import Link from "next/link";
@@ -23,7 +24,7 @@ import { ChartActions } from "@/components/kit/chart-actions";
 import { BINS, METRICS, binColor, colorOf, funBins, histCounts, histLabel, isBelowBin, quintileBins, type Bin, type MetricKey } from "@/lib/bins";
 import { MDE_MIN, PANDEMIC_YEARS, POP_BANDS, brlShort, funMin, int, normKey, pct, share } from "@/lib/format";
 import { cityPath, getRegion, getUf, ofUf, type RegionKey } from "@/lib/geo";
-import { atipNote, atipOf, belowShare, isAtip, isImplausible, shortfallKnown, shortfallLabel, timesBelow, type Deficit, type Row, type Stats } from "@/lib/rows";
+import { atipNote, atipOf, belowShare, isAtip, isImplausible, shortfallKnown, shortfallLabel, timesBelow, type BalanceItem, type Deficit, type PeriodBalance, type Row, type Stats } from "@/lib/rows";
 import { cn } from "@/lib/utils";
 import { fromColumns, type Columns } from "./territory/pack";
 import { ShortfallInfo } from "./territory/InfoTip";
@@ -45,6 +46,8 @@ type Props = {
   deficits: Deficit[];
   /** same ranking by the IPCA-corrected balance */
   deficitsReal: Deficit[];
+  balanceTotal: PeriodBalance;
+  balanceItems: BalanceItem[];
 };
 
 type SortKey = "name" | "pop" | "mde" | "fun" | "short" | "reinc" | "aluno";
@@ -105,7 +108,7 @@ function rowStatus(r: Row, yi: number, year: number): { kind: StatusKind; label:
   return { kind: "ok", label: "Cumpre" };
 }
 
-export default function UfDashboard({ uf, years, initialYear, rows: packed, stats, regionStats, brStats, gov, deficits, deficitsReal }: Props) {
+export default function UfDashboard({ uf, years, initialYear, rows: packed, stats, regionStats, brStats, gov, deficits, deficitsReal, balanceTotal, balanceItems }: Props) {
   const rows = useMemo(() => fromColumns(packed), [packed]);
   const [yearNow, setYear] = useYear(years, initialYear);
   // the picker answers at once; the dashboard (charts, map, tables) follows as a low-priority render (INP)
@@ -547,6 +550,15 @@ export default function UfDashboard({ uf, years, initialYear, rows: packed, stat
           </Panel>
           <DeficitPanel nominal={deficits} real={deficitsReal} years={years} year={year} initialYear={initialYear} compact />
         </section>
+
+        <BalancePanel
+          title={`Saldo no período · ${years[0]}–${years[years.length - 1]}`}
+          description={`Quanto cada município ${ofUf(uf)} aplicou acima (+) ou abaixo (−) dos 25% de MDE, somando todos os anos. Não muda com o ano escolhido.`}
+          total={balanceTotal}
+          totalLabel={ofUf(uf)}
+          groups={[{ key: "mun", label: "Municípios", noun: "Município", items: balanceItems }]}
+          years={years}
+        />
 
         <Panel
           id="municipios"

@@ -7,11 +7,11 @@ import fs from "node:fs";
 import path from "node:path";
 import meta from "@/data/meta.json";
 import { MDE_MIN, shortfall } from "./format";
-import { REGIONS, UFS, getRegion, type RegionKey, type Scope, scopeUfs } from "./geo";
-import { ATIP_BITS, ATIP_IMPL_BIT, aggregate, toReal, type CityYear, type Deficit, type RegionSummary, type Row, type Stats, type UfSummary } from "./rows";
+import { REGIONS, UFS, cityPath, getRegion, regionPath, ufPath, type RegionKey, type Scope, scopeUfs } from "./geo";
+import { ATIP_BITS, ATIP_IMPL_BIT, aggregate, toReal, type BalanceItem, type CityYear, type Deficit, type PeriodBalance, type RegionSummary, type Row, type Stats, type UfSummary } from "./rows";
 
 export * from "./format";
-export type { AtipCode, CityYear, Deficit, Finance, FinanceRow, RegionSummary, Row, Stats, UfSummary } from "./rows";
+export type { AtipCode, BalanceItem, CityYear, PeriodBalance, Deficit, Finance, FinanceRow, RegionSummary, Row, Stats, UfSummary } from "./rows";
 export {
   ATIP_IMPL_LABEL, ATIP_LABEL, DATA_VERSION, HEALTH_UFS, IPCA_BASE, IPCA_LABEL, atipNote, atipOf, deltaPp, existedIn,
   ipcaFactor, isAtip, isImplausible, toReal, ufHasHealth,
@@ -181,6 +181,52 @@ export function deficitTrail(c: City) {
     return { year: y, carry, carryReal, shortfall: sh, shortfallReal: toReal(sh, y) ?? sh, rec: r };
   });
 }
+
+/** Over/under-application against 25% summed over every year with a declared % and a known tax base. */
+const balanceCache = new Map<number, PeriodBalance>();
+export function periodBalance(c: City): PeriodBalance {
+  let b = balanceCache.get(c.id);
+  if (!b) {
+    b = { short: 0, over: 0, shortReal: 0, overReal: 0, years: 0 };
+    for (const y of YEARS) {
+      const r = c.years[y];
+      if (r?.mde == null || r.base == null) continue;
+      const d = ((r.mde - MDE_MIN) / 100) * r.base;
+      const dr = toReal(d, y) ?? d;
+      b.years++;
+      if (d < 0) {
+        b.short -= d;
+        b.shortReal -= dr;
+      } else {
+        b.over += d;
+        b.overReal += dr;
+      }
+    }
+    balanceCache.set(c.id, b);
+  }
+  return b;
+}
+
+/** Sum of the cities' balances (a region, a state or the whole country). */
+export function sumBalance(cs: City[]): PeriodBalance {
+  const t: PeriodBalance = { short: 0, over: 0, shortReal: 0, overReal: 0, years: 0 };
+  for (const c of cs) {
+    const b = periodBalance(c);
+    t.short += b.short; t.over += b.over; t.shortReal += b.shortReal; t.overReal += b.overReal;
+    t.years = Math.max(t.years, b.years);
+  }
+  return t;
+}
+
+const r0 = (b: PeriodBalance): PeriodBalance => ({ ...b, short: Math.round(b.short), over: Math.round(b.over), shortReal: Math.round(b.shortReal), overReal: Math.round(b.overReal) });
+export const regionBalances = (): BalanceItem[] =>
+  REGIONS.map((r) => ({ key: r.key, name: r.name, sub: r.ufs.join(" · "), href: regionPath(r.key), ...r0(sumBalance(citiesIn({ level: "region", region: r.key }))) }));
+export const ufBalances = (ufs: string[] = UFS.map((u) => u.uf)): BalanceItem[] =>
+  ufs.map((uf) => ({ key: uf, name: UFS.find((u) => u.uf === uf)!.name, sub: uf, href: ufPath(uf), ...r0(sumBalance(citiesOf(uf))) }));
+export const cityBalances = (uf: string): BalanceItem[] =>
+  citiesOf(uf).map((c) => ({ key: String(c.id), name: c.name, href: cityPath(c.uf, c.slug), ...r0(periodBalance(c)) }));
+export const brBalance = () => r0(sumBalance(allCities()));
+export const scopeBalance = (s: Scope) => r0(sumBalance(citiesIn(s)));
 
 export function latestYear(c: City): number | null {
   for (let i = YEARS.length - 1; i >= 0; i--) if (c.years[YEARS[i]]?.mde != null) return YEARS[i];

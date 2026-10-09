@@ -162,6 +162,8 @@ export default function SearchPaletteDialog({ open, onOpenChange }: { open: bool
   const go = (o: Option) => {
     saveRecent(o);
     onOpenChange(false);
+    // the immersive map (/mapa) handles the pick itself (flies to the place); preventDefault skips the navigation
+    if (!window.dispatchEvent(new CustomEvent("radar:navigate", { detail: { href: o.href }, cancelable: true }))) return;
     router.push(o.href);
   };
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { BalancePanel, type BalanceGroup } from "./BalancePanel";
 import { DeficitPanel } from "./DeficitPanel";
 import Link from "next/link";
 import { useCallback, useDeferredValue, useEffect, useId, useMemo, useRef, useState } from "react";
@@ -19,7 +20,7 @@ import { BINS, histLabel } from "@/lib/bins";
 import { InfoTip, ShortfallInfo } from "./InfoTip";
 import { useUrlParam } from "./useUrlParam";
 import { delta, fmtPct0, fmtPp, relChange } from "./delta";
-import { alignRows, belowShare, loadAllRows, shortfallKnown, shortfallLabel, type Deficit, type RegionSummary, type Row, type Stats, type UfSummary } from "@/lib/rows";
+import { alignRows, belowShare, loadAllRows, shortfallKnown, shortfallLabel, type Deficit, type PeriodBalance, type RegionSummary, type Row, type Stats, type UfSummary } from "@/lib/rows";
 import TerritoryMap from "./TerritoryMap";
 import UfMultiples from "./UfMultiples";
 import UfTable from "./UfTable";
@@ -36,6 +37,9 @@ type Props = {
   deficits: Deficit[];
   /** same ranking by the IPCA-corrected balance */
   deficitsReal: Deficit[];
+  /** over/under-application against 25% summed over all years, for the scope and for the lists below it */
+  balanceTotal: PeriodBalance;
+  balanceGroups: BalanceGroup[];
   /** MDE % histogram counts per year (`histCounts`), binned on the server */
   hist: number[][];
 };
@@ -102,7 +106,7 @@ function Spark({ values, index, color }: { values: (number | null)[]; index: num
   );
 }
 
-export default function TerritoryDashboard({ region, years, initialYear, stats, parent, ufs, regions, deficits, deficitsReal, hist }: Props) {
+export default function TerritoryDashboard({ region, years, initialYear, stats, parent, ufs, regions, deficits, deficitsReal, balanceTotal, balanceGroups, hist }: Props) {
   const [yearNow, setYear] = useYear(years, initialYear);
   // the picker answers at once; the dashboard (charts, map, tables) follows as a low-priority render (INP)
   const year = useDeferredValue(yearNow);
@@ -456,6 +460,15 @@ export default function TerritoryDashboard({ region, years, initialYear, stats, 
           </Panel>
           <DeficitPanel nominal={deficits} real={deficitsReal} years={years} year={year} initialYear={initialYear} />
         </section>
+
+        <BalancePanel
+          title={`Saldo no período · ${years[0]}–${years[years.length - 1]}`}
+          description={`Quanto cada ${region ? "estado" : "região e estado"} aplicou acima (+) ou abaixo (−) dos 25% de MDE, somando todos os anos. Não muda com o ano escolhido.`}
+          total={balanceTotal}
+          totalLabel={region ? `da região ${getRegion(region).name}` : "do Brasil"}
+          groups={balanceGroups}
+          years={years}
+        />
 
         <Panel
           divided

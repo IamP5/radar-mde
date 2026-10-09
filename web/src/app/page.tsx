@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/kit/page-header";
 import { SearchButton } from "@/components/SearchPalette";
 import TerritoryDashboard from "@/components/territory/TerritoryDashboard";
 import { buttonVariants } from "@/components/ui/button";
-import { YEARS, brStats, defaultYear, int, regionSummaries, rowsIn, topDeficits, ufSummaries } from "@/lib/data";
+import { YEARS, brBalance, brStats, regionBalances, ufBalances, defaultYear, int, regionSummaries, rowsIn, topDeficits, ufSummaries } from "@/lib/data";
 import { histCounts } from "@/lib/bins";
 
 export const metadata: Metadata = { alternates: { canonical: "/" } };
@@ -43,6 +43,10 @@ export default function Home() {
               <Download aria-hidden />
               Baixar CSV
             </a>
+            <Link href="/mapa" className={buttonVariants({ variant: "default", size: "sm" })}>
+              Mapa interativo
+              <ArrowRight aria-hidden />
+            </Link>
             <Link href="/explorar" className={buttonVariants({ variant: "outline", size: "sm" })}>
               Explorar municípios
               <ArrowRight aria-hidden />
@@ -58,6 +62,11 @@ export default function Home() {
         regions={regionSummaries()}
         deficits={topDeficits({ level: "br" }, 25)}
         deficitsReal={topDeficits({ level: "br" }, 25, { real: true })}
+        balanceTotal={brBalance()}
+        balanceGroups={[
+          { key: "reg", label: "Regiões", noun: "Região", items: regionBalances() },
+          { key: "uf", label: "Estados", noun: "Estado", items: ufBalances() },
+        ]}
         hist={YEARS.map((_, i) => histCounts(rows.map((r) => r.mde[i])))}
       />
     </>

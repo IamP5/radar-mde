@@ -1,0 +1,669 @@
+/*
+ * /mapa — immersive map view. Follows the app theme (next-themes puts `.dark` on <html>), with its own data
+ * palette per mode: red = below the legal minimum, blue = above it, stronger = further from the centre.
+ * Tokens are scoped to .mapa-shell so bins.ts (var(--bin-n)) and the rest of the app are untouched.
+ * Unlayered on purpose: they must beat the global :root/.dark tokens inherited from <html>.
+ *   --m-ink        text / hairlines / selection (mixed with transparency via color-mix or Tailwind `/NN`)
+ *   --m-on-strong  label text over the strongest fills (bright in dark mode, deep in light mode)
+ *   --m-halo       text-shadow that separates map labels from any fill
+ */
+.mapa-shell {
+  color-scheme: light;
+  --m-bg: #eceef1;
+  --m-stage-hi: #f8f9fb;
+  --m-panel: rgba(255, 255, 255, 0.86);
+  --m-panel-solid: #ffffff;
+  --m-card: rgba(255, 255, 255, 0.97);
+  --m-chip-bg: rgba(255, 255, 255, 0.95);
+  --m-line: rgba(16, 24, 40, 0.09);
+  --m-line-2: rgba(16, 24, 40, 0.16);
+  --m-ink: #14171c;
+  --m-text: var(--m-ink);
+  --m-dim: #5b6370;
+  --m-faint: #8a919c;
+  --m-red: #d42f35;
+  --m-blue: #1f66d1;
+  --m-amber: #9a5800;
+  --m-amber-fill: #e8960f;
+  --m-undeclared: #cbbfdc;
+  --m-on-strong: #ffffff;
+  --m-halo: 0 0 2px rgba(255, 255, 255, 0.95), 0 0 6px rgba(255, 255, 255, 0.85);
+  --m-halo-strong: 0 0 2px #fff, 0 0 8px rgba(255, 255, 255, 0.95);
+  --m-shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 10px 28px -14px rgba(16, 24, 40, 0.22);
+  --m-shadow-lg: 0 2px 4px rgba(16, 24, 40, 0.06), 0 16px 40px -12px rgba(16, 24, 40, 0.3);
+
+  /* light data palette: the app's validated light steps (DESIGN.md), with a warmer tan for "at the limit" */
+  --bin-1: #b42727;
+  --bin-2: #e27371;
+  --bin-3: #cbbd98;
+  --bin-4: #5598e7;
+  --bin-5: #1c5cab;
+  --bin-nd: #b9bdc4;
+  --bin-zero: #f8f7f3;
+  --seq-1: #cde2fb;
+  --seq-2: #86b6ef;
+  --seq-3: #3987e5;
+  --seq-4: #1c5cab;
+  --seq-5: #0d366b;
+  --red-1: #efaeac;
+  --red-2: #e27371;
+  --red-3: #cd4a48;
+  --red-4: #a32828;
+  --red-5: #6a1616;
+  --rec-0: #c9dbf2;
+
+  /* motion: one easing family (reference: .4,0,.2,1 / .16,1,.3,1), quick hovers */
+  --m-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --m-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --m-hover: 0.12s;
+  /* one year step: fills, markers, numbers and the timeline all move on this clock */
+  --m-step: 0.6s;
+
+  background: var(--m-bg);
+  color: var(--m-text);
+}
+.dark .mapa-shell {
+  color-scheme: dark;
+  --m-bg: #07080a;
+  --m-stage-hi: #0d1015;
+  --m-panel: rgba(16, 18, 23, 0.8);
+  --m-panel-solid: #101217;
+  --m-card: rgba(14, 16, 20, 0.94);
+  --m-chip-bg: rgba(16, 18, 23, 0.92);
+  --m-line: rgba(255, 255, 255, 0.08);
+  --m-line-2: rgba(255, 255, 255, 0.14);
+  --m-ink: #f2f3f5;
+  --m-dim: #9ca3af;
+  --m-faint: #6b7280;
+  --m-red: #ff5d5d;
+  --m-blue: #5ea3ff;
+  --m-amber: #ffc069;
+  --m-amber-fill: #f5a623;
+  --m-undeclared: #5b4f66;
+  --m-on-strong: #101216;
+  --m-halo: 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.6);
+  --m-halo-strong: 0 1px 4px #000, 0 0 10px #000;
+  --m-shadow: 0 8px 32px -12px rgba(0, 0, 0, 0.6);
+  --m-shadow-lg: 0 12px 40px -8px rgba(0, 0, 0, 0.7);
+
+  --bin-1: #ff5d5d;
+  --bin-2: #c23b44;
+  --bin-3: #4d4a3f;
+  --bin-4: #2f6fd0;
+  --bin-5: #5ea3ff;
+  --bin-nd: #3a3f48;
+  --bin-zero: #27323f;
+  --seq-1: #1d2d47;
+  --seq-2: #1f4f8f;
+  --seq-3: #2f7ad6;
+  --seq-4: #6fb0ff;
+  --seq-5: #bfe0ff;
+  --red-1: #7a3038;
+  --red-2: #a8363f;
+  --red-3: #d4474f;
+  --red-4: #f06a6a;
+  --red-5: #ffa29c;
+  --rec-0: #1e3556;
+}
+
+@layer components {
+
+.mapa-shell .font-display {
+  font-family: var(--font-serif), "Iowan Old Style", Georgia, serif;
+  letter-spacing: -0.015em;
+}
+
+/* ---------- glass surfaces ---------- */
+.m-panel {
+  background: var(--m-panel);
+  border: 1px solid var(--m-line);
+  border-radius: 16px;
+  backdrop-filter: blur(18px) saturate(1.2);
+  box-shadow: var(--m-shadow);
+}
+.m-card {
+  background: var(--m-card);
+  border: 1px solid var(--m-line-2);
+  border-radius: 12px;
+  backdrop-filter: blur(14px);
+  box-shadow: var(--m-shadow-lg);
+}
+.m-ctl {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: var(--m-panel);
+  border: 1px solid var(--m-line);
+  color: color-mix(in srgb, var(--m-ink) 90%, transparent);
+  backdrop-filter: blur(14px);
+  transition: background var(--m-hover) var(--m-ease), border-color var(--m-hover) var(--m-ease);
+}
+.m-ctl.m-ctl-flat {
+  border-color: transparent;
+  background: transparent;
+  backdrop-filter: none;
+}
+.m-ctl:hover {
+  background: color-mix(in srgb, var(--m-ink) 9%, var(--m-panel-solid));
+  border-color: var(--m-line-2);
+}
+.m-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  color: var(--m-dim);
+  white-space: nowrap;
+  transition: background 0.2s var(--m-ease), color 0.2s var(--m-ease), box-shadow 0.2s var(--m-ease);
+}
+.m-pill:hover {
+  color: var(--m-text);
+}
+.m-pill[aria-pressed="true"],
+.m-pill[aria-selected="true"],
+.m-pill[aria-checked="true"] {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--m-ink) 10%, transparent);
+  background: color-mix(in srgb, var(--m-ink) 12%, transparent);
+  color: var(--m-ink);
+}
+.m-pill:disabled {
+  opacity: 0.4;
+}
+.mapa-shell :focus-visible {
+  outline: 2px solid var(--m-blue);
+  outline-offset: 2px;
+}
+.mapa-shell .mapa-stage:focus-visible {
+  outline-offset: -4px;
+}
+
+@keyframes m-hint {
+  0%, 80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.m-hint {
+  animation: m-hint 9s ease forwards;
+  pointer-events: none;
+}
+
+/* ---------- map ---------- */
+.mapa-stage {
+  background: radial-gradient(120% 90% at 50% 40%, var(--m-stage-hi) 0%, var(--m-bg) 70%);
+}
+/* fade the map out under the top controls so polygons never run behind the tabs */
+.mapa-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 132px;
+  background: linear-gradient(var(--m-bg) 30%, transparent);
+  pointer-events: none;
+}
+/* before the first fill pass the shapes are neutral (no black flash), then fade in */
+.mapa-stage .m-mun path,
+.mapa-stage .m-uf path {
+  fill: var(--bin-nd);
+}
+.mapa-stage svg {
+  animation: m-fade 0.6s var(--m-ease) both;
+}
+.mapa-stage .m-mun path {
+  stroke: var(--m-bg);
+  stroke-width: 0.3px;
+  vector-effect: non-scaling-stroke;
+  stroke-linejoin: round;
+  transition: fill var(--m-step) var(--m-ease), fill-opacity 0.45s var(--m-ease);
+}
+.mapa-stage[data-sw="uf"] .m-mun path {
+  stroke-width: 0.6px;
+}
+.mapa-stage[data-sw="city"] .m-mun path {
+  stroke-width: 0.9px;
+}
+.mapa-stage .m-mun {
+  transition: opacity 0.5s ease;
+}
+.mapa-stage .m-uf path {
+  fill: transparent;
+  stroke: none;
+  transition: fill var(--m-step) var(--m-ease), fill-opacity 0.45s var(--m-ease);
+}
+.mapa-stage[data-level="mun"] .m-uf {
+  pointer-events: none;
+}
+.mapa-stage[data-level="uf"] .m-mun {
+  opacity: 0;
+  pointer-events: none;
+}
+.mapa-stage[data-level="uf"] .m-uf path {
+  stroke: var(--m-bg);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+  stroke-linejoin: round;
+}
+.mapa-stage .m-borders,
+.mapa-stage .m-outline,
+.mapa-stage .m-hover,
+.mapa-stage .m-sel {
+  fill: none;
+  vector-effect: non-scaling-stroke;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+.mapa-stage .m-borders {
+  stroke: color-mix(in srgb, var(--m-ink) 24%, transparent);
+  stroke-width: 0.7px;
+  transition: opacity 0.4s;
+}
+.mapa-stage[data-level="uf"] .m-borders {
+  opacity: 0;
+}
+.mapa-stage .m-outline {
+  stroke: color-mix(in srgb, var(--m-ink) 34%, transparent);
+  stroke-width: 0.9px;
+}
+.mapa-stage[data-level="uf"] .m-outline {
+  opacity: 0;
+}
+.mapa-stage .m-hover {
+  fill: color-mix(in srgb, var(--m-ink) 7%, transparent);
+  stroke: var(--m-ink);
+  stroke-width: 1.3px;
+}
+.mapa-stage .m-sel {
+  stroke: var(--m-ink);
+  stroke-width: 2px;
+}
+.mapa-stage .m-sel-uf {
+  stroke: color-mix(in srgb, var(--m-ink) 80%, transparent);
+  stroke-width: 1.2px;
+}
+
+/* labels */
+.m-uflabel {
+  display: block;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  font-size: 0.6875rem;
+  line-height: 1.15;
+  color: color-mix(in srgb, var(--m-ink) 92%, transparent);
+  text-shadow: var(--m-halo);
+  transition: color var(--m-step) var(--m-ease), text-shadow var(--m-step) var(--m-ease);
+}
+.m-uflabel b {
+  display: block;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+.m-uflabel.is-strong {
+  color: var(--m-on-strong);
+  text-shadow: none;
+}
+.m-uflabel span {
+  font-size: 0.625rem;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.85;
+}
+.m-callout {
+  margin-top: -2px;
+}
+/* small-state callouts: filled with the state's data colour, clickable (fly to the state) */
+.m-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 24px;
+  min-width: 72px;
+  padding: 0 8px;
+  border-radius: 5px;
+  font-size: 0.6875rem;
+  color: var(--m-ink);
+  background: var(--chip, var(--m-chip-bg));
+  border: 1px solid var(--m-line-2);
+  font-variant-numeric: tabular-nums;
+  text-shadow: var(--m-halo);
+  cursor: pointer;
+  transition: box-shadow var(--m-hover) var(--m-ease), background-color var(--m-step) var(--m-ease), color var(--m-step) var(--m-ease), text-shadow var(--m-step) var(--m-ease);
+}
+.m-chip.is-strong {
+  color: var(--m-on-strong);
+  text-shadow: none;
+}
+.m-chip:hover,
+.m-chip:focus-visible {
+  box-shadow: 0 0 0 2px var(--m-ink);
+}
+.m-chip b {
+  font-weight: 600;
+}
+.m-chip span {
+  margin-left: auto;
+  opacity: 0.9;
+}
+.m-leader {
+  stroke: color-mix(in srgb, var(--m-ink) 28%, transparent);
+  stroke-width: 1px;
+  transition: opacity 0.3s, stroke 0.12s;
+}
+.m-leader.is-hot {
+  stroke: var(--m-ink);
+}
+[data-near="0"] .m-leader {
+  opacity: 0;
+}
+.m-city {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transform: translate(-3px, -50%);
+  font-size: 0.6875rem;
+  color: color-mix(in srgb, var(--m-ink) 88%, transparent);
+  text-shadow: var(--m-halo);
+  white-space: nowrap;
+  animation: m-fade 0.5s ease both;
+}
+.m-city i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--m-ink);
+  box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--m-bg) 70%, transparent);
+}
+.m-pin {
+  position: absolute;
+  left: -7px;
+  top: -7px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--m-ink);
+  background: color-mix(in srgb, var(--m-ink) 18%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--m-bg) 45%, transparent);
+}
+/* selected municipality name (reference: .townpill) */
+.m-townpill {
+  position: absolute;
+  left: 13px;
+  top: -13px;
+  white-space: nowrap;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--m-ink);
+  background: var(--m-card);
+  border: 1px solid var(--m-line-2);
+  box-shadow: var(--m-shadow);
+  animation: m-fade 0.3s var(--m-ease) both;
+}
+.m-tip {
+  border-radius: 14px;
+  animation: m-fade var(--m-hover) var(--m-ease) both;
+}
+
+/* pulse markers for municipalities below the legal minimum */
+.m-ping {
+  position: absolute;
+  left: -4px;
+  top: -4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--m-red);
+  box-shadow: 0 0 0 1.5px var(--m-bg);
+  /* a marker appears with the colour change (same timing as the fills) and then stays put across years */
+  animation: m-pop 0.45s var(--m-ease-out) both;
+  transition: width 0.3s var(--m-ease), height 0.3s var(--m-ease), left 0.3s var(--m-ease), top 0.3s var(--m-ease);
+}
+.m-ping > i {
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
+  border: 1.5px solid var(--m-red);
+  animation: m-ping 2.2s var(--m-ease-out) 3;
+  animation-delay: calc(0.3s + var(--i, 0) * 90ms);
+  animation-fill-mode: both;
+}
+.m-ping.is-still {
+  left: -2.5px;
+  top: -2.5px;
+  width: 5px;
+  height: 5px;
+  box-shadow: 0 0 0 1px var(--m-bg);
+}
+.m-ping.is-out {
+  animation: m-pop-out 0.32s var(--m-ease) both;
+}
+@keyframes m-pop {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+@keyframes m-pop-out {
+  to {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+}
+@keyframes m-ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(2.8);
+    opacity: 0;
+  }
+}
+@keyframes m-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes m-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+@keyframes m-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+}
+.m-rise {
+  animation: m-rise 0.52s var(--m-ease-out) both;
+}
+.m-slide-in {
+  animation: m-slide-in 0.45s var(--m-ease-out) both;
+}
+
+.m-spinner {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--m-ink) 15%, transparent);
+  border-top-color: color-mix(in srgb, var(--m-ink) 80%, transparent);
+  animation: m-spin 0.8s linear infinite;
+}
+@keyframes m-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* timeline */
+.m-track {
+  position: relative;
+  height: 28px;
+  cursor: pointer;
+  touch-action: none;
+}
+.m-track-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 13px;
+  height: 2px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--m-ink) 14%, transparent);
+}
+.m-track-fill {
+  position: absolute;
+  left: 0;
+  top: 13px;
+  height: 2px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--m-ink) 70%, transparent);
+  transition: width var(--m-step) var(--m-ease);
+}
+.m-track i {
+  transition: opacity var(--m-step) var(--m-ease);
+}
+/* the thumb and the fill glide one year per step; while dragging they follow the pointer directly */
+.m-track[data-drag="1"] .m-track-fill,
+.m-track[data-drag="1"] .m-thumb {
+  transition: none;
+}
+/* the year rolls up into place */
+.m-year {
+  display: block;
+  animation: m-year 0.42s var(--m-ease-out) both;
+}
+@keyframes m-year {
+  from {
+    opacity: 0;
+    transform: translateY(0.45em);
+  }
+}
+/* play button: a ring that fills during each year's beat */
+.m-beat {
+  position: absolute;
+  inset: -3.5px;
+  width: calc(100% + 7px);
+  height: calc(100% + 7px);
+  transform: rotate(-90deg);
+  pointer-events: none;
+}
+.m-beat circle {
+  fill: none;
+  stroke-width: 2;
+}
+.m-beat .is-track {
+  stroke: color-mix(in srgb, var(--m-ink) 12%, transparent);
+}
+.m-beat .is-run {
+  stroke: color-mix(in srgb, var(--m-ink) 60%, transparent);
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  animation: m-beat var(--beat, 1.5s) linear both;
+}
+@keyframes m-beat {
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+/* 44px touch target around the 16px thumb */
+.m-thumb::before {
+  content: "";
+  position: absolute;
+  inset: -14px;
+  border-radius: 50%;
+}
+.m-thumb {
+  position: absolute;
+  top: 6px;
+  width: 16px;
+  height: 16px;
+  margin-left: -8px;
+  border-radius: 50%;
+  background: var(--m-ink);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--m-ink) 15%, transparent), 0 2px 6px rgba(0, 0, 0, 0.3);
+  transition: left var(--m-step) var(--m-ease);
+}
+
+.m-bar-in {
+  transform-origin: left;
+  animation: m-bar 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@keyframes m-bar {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .m-ping,
+  .m-ping > i,
+  .m-spinner,
+  .m-beat .is-run,
+  .m-year {
+    animation: none;
+  }
+  .m-ping.is-out {
+    display: none;
+  }
+  .m-thumb,
+  .m-track-fill,
+  .m-chip,
+  .m-uflabel,
+  .m-lc-head,
+  .m-hist rect {
+    transition: none !important;
+  }
+  .m-rise,
+  .m-slide-in,
+  .m-townpill,
+  .m-tip,
+  .mapa-stage svg,
+  .m-bar-in,
+  .m-city {
+    animation: none;
+  }
+  .mapa-stage .m-mun path,
+  .mapa-stage .m-uf path {
+    transition: none;
+  }
+}
+
+.m-facts-btn {
+  display: none;
+}
+@media (min-width: 1024px) and (max-height: 820px) {
+  .m-facts-btn {
+    display: inline;
+  }
+  .m-facts[data-open="0"],
+  .m-tall-only {
+    display: none !important;
+  }
+}
+/* phones: state labels keep only the sigla, the counts crowd the small map */
+@media (max-width: 640px) {
+  .m-uflabel span {
+    display: none;
+  }
+}
+
+/* scrollbars inside panels */
+.m-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--m-ink) 18%, transparent) transparent;
+}
+
+}

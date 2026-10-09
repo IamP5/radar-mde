@@ -52,6 +52,12 @@ e % em saúde).
 
 - `scripts/` — coleta (SIOPE, SICONFI, IBGE) e montagem da base.
 - `web/` — Next.js (App Router), ~5.600 páginas geradas estaticamente.
+  - `/mapa` visão imersiva (estilo apuração eleitoral): mapa em tela cheia com navegação dentro do próprio mapa
+    (clique no estado → voo até ele → clique no município → ficha lateral), indicadores (% em educação, Fundeb,
+    R$ por aluno corrigido pelo IPCA, anos abaixo de 25%, com ou sem 2020–21), níveis município/estado, linha do
+    tempo 2008–2025 com reprodução, marcadores nos municípios abaixo do mínimo, busca ⌘K que voa até o lugar, tema
+    claro e escuro. O lugar fica no hash (`/mapa#sp-3550308`), o resto na query (`?i=fun&nivel=estados&ano=2012`).
+    Código em `web/src/components/mapa/`.
   - `/` Brasil: indicadores, mapa por estado ou por município, regiões, evolução, ranking de estados, déficits.
   - `/regiao/[slug]` região (norte, nordeste, centro-oeste, sudeste, sul) com o mesmo painel.
   - `/[uf]` estado: mapa municipal, comparação com região e país, governo estadual, tabela filtrável.

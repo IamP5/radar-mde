@@ -16,7 +16,7 @@ import { EmptyState, Panel } from "@/components/kit/panel";
 import { Stat } from "@/components/kit/stat";
 import { StatusBadge } from "@/components/kit/status";
 import { Button } from "@/components/ui/button";
-import { MDE_MIN, brl, brlShort, pct, siconfiUrl, siopeUrl } from "@/lib/format";
+import { MDE_MIN, brl, brlShort, brlSigned, pct, siconfiUrl, siopeUrl } from "@/lib/format";
 import { cityPath } from "@/lib/geo";
 import { ATIP_IMPL_LABEL, ATIP_LABEL, IPCA_BASE } from "@/lib/rows";
 import { cn } from "@/lib/utils";
@@ -235,6 +235,29 @@ export function YearKpis() {
         }
       />
     </section>
+  );
+}
+
+/** Whole-period balance against 25% (all years, no carry-over): what was applied above the minimum minus what fell short. */
+export function PeriodBalanceCard() {
+  const { d } = useCity();
+  const b = d.balance;
+  if (!b.years) return null;
+  const net = b.over - b.short;
+  const netReal = b.overReal - b.shortReal;
+  const span = `${d.years[0]}–${d.years[d.years.length - 1]}`;
+  return (
+    <Stat
+      label={`Saldo no período, ${span}`}
+      value={brlSigned(net)}
+      tone={net < 0 ? "bad" : net > 0 ? "good" : "neutral"}
+      sub={
+        <>
+          Aplicou {brlShort(b.over)} acima dos 25% e deixou de aplicar {brlShort(b.short)} nos anos abaixo do mínimo ({b.years}{" "}
+          {b.years === 1 ? "ano" : "anos"} com receita declarada). R$ da época · {brlSigned(netReal)} corrigidos pelo IPCA (R$ de {IPCA_BASE}).
+        </>
+      }
+    />
   );
 }
 

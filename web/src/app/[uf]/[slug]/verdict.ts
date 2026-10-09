@@ -4,6 +4,7 @@
  */
 import type { StatusKind } from "@/components/kit/status";
 import { MDE_MIN, PANDEMIC_YEARS, pct } from "@/lib/format";
+import type { PeriodBalance } from "@/lib/rows";
 
 /** Status of one year: data → ok/edge/below; nd = nothing declared; none = no record; na = municipality didn't exist yet. */
 export type St = "ok" | "edge" | "below" | "nd" | "none" | "na";
@@ -42,6 +43,8 @@ export type CityYearData = {
   inUf: string;
   single: boolean;
   since: number | null;
+  /** over/under-application against 25% summed over the whole period (R$) */
+  balance: PeriodBalance;
   years: number[];
   initial: number;
   points: YearPoint[];

@@ -8,7 +8,7 @@ import TerritoryDashboard from "@/components/territory/TerritoryDashboard";
 import { buttonVariants } from "@/components/ui/button";
 import { histCounts } from "@/lib/bins";
 import { csvHref } from "@/lib/csv";
-import { YEARS, brStats, citiesIn, defaultYear, int, regionStats, rowsIn, topDeficits, ufSummaries } from "@/lib/data";
+import { YEARS, brStats, scopeBalance, ufBalances, citiesIn, defaultYear, int, regionStats, rowsIn, topDeficits, ufSummaries } from "@/lib/data";
 import { REGIONS, getRegionBySlug, regionPath } from "@/lib/geo";
 import { cn } from "@/lib/utils";
 
@@ -94,6 +94,8 @@ export default async function Page({ params }: PageProps<"/regiao/[slug]">) {
         ufs={ufSummaries(r.ufs)}
         deficits={topDeficits(scope, 25)}
         deficitsReal={topDeficits(scope, 25, { real: true })}
+        balanceTotal={scopeBalance(scope)}
+        balanceGroups={[{ key: "uf", label: "Estados", noun: "Estado", items: ufBalances(r.ufs) }]}
         hist={YEARS.map((_, i) => histCounts(rows.map((x) => x.mde[i])))}
       />
     </>

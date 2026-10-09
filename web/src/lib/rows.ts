@@ -283,6 +283,15 @@ export function loadAllRows() {
   return rowsPromise;
 }
 
+/**
+ * Balance against the 25% minimum over the whole published period, summed year by year (no carry-over):
+ * `short` = R$ below the minimum, `over` = R$ applied above it; both ≥ 0, nominal and in R$ of IPCA_BASE.
+ * Net balance = over − short. Only years with a declared % and a known tax base count (`years`).
+ */
+export type PeriodBalance = { short: number; over: number; shortReal: number; overReal: number; years: number };
+export type BalanceItem = PeriodBalance & { key: string; name: string; sub?: string; href: string };
+export const netBalance = (b: PeriodBalance, real: boolean) => (real ? b.overReal - b.shortReal : b.over - b.short);
+
 // ---- territory summaries computed on the server and handed to client dashboards
 export type UfSummary = { uf: string; name: string; region: "N" | "NE" | "SE" | "S" | "CO"; stats: Stats[]; gov: (number | null)[] };
 export type RegionSummary = { key: "N" | "NE" | "SE" | "S" | "CO"; slug: string; name: string; ufs: string[]; stats: Stats[] };

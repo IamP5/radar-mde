@@ -54,3 +54,24 @@ Read this before touching UI. Tokens live in `src/app/globals.css`.
   radiogroups/tablists and textareas are hidden; sticky bars static; scrollers/tables expanded with repeating header;
   panels may split, but charts, maps, KPI cards and table rows don't, and a panel header stays with its body; charts fit their box (never taller than the container); numeric cells in data tables don't wrap. `PageHeader` prints URL + print date (`kit/print-meta.tsx`).
   Mark any other control `print:hidden`; print-only notes use `.print-only` or `hidden print:block`.
+
+## /mapa (immersive view)
+Deliberate exception to the flat document look: a full-bleed map with floating glass panels (`src/components/mapa/`).
+It brings its own chrome (the site header/footer are hidden by `ChromeGate`) and follows the app theme (`.dark` on `<html>`;
+a sun/moon button in its top bar). `mapa.css` scopes its tokens to `.mapa-shell` (light) and `.dark .mapa-shell`, unlayered so
+they beat the global ones: `--m-ink` for text/hairlines (mix it, `text-(--m-ink)/60`; never hard-code white/black),
+`--m-on-strong` + `--m-halo` for labels over fills, and a data palette per mode (red below 25%, a neutral "no limite" 25–26%,
+blue above; the stronger the step, the further from 25% — brighter in dark, deeper in light).
+- Navigation lives in the map: click state → fly (van Wijk smooth zoom, 600–1000 ms) → click city → drawer (‹ › walk the
+  state's ranking). Place in the URL hash, view in the query. State labels and callouts are buttons (keyboard: Tab + Enter).
+- The drawer, legend, rankings and charts follow the active indicator. R$ por aluno is in R$ of IPCA_BASE with fixed classes;
+  "Anos abaixo" accumulates up to the chosen year and can leave out 2020–21 (EC 119, also shaded on charts and timeline).
+- Every municipality below the minimum gets a marker; when there are many (2020–21) only the 30 lowest pulse, 3 times.
+- Performance rule: never dim thousands of paths with `opacity` (offscreen buffer per path, ~30 ms/frame); use `fill-opacity`.
+  The camera moves one `<g>`; labels, callouts and pulse markers are screen-space HTML placed per frame.
+- Year changes run on one clock, `--m-step` (0.6 s): fills crossfade, markers pop in or fade out, chips/labels recolour,
+  timeline thumb + fill, chart playhead, legend/ranking bars and counts all glide together. Play advances one year per
+  `BEAT` (1.5 s, a ring on the play button shows it) as a React transition; nothing pulses while playing (the pulse returns
+  on the year it stops), panels never remount or change height per year (`Reveal` for notes that come and go), and tweened
+  numbers are leaf `<Num>` components. Fills are written only when a path's class changes, big batches over ≤ 4 frames.
+- Motion respects `prefers-reduced-motion` (no fly, no pulse, no tweens, no glides).

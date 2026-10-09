@@ -4,9 +4,10 @@ import { Star, StarOff } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useWatchlist } from "@/lib/watchlist";
+import { cn } from "@/lib/utils";
 
 /** `id` is "uf/slug". Saved in this browser only (see /acompanhar, "Municípios salvos"). */
-export default function WatchButton({ id }: { id: string }) {
+export default function WatchButton({ id, className }: { id: string; className?: string }) {
   const [list, toggle] = useWatchlist();
   // hover preview ("remover") only for a real mouse: on touch, pointerenter fires on tap and never leaves
   const [hover, setHover] = useState(false);
@@ -30,7 +31,7 @@ export default function WatchButton({ id }: { id: string }) {
         onPointerLeave={() => setHover(false)}
         aria-pressed={on}
         title={on ? "Remover dos salvos (salvo só neste navegador)" : "Salvar este município para ver depois (só neste navegador)"}
-        className={on ? "text-foreground print:hidden" : "print:hidden"}
+        className={cn(on ? "text-foreground print:hidden" : "print:hidden", className)}
       >
         {on && hover ? (
           <StarOff className="text-muted-foreground" />

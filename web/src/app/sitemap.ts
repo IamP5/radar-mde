@@ -16,6 +16,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const once = (e: ReturnType<typeof at>) => (seen.has(e.url) ? [] : (seen.add(e.url), [e]));
   return [
     at("/", 1),
+    at("/mapa", 0.8),
     at("/explorar", 0.8),
     at("/dados", 0.6),
     at("/sobre", 0.5, "yearly"),

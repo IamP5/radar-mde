@@ -1,7 +1,8 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Newsreader } from "next/font/google";
 import Link from "next/link";
 import SearchPalette from "@/components/SearchPalette";
+import { ChromeGate } from "@/components/kit/chrome-gate";
 import { Logo } from "@/components/kit/logo";
 import { NavLinks } from "@/components/kit/nav";
 import { NAV } from "@/components/kit/nav-items";
@@ -13,6 +14,8 @@ import "./globals.css";
 
 const geistSans = Geist({ subsets: ["latin"], variable: "--font-geist-sans" });
 const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
+/** display serif for the immersive /mapa view */
+const serif = Newsreader({ subsets: ["latin"], variable: "--font-serif" });
 
 const DESCRIPTION =
   "Quanto cada um dos 5.570 municípios brasileiros aplica em educação, e se cumpre o mínimo constitucional de 25%. Do Brasil às regiões, estados e cidades, de 2008 a 2025.";
@@ -38,7 +41,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="pt-BR" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} ${serif.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
         <ThemeProvider>
           <TooltipProvider delay={150}>
@@ -48,6 +51,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             >
               Pular para o conteúdo
             </a>
+            <ChromeGate>
             <header className="sticky top-0 z-40 border-b bg-(--header-bg) backdrop-blur-md backdrop-saturate-150">
               <div className="mx-auto flex h-14 max-w-7xl items-center gap-3 px-4 sm:gap-5 sm:px-6">
                 <Link href="/" className="flex shrink-0 items-center gap-2 rounded-md text-[0.9375rem] font-semibold tracking-[-0.02em]">
@@ -67,9 +71,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                 <NavLinks />
               </div>
             </header>
+            </ChromeGate>
             <main id="conteudo" tabIndex={-1} className="flex-1 outline-none">
               {children}
             </main>
+            <ChromeGate>
             <footer className="border-t bg-background">
               <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-[1.4fr_1fr]">
                 <div className="space-y-3">
@@ -104,6 +110,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                 </div>
               </div>
             </footer>
+            </ChromeGate>
           </TooltipProvider>
         </ThemeProvider>
       </body>

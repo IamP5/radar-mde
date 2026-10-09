@@ -32,6 +32,7 @@ import {
   latestYear,
   mdeStatus,
   pct,
+  periodBalance,
   siconfiUrl,
   siopeUrl,
   ufStats,
@@ -53,6 +54,7 @@ import {
   RankPanel,
   YearBar,
   YearKpis,
+  PeriodBalanceCard,
 } from "./city-year";
 import { Term } from "./glossary";
 import { type CityYearData, type Rank, type St, type YearPoint, summary } from "./verdict";
@@ -185,6 +187,7 @@ function cityYearData(c: City): CityYearData {
     inUf: inUf(c.uf),
     single,
     since: c.since ?? null,
+    balance: periodBalance(c),
     years: YEARS,
     initial: latestYear(c) ?? YEARS[YEARS.length - 1],
     points,
@@ -324,6 +327,7 @@ function CityContent({ c }: { c: City }) {
         ) : (
           <>
             <YearKpis />
+            <PeriodBalanceCard />
 
             {(hasStaticCallouts || hasAtip) && (
               <div className="grid gap-3 empty:hidden md:grid-cols-2">

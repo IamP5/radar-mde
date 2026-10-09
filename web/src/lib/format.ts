@@ -77,6 +77,9 @@ export function brlShort(v: number) {
   return brl(v);
 }
 
+/** Signed short BRL: "+R$ 12 mi", "−R$ 3,4 bi" (true minus sign, zero without sign). */
+export const brlSigned = (v: number) => (Math.abs(v) < 0.5 ? "R$ 0" : `${v > 0 ? "+" : "−"}${brlShort(Math.abs(v))}`);
+
 export const pct = (v: number | null | undefined, digits = 2) =>
   v == null ? "—" : `${v.toLocaleString("pt-BR", { minimumFractionDigits: digits, maximumFractionDigits: digits })}%`;
 
