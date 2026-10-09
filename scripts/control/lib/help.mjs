@@ -122,9 +122,8 @@ Target flags (click, fill, wait, find, text, snapshot):
 If more than one control matches, the command fails and lists names. Narrow --name.
 Do not pass a coordinate.
 
-Known limit: headless Chromium does not enter fullscreen, so the map's Tela cheia
-button keeps its name. Run the browser with --headed on a machine with a display
-to drive fullscreen.
+Headless Chromium does enter fullscreen from a click. On the map, Tela cheia
+becomes Sair da tela cheia; assert that name, then click it to leave.
 `,
   seed: `control-radar-mde seed — watchlist fixtures in this run's profile
 

@@ -72,7 +72,7 @@ Drive from the recipes in `features/`. Every browser command goes through `./scr
 
 A click decides before it clicks whether it should navigate (a same-origin link to another path or query, or a search result). Those wait for the URL to change; every other click returns about 400 ms later. `--timeout` is one budget for the whole command. The click JSON reports `navigated`, `expectNav`, and `elapsedMs`.
 
-The browser never leaves the site. WhatsApp, `mailto:`, external links, `window.open`, and `navigator.share` are blocked and recorded: the click JSON lists them under `outbound`, and `browser outbound` prints all of them. Headless Chromium does not enter fullscreen, so `Tela cheia` cannot be proven headless.
+The browser never leaves the site. WhatsApp, `mailto:`, external links, `window.open`, and `navigator.share` are blocked and recorded: the click JSON lists them under `outbound`, and `browser outbound` prints all of them. Headless Chromium does enter fullscreen from a click: on the map, `browser click --role button --name "Tela cheia" --exact` renames the button to `Sair da tela cheia`.
 
 Stable handles, from the UI:
 
@@ -137,7 +137,7 @@ Run cleanup after a failed drive too, so the checkout is not left holding `web/.
 | `./scripts/control-radar-mde evidence list` | List proof files |
 | `./scripts/control-radar-mde cleanup` | Stop this run only |
 
-The script is executable. `node scripts/control/cli.mjs` is the same program. Tests that do not need a browser:
+The script is executable. `node scripts/control/cli.mjs` is the same program. Tests (no `next dev` needed):
 
 ```bash
 node --test scripts/control/test/*.test.mjs

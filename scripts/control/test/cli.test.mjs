@@ -50,13 +50,13 @@ test("help names every command and the app", () => {
   assert.match(run(["cleanup", "--help"]).stdout, /--dry-run/);
 });
 
-test("browser help documents selector, within-exact, viewport, outbound, and the fullscreen limit", () => {
+test("browser help documents selector, within-exact, viewport, outbound, and fullscreen", () => {
   const help = run(["browser", "--help"]).stdout;
   for (const flag of ["--selector", "--within-exact", "--within-name-regex", "--expect-nav", "viewport", "outbound"]) {
     assert.match(help, new RegExp(flag.replace(/-/g, "\\-")), flag);
   }
   assert.match(help, /One budget for the whole command/);
-  assert.match(help, /fullscreen/);
+  assert.match(help, /Sair da tela cheia/);
   assert.match(run(["browser", "viewport", "--help"]).stdout, /--preset phone/);
   assert.match(run(["browser", "outbound", "--help"]).stdout, /window\.open/);
   assert.match(run(["browser", "text", "--help"]).stdout, /textarea/);
