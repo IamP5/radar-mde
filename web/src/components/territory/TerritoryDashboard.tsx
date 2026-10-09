@@ -21,6 +21,8 @@ import { InfoTip, ShortfallInfo } from "./InfoTip";
 import { useUrlParam } from "./useUrlParam";
 import { delta, fmtPct0, fmtPp, relChange } from "./delta";
 import { alignRows, belowShare, loadAllRows, shortfallKnown, shortfallLabel, type Deficit, type PeriodBalance, type RegionSummary, type Row, type Stats, type UfSummary } from "@/lib/rows";
+import { FundebMap } from "@/components/FundebMap";
+import type { FundebMapPayload } from "@/lib/fundeb-types";
 import TerritoryMap from "./TerritoryMap";
 import UfMultiples from "./UfMultiples";
 import UfTable from "./UfTable";
@@ -42,6 +44,7 @@ type Props = {
   balanceGroups: BalanceGroup[];
   /** MDE % histogram counts per year (`histCounts`), binned on the server */
   hist: number[][];
+  fundeb: FundebMapPayload;
 };
 
 /** States with fewer reporting municipalities than this aren't named as "the highest share" (small-n noise). */
@@ -106,7 +109,7 @@ function Spark({ values, index, color }: { values: (number | null)[]; index: num
   );
 }
 
-export default function TerritoryDashboard({ region, years, initialYear, stats, parent, ufs, regions, deficits, deficitsReal, balanceTotal, balanceGroups, hist }: Props) {
+export default function TerritoryDashboard({ region, years, initialYear, stats, parent, ufs, regions, deficits, deficitsReal, balanceTotal, balanceGroups, hist, fundeb }: Props) {
   const [yearNow, setYear] = useYear(years, initialYear);
   // the picker answers at once; the dashboard (charts, map, tables) follows as a low-priority render (INP)
   const year = useDeferredValue(yearNow);
@@ -121,6 +124,7 @@ export default function TerritoryDashboard({ region, years, initialYear, stats, 
   const s = stats[yi];
   const prev = yi > 0 ? stats[yi - 1] : null;
   const scopeLabel = region ? `Região ${getRegion(region).name}` : "Brasil";
+  const fundebCodes = region ? getRegion(region).ufs.map((sigla) => UFS.find((u) => u.uf === sigla)!.code) : undefined;
   const ufCodes = useMemo(() => (region ? UFS.filter((u) => u.region === region).map((u) => u.code) : undefined), [region]);
 
   useEffect(() => {
@@ -366,6 +370,8 @@ export default function TerritoryDashboard({ region, years, initialYear, stats, 
             />
           </Panel>
         </section>
+
+        <FundebMap pageYear={year} data={fundeb} src="br" ufCodes={fundebCodes} scopeLabel={scopeLabel} />
 
         <Panel
           divided

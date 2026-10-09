@@ -65,6 +65,10 @@ export function shortfall(r: YearRecord | undefined): number {
 export const brl = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 
+/** Legal Fundeb figures are published in centavos. */
+export const brlCents = (v: number) =>
+  v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
 export function brlShort(v: number) {
   const a = Math.abs(v);
   if (a >= 1e9) {

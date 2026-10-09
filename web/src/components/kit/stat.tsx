@@ -8,10 +8,12 @@ export type Tone = "bad" | "good" | "neutral";
  * `spark` renders flush at the bottom edge (Vercel Analytics style).
  */
 export function Stat({
-  label, value, sub, tone = "neutral", delta, deltaTone = "neutral", context, spark, className, icon,
+  label, value, sub, tone = "neutral", delta, deltaTone = "neutral", context, spark, className, icon, wrap = false,
 }: {
   label: ReactNode; value: ReactNode; sub?: ReactNode; tone?: Tone; delta?: ReactNode; deltaTone?: Tone;
   context?: ReactNode; spark?: ReactNode; className?: string; icon?: ReactNode;
+  /** Let a long amount break onto the next line on a narrow card. */
+  wrap?: boolean;
 }) {
   return (
     <div className={cn("relative flex min-w-0 flex-col overflow-hidden rounded-xl border bg-card p-4 shadow-card", className)}>
@@ -22,7 +24,8 @@ export function Stat({
       <div className="mt-1.5 flex flex-wrap items-baseline gap-x-2 gap-y-1">
         <span
           className={cn(
-            "text-[1.375rem] leading-7 font-semibold tracking-[-0.04em] tnum whitespace-nowrap sm:text-[1.75rem] sm:leading-8",
+            "text-[1.375rem] leading-7 font-semibold tracking-[-0.04em] tnum sm:text-[1.75rem] sm:leading-8",
+            wrap ? "whitespace-normal" : "whitespace-nowrap",
             tone === "bad" && "text-critical",
             tone === "good" && "text-good-ink",
           )}
