@@ -474,6 +474,10 @@ svg :focus:not(:focus-visible) {
     border-top: 1px solid var(--border);
     background: none !important;
   }
+  /* a printed document already carries its URL, date and source in PrintMeta */
+  main:has([data-print-doc]) ~ footer {
+    display: none !important;
+  }
   main ~ footer > div {
     padding-block: 0.75rem !important;
     gap: 0.5rem !important;

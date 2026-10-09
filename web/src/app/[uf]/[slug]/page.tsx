@@ -45,6 +45,7 @@ import { cn } from "@/lib/utils";
 import {
   AtypicalCallout,
   CityYearProvider,
+  CouncilLink,
   DistributionPanel,
   HeaderShare,
   HeaderSource,
@@ -452,6 +453,7 @@ function CityContent({ c }: { c: City }) {
               uma comunicação ao <span className="whitespace-nowrap"><Term k="tc">Tribunal de Contas</Term>.</span> Qualquer pessoa tem direito a essas informações.
             </>
           }
+          action={<CouncilLink />}
           divided
           bodyClassName="p-0"
         >

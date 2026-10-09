@@ -12,6 +12,7 @@ A municipality page is one city's education spending: the selected year, the ind
 - `city-alerts` shows the alert list for the whole series.
 - `city-source` records the raw-file link for the selected year without leaving the page.
 - `city-thesis` shows the research comparison on Santo André.
+- `city-council` opens the council sheet for the selected year.
 
 ## How to get to it (user POV)
 
@@ -35,6 +36,7 @@ Preconditions:
 - **Alerts.** Run `./scripts/control-radar-mde browser wait --role heading --name "Sinais de alerta"`.
 - **Raw file.** Run `./scripts/control-radar-mde browser click --role button --name-regex "Dados brutos de [0-9]{4} no SIOPE"`. The click's JSON `outbound` has an entry whose `kind` is `link` and whose `url` contains `fnde.gov.br`. Run `./scripts/control-radar-mde browser outbound`. That url is in `entries`. Run `./scripts/control-radar-mde browser url`. The path is still `/sp/santo-andre`.
 - **Research note.** Run `./scripts/control-radar-mde browser wait --role heading --name "Comparação com a pesquisa"`.
+- **Council sheet.** Run `./scripts/control-radar-mde browser click --role link --name "Ficha para o conselho" --exact`. The URL path is `/sp/santo-andre/conselho`. Run `./scripts/control-radar-mde browser wait --role heading --name "Ficha para o conselho"`. Run `./scripts/control-radar-mde browser open /sp/santo-andre` to come back for the proof.
 - **Proof.** Run `./scripts/control-radar-mde browser screenshot --full-page --path municipality/santo-andre.png` and `./scripts/control-radar-mde browser snapshot --aria --path municipality/santo-andre.aria.txt`. The screenshot shows the Radar MDE header and `Santo André`.
 
 ## Gotchas

@@ -78,6 +78,7 @@ export function tribunal(c: { id: number; uf: string }): { name: string; short: 
 // The Distrito Federal's only "municipality" is Brasília, whose page doubles as the DF dashboard
 export const ufPath = (sigla: string) => (sigla.toUpperCase() === "DF" ? "/df/brasilia" : `/${sigla.toLowerCase()}`);
 export const cityPath = (sigla: string, slug: string) => `/${sigla.toLowerCase()}/${slug}`;
+export const councilPath = (sigla: string, slug: string) => `${cityPath(sigla, slug)}/conselho`;
 export const regionPath = (key: RegionKey) => `/regiao/${getRegion(key).slug}`;
 
 export type Scope =
