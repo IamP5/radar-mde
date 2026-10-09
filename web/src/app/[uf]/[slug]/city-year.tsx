@@ -16,12 +16,12 @@ import { EmptyState, Panel } from "@/components/kit/panel";
 import { Stat } from "@/components/kit/stat";
 import { StatusBadge } from "@/components/kit/status";
 import { Button } from "@/components/ui/button";
-import { MDE_MIN, brl, brlShort, brlSigned, pct, siconfiUrl, siopeUrl } from "@/lib/format";
+import { MDE_MIN, brl, brlShort, brlSigned, listYears, pct, siconfiUrl, siopeUrl } from "@/lib/format";
 import { cityPath } from "@/lib/geo";
 import { ATIP_IMPL_LABEL, ATIP_LABEL, IPCA_BASE } from "@/lib/rows";
 import { cn } from "@/lib/utils";
 import { Term } from "./glossary";
-import { type CityYearData, type Rank, type YearPoint, comparison, listYears, pts, summary } from "./verdict";
+import { type CityYearData, type Rank, type YearPoint, comparison, pts, summary } from "./verdict";
 
 type Ctx = {
   d: CityYearData;
