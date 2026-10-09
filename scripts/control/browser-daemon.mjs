@@ -7,6 +7,7 @@ import fs from "node:fs";
 import net from "node:net";
 import path from "node:path";
 import { chromium } from "playwright";
+import { clickSettle } from "./lib/click-settle.mjs";
 import { CliError } from "./lib/errors.mjs";
 import { readJson, runPaths } from "./lib/paths.mjs";
 import { alive } from "./lib/proc.mjs";
@@ -314,10 +315,24 @@ async function handle(msg) {
       return { ok: true, url: current.url(), download: { path: msg.download, suggestedFilename: download.suggestedFilename(), bytes } };
     }
     const before = current.url();
-    // Client navigations (search → city) finish after the click event. Wait briefly so the returned URL is the destination.
-    const moved = current.waitForURL((url) => url.toString() !== before, { timeout: 8000 }).then(() => true).catch(() => false);
+    const href = await resolved.locator
+      .evaluate((el) => {
+        const node = el.closest("a");
+        return node ? node.getAttribute("href") : "";
+      })
+      .catch(() => "");
     await resolved.locator.click({ timeout, force: Boolean(msg.force) });
-    await Promise.race([moved, current.waitForTimeout(400)]);
+    const started = Date.now();
+    while (true) {
+      const elapsedMs = Date.now() - started;
+      const urlChanged = current.url() !== before;
+      const stillThere = urlChanged ? false : (await resolved.locator.count().catch(() => 0)) > 0;
+      if (clickSettle({ href, urlChanged, stillThere, elapsedMs, timeoutMs: timeout }) === "done") break;
+      await current.waitForTimeout(50);
+    }
+    if (href && current.url() !== before) {
+      await current.locator("main#conteudo, [role='application']").first().waitFor({ state: "attached", timeout }).catch(() => {});
+    }
     rememberUrl();
     return { ok: true, url: current.url() };
   }

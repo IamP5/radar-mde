@@ -28,6 +28,7 @@ Preconditions:
 - **Choose São Paulo.** Run `./scripts/control-radar-mde browser click --role option --name-regex "Santo André.*SP"`. The URL path is `/sp/santo-andre`. A level-1 heading named `Santo André` is visible.
 - **Header entry.** Run `./scripts/control-radar-mde browser open /`. Run `./scripts/control-radar-mde browser click --role button --name "Buscar município, estado ou região"`. The same dialog appears.
 - **Keyboard entry.** Run `./scripts/control-radar-mde browser open /`. Run `./scripts/control-radar-mde browser press --key Control+k`. The same dialog appears.
+- **Map entry stays on the map.** Run `./scripts/control-radar-mde browser open /mapa`, wait for the application, then open the same header button and choose `Santo André.*SP`. The URL stays on `/mapa` and the hash is `#sp-3547809`. It is not `/sp/santo-andre`.
 - **Proof.** Run `./scripts/control-radar-mde browser screenshot --path search/santo-andre.png` and `./scripts/control-radar-mde browser snapshot --aria --path search/santo-andre.aria.txt` on `/sp/santo-andre`. Recent searches are `./scripts/control-radar-mde browser storage get --key radar-mde:recent-search` and include `sp/santo-andre`.
 
 ## Gotchas
@@ -36,4 +37,6 @@ Preconditions:
 - Typing is accent-insensitive. `santo andre` finds `Santo André`.
 - `/` typed while the combobox is focused goes into the query. Use Ctrl+K, or press `/` only when no field is focused.
 - The dialog is not in the first paint. Wait for the dialog after the click before filling the combobox.
-- On `/mapa`, choosing a result updates the map hash instead of navigating to the city page. Assert a city page only after search started from a page other than the map.
+- On `/mapa`, choosing a result updates the map hash instead of navigating to the city page. Assert a city page only after search started from a page other than the map. The map hides the site header; its own search button has the same accessible name.
+- The city heading's accessible name is `Santo André (São Paulo) SP`, not only `Santo André`. `--name "Santo André"` matches it. `--exact` does not.
+- Recent searches are stored as JSON objects. `sp/santo-andre` is inside `id` (`c:sp/santo-andre`) and `href`, not as a bare string in the array.

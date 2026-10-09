@@ -9,6 +9,7 @@ import { parseArgs } from "../lib/args.mjs";
 import { commandNames } from "../lib/help.mjs";
 import { isInside, repoRoot, resolveEvidencePath, runPaths } from "../lib/paths.mjs";
 import { alive } from "../lib/proc.mjs";
+import { clickSettle } from "../lib/click-settle.mjs";
 import { nextWatch, parseWatch } from "../lib/watch.mjs";
 
 const cli = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "cli.mjs");
@@ -67,6 +68,15 @@ test("unknown http subcommand says to use get, before any server", () => {
   assert.equal(res.json.ok, false);
   assert.match(res.json.hint, /http get/);
   assert.match(res.json.hint, /--help/);
+});
+
+test("click waits for a link or a detached control, and not for a menu button", () => {
+  const timeoutMs = 15000;
+  assert.equal(clickSettle({ href: "/regiao/sudeste", urlChanged: false, stillThere: true, elapsedMs: 500, timeoutMs }), "wait");
+  assert.equal(clickSettle({ href: "/regiao/sudeste", urlChanged: true, stillThere: true, elapsedMs: 500, timeoutMs }), "done");
+  assert.equal(clickSettle({ href: "", urlChanged: false, stillThere: false, elapsedMs: 500, timeoutMs }), "wait");
+  assert.equal(clickSettle({ href: "", urlChanged: false, stillThere: true, elapsedMs: 400, timeoutMs }), "done");
+  assert.equal(clickSettle({ href: "", urlChanged: true, stillThere: false, elapsedMs: 80, timeoutMs }), "done");
 });
 
 test("a bad --timeout names the flag and does not start a server", () => {

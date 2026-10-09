@@ -23,11 +23,13 @@ Preconditions:
 - `./scripts/control-radar-mde doctor` reports `ok: true` for this run.
 - The window is 1440×900 so the desktop indicator tabs are the visible ones.
 
+- **Open from the panel.** Run `./scripts/control-radar-mde browser open /`. Then `./scripts/control-radar-mde browser click --role link --name "Mapa interativo"`. The URL path is `/mapa`.
+- **Open from the header.** Run `./scripts/control-radar-mde browser click --role link --name "Mapa" --within-role navigation --within-name Principal`. The URL path is `/mapa`. `Mapa` is also a footer link, so the nav scope is required.
 - **Open the map.** Run `./scripts/control-radar-mde browser open /mapa`. Wait with `./scripts/control-radar-mde browser wait --role application --name-regex "Mapa do Brasil"`. The title `Radar MDE` is visible.
-- **Switch to Fundeb.** Run `./scripts/control-radar-mde browser click --role tab --name "Fundeb"`. The URL contains `i=fun`. The tab `Fundeb` is selected.
-- **Play the years.** Run `./scripts/control-radar-mde browser click --role button --name "Reproduzir a evolução ano a ano"`. A status says `Reproduzindo a evolução ano a ano.` Then `./scripts/control-radar-mde browser click --role button --name "Pausar a animação dos anos"`.
-- **Open Rio de Janeiro.** Run `./scripts/control-radar-mde browser click --role button --name-regex "Rio de Janeiro.*Aproximar"`. The URL hash contains `#rj`.
-- **Shared-link entry.** Run `./scripts/control-radar-mde browser open "/mapa#sp"`. The URL hash is `#sp`.
+- **Switch to Fundeb.** Run `./scripts/control-radar-mde browser click --role tab --name "Fundeb"`. The URL contains `i=fun`. The tab snapshot says `tab "Fundeb" [selected]`. A shared link does the same: `./scripts/control-radar-mde browser open "/mapa?i=fun"`, then wait for the application. The URL contains `i=fun`.
+- **Play the years.** Run `./scripts/control-radar-mde browser click --role button --name "Reproduzir a evolução ano a ano"`. The URL gains `ano=` at the first published year. `./scripts/control-radar-mde browser snapshot --aria --path map/playing.aria.txt` contains `status: Reproduzindo a evolução ano a ano.` and `button "Pausar a animação dos anos"`. Then `./scripts/control-radar-mde browser click --role button --name "Pausar a animação dos anos"`. The year in the URL stops advancing and the button name returns to `Reproduzir a evolução ano a ano`.
+- **Open Rio de Janeiro.** Run `./scripts/control-radar-mde browser click --role button --name-regex "Rio de Janeiro.*Aproximar"`. The URL hash contains `#rj`. The document title starts with `Rio de Janeiro`.
+- **Shared-link entry.** Run `./scripts/control-radar-mde browser open "/mapa#sp"`, then wait for the application. The URL hash is `#sp` and the document title starts with `São Paulo`. The page is not a city-page heading.
 - **Proof.** Run `./scripts/control-radar-mde browser screenshot --path map/sao-paulo.png` and `./scripts/control-radar-mde browser snapshot --aria --path map/sao-paulo.aria.txt`.
 
 ## Gotchas
@@ -36,4 +38,5 @@ Preconditions:
 - State labels for large states, including São Paulo, do not take pointer hits. The clickable chips are the small-state callouts: Rio Grande do Norte, Paraíba, Pernambuco, Alagoas, Sergipe, Espírito Santo, and Rio de Janeiro. Their accessible names end with `Aproximar`.
 - A shared hash is a real entry. `/mapa#sp` opens São Paulo. `/mapa#sp-3547809` opens Santo André. Assert the hash, not a city-page heading.
 - Search started on the map flies the map and does not open `/sp/santo-andre`. Use the search recipe from the panel when the goal is the city page.
-- The play control's name is `Reproduzir a evolução ano a ano` and, while playing, `Pausar a animação dos anos`.
+- The play control's name is `Reproduzir a evolução ano a ano` and, while playing, `Pausar a animação dos anos`. The playback sentence is an sr-only `status`. The page ARIA snapshot includes it. `browser find --role status` lists that text while playback is running; a `--name` filter misses it once pause has replaced the sentence with the year summary.
+- The document title for `/mapa#sp` updates after the map reads the hash. Wait for the application before reading the title. The hash itself is already `#sp`.
