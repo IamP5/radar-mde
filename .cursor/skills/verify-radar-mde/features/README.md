@@ -41,3 +41,23 @@ H1 title + one paragraph, then exactly four H2s: `Sub-features` (short IDs, one 
 - [Explore municipalities](./explore.md) covers the national table, UF filter, capitals, and CSV export.
 - [Immersive map](./map.md) covers indicator tabs, the year playback, and opening a state.
 - [Save a municipality](./save-municipality.md) covers saving from a city page and seeing it under Salvos.
+- [Theme](./theme.md) covers the header light/dark toggle and the footer Sistema, Claro, and Escuro choices.
+- [Recent searches](./recent-searches.md) covers the Recentes group in the search palette and a query with no match.
+- [State page](./state.md) covers a state's year, municipality search, map indicator, CSV, and the Distrito Federal redirect.
+- [Region page](./region.md) covers switching region, the region CSV, and opening that region's table.
+- [Municipality page](./municipality.md) covers a city's year, indicators, charts, rank, neighbors, source link, and the Santo André research note.
+- [Action letters](./letters.md) covers the four ready-to-send letters, the signature fields, and copying the text.
+- [Glossary](./glossary.md) covers the dotted terms that open a short definition.
+- [Share a link](./share.md) covers Compartilhar and Copiar link, including the selected year.
+- [Chart export](./chart-export.md) covers PNG, CSV, and the citation on a chart.
+- [Open data](./open-data.md) covers the Dados page, the home CSV, per-state files, JSON, the dictionary, and the citation.
+- [Methodology](./methodology.md) covers /sobre, the section list, and the link to the data page.
+- [Page not found](./not-found.md) covers an unknown address, an unknown municipality, and an unknown region.
+- [Territorial breadcrumbs](./breadcrumbs.md) covers Brasil, swapping state, and swapping municipality.
+- [Series indicator](./series.md) covers the national chart's three indicators.
+- [Period balance](./balance.md) covers nominal versus IPCA, the grouping, the sort, and opening a region from the list.
+- [Table filters](./table-filters.md) covers the explorer filters beyond name, UF, and capitals, plus copy link, the other CSV formats, and the empty table.
+- [Map controls](./map-controls.md) covers zoom, state view, the legend, copying the map link, the pandemic count, and a city detail.
+- [Footer and skip link](./chrome.md) covers the footer section links, the license, and Pular para o conteúdo.
+- [Phone navigation](./phone-nav.md) covers the second header bar and the short Método label.
+- [Saved year strip](./saved-series.md) covers the year cells on Salvos and Adicionar.
