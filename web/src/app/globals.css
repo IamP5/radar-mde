@@ -447,8 +447,7 @@ svg :focus:not(:focus-visible) {
   header.sticky,
   a[href="#conteudo"],
   main ~ footer ul,
-  /* Arc buttons and button links carry only module classes (`button-module__<hash>__button`) */
-  [class*="button-module__"][class*="__button"],
+  [data-slot="button"],
   [role="group"]:has(> * > button[aria-pressed]),
   [role="group"]:has(> button[aria-pressed]),
   [role="radiogroup"],

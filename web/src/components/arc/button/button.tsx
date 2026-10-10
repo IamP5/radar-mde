@@ -99,6 +99,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
 
   return (
     <motion.button
+      data-slot="button"
       ref={setRefs}
       tabIndex={props.tabIndex ?? 0}
       className={classes}

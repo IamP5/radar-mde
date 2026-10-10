@@ -22,6 +22,8 @@ export const PATCHES = {
     ["aria-label={label ?? `Switch to ${next} mode`}", 'aria-label={label ?? (next === "dark" ? "Usar tema escuro" : "Usar tema claro")}'],
     [">Switch theme<", ">Alternar tema<"],
   ],
+  // Print styles hide buttons by this hook; module class names are hashed in production builds.
+  "button/button.tsx": [["<motion.button\n      ref={setRefs}", "<motion.button\n      data-slot=\"button\"\n      ref={setRefs}"]],
   // Several menus share one visible word ("Exportar"); the trigger needs a distinct accessible name.
   "dropdown-menu/dropdown-menu.tsx": [
     ["export interface DropdownMenuProps { label: string; items: DropdownItem[]; icon?: ReactNode; }", "export interface DropdownMenuProps { label: string; items: DropdownItem[]; icon?: ReactNode; ariaLabel?: string; }"],

@@ -17,6 +17,6 @@ type Props = ComponentProps<"a"> & {
 export function ButtonLink({ variant = "secondary", size = "sm", external = false, className, children, ...props }: Props) {
   const classes = cn(styles.button, styles[variant], styles[size], "no-underline", className);
   const label = <span className={styles.labelPhase}>{children}</span>;
-  if (external) return <a {...props} className={classes}>{label}</a>;
-  return <Link {...props} className={classes}>{label}</Link>;
+  if (external) return <a {...props} data-slot="button" className={classes}>{label}</a>;
+  return <Link {...props} data-slot="button" className={classes}>{label}</Link>;
 }
