@@ -9,33 +9,11 @@ import path from "node:path";
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "../src/components/arc");
 
 export const PATCHES = {
-  "command-palette/command-palette.tsx": [
-    ['placeholder = "Search commands"', 'placeholder = "Buscar comandos"'],
-    ['label = "Command palette"', 'label = "Paleta de comandos"'],
-    ['item.group ?? "Actions"', 'item.group ?? "Ações"'],
-    ['aria-label="Clear search"', 'aria-label="Limpar busca"'],
-    ['aria-label="Close command palette"', 'aria-label="Fechar paleta de comandos"'],
-    ['aria-label="Command results"', 'aria-label="Resultados"'],
-    [">No matching actions<", ">Nenhuma ação encontrada<"],
-    [">Try a different word or clear the search.<", ">Tente outra palavra ou limpe a busca.<"],
-  ],
-  "combobox/combobox.tsx": [
-    ['placeholder = "Search or select…"', 'placeholder = "Buscar ou selecionar…"'],
-    ['emptyMessage = "No matches found"', 'emptyMessage = "Nenhum resultado"'],
-    ['aria-label="Clear selection"', 'aria-label="Limpar seleção"'],
-  ],
-  "copy-button/copy-button.tsx": [
-    ['label = "Copy"', 'label = "Copiar"'],
-    ['state === "copied" ? "Copied" : state === "error" ? "Failed" : label', 'state === "copied" ? "Copiado" : state === "error" ? "Falhou" : label'],
-    ["<span className={styles.measure}>Copied</span><span className={styles.measure}>Failed</span>", "<span className={styles.measure}>Copiado</span><span className={styles.measure}>Falhou</span>"],
-  ],
   "dialog/dialog.tsx": [['aria-label="Close dialog"', 'aria-label="Fechar"']],
-  "drawer/drawer.tsx": [['aria-label="Close drawer"', 'aria-label="Fechar painel"']],
   "progress/progress.tsx": [['aria-label={label ?? "Progress"}', 'aria-label={label ?? "Progresso"}']],
   "search-field/search-field.tsx": [['aria-label="Clear search"', 'aria-label="Limpar busca"']],
   "select/select.tsx": [['placeholder = "Select an option"', 'placeholder = "Selecione uma opção"']],
   "skeleton/skeleton.tsx": [['label = "Loading content"', 'label = "Carregando"']],
-  "breadcrumb/breadcrumb.tsx": [['ariaLabel = "Breadcrumb"', 'ariaLabel = "Navegação estrutural"']],
   "tabs/tabs.tsx": [
     ['aria-label="Scroll tabs left"', 'aria-label="Rolar abas para a esquerda"'],
     ['aria-label="Scroll tabs right"', 'aria-label="Rolar abas para a direita"'],
@@ -54,7 +32,7 @@ export const PATCHES = {
 
 // Arc passes Base UI's `render` prop to Radix primitives, which ignore it and spread it onto the DOM,
 // so the motion element never mounts. Radix composes through `asChild`.
-const RENDER_FILES = ["dialog/dialog.tsx", "drawer/drawer.tsx", "tabs/tabs.tsx"];
+const RENDER_FILES = ["dialog/dialog.tsx", "tabs/tabs.tsx"];
 const RENDER_PROP = /\srender=\{<motion\.div ([\s\S]*?) \/>\}>([\s\S]*?)<\/((?:Dialog|Tabs)Primitive\.\w+)>/g;
 
 export function missingPatches() {
