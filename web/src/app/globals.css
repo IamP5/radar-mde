@@ -373,8 +373,7 @@ svg :focus:not(:focus-visible) {
   [role="radio"][aria-checked="true"],
   [role="tab"][aria-selected="true"],
   [role="option"][aria-selected="true"],
-  [aria-pressed="true"],
-  [data-slot="tabs-trigger"][data-active] {
+  [aria-pressed="true"] {
     outline: 2px solid Highlight;
     outline-offset: -2px;
   }
@@ -441,9 +440,10 @@ svg :focus:not(:focus-visible) {
   header.sticky,
   a[href="#conteudo"],
   main ~ footer ul,
-  main ~ footer [role="radiogroup"],
-  [data-slot="button"],
-  [data-slot="tooltip-trigger"] > svg,
+  /* Arc buttons and button links carry only module classes (`button-module__<hash>__button`) */
+  [class*="button-module__"][class*="__button"],
+  [role="group"]:has(> * > button[aria-pressed]),
+  [role="group"]:has(> button[aria-pressed]),
   [role="radiogroup"],
   [role="tablist"],
   textarea,
@@ -485,7 +485,6 @@ svg :focus:not(:focus-visible) {
    * or table row, and a panel header always stays with what follows it.
    */
   div.rounded-xl.border,
-  [data-slot="card"],
   figure,
   .recharts-wrapper,
   svg[role="img"] {
