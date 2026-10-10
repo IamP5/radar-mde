@@ -29,15 +29,15 @@ Around the map itself, a person zooms, frames the country again, colors states i
 Preconditions:
 
 - `./scripts/control-radar-mde doctor` reports `ok: true` for this run.
-- The window is 1440×900 so the desktop legend and the desktop indicator tabs are the visible ones.
-- Indicator tabs, year playback, and opening a state chip are the immersive-map recipe. This recipe does not repeat them.
+- The window is 1440×900 so the desktop legend is the visible one.
+- Switching the indicator to Fundeb, year playback, and opening a state chip are the immersive-map recipe. This recipe does not repeat them.
 
 - **Open the map.** Run `./scripts/control-radar-mde browser open /mapa`. Wait with `./scripts/control-radar-mde browser wait --role application --name-regex "Mapa do Brasil"`. The words `Radar MDE` are visible.
 - **Zoom and frame.** Run `./scripts/control-radar-mde browser click --role button --name "Aproximar" --exact`. Run `./scripts/control-radar-mde browser wait --role button --name "Voltar ao enquadramento"`. Run `./scripts/control-radar-mde browser click --role button --name "Voltar ao enquadramento"`.
 - **Highlight a band.** Run `./scripts/control-radar-mde browser wait --role button --name-regex "22–25%:.*Destacar no mapa"`. Run `./scripts/control-radar-mde browser click --role button --name-regex "22–25%:.*Destacar no mapa"`.
-- **States and median.** Run `./scripts/control-radar-mde browser click --role radio --name "Estados" --within-role radiogroup --within-name "Ver o mapa por"`. The URL contains `nivel=estados`. Run `./scripts/control-radar-mde browser click --role radio --name "Mediana" --within-role radiogroup --within-name "Medida por estado"`. The URL contains `medida=median`.
+- **States and median.** Run `./scripts/control-radar-mde browser click --role button --name "Estados" --within-role group --within-name "Ver o mapa por"`. The URL contains `nivel=estados`. Run `./scripts/control-radar-mde browser click --role button --name "Mediana" --within-role group --within-name "Medida por estado"`. The URL contains `medida=median`.
 - **Copy the view.** Run `./scripts/control-radar-mde browser click --role button --name "Copiar o link desta visão"`. Run `./scripts/control-radar-mde browser clipboard`. The text contains `/mapa` and `nivel=estados`.
-- **Pandemic years.** Run `./scripts/control-radar-mde browser click --role tab --name "Anos abaixo"`. The URL contains `i=rec`. Run `./scripts/control-radar-mde browser click --role button --name "Contar 2020–21 (pandemia)"`. The URL contains `pandemia=0`.
+- **Pandemic years.** Run `./scripts/control-radar-mde browser click --role button --name "Anos abaixo" --within-role group --within-name "Indicador do mapa"`. The URL contains `i=rec`. Run `./scripts/control-radar-mde browser click --role button --name "Contar 2020–21 (pandemia)"`. The URL contains `pandemia=0`.
 - **City detail.** Run `./scripts/control-radar-mde browser click --role button --name "Buscar município, estado ou região"`. Run `./scripts/control-radar-mde browser wait --role dialog --name "Buscar município, estado ou região"`. Run `./scripts/control-radar-mde browser fill --role combobox --name "Buscar" --value "santo andre"`. Run `./scripts/control-radar-mde browser click --role option --name-regex "Santo André.*SP" --timeout 90000`. The click's JSON `url` contains `#sp-` and `navigated` is true. Run `./scripts/control-radar-mde browser wait --role complementary --name "Detalhes de Santo André"`.
 - **Close and return.** Run `./scripts/control-radar-mde browser click --role button --name "Fechar detalhes"`. Run `./scripts/control-radar-mde browser find --role complementary --name "Detalhes de Santo André"`. The count is 0. Run `./scripts/control-radar-mde browser click --role button --name "Brasil" --exact --within-role navigation --within-name "Navegação no mapa"`. Run `./scripts/control-radar-mde browser url`. The URL has no `#sp-`.
 - **Fullscreen.** Run `./scripts/control-radar-mde browser click --role button --name "Tela cheia" --exact`. The button is now `Sair da tela cheia`: `./scripts/control-radar-mde browser wait --role button --name "Sair da tela cheia"`. Run `./scripts/control-radar-mde browser click --role button --name "Sair da tela cheia" --exact`. The button is `Tela cheia` again: `./scripts/control-radar-mde browser wait --role button --name "Tela cheia" --exact`.
@@ -47,7 +47,7 @@ Preconditions:
 
 - State callouts are also named with `Aproximar` at the end (`Rio de Janeiro… Aproximar`). The zoom button's whole name is `Aproximar`. Use `--exact`.
 - `22–25%` uses an en dash, the same dash as on the legend, not a hyphen. That band is on the municipal MDE legend. After `Mediana`, the state legend uses `< 25%` and `25–26%` instead, so highlight the band before switching the measure.
-- Two tab lists are named `Indicador do mapa`. At 1440×900 only the desktop list is visible. `Anos abaixo` is on that list.
+- `Indicador do mapa`, `Ver o mapa por`, and `Medida por estado` are segmented controls: role `group`, with role `button` options marked `[pressed]` when chosen. They are not tabs or radios. `Anos abaixo` is in `Indicador do mapa`.
 - Search started on the map does not open `/sp/santo-andre`. It moves the map and opens the detail. Assert `#sp-` and `Detalhes de Santo André`. The option click waits for that hash inside `--timeout`.
 - `Tela cheia` is hidden below the small breakpoint (`max-sm`). At 1440×900 the click enters fullscreen and the button is renamed `Sair da tela cheia`. Click that name to leave before the proof.
 - `Afastar` is the paired zoom-out button. The frame button is the proof that zoom changed the view.

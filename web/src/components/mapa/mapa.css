@@ -140,46 +140,13 @@
   backdrop-filter: blur(14px);
   transition: background var(--m-hover) var(--m-ease), border-color var(--m-hover) var(--m-ease);
 }
-.m-ctl.m-ctl-flat {
-  border-color: transparent;
-  background: transparent;
-  backdrop-filter: none;
-}
 .m-ctl:hover {
   background: color-mix(in srgb, var(--m-ink) 9%, var(--m-panel-solid));
   border-color: var(--m-line-2);
 }
-.m-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 28px;
-  padding: 0 12px;
-  border-radius: 999px;
-  font-size: 0.8125rem;
-  color: var(--m-dim);
-  white-space: nowrap;
-  transition: background 0.2s var(--m-ease), color 0.2s var(--m-ease), box-shadow 0.2s var(--m-ease);
-}
-.m-pill:hover {
-  color: var(--m-text);
-}
-.m-pill[aria-pressed="true"],
-.m-pill[aria-selected="true"],
-.m-pill[aria-checked="true"] {
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--m-ink) 10%, transparent);
-  background: color-mix(in srgb, var(--m-ink) 12%, transparent);
-  color: var(--m-ink);
-}
-.m-pill:disabled {
-  opacity: 0.4;
-}
-.mapa-shell :focus-visible {
-  outline: 2px solid var(--m-blue);
-  outline-offset: 2px;
-}
-.mapa-shell .mapa-stage:focus-visible {
-  outline-offset: -4px;
+/* the stage fills the viewport, so its keyboard outline is drawn inside */
+.mapa-stage {
+  --focus-outline-offset: -4px;
 }
 
 @keyframes m-hint {
@@ -548,16 +515,15 @@
     transform: translateY(0.45em);
   }
 }
-/* play button: a ring that fills during each year's beat */
+/* play button: a ring that fills during each year's beat, tracing the button's rounded edge clockwise from the top */
 .m-beat {
   position: absolute;
   inset: -3.5px;
   width: calc(100% + 7px);
   height: calc(100% + 7px);
-  transform: rotate(-90deg);
   pointer-events: none;
 }
-.m-beat circle {
+.m-beat rect {
   fill: none;
   stroke-width: 2;
 }
