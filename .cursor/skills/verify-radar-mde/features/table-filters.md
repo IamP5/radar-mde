@@ -34,7 +34,7 @@ Preconditions:
 - **Open the table.** Run `./scripts/control-radar-mde browser open /explorar`. Wait with `./scripts/control-radar-mde browser wait --text-regex "[0-9.]+ de [0-9.]+ municípios"`.
 - **Region.** Run `./scripts/control-radar-mde browser click --role combobox --name "Região"`. Run `./scripts/control-radar-mde browser click --role option --name-regex "^Nordeste"`. The URL contains `regiao=nordeste`.
 - **Population.** Run `./scripts/control-radar-mde browser click --role combobox --name "População"`. Run `./scripts/control-radar-mde browser click --role option --name-regex "^5 a 20 mil"`. The URL contains `porte=p2`.
-- **Situation.** Run `./scripts/control-radar-mde browser click --role combobox --name-regex "^Situação em"`. Run `./scripts/control-radar-mde browser click --role option --name-regex "^Abaixo de 25%\\s+\\d"`. The URL contains `situacao=abaixo`.
+- **Situation.** Run `./scripts/control-radar-mde browser click --role combobox --name-regex "^Situação em"`. Run `./scripts/control-radar-mde browser click --role option --name-regex "^Abaixo de 25% \\(\\d"`. The URL contains `situacao=abaixo`.
 - **Recurrence.** Run `./scripts/control-radar-mde browser click --role combobox --name "Reincidência"`. Run `./scripts/control-radar-mde browser click --role option --name-regex "^3\\+ anos abaixo"`. The URL contains `reinc=3`.
 - **Year 2020.** Run `./scripts/control-radar-mde browser click --role combobox --name "Exercício"`. Run `./scripts/control-radar-mde browser click --role option --name "2020" --exact`. The URL contains `ano=2020`. The text `2020 foi ano de pandemia` is visible.
 - **Sort by name.** Run `./scripts/control-radar-mde browser click --role button --name "Município" --exact`. The URL contains `ordem=nome`.
@@ -46,7 +46,7 @@ Preconditions:
 
 ## Gotchas
 
-- `Abaixo de 25%` is also the start of `Abaixo de 25% e Fundeb < 70%` (or `< 60%` through 2020). The option regex must require digits (the count) right after `Abaixo de 25%`.
+- `Abaixo de 25%` is also the start of `Abaixo de 25% e Fundeb < 70%` (or `< 60%` through 2020). The option regex must require the count in parentheses right after `Abaixo de 25%`, as in `Abaixo de 25% (1.234)`.
 - Option names include a count. Do not use `--exact` on `Nordeste` or `5 a 20 mil`.
 - `Mais de 500 mil` together with `Abaixo de 25%` matches no municipality, and `Exportar CSV` stays disabled on an empty table. `5 a 20 mil` in the Nordeste still has rows in 2020, so the series download can run.
 - `Só <year> · CSV padrão` is the explore-municipalities recipe. This recipe downloads the item that starts with `Série`.
