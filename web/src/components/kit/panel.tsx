@@ -29,19 +29,6 @@ export function Panel({
   );
 }
 
-/** Small section heading used between groups of panels. */
-export function SectionTitle({ children, description, action }: { children: ReactNode; description?: ReactNode; action?: ReactNode }) {
-  return (
-    <div className="flex flex-wrap items-end justify-between gap-3 pt-2">
-      <div>
-        <h2 className="text-xl font-medium tracking-[-0.02em]">{children}</h2>
-        {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
-      </div>
-      {action}
-    </div>
-  );
-}
-
 /** Empty / loading / error box with the same geometry as the content it replaces. */
 export function EmptyState({
   title, children, className, icon, live = false,
