@@ -8,7 +8,6 @@ import { NavLinks } from "@/components/kit/nav";
 import { NAV } from "@/components/kit/nav-items";
 import { Providers } from "@/components/kit/providers";
 import { ThemeSwitcher, ThemeToggle } from "@/components/kit/theme";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { META, dateBR } from "@/lib/data";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
@@ -46,7 +45,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="pt-BR" suppressHydrationWarning className={`${geist.variable} ${inter.variable} ${geistMono.variable} ${serif.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
         <Providers>
-          <TooltipProvider delay={150}>
             <a
               href="#conteudo"
               className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:shadow-pop"
@@ -113,7 +111,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               </div>
             </footer>
             </ChromeGate>
-          </TooltipProvider>
         </Providers>
       </body>
     </html>

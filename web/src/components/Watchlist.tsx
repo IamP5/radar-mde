@@ -284,7 +284,7 @@ export default function Watchlist() {
               const t = timesBelow(r);
               return (
                 <TableRow key={r.id} className="group hover:bg-accent/60">
-                  <TableCell className="sticky left-0 z-10 bg-card py-2.5 pl-4 group-hover:bg-[color-mix(in_oklab,var(--card),var(--accent)_60%)] sm:pl-5">
+                  <TableCell className="sticky left-0 z-10 bg-card py-2.5 pl-4 group-hover:bg-[color-mix(in_oklab,var(--card),var(--surface-muted)_60%)] sm:pl-5">
                     <div className="flex items-center gap-2">
                       <Link href={cityPath(r.uf, r.slug)} className="max-w-44 truncate font-medium hover:text-brand-ink hover:underline hover:underline-offset-2 sm:max-w-none">
                         {r.name}

@@ -64,7 +64,7 @@ export default function Histogram({ values, counts: pre, mark, height = 220, ari
           />
           <YAxis {...AXIS} width={44} domain={domain} ticks={ticks} allowDecimals={false} tickFormatter={compact} />
           <ChartTooltip
-            cursor={{ fill: "var(--accent)", fillOpacity: 0.6 }}
+            cursor={{ fill: "var(--surface-muted)" }}
             content={
               <ChartTooltipContent
                 hideLabel
