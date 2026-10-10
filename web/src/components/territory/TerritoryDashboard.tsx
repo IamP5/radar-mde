@@ -3,16 +3,16 @@
 import { BalancePanel, type BalanceGroup } from "./BalancePanel";
 import { DeficitPanel } from "./DeficitPanel";
 import Link from "next/link";
-import { useCallback, useDeferredValue, useEffect, useId, useMemo, useRef, useState } from "react";
+import { useCallback, useDeferredValue, useEffect, useId, useMemo, useState } from "react";
 import Histogram from "@/components/Histogram";
 import MultiLine, { type Series } from "@/components/MultiLine";
 import { PageBody } from "@/components/kit/page-header";
+import SegmentedControl from "@/components/arc/segmented-control/segmented-control";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/arc/tabs/tabs";
 import { Panel } from "@/components/kit/panel";
-import { Segmented } from "@/components/kit/segmented";
 import { Stat } from "@/components/kit/stat";
 import { StatusDot } from "@/components/kit/status";
 import YearPicker, { useYear, withYear } from "@/components/YearPicker";
-import { cn } from "@/lib/utils";
 import { PANDEMIC_YEARS, brlShort, funMin, int, pct, share } from "@/lib/format";
 import { UFS, getRegion, regionPath, ufPath, type RegionKey } from "@/lib/geo";
 import { ChartActions } from "@/components/kit/chart-actions";
@@ -111,7 +111,6 @@ export default function TerritoryDashboard({ region, years, initialYear, stats, 
   // the picker answers at once; the dashboard (charts, map, tables) follows as a low-priority render (INP)
   const year = useDeferredValue(yearNow);
   const [trend, setTrend] = useUrlParam<TrendKey>("serie", { share: "abaixo", short: "faltou", median: "mediana" }, "share");
-  const tabs = useRef<HTMLDivElement>(null);
   const [all, setAll] = useState<Row[] | null>(null);
   const [rowsError, setRowsError] = useState(false);
   // the 2 MB municipal file is only needed by the municipal map layer (default on regions, opt-in on Brasil)
@@ -166,12 +165,6 @@ export default function TerritoryDashboard({ region, years, initialYear, stats, 
   const ink = "var(--ink-2)";
   const short = shortfallLabel(s);
 
-  const moveTab = (d: number) => {
-    const n = TRENDS[(TRENDS.findIndex((x) => x.key === trend) + d + TRENDS.length) % TRENDS.length];
-    setTrend(n.key);
-    requestAnimationFrame(() => tabs.current?.querySelector<HTMLElement>("[aria-selected=true]")?.focus());
-  };
-
   const explorerHref = (() => {
     const q = new URLSearchParams();
     if (region) q.set("regiao", getRegion(region).slug);
@@ -194,7 +187,7 @@ export default function TerritoryDashboard({ region, years, initialYear, stats, 
           <YearPicker years={years} year={yearNow} onChange={setYear} className="min-w-0 flex-1" />
           <div className="ml-auto hidden shrink-0 items-center gap-2 lg:flex">
             <span className="text-[13px] text-muted-foreground">Série</span>
-            <Segmented ariaLabel="Indicador da série" value={trend} onChange={setTrend} options={TRENDS.map((x) => ({ value: x.key, label: x.short, title: x.label }))} />
+            <SegmentedControl label="Indicador da série" value={trend} onValueChange={(v) => setTrend(v as TrendKey)} options={TRENDS.map((x) => ({ value: x.key, label: x.short }))} />
           </div>
         </div>
       </div>
@@ -385,50 +378,25 @@ export default function TerritoryDashboard({ region, years, initialYear, stats, 
           }
           description="Toque ou clique num ano do gráfico para atualizar o painel. 2020–2021: anos da pandemia (EC 119/2022)."
         >
-          <div
-            ref={tabs}
-            role="tablist"
-            aria-label="Indicador da série"
-            className="grid grid-cols-3 border-b"
-            onKeyDown={(e) => {
-              if (e.key === "ArrowRight") { e.preventDefault(); moveTab(1); }
-              if (e.key === "ArrowLeft") { e.preventDefault(); moveTab(-1); }
-            }}
-          >
-            {TRENDS.map((x) => {
-              const on = trend === x.key;
-              const v = x.of(s);
-              return (
-                <button
-                  key={x.key}
-                  type="button"
-                  role="tab"
-                  id={`trend-tab-${x.key}`}
-                  aria-selected={on}
-                  aria-controls="trend-panel"
-                  tabIndex={on ? 0 : -1}
-                  onClick={() => setTrend(x.key)}
-                  className={cn(
-                    "relative min-w-0 border-r px-2.5 py-3 text-left transition-colors duration-150 last:border-r-0 sm:px-5 sm:py-4",
-                    on ? "bg-card" : "bg-muted/40 hover:bg-accent/60",
-                    "after:absolute after:inset-x-0 after:-bottom-px after:h-0.5 after:transition-colors",
-                    on ? "after:bg-foreground forced-colors:outline-2 forced-colors:-outline-offset-2 forced-colors:outline-[Highlight] forced-colors:outline" : "after:bg-transparent",
-                  )}
-                >
-                  <span className={cn("block truncate text-xs sm:text-[13px]", on ? "text-foreground" : "text-muted-foreground")}>
+          <Tabs value={trend} onValueChange={(v) => setTrend(v as TrendKey)} className="px-2 pt-4 pb-3 sm:px-4">
+            <TabsList aria-label="Indicador da série" className="ml-2 sm:ml-1">
+              {TRENDS.map((x) => {
+                const v = x.of(s);
+                return (
+                  <TabsTrigger key={x.key} value={x.key}>
                     <span className="sm:hidden">{x.tiny}</span>
                     <span className="hidden sm:inline">{x.label}</span>
-                  </span>
-                  <span className={cn("mt-1 block truncate text-base leading-7 font-medium tracking-[-0.03em] tnum sm:text-[22px]", !on && "text-muted-foreground")}>
-                    {v == null ? "—" : x.show(v)}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-          <div id="trend-panel" role="tabpanel" aria-labelledby={`trend-tab-${trend}`} className="px-2 pt-4 pb-3 sm:px-4">
-            <MultiLine years={years} series={trendSeries} selected={year} onSelect={setYear} fmt={t.fmt} ariaLabel={`${t.label} por ano, ${scopeLabel}`} min={trend === "median" ? 20 : 0} band={{ from: 2020, to: 2021, label: "pandemia" }} />
-          </div>
+                    <span className="ml-2 tnum">{v == null ? "—" : x.show(v)}</span>
+                  </TabsTrigger>
+                );
+              })}
+            </TabsList>
+            {TRENDS.map((x) => (
+              <TabsContent key={x.key} value={x.key}>
+                <MultiLine years={years} series={trendSeries} selected={year} onSelect={setYear} fmt={t.fmt} ariaLabel={`${t.label} por ano, ${scopeLabel}`} min={trend === "median" ? 20 : 0} band={{ from: 2020, to: 2021, label: "pandemia" }} />
+              </TabsContent>
+            ))}
+          </Tabs>
         </Panel>
 
         {regions && (

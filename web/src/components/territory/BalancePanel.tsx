@@ -4,14 +4,24 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { InfoTip } from "./InfoTip";
 import { useUrlParam } from "./useUrlParam";
+import SegmentedControl from "@/components/arc/segmented-control/segmented-control";
 import { Panel } from "@/components/kit/panel";
-import { Segmented } from "@/components/kit/segmented";
 import { brlShort, brlSigned } from "@/lib/format";
 import { IPCA_BASE, netBalance, type BalanceItem, type PeriodBalance } from "@/lib/rows";
 import { cn } from "@/lib/utils";
 
 type Sort = "worst" | "best" | "name";
 export type BalanceGroup = { key: string; label: string; /** column header and listbox noun, e.g. "Estado" */ noun: string; items: BalanceItem[] };
+
+const VALUE_OPTIONS = [
+  { value: "nom", label: "Nominal" },
+  { value: "real", label: "Corrigido (IPCA)" },
+];
+const SORT_OPTIONS = [
+  { value: "worst", label: "Pior saldo" },
+  { value: "best", label: "Maior saldo" },
+  { value: "name", label: "A–Z" },
+];
 
 const tone = (v: number) => (v < 0 ? "text-critical-ink" : v > 0 ? "text-good-ink" : "text-muted-foreground");
 
@@ -52,15 +62,7 @@ export function BalancePanel({
       title={title}
       description={description}
       action={
-        <Segmented
-          ariaLabel="Valores do saldo"
-          value={mode}
-          onChange={setMode}
-          options={[
-            { value: "nom", label: "Nominal", title: "Valores da época, sem correção" },
-            { value: "real", label: "Corrigido (IPCA)", title: `R$ de ${IPCA_BASE}, corrigidos pelo IPCA` },
-          ]}
-        />
+        <SegmentedControl label="Valores do saldo" value={mode} onValueChange={(v) => setMode(v as typeof mode)} options={VALUE_OPTIONS} />
       }
     >
       <dl className="grid grid-cols-1 divide-y border-b sm:grid-cols-3 sm:divide-x sm:divide-y-0">
@@ -93,20 +95,11 @@ export function BalancePanel({
 
       <div className="flex flex-wrap items-center justify-between gap-2 border-b px-4 py-2 sm:px-5">
         {groups.length > 1 ? (
-          <Segmented ariaLabel="Nível" value={group.key} onChange={setGk} options={groups.map((g) => ({ value: g.key, label: g.label }))} />
+          <SegmentedControl label="Nível" value={group.key} onValueChange={setGk} options={groups.map((g) => ({ value: g.key, label: g.label }))} />
         ) : (
           <span className="text-[0.8125rem] text-muted-foreground">{group.items.length} {group.label.toLowerCase()}</span>
         )}
-        <Segmented
-          ariaLabel="Ordem"
-          value={sort}
-          onChange={setSort}
-          options={[
-            { value: "worst", label: "Pior saldo", title: "Do maior saldo negativo ao positivo" },
-            { value: "best", label: "Maior saldo", title: "Do maior saldo positivo ao negativo" },
-            { value: "name", label: "A–Z" },
-          ]}
-        />
+        <SegmentedControl label="Ordem" value={sort} onValueChange={(v) => setSort(v as Sort)} options={SORT_OPTIONS} />
       </div>
 
       <ol className={cn("scroll-thin fade-b max-h-[28rem] divide-y overflow-y-auto pb-6", listClassName)} aria-label={`${group.label}: saldo ${span}, ${real ? `R$ de ${IPCA_BASE} corrigidos pelo IPCA` : "valores nominais"}`}>
