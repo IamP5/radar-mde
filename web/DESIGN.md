@@ -1,20 +1,20 @@
-# Radar MDE design system (Vercel / Geist look, shadcn/ui on Base UI)
+# Radar MDE design system (Arc components on Radix + motion)
 
-Read this before touching UI. Tokens live in `src/app/globals.css`.
+Read this before touching UI, then `.cursor/rules/arc.mdc`. Arc owns neutrals, radii, type and motion (`src/components/arc/foundation.css`); the app's data and status colors and the shadcn token aliases live in `src/app/globals.css`.
 
 ## Principles
 - Flat, quiet, precise. Hairline borders (`border`), no gradients, no glows, no grid backgrounds, no pulsing.
 - Page = white `PageHeader` band (title + one-line muted description + actions) on top of the gray canvas (`bg-canvas`, #fafafa / #000); content in `PageBody` (max-w-7xl, px-4 sm:px-6, space-y-6).
-- Cards = `Panel` (rounded-xl border bg-card, 15px semibold title, 13px muted description). Never nest panels. Use `divided` when the body is a table/chart that runs edge to edge.
+- Cards = `Panel` (rounded-xl border bg-card, 16px medium title, 14px muted description). Never nest panels. Use `divided` when the body is a table/chart that runs edge to edge.
 - Text: `text-foreground` (primary), `text-muted-foreground` (secondary). Sentence case, never all-caps eyebrows. Numbers `tnum`. Geist Mono (`font-mono`) only for identifiers: IBGE codes, UF siglas in chips, ⌘K, years in compact chips, source metadata.
-- Type: page title 24→32px semibold tracking-[-0.04em]; section 20px semibold -0.02em; card title 15px semibold; KPI value 26–28px semibold tracking-[-0.04em] tnum; label 13px muted; body 14–15px.
-- Colors: brand blue `text-brand` / `bg-brand` / `text-brand-ink` (links); status `good`, `warning`, `critical` (+ `-soft` tints, `-ink` text). Text in a status color always uses the `-ink` token (`text-critical-ink`, `text-good-ink`, `text-warning-ink`); the plain token is for dots, strokes and ≥ 18px values. Never dim colored text with `opacity-*`. `bg-accent` = hover gray. `bg-muted` = gray track. Data: `--bin-1..5` diverging MDE, `--series-1..5` categorical (fixed order), `--seq-1..5`, `--red-1..5`, `--grid` gridlines, `--axis` baselines, `--ink` emphasis line.
+- Type: Arc's scale. Headings `font-heading` (Geist), body `font-sans` (Inter), one weight for emphasis (`font-medium`, never semibold/bold). Page title 24→30px `tracking-(--tracking-display)`; card title 16px; KPI value 20→24px tracking-[-0.04em] tnum; label 14px muted; body 14–15px.
+- Colors: brand blue `text-brand` / `bg-brand` / `text-brand-ink` (links); status `good`, `warning`, `critical` (+ `-soft` tints, `-ink` text). Text in a status color always uses the `-ink` token (`text-critical-ink`, `text-good-ink`, `text-warning-ink`); the plain token is for dots, strokes and ≥ 18px values. Never dim colored text with `opacity-*`. `bg-accent` = hover gray (Tailwind's `accent` maps to `--surface-muted`; the raw `var(--accent)` is Arc's near-black emphasis, never a hover fill). `bg-muted` = gray track. Data: `--bin-1..5` diverging MDE, `--series-1..5` categorical (fixed order), `--seq-1..5`, `--red-1..5`, `--grid` gridlines, `--axis` baselines, `--ink` emphasis line.
 - Status: `StatusDot` / `StatusBadge` from `@/components/kit/status` (ok=good, edge=warning, below=critical, nd=gray). Always with a label.
-- Controls: `Segmented` from `@/components/kit/segmented` for 2–5 mutually exclusive options; shadcn `Button` (variant outline / ghost / secondary, size sm) for actions; shadcn `Badge`, `Tooltip`, `DropdownMenu`, `Popover`, `Select`, `Input`, `Table`, `Tabs`, `Skeleton`, `Command`, `Dialog`, `Sheet`, `Kbd` in `@/components/ui/*` (Base UI flavored: use `render` prop instead of `asChild`; read the component file before using).
+- Controls: Arc components in `@/components/arc/<id>/<id>` (read the component file first). `SegmentedControl` for mutually exclusive options (a `group` of pressed buttons, string labels); `Button` (secondary / ghost / primary, size sm) for actions and `ButtonLink` (`@/components/kit/button-link`) for links that look like buttons; `Badge`, `Tooltip`, `DropdownMenu`, `Popover`, `Select`, `SearchField`, `Input`, `Textarea`, `Tabs`, `Skeleton`, `Progress`, `Dialog`, `EmptyState`, `ThemeSwitch`. No Arc equivalent, so these stay in `@/components/ui/*`: `Table`, `Command` (inside the search dialog), `Kbd`, `Chart`. Arc module CSS beats Tailwind utilities: pass only layout classes to Arc components.
 - KPI: `Stat` from `@/components/kit/stat` (label, value, delta pill with tone, sub, context, optional `spark` flush at bottom).
 - Empty/loading: `EmptyState` or `Skeleton` with the final geometry.
 - Icons: lucide-react, size-4 (size-3.5 in dense UI), `text-muted-foreground`.
-- Motion: 150ms color transitions; popovers 150–200ms ease-out; charts `isAnimationActive={false}`.
+- Motion: Arc's tokens (`--ease-standard`, `--duration-*`, springs in `arc/lib/motion-tokens.ts`); every Arc component has its own reduced-motion branch. App transitions use `ease-(--ease-standard)`; charts `isAnimationActive={false}`; theme changes crossfade with a view transition, skipped under reduced motion.
 - Sticky sub-bars go under the site header: `sticky top-(--header-h) z-30`.
 - Hover rows: `hover:bg-accent/60`; table header `h-10 text-[13px] font-medium text-muted-foreground`, numeric columns right-aligned tnum.
 
@@ -40,18 +40,18 @@ Read this before touching UI. Tokens live in `src/app/globals.css`.
 - If you change any data color, re-run the validator and the contrast numbers; record them in `globals.css` comments.
 
 ## Accessibility & print
-- Focus: one rule, `:focus-visible` 2px `--brand` outline. Recharts/svg internals never show a ring on mouse/touch focus.
+- Focus: Arc's `--focus-outline` ring, set to `--brand`. Recharts/svg internals never show a ring on mouse/touch focus.
 - Sticky bars: site header + context bar (`sticky top-(--header-h)` and `data-subbar`). `html` reserves
   `scroll-padding-top` for both, so focused elements never hide under them; at `max-height: 30rem` (zoom/short screens)
   they become static.
-- Targets: interactive controls ≥ 24px tall (`h-7` minimum in dense UI, `size-8` icon buttons).
+- Targets: interactive controls ≥ 24px tall; Arc small controls are 36px, and 44px on coarse pointers (`--control-height-sm` in `globals.css`).
 - Forced colors: swatches/bars with inline `background` keep their color automatically; for class-colored swatches add
   `data-swatch` or `forced-color-adjust-none`. Selected states (radio, tab, pressed, option) get a `Highlight` outline globally.
 - Text sizes in rem (`text-[0.8125rem]`, not `text-[13px]`) so browser text zoom keeps the hierarchy.
 - In-card scrollers: `fade-b` (vertical lists) / `fade-x` (horizontal tracks) show that more content exists.
 - `EmptyState`: `live` only for async results/errors; `icon` renders above the title.
-- Print (`@media print`, A4): always light; site header, skip link, footer nav, theme switcher, `Button`s,
-  radiogroups/tablists and textareas are hidden; sticky bars static; scrollers/tables expanded with repeating header;
+- Print (`@media print`, A4): always light; site header, skip link, footer nav, theme switcher, Arc buttons,
+  segmented controls, tablists and textareas are hidden; sticky bars static; scrollers/tables expanded with repeating header;
   panels may split, but charts, maps, KPI cards and table rows don't, and a panel header stays with its body; charts fit their box (never taller than the container); numeric cells in data tables don't wrap. `PageHeader` prints URL + print date (`kit/print-meta.tsx`).
   Mark any other control `print:hidden`; print-only notes use `.print-only` or `hidden print:block`.
 

@@ -79,10 +79,10 @@ Stable handles, from the UI:
 - Header search button: role `button`, name `Buscar município, estado ou região`. Home CTA: role `button`, name `Digite o nome da sua cidade`.
 - Search dialog: role `dialog`, name `Buscar município, estado ou região`. Field: role `combobox`, name `Buscar`. Results: role `option`.
 - Header links: role `link` inside role `navigation` named `Principal`. Names: `Painel`, `Mapa`, `Explorar`, `Salvos`, `Dados`, `Metodologia`.
-- Year control: role `button` name `Ano anterior` or `Próximo ano`, radios inside role `radiogroup` named `Exercício`.
+- Year control: role `button` name `Ano anterior` or `Próximo ano`, and one role `button` per year inside role `group` named `Exercício`, marked `[pressed]` when chosen. Segmented controls (Arc) are always a `group` of pressed buttons, never radios or tabs.
 - Explorer filter: role `searchbox` name `Buscar município pelo nome`. UF filter: role `combobox` name `UF`, then role `option`.
 - Save control on a city page: role `button` name `Salvar` (becomes `Salvo`). Removal: role `button` name `Remover <city> dos salvos`.
-- Map shell: role `application` whose name starts with `Mapa do Brasil`. Indicator tabs: role `tab` inside `Indicador do mapa` (`% em educação`, `Fundeb`, `R$ por aluno`, `Anos abaixo`).
+- Map shell: role `application` whose name starts with `Mapa do Brasil`. Indicator: role `button` inside role `group` named `Indicador do mapa` (`% em educação`, `Fundeb`, `R$ por aluno`, `Anos abaixo`).
 
 If a command reports more than one match, it lists names and does not click. Tighten `--name` or add `--name-regex`. Do not pass coordinates.
 
