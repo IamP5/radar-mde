@@ -3,24 +3,27 @@
  * palette per mode: red = below the legal minimum, blue = above it, stronger = further from the centre.
  * Tokens are scoped to .mapa-shell so bins.ts (var(--bin-n)) and the rest of the app are untouched.
  * Unlayered on purpose: they must beat the global :root/.dark tokens inherited from <html>.
+ * Neutrals (surfaces, ink, hairlines, shadows, easing) are Arc's tokens, which already follow the theme; the glass
+ * panels are Arc surfaces mixed with transparency. Only the data palette and the label halos are the map's own.
  *   --m-ink        text / hairlines / selection (mixed with transparency via color-mix or Tailwind `/NN`)
  *   --m-on-strong  label text over the strongest fills (bright in dark mode, deep in light mode)
  *   --m-halo       text-shadow that separates map labels from any fill
  */
 .mapa-shell {
   color-scheme: light;
-  --m-bg: #eceef1;
-  --m-stage-hi: #f8f9fb;
-  --m-panel: rgba(255, 255, 255, 0.86);
-  --m-panel-solid: #ffffff;
-  --m-card: rgba(255, 255, 255, 0.97);
-  --m-chip-bg: rgba(255, 255, 255, 0.95);
-  --m-line: rgba(16, 24, 40, 0.09);
-  --m-line-2: rgba(16, 24, 40, 0.16);
-  --m-ink: #14171c;
+  /* one neutral step below Arc's muted surface, so states at 0% (--bin-zero, near white) still read as land */
+  --m-bg: var(--neutral-3);
+  --m-stage-hi: var(--surface-muted);
+  --m-panel: color-mix(in oklab, var(--surface) 86%, transparent);
+  --m-panel-solid: var(--surface);
+  --m-card: color-mix(in oklab, var(--surface-raised) 97%, transparent);
+  --m-chip-bg: color-mix(in oklab, var(--surface) 95%, transparent);
+  --m-line: var(--border);
+  --m-line-2: var(--border-strong);
+  --m-ink: var(--foreground);
   --m-text: var(--m-ink);
-  --m-dim: #5b6370;
-  --m-faint: #8a919c;
+  --m-dim: var(--text-secondary);
+  --m-faint: var(--text-muted);
   --m-red: #d42f35;
   --m-blue: #1f66d1;
   --m-amber: #9a5800;
@@ -29,8 +32,8 @@
   --m-on-strong: #ffffff;
   --m-halo: 0 0 2px rgba(255, 255, 255, 0.95), 0 0 6px rgba(255, 255, 255, 0.85);
   --m-halo-strong: 0 0 2px #fff, 0 0 8px rgba(255, 255, 255, 0.95);
-  --m-shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 10px 28px -14px rgba(16, 24, 40, 0.22);
-  --m-shadow-lg: 0 2px 4px rgba(16, 24, 40, 0.06), 0 16px 40px -12px rgba(16, 24, 40, 0.3);
+  --m-shadow: var(--shadow-raised);
+  --m-shadow-lg: var(--shadow-floating);
 
   /* light data palette: the app's validated light steps (DESIGN.md), with a warmer tan for "at the limit" */
   --bin-1: #b42727;
@@ -52,10 +55,9 @@
   --red-5: #6a1616;
   --rec-0: #c9dbf2;
 
-  /* motion: one easing family (reference: .4,0,.2,1 / .16,1,.3,1), quick hovers */
-  --m-ease: cubic-bezier(0.4, 0, 0.2, 1);
-  --m-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --m-hover: 0.12s;
+  --m-ease: var(--ease-standard);
+  --m-ease-out: var(--ease-enter);
+  --m-hover: var(--duration-instant);
   /* one year step: fills, markers, numbers and the timeline all move on this clock */
   --m-step: 0.6s;
 
@@ -64,17 +66,11 @@
 }
 .dark .mapa-shell {
   color-scheme: dark;
-  --m-bg: #07080a;
-  --m-stage-hi: #0d1015;
-  --m-panel: rgba(16, 18, 23, 0.8);
-  --m-panel-solid: #101217;
-  --m-card: rgba(14, 16, 20, 0.94);
-  --m-chip-bg: rgba(16, 18, 23, 0.92);
-  --m-line: rgba(255, 255, 255, 0.08);
-  --m-line-2: rgba(255, 255, 255, 0.14);
-  --m-ink: #f2f3f5;
-  --m-dim: #9ca3af;
-  --m-faint: #6b7280;
+  --m-bg: var(--background);
+  --m-stage-hi: var(--surface);
+  --m-panel: color-mix(in oklab, var(--surface) 80%, transparent);
+  --m-card: color-mix(in oklab, var(--surface-raised) 94%, transparent);
+  --m-chip-bg: color-mix(in oklab, var(--surface) 92%, transparent);
   --m-red: #ff5d5d;
   --m-blue: #5ea3ff;
   --m-amber: #ffc069;
@@ -83,8 +79,6 @@
   --m-on-strong: #101216;
   --m-halo: 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.6);
   --m-halo-strong: 0 1px 4px #000, 0 0 10px #000;
-  --m-shadow: 0 8px 32px -12px rgba(0, 0, 0, 0.6);
-  --m-shadow-lg: 0 12px 40px -8px rgba(0, 0, 0, 0.7);
 
   --bin-1: #ff5d5d;
   --bin-2: #c23b44;
@@ -117,32 +111,31 @@
 .m-panel {
   background: var(--m-panel);
   border: 1px solid var(--m-line);
-  border-radius: 16px;
+  border-radius: var(--radius-panel);
   backdrop-filter: blur(18px) saturate(1.2);
   box-shadow: var(--m-shadow);
 }
 .m-card {
   background: var(--m-card);
   border: 1px solid var(--m-line-2);
-  border-radius: 12px;
+  border-radius: var(--radius-control);
   backdrop-filter: blur(14px);
   box-shadow: var(--m-shadow-lg);
 }
+/* SearchPalette's compact trigger on the map bar: drawn like the Arc secondary buttons beside it */
 .m-ctl {
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
-  background: var(--m-panel);
-  border: 1px solid var(--m-line);
-  color: color-mix(in srgb, var(--m-ink) 90%, transparent);
-  backdrop-filter: blur(14px);
-  transition: background var(--m-hover) var(--m-ease), border-color var(--m-hover) var(--m-ease);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  transition: background var(--duration-fast) var(--ease-standard);
 }
-.m-ctl:hover {
-  background: color-mix(in srgb, var(--m-ink) 9%, var(--m-panel-solid));
-  border-color: var(--m-line-2);
+@media (hover: hover) and (pointer: fine) {
+  .m-ctl:hover {
+    background: var(--surface-muted);
+  }
 }
 /* the stage fills the viewport, so its keyboard outline is drawn inside */
 .mapa-stage {
@@ -269,7 +262,7 @@
 }
 .m-uflabel b {
   display: block;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.03em;
 }
 .m-uflabel.is-strong {
@@ -311,7 +304,7 @@
   box-shadow: 0 0 0 2px var(--m-ink);
 }
 .m-chip b {
-  font-weight: 600;
+  font-weight: 500;
 }
 .m-chip span {
   margin-left: auto;
@@ -374,7 +367,7 @@
   animation: m-fade 0.3s var(--m-ease) both;
 }
 .m-tip {
-  border-radius: 14px;
+  border-radius: var(--radius-control);
   animation: m-fade var(--m-hover) var(--m-ease) both;
 }
 
