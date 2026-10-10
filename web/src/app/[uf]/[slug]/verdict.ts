@@ -2,7 +2,7 @@
  * Year-dependent wording for the city page, shared by the server (metadata, OG image) and the client islands
  * (header, share text) so every surface says the same thing about the selected year.
  */
-import type { StatusKind } from "@/components/kit/status";
+import type { BadgeTone } from "@/components/arc/badge/badge";
 import { MDE_MIN, PANDEMIC_YEARS, pct } from "@/lib/format";
 import type { PeriodBalance } from "@/lib/rows";
 
@@ -108,13 +108,13 @@ export function deltaSentence(d: CityYearData, p: YearPoint): string | null {
   return `${dv > 0 ? "Subiu" : "Caiu"} ${pontos(dv)} em relação a ${base.y} (${pct(base.mde)}).`;
 }
 
-export const STATUS_KIND: Record<St, StatusKind> = { ok: "ok", edge: "edge", below: "below", nd: "below", none: "nd", na: "nd" };
+const STATUS_TONE: Record<St, BadgeTone> = { ok: "success", edge: "warning", below: "danger", nd: "danger", none: "neutral", na: "neutral" };
 
 /**
  * Badges and one-paragraph verdict for the selected year. When the page opens on the last declared year but the
  * municipality stopped declaring afterwards, the non-declaration leads (never a green "Cumpre" first).
  */
-export function summary(d: CityYearData, p: YearPoint): { badges: { kind: StatusKind; text: string }[]; verdict: string } {
+export function summary(d: CityYearData, p: YearPoint): { badges: { tone: BadgeTone; text: string }[]; verdict: string } {
   const y = p.y;
   const stopped = y === d.initial && d.stopped.length > 0 && p.mde != null;
   const level =
@@ -130,30 +130,30 @@ export function summary(d: CityYearData, p: YearPoint): { badges: { kind: Status
 
   if (p.st === "na")
     return {
-      badges: [{ kind: "nd", text: `Não existia em ${y}` }],
+      badges: [{ tone: "neutral", text: `Não existia em ${y}` }],
       verdict: `${d.name} ainda não existia em ${y}: o município foi instalado em ${d.since}.`,
     };
   if (p.st === "nd")
     return {
-      badges: [{ kind: "below", text: `Não declarou ${y}` }],
+      badges: [{ tone: "danger", text: `Não declarou ${y}` }],
       verdict: `Não declarou ao governo federal os dados de educação de ${y}, por isso não dá para saber quanto aplicou.${d.since === y ? ` O município foi instalado em ${y}.` : ""}`,
     };
   if (p.st === "none" || p.mde == null)
-    return { badges: [{ kind: "nd", text: `Sem dados em ${y}` }], verdict: `Não há dados de ${y} para ${d.name}.` };
+    return { badges: [{ tone: "neutral", text: `Sem dados em ${y}` }], verdict: `Não há dados de ${y} para ${d.name}.` };
 
   const delta = deltaSentence(d, p);
   if (stopped)
     return {
       badges: [
-        { kind: "below", text: `Não declarou ${listYears(d.stopped)}` },
-        { kind: "nd", text: `Último dado: ${y}` },
+        { tone: "danger", text: `Não declarou ${listYears(d.stopped)}` },
+        { tone: "neutral", text: `Último dado: ${y}` },
       ],
       verdict: [`Não enviou ao governo federal os dados de ${listYears(d.stopped)}.`, `No último ano informado (${y}), aplicou ${pct(p.mde)} da receita de impostos em educação — ${level}.`, ...extra].join(" "),
     };
   const badge =
     p.st === "below" ? `Abaixo de ${MDE_MIN}% em ${y}` : p.st === "edge" ? `No limite em ${y}` : `Cumpre ${MDE_MIN}% em ${y}`;
   return {
-    badges: [{ kind: STATUS_KIND[p.st], text: badge }, ...(p.atip.includes("mde") ? [{ kind: "edge" as const, text: "Fora do padrão" }] : [])],
+    badges: [{ tone: STATUS_TONE[p.st], text: badge }, ...(p.atip.includes("mde") ? [{ tone: "warning" as const, text: "Fora do padrão" }] : [])],
     verdict: [`Em ${y}, aplicou ${pct(p.mde)} da receita de impostos em educação — ${level}.`, delta, ...extra].filter(Boolean).join(" "),
   };
 }

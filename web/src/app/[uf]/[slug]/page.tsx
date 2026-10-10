@@ -1,7 +1,7 @@
 import { CircleAlert, ExternalLink, Info, MessageSquareText, TriangleAlert } from "lucide-react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import ActionKit from "@/components/ActionKit";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import TrendChart from "@/components/TrendChart";
@@ -9,9 +9,9 @@ import { ChartActions } from "@/components/kit/chart-actions";
 import WatchButton from "@/components/WatchButton";
 import { PageBody, PageHeader } from "@/components/kit/page-header";
 import { EmptyState, Panel } from "@/components/kit/panel";
-import { StatusBadge, StatusDot } from "@/components/kit/status";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { StatusDot } from "@/components/kit/status";
+import { Badge } from "@/components/arc/badge/badge";
+import { ButtonLink } from "@/components/kit/button-link";
 import { TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
   MDE_MIN,
@@ -289,19 +289,17 @@ function CityContent({ c }: { c: City }) {
               {c.capital && !single ? ", capital" : ""})
             </span>
             <span aria-hidden className="ml-2.5 inline-flex translate-y-[-3px] items-center gap-1.5 align-middle tracking-normal">
-              <Badge variant="outline" className="font-mono text-[0.6875rem] text-muted-foreground">
-                {c.uf}
-              </Badge>
-              {c.capital && <Badge variant="secondary">Capital</Badge>}
+              <Badge size="sm">{c.uf}</Badge>
+              {c.capital && <Badge size="sm">Capital</Badge>}
             </span>
           </>
         }
         description={<HeaderStatus belowCount={f.below.length} />}
         actions={
           <>
-            <Button variant="outline" render={<a href="#agir" />} nativeButton={false} className="print:hidden">
-              <MessageSquareText className="text-muted-foreground" />O que posso fazer?
-            </Button>
+            <ButtonLink external href="#agir" className="print:hidden">
+              <MessageSquareText aria-hidden className="size-4 text-muted-foreground" />O que posso fazer?
+            </ButtonLink>
             <WatchButton id={`${c.uf.toLowerCase()}/${c.slug}`} />
             <HeaderShare />
             <HeaderSource />
@@ -692,7 +690,7 @@ function ThesisComparison({ c }: { c: City }) {
           </a>
         </>
       }
-      action={<Badge variant="outline" className="text-muted-foreground">Santo André</Badge>}
+      action={<Badge size="sm">Santo André</Badge>}
       divided
       bodyClassName="p-0"
       footer="Fontes da tese: Figura 42 (TCE-SP, 2020) e Figura 40 (MEC/Inep, 2020). Diferença = declarado − apurado. Valores em R$ da época."
@@ -751,9 +749,9 @@ function ThesisComparison({ c }: { c: City }) {
                     {y}
                     {split && (
                       <span className="ml-2 align-middle">
-                        <StatusBadge kind="edge" dot={false}>
+                        <Badge size="sm" tone="warning" style={{ "--warning": "var(--warning-ink)" } as CSSProperties}>
                           divergem
-                        </StatusBadge>
+                        </Badge>
                       </span>
                     )}
                   </TableCell>
