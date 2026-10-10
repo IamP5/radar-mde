@@ -8,6 +8,7 @@
  */
 import { LocateFixed, Minus, Plus } from "lucide-react";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { Button } from "@/components/arc/button/button";
 import { cn } from "@/lib/utils";
 import { ufOfMun, type Bbox, type BrGeo, type Shape } from "./geo";
 import { ufCode, ufName, ufSigla, type Layer, type Level, type Scope } from "./model";
@@ -684,16 +685,16 @@ export default function Stage(p: StageProps) {
 
       {/* zoom controls */}
       <div data-ui className="m-panel absolute bottom-24 z-10 flex flex-col gap-0.5 rounded-full p-[3px] max-lg:hidden" style={{ left: insets.left + 20 }}>
-        <button type="button" className="m-ctl m-ctl-flat" aria-label="Aproximar" title="Aproximar (+)" onClick={() => zoomCenter(1.7)}>
+        <Button variant="ghost" size="sm" className="size-9" aria-label="Aproximar" title="Aproximar (+)" onClick={() => zoomCenter(1.7)}>
           <Plus className="size-4" />
-        </button>
-        <button type="button" className="m-ctl m-ctl-flat" aria-label="Afastar" title="Afastar (−)" onClick={() => zoomCenter(1 / 1.7)}>
+        </Button>
+        <Button variant="ghost" size="sm" className="size-9" aria-label="Afastar" title="Afastar (−)" onClick={() => zoomCenter(1 / 1.7)}>
           <Minus className="size-4" />
-        </button>
+        </Button>
         {(moved || scope.uf) && (
-          <button type="button" className="m-ctl m-ctl-flat" aria-label="Voltar ao enquadramento" title="Voltar ao enquadramento (0)" onClick={() => { flyTo(targetFor(scope)); setMoved(false); }}>
+          <Button variant="ghost" size="sm" className="size-9" aria-label="Voltar ao enquadramento" title="Voltar ao enquadramento (0)" onClick={() => { flyTo(targetFor(scope)); setMoved(false); }}>
             <LocateFixed className="size-4" />
-          </button>
+          </Button>
         )}
       </div>
     </div>

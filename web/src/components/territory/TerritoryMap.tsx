@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, type ReactNode } from "react";
 import { useUrlParam } from "./useUrlParam";
 
 import Choropleth, { Legend, prewarmMap } from "@/components/Choropleth";
-import { Segmented } from "@/components/kit/segmented";
+import SegmentedControl from "@/components/arc/segmented-control/segmented-control";
 import { StatusDot, type StatusKind } from "@/components/kit/status";
 import { withYear } from "@/components/YearPicker";
 import { ChartActions, type ChartLegendItem } from "@/components/kit/chart-actions";
@@ -127,7 +127,7 @@ export default function TerritoryMap({ ufs, years, year, initialYear, rows, rows
       const kind: StatusKind = sh == null ? "nd" : s.below === 0 ? "ok" : "below";
       return (
         <>
-          <div className="flex items-center gap-2 font-semibold">
+          <div className="flex items-center gap-2 font-medium">
             <StatusDot kind={kind} />
             <span className="truncate">{u.name}</span>
             <span className="ml-auto font-mono text-[11px] font-normal text-muted-foreground">{u.uf}</span>
@@ -153,12 +153,12 @@ export default function TerritoryMap({ ufs, years, year, initialYear, rows, rows
       <>
         <div className="flex items-center gap-2">
           {kind && <StatusDot kind={kind} />}
-          <span className="truncate font-semibold">{r.name}</span>
+          <span className="truncate font-medium">{r.name}</span>
           <span className="ml-auto font-mono text-[11px] text-muted-foreground">{r.uf}</span>
         </div>
         <div className="mt-1 flex items-baseline justify-between gap-4">
           <span className="text-xs text-muted-foreground">{m.short}</span>
-          <span className="text-[15px] font-semibold tnum">
+          <span className="text-[15px] font-medium tnum">
             {nd ? <span className="text-critical">Não declarou</span> : v == null ? <span className="text-muted-foreground">{r.since != null && year < r.since ? "Não existia" : "Sem dados"}</span> : m.fmt(v)}
           </span>
         </div>
@@ -231,10 +231,10 @@ export default function TerritoryMap({ ufs, years, year, initialYear, rows, rows
           onFocus={warm}
           onTouchStart={warm}
         >
-        <Segmented
-          ariaLabel="Nível do mapa"
+        <SegmentedControl
+          label="Nível do mapa"
           value={mode}
-          onChange={setMode}
+          onValueChange={(v) => setMode(v as typeof mode)}
           options={[
             { value: "uf", label: "Estados" },
             { value: "mun", label: "Municípios" },
@@ -242,9 +242,9 @@ export default function TerritoryMap({ ufs, years, year, initialYear, rows, rows
         />
         </span>
         {showMun ? (
-          <Segmented ariaLabel="Indicador do mapa" value={metric} onChange={setMetric} options={METRICS.map((m) => ({ value: m.key, label: MUN_SHORT[m.key], title: m.label }))} />
+          <SegmentedControl label="Indicador do mapa" value={metric} onValueChange={(v) => setMetric(v as MetricKey)} options={METRICS.map((m) => ({ value: m.key, label: MUN_SHORT[m.key] }))} />
         ) : (
-          <Segmented ariaLabel="Indicador do mapa" value={ufMetric} onChange={setUfMetric} options={UF_METRICS.map((m) => ({ value: m.key, label: m.short, title: m.label }))} />
+          <SegmentedControl label="Indicador do mapa" value={ufMetric} onValueChange={(v) => setUfMetric(v as UfMetric)} options={UF_METRICS.map((m) => ({ value: m.key, label: m.short }))} />
         )}
         {loading && (
           <span className="text-xs text-muted-foreground" role="status">

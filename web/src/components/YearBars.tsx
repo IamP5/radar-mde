@@ -48,7 +48,7 @@ export default function YearBars({ data, selected, onSelect }: { data: D[]; sele
           <XAxis dataKey="year" {...AXIS} ticks={yearTicks(years, width - 36, 30)} interval={0} tick={(p) => <YearTick {...p} selected={selected} short />} />
           <YAxis {...AXIS} width={36} domain={domain} ticks={ticks} allowDecimals={false} tickFormatter={(v: number) => int(v)} />
           <ChartTooltip
-            cursor={{ fill: "var(--accent)", fillOpacity: 0.6 }}
+            cursor={{ fill: "var(--surface-muted)" }}
             content={
               <ChartTooltipContent
                 indicator="line"
@@ -58,7 +58,7 @@ export default function YearBars({ data, selected, onSelect }: { data: D[]; sele
                   const d = item.payload as D;
                   return (
                     <div className="grid gap-0.5">
-                      <div className="text-sm font-semibold text-foreground tabular-nums">{int(d.below)} abaixo de 25%</div>
+                      <div className="text-sm font-medium text-foreground tabular-nums">{int(d.below)} abaixo de 25%</div>
                       <div className="text-muted-foreground tabular-nums">
                         {d.year} · {int(d.reported)} com dados · {int(d.nd)} não declararam
                       </div>

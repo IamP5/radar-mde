@@ -12,8 +12,8 @@ export function PageHeader({
         {eyebrow && <div className="mb-3 text-sm text-muted-foreground">{eyebrow}</div>}
         <div className="flex flex-col gap-4 lg:flex-row lg:flex-wrap lg:items-end lg:justify-between">
           <div className="min-w-0 lg:min-w-[min(100%,28rem)] lg:flex-1">
-            <h1 className="text-2xl leading-8 font-semibold tracking-[-0.04em] text-balance md:text-[2rem] md:leading-10">{title}</h1>
-            {description && <div className="mt-2 max-w-3xl text-[0.9375rem] leading-6 text-pretty text-muted-foreground">{description}</div>}
+            <h1 className="font-heading text-2xl leading-8 font-medium tracking-(--tracking-display) text-balance md:text-3xl md:leading-10">{title}</h1>
+            {description && <div className="mt-2 max-w-3xl text-base leading-6 text-pretty text-muted-foreground">{description}</div>}
             <PrintMeta />
           </div>
           {actions && <div className="flex max-w-full min-w-0 flex-wrap items-center gap-2 lg:max-w-[50%] lg:justify-end print:hidden">{actions}</div>}

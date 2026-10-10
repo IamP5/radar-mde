@@ -13,7 +13,7 @@ Salvos lists each saved municipality with one cell per year and a way to add ano
 - Save a city, then choose `Salvos`.
 - Each year is a cell named with the year and the percent, or with `não declarou` or `sem dados`.
 - `Adicionar` opens search.
-- With nothing saved, the page says `Nenhum município salvo` and offers a button named `Explorar a lista`.
+- With nothing saved, the page says `Nenhum município salvo` and offers a link named `Explorar a lista`.
 
 ## Driving it with control-radar-mde
 
@@ -25,7 +25,7 @@ Preconditions:
 - **Open Salvos.** Run `./scripts/control-radar-mde browser open /acompanhar`. A heading named `1 município` is visible. A link named `Santo André` is visible.
 - **Year cells.** Run `./scripts/control-radar-mde browser snapshot --aria --path saved-series/cells.aria.txt`. The snapshot contains a name that starts with `2024:`.
 - **Add.** Run `./scripts/control-radar-mde browser click --role button --name "Adicionar"`. Run `./scripts/control-radar-mde browser wait --role dialog --name "Buscar município, estado ou região"`. Run `./scripts/control-radar-mde browser press --key Escape`.
-- **Empty the list.** Run `./scripts/control-radar-mde browser click --role button --name "Remover Santo André dos salvos"`. Run `./scripts/control-radar-mde browser wait --text "Nenhum município salvo"`. Run `./scripts/control-radar-mde browser wait --role button --name "Explorar a lista"`.
+- **Empty the list.** Run `./scripts/control-radar-mde browser click --role button --name "Remover Santo André dos salvos"`. Run `./scripts/control-radar-mde browser wait --text "Nenhum município salvo"`. Run `./scripts/control-radar-mde browser wait --role link --name "Explorar a lista"`.
 - **Proof of the empty list.** Run `./scripts/control-radar-mde browser screenshot --path saved-series/empty.png` and `./scripts/control-radar-mde browser snapshot --aria --path saved-series/empty.aria.txt`. The screenshot shows the Radar MDE header and `Nenhum município salvo`.
 - **Stored list.** Run `./scripts/control-radar-mde browser storage get --key radar-mde:watch`. The value is `[]`.
 
@@ -36,4 +36,4 @@ Preconditions:
 - `Adicionar` and the empty state's `Buscar município` both open the palette. Closing with Escape does not save a second city.
 - Take the year-cell snapshot before `Remover`. The empty list is the restored baseline, not the proof of the cells.
 - The header and the footer both link to Salvos. This recipe opens `/acompanhar` directly.
-- `Explorar a lista` is a button, not a link. A role of `link` matches the header and the footer `Explorar` and misses the empty-state control.
+- `Explorar a lista` is a link to `/explorar` drawn as a button. Match its whole label: `--name "Explorar"` alone also hits the header and the footer `Explorar`.

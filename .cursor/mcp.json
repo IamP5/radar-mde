@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "arc": {
+      "url": "https://uiarc.dev/api/mcp"
+    }
+  }
+}

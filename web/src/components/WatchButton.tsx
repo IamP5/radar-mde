@@ -2,12 +2,12 @@
 
 import { Star, StarOff } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/arc/button/button";
 import { useWatchlist } from "@/lib/watchlist";
 import { cn } from "@/lib/utils";
 
 /** `id` is "uf/slug". Saved in this browser only (see /acompanhar, "Municípios salvos"). */
-export default function WatchButton({ id, className }: { id: string; className?: string }) {
+export default function WatchButton({ id }: { id: string }) {
   const [list, toggle] = useWatchlist();
   // hover preview ("remover") only for a real mouse: on touch, pointerenter fires on tap and never leaves
   const [hover, setHover] = useState(false);
@@ -21,7 +21,8 @@ export default function WatchButton({ id, className }: { id: string; className?:
   return (
     <>
       <Button
-        variant="outline"
+        variant="secondary"
+        size="sm"
         onClick={() => {
           toggle(id);
           setHover(false);
@@ -31,12 +32,12 @@ export default function WatchButton({ id, className }: { id: string; className?:
         onPointerLeave={() => setHover(false)}
         aria-pressed={on}
         title={on ? "Remover dos salvos (salvo só neste navegador)" : "Salvar este município para ver depois (só neste navegador)"}
-        className={cn(on ? "text-foreground print:hidden" : "print:hidden", className)}
+        className="print:hidden"
       >
         {on && hover ? (
-          <StarOff className="text-muted-foreground" />
+          <StarOff className="size-4 text-muted-foreground" />
         ) : (
-          <Star className={on ? "fill-warning text-warning" : "text-muted-foreground"} />
+          <Star className={cn("size-4", on ? "fill-warning text-warning" : "text-muted-foreground")} />
         )}
         {on ? (hover ? "Remover" : "Salvo") : "Salvar"}
       </Button>

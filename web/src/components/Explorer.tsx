@@ -1,20 +1,19 @@
 "use client";
 
 import {
-  AlertTriangle, ArrowDown, ArrowUp, ArrowUpDown, CalendarDays, Check, ChevronDown, Download, Info, Link2, PlusCircle, RotateCcw, Search, X,
+  AlertTriangle, ArrowDown, ArrowUp, ArrowUpDown, Check, ChevronDown, Download, Info, Link2, PlusCircle, RotateCcw, SearchX, X,
 } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { Button } from "@/components/arc/button/button";
+import { DropdownMenu } from "@/components/arc/dropdown-menu/dropdown-menu";
+import { EmptyState } from "@/components/arc/empty-state/empty-state";
+import { SearchField } from "@/components/arc/search-field/search-field";
+import { Select } from "@/components/arc/select/select";
+import { Skeleton } from "@/components/arc/skeleton/skeleton";
 import { Panel } from "@/components/kit/panel";
 import { Stat } from "@/components/kit/stat";
 import { StatusBadge, type StatusKind } from "@/components/kit/status";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group";
-import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger } from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
 import { TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useYear, withYear } from "@/components/YearPicker";
 import { BINS, binColor } from "@/lib/bins";
@@ -459,44 +458,33 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
 
   return (
     <div className="space-y-4">
-      {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-2">
-        <InputGroup className="h-8 w-full bg-background sm:w-64 dark:bg-input/30">
-          <InputGroupAddon>
-            <Search className="size-4" />
-          </InputGroupAddon>
-          <InputGroupInput
-            type="search"
-            aria-label="Buscar município pelo nome"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Filtrar por nome…"
-            className="[&::-webkit-search-cancel-button]:hidden"
-          />
-          {q && (
-            <InputGroupAddon align="inline-end">
-              <InputGroupButton size="icon-xs" aria-label="Limpar busca" onClick={() => setQ("")}>
-                <X />
-              </InputGroupButton>
-            </InputGroupAddon>
+      <div className="grid grid-cols-2 items-end gap-3 sm:grid-cols-3 lg:grid-cols-[minmax(0,0.6fr)_repeat(5,minmax(0,1fr))]">
+        <div className="col-span-full flex items-end gap-3">
+          <div className="min-w-0 flex-1 sm:max-w-sm">
+            <SearchField label="Buscar município pelo nome" value={q} onValueChange={setQ} placeholder="Filtrar por nome…" />
+          </div>
+          {(hasCapital || capital) && (
+            <Button
+              variant={capital ? "primary" : "secondary"}
+              aria-pressed={capital}
+              onClick={() => setCapital((v) => !v)}
+              title="Só as capitais dos estados e Brasília"
+            >
+              {capital ? <Check size={16} aria-hidden /> : <PlusCircle size={16} aria-hidden />}
+              Capitais
+              {data && <span className="tnum opacity-70">{int(facets.capital)}</span>}
+            </Button>
           )}
-        </InputGroup>
-
-        <Select value={String(year)} onValueChange={(v) => v != null && setYear(Number(v))}>
-          <SelectTrigger aria-label="Exercício" className="h-8 rounded-md bg-background text-[13px]">
-            <CalendarDays className="size-3.5 text-muted-foreground" />
-            <span className="text-muted-foreground">Exercício</span>
-            <span className="font-medium tnum">{year}</span>
-          </SelectTrigger>
-          <SelectContent alignItemWithTrigger={false} align="start" className="max-h-72 w-auto min-w-36">
-            {[...years].reverse().map((y) => (
-              <SelectItem key={y} value={String(y)} className="tnum">{y}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
+        </div>
+        <Select
+          label="Exercício"
+          value={String(year)}
+          onValueChange={(v) => setYear(Number(v))}
+          options={[...years].reverse().map((y) => ({ value: String(y), label: String(y) }))}
+        />
         <FilterSelect
           label="Região"
+          all="Todas as regiões"
           value={regiao}
           onChange={changeRegiao}
           ready={!!data}
@@ -504,23 +492,15 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
         />
         <FilterSelect
           label="UF"
+          all="Todas as UFs"
           value={uf}
           onChange={setUf}
           ready={!!data}
-          display={(v) => <span className="font-mono">{v}</span>}
-          options={ufOptions.map((u) => ({
-            value: u.uf,
-            label: (
-              <>
-                <span className="w-6 font-mono text-[12px] text-muted-foreground">{u.uf}</span>
-                {u.name}
-              </>
-            ),
-            count: facets.uf.get(u.uf) ?? 0,
-          }))}
+          options={ufOptions.map((u) => ({ value: u.uf, label: `${u.uf} · ${u.name}`, count: facets.uf.get(u.uf) ?? 0 }))}
         />
         <FilterSelect
           label="População"
+          all="Qualquer população"
           value={porte}
           onChange={setPorte}
           ready={!!data}
@@ -528,117 +508,94 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
         />
         <FilterSelect
           label={`Situação em ${year}`}
+          all="Qualquer situação"
           value={sit === "all" ? "" : sit}
           onChange={(v) => setSit((v || "all") as Situation)}
           ready={!!data}
-          display={() => sitLabel(sit)}
-          options={SITUATIONS.map((s) => ({ value: s.key, label: sitLabel(s.key), count: facets.sit.get(s.key) ?? 0, sep: s.key === "fun" }))}
+          options={SITUATIONS.map((s) => ({ value: s.key, label: sitLabel(s.key), count: facets.sit.get(s.key) ?? 0 }))}
         />
         <FilterSelect
           label="Reincidência"
+          all={REC.all.label}
           value={rec === "all" ? "" : rec}
           onChange={(v) => setRec((v || "all") as Rec)}
           ready={!!data}
-          display={() => REC[rec].label}
           options={RECS.map((k) => ({
             value: k,
             label: k === "u5" ? `2+ anos abaixo em ${year - 4}–${year}` : k === "s2" || k === "s3" ? `${REC[k].label} (até ${year})` : REC[k].label,
             count: facets.rec.get(k) ?? 0,
-            sep: k === "2x",
           }))}
         />
-        {(hasCapital || capital) && (
-          <ToggleChip on={capital} onClick={() => setCapital((v) => !v)} title="Só as capitais dos estados e Brasília" count={data ? facets.capital : null}>
-            Capitais
-          </ToggleChip>
-        )}
+      </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+        {/* Result count + active filters */}
+        <div className="flex min-h-9 min-w-0 flex-wrap items-center gap-2 text-[13px]" aria-live="polite">
+          <span className="text-muted-foreground">
+            {error ? (
+              "Dados indisponíveis"
+            ) : data ? (
+              <>
+                <span className="font-medium text-foreground tnum">{int(filtered.length)}</span> de <span className="tnum">{int(facets.existing)}</span> municípios
+                {facets.notYet > 0 && (
+                  <span title="Municípios instalados depois deste ano não aparecem na tabela nem no CSV deste ano">
+                    {" "}em {year} (+{int(facets.notYet)} {facets.notYet === 1 ? "criado" : "criados"} depois)
+                  </span>
+                )}
+              </>
+            ) : (
+              "Carregando municípios…"
+            )}
+          </span>
+          {chips.length > 0 && <span aria-hidden className="h-4 w-px bg-border" />}
+          {chips.map((c) => (
+            <span key={c.key} className="inline-flex h-6 max-w-full items-center gap-1 rounded-full border bg-background pr-0.5 pl-2.5 text-xs dark:bg-input/30">
+              <span className="truncate">{c.label}</span>
+              <button
+                type="button"
+                onClick={c.remove}
+                aria-label="Remover filtro"
+                className="inline-flex size-6 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              >
+                <X className="size-3" />
+              </button>
+            </span>
+          ))}
+          {chips.length > 0 && (
+            <Button variant="ghost" size="sm" onClick={clear}>
+              <RotateCcw size={16} aria-hidden />
+              Limpar
+            </Button>
+          )}
+        </div>
 
         <div className="ml-auto flex items-center gap-2">
-          <Button variant="outline" className="h-8 rounded-md" onClick={copyLink} title="Copia o endereço desta visão, com filtros, ano e ordem">
-            {copied ? <Check data-icon="inline-start" className="text-good-ink" /> : <Link2 data-icon="inline-start" />}
+          <Button variant="secondary" size="sm" onClick={copyLink} title="Copia o endereço desta visão, com filtros, ano e ordem">
+            {copied ? <Check size={16} aria-hidden className="text-good-ink" /> : <Link2 size={16} aria-hidden />}
             {copied ? "Link copiado" : "Copiar link"}
           </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              disabled={!data || !rows.length}
-              render={
-                <Button variant="outline" className="h-8 rounded-md">
-                  <Download data-icon="inline-start" />
-                  {exporting ? "Preparando…" : "Exportar CSV"}
-                  <ChevronDown data-icon="inline-end" className="text-muted-foreground" />
-                </Button>
-              }
+          {data && rows.length ? (
+            <DropdownMenu
+              label={exporting ? "Preparando…" : "Exportar CSV"}
+              icon={<Download size={16} />}
+              items={[
+                { label: `Só ${year} · CSV padrão`, icon: <Download size={16} />, onSelect: () => exportCsv("year", false) },
+                { label: `Série ${firstYear}–${lastYear} · CSV padrão`, icon: <Download size={16} />, onSelect: () => exportCsv("series", false) },
+                { label: `Só ${year} · Excel Brasil`, icon: <Download size={16} />, onSelect: () => exportCsv("year", true), separatorBefore: true },
+                { label: `Série ${firstYear}–${lastYear} · Excel Brasil`, icon: <Download size={16} />, onSelect: () => exportCsv("series", true) },
+              ]}
             />
-            <DropdownMenuContent align="end" className="w-72">
-              <DropdownMenuGroup>
-                <DropdownMenuLabel>Os {int(rows.length)} municípios filtrados, na ordem da tabela</DropdownMenuLabel>
-                <DropdownMenuItem onClick={() => exportCsv("year", false)}>
-                  <Download className="text-muted-foreground" />
-                  Só {year} · CSV padrão
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => exportCsv("series", false)}>
-                  <Download className="text-muted-foreground" />
-                  Série {firstYear}–{lastYear} · CSV padrão
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <DropdownMenuLabel>Excel em português (separador “;” e vírgula decimal)</DropdownMenuLabel>
-                <DropdownMenuItem onClick={() => exportCsv("year", true)}>
-                  <Download className="text-muted-foreground" />
-                  Só {year} · Excel Brasil
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => exportCsv("series", true)}>
-                  <Download className="text-muted-foreground" />
-                  Série {firstYear}–{lastYear} · Excel Brasil
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          ) : (
+            <Button variant="secondary" size="sm" disabled>
+              <Download size={16} aria-hidden />
+              Exportar CSV
+              <ChevronDown size={15} aria-hidden />
+            </Button>
+          )}
           <span className="sr-only" role="status">
             {copied ? "Link copiado para a área de transferência" : ""}
           </span>
         </div>
-      </div>
-
-      {/* Result count + active filters */}
-      <div className="flex min-h-7 flex-wrap items-center gap-2 text-[13px]" aria-live="polite">
-        <span className="text-muted-foreground">
-          {error ? (
-            "Dados indisponíveis"
-          ) : data ? (
-            <>
-              <span className="font-medium text-foreground tnum">{int(filtered.length)}</span> de <span className="tnum">{int(facets.existing)}</span> municípios
-              {facets.notYet > 0 && (
-                <span title="Municípios instalados depois deste ano não aparecem na tabela nem no CSV deste ano">
-                  {" "}em {year} (+{int(facets.notYet)} {facets.notYet === 1 ? "criado" : "criados"} depois)
-                </span>
-              )}
-            </>
-          ) : (
-            "Carregando municípios…"
-          )}
-        </span>
-        {chips.length > 0 && <span aria-hidden className="h-4 w-px bg-border" />}
-        {chips.map((c) => (
-          <span key={c.key} className="inline-flex h-6 max-w-full items-center gap-1 rounded-full border bg-background pr-0.5 pl-2.5 text-xs dark:bg-input/30">
-            <span className="truncate">{c.label}</span>
-            <button
-              type="button"
-              onClick={c.remove}
-              aria-label="Remover filtro"
-              className="inline-flex size-6 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-            >
-              <X className="size-3" />
-            </button>
-          </span>
-        ))}
-        {chips.length > 0 && (
-          <Button variant="ghost" size="xs" onClick={clear} className="text-muted-foreground">
-            <RotateCcw data-icon="inline-start" />
-            Limpar
-          </Button>
-        )}
       </div>
 
       {PANDEMIC_YEARS.has(year) && (
@@ -683,10 +640,8 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
             </>
           ) : (
             Array.from({ length: 5 }, (_, i) => (
-              <div key={i} className={cn("h-[118px] rounded-xl border bg-card p-4", i === 2 && "col-span-2 sm:col-span-1")}>
-                <Skeleton className="h-4 w-24" />
-                <Skeleton className="mt-3 h-7 w-20" />
-                <Skeleton className="mt-3 h-3 w-28" />
+              <div key={i} aria-hidden className={cn("h-[118px] rounded-xl border bg-card p-4", i === 2 && "col-span-2 sm:col-span-1")}>
+                <Skeleton lines={3} />
               </div>
             ))
           )}
@@ -716,8 +671,8 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
         {error ? (
           <div className="flex flex-col items-center gap-3 px-6 py-12 text-center text-sm text-muted-foreground" role="alert">
             <p>Não foi possível carregar os dados dos municípios. Verifique a conexão.</p>
-            <Button variant="outline" size="sm" onClick={() => { setError(false); setAttempt((a) => a + 1); }}>
-              <RotateCcw data-icon="inline-start" />
+            <Button variant="secondary" size="sm" onClick={() => { setError(false); setAttempt((a) => a + 1); }}>
+              <RotateCcw size={16} aria-hidden />
               Tentar de novo
             </Button>
           </div>
@@ -725,7 +680,7 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
           <div
             ref={scroller}
             className={cn(
-              "scroll-thin relative max-h-[min(72vh,760px)] overflow-auto",
+              "scroll-thin @container relative max-h-[min(72vh,760px)] overflow-auto",
               moreRight && "[mask-image:linear-gradient(to_right,#000_calc(100%-2rem),transparent)]",
             )}
             tabIndex={-1}
@@ -754,7 +709,9 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
                       <TableRow key={i} aria-hidden className="hover:bg-transparent">
                         {Array.from({ length: 10 }, (_, j) => (
                           <TableCell key={j} className={cn("py-3", j === 0 && "pl-4", j === 1 && "max-sm:hidden")}>
-                            <Skeleton className={cn("h-3.5", j === 0 ? "w-36" : j === 9 ? "w-40" : j === 4 ? "w-16" : "ml-auto w-14")} />
+                            <div className={j === 0 ? "w-36" : j === 9 ? "w-40" : j === 4 ? "w-16" : "ml-auto w-14"}>
+                              <Skeleton lines={1} />
+                            </div>
                           </TableCell>
                         ))}
                       </TableRow>
@@ -780,12 +737,16 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
                   )}
                 {data && !sorted.length && (
                   <TableRow className="hover:bg-transparent">
-                    <TableCell colSpan={10} className="py-14 text-center whitespace-normal">
-                      <div className="text-sm font-medium">Nenhum município com esses filtros</div>
-                      <div className="mt-1 text-[13px] text-muted-foreground">Remova algum filtro ou tente outro ano.</div>
-                      <Button variant="outline" size="sm" className="mt-3" onClick={clear}>
-                        Limpar filtros
-                      </Button>
+                    <TableCell colSpan={10} className="p-0 whitespace-normal">
+                      {/* the table is wider than a phone: keep the message in the visible part of the scroller */}
+                      <div className="sticky left-0 w-[100cqw]">
+                        <EmptyState
+                          title="Nenhum município com esses filtros"
+                          description="Remova algum filtro ou tente outro ano."
+                          icon={<SearchX size={24} strokeWidth={1.5} />}
+                          action={<Button variant="secondary" size="sm" onClick={clear}>Limpar filtros</Button>}
+                        />
+                      </div>
                     </TableCell>
                   </TableRow>
                 )}
@@ -802,76 +763,24 @@ export default function Explorer({ years, initialYear }: { years: number[]; init
 const stickyHead =
   "sticky top-0 z-10 h-10 bg-card px-2.5 text-[13px] font-medium text-muted-foreground shadow-[inset_0_-1px_0_var(--border)] first:pl-4";
 
-function ToggleChip({ on, onClick, title, count, children }: { on: boolean; onClick: () => void; title: string; count: number | null; children: ReactNode }) {
-  return (
-    <button
-      type="button"
-      aria-pressed={on}
-      onClick={onClick}
-      title={title}
-      className={cn(
-        "inline-flex h-8 items-center gap-1.5 rounded-md border px-2.5 text-[13px] transition-colors duration-150",
-        on ? "border-solid bg-background text-foreground hover:bg-accent dark:bg-input/30" : "border-dashed text-muted-foreground hover:bg-accent hover:text-foreground",
-      )}
-    >
-      {on ? <X className="size-3.5" /> : <PlusCircle className="size-3.5" />}
-      {children}
-      {count != null && <span className="text-xs text-muted-foreground tnum">{int(count)}</span>}
-    </button>
-  );
-}
-
-/** Dashed "filter chip" (Vercel / shadcn data-table style) backed by a Base UI Select, with per-option counts. */
+/** Arc Select over an optional filter: "" (no filter) maps to the ALL sentinel because Radix forbids "" as a value. The option name carries the facet count. */
 function FilterSelect({
-  label, value, onChange, options, display, ready,
+  label, all, value, onChange, options, ready,
 }: {
   label: string;
+  all: string;
   value: string;
   onChange: (v: string) => void;
-  options: { value: string; label: ReactNode; count: number; sep?: boolean }[];
-  display?: (v: string) => ReactNode;
+  options: { value: string; label: string; count: number }[];
   ready: boolean;
 }) {
-  const active = value !== "";
-  const current = options.find((o) => o.value === value);
   return (
-    <Select value={value || ALL} onValueChange={(v) => onChange(v == null || v === ALL ? "" : String(v))}>
-      <SelectTrigger
-        aria-label={label}
-        className={cn(
-          "h-8 max-w-full gap-1.5 rounded-md px-2.5 text-[13px] [&>svg:last-child]:hidden",
-          active ? "bg-background text-foreground hover:bg-accent" : "border-dashed bg-transparent text-muted-foreground hover:bg-accent hover:text-foreground dark:bg-transparent",
-        )}
-      >
-        <PlusCircle className={cn("size-3.5", active && "rotate-45")} />
-        {label}
-        {active && (
-          <>
-            <span aria-hidden className="mx-0.5 h-4 w-px bg-border" />
-            <span className="max-w-40 truncate rounded-sm bg-muted px-1.5 py-px text-xs font-medium">{display ? display(value) : current?.label}</span>
-          </>
-        )}
-      </SelectTrigger>
-      <SelectContent alignItemWithTrigger={false} align="start" className="max-h-80 w-auto min-w-60">
-        <SelectItem value={ALL} className="text-muted-foreground">Todos</SelectItem>
-        <SelectSeparator />
-        {options.map((o) => (
-          <FilterOption key={o.value} o={o} ready={ready} />
-        ))}
-      </SelectContent>
-    </Select>
-  );
-}
-
-function FilterOption({ o, ready }: { o: { value: string; label: ReactNode; count: number; sep?: boolean }; ready: boolean }) {
-  return (
-    <>
-      {o.sep && <SelectSeparator />}
-      <SelectItem value={o.value} className={cn(ready && !o.count && "text-muted-foreground")}>
-        <span className="flex items-center gap-1.5">{o.label}</span>
-        {ready && <span className="ml-auto pl-4 text-xs text-muted-foreground tnum">{int(o.count)}</span>}
-      </SelectItem>
-    </>
+    <Select
+      label={label}
+      value={value || ALL}
+      onValueChange={(v) => onChange(v === ALL ? "" : v)}
+      options={[{ value: ALL, label: all }, ...options.map((o) => ({ value: o.value, label: ready ? `${o.label} (${int(o.count)})` : o.label }))]}
+    />
   );
 }
 
@@ -912,7 +821,7 @@ function ExplorerRow({
   const impl = isImplausible(r, yi);
   return (
     <TableRow ref={ref} aria-rowindex={index} className="group h-[57px] hover:bg-accent/60">
-      <TableCell className="sticky left-0 z-[1] max-w-[280px] bg-card py-2 pr-3 pl-4 group-hover:bg-[color-mix(in_oklab,var(--card),var(--accent)_60%)] max-sm:max-w-[150px]">
+      <TableCell className="sticky left-0 z-[1] max-w-[280px] bg-card py-2 pr-3 pl-4 group-hover:bg-[color-mix(in_oklab,var(--surface-muted)_60%,var(--card))] max-sm:max-w-[150px]">
         <Link
           href={withYear(cityPath(r.uf, r.slug), year, initialYear)}
           prefetch={false}

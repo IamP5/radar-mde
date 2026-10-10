@@ -130,7 +130,7 @@ export default function UfTable({
               const gov = u.gov[yi];
               return (
                 <TableRow key={u.uf} className="group hover:bg-accent/60">
-                  <TableCell className={cn(sticky, "py-2.5 pr-3 pl-4 transition-colors group-hover:bg-[color-mix(in_oklab,var(--accent)_60%,var(--card))] sm:pl-5")}>
+                  <TableCell className={cn(sticky, "py-2.5 pr-3 pl-4 transition-colors group-hover:bg-[color-mix(in_oklab,var(--surface-muted)_60%,var(--card))] sm:pl-5")}>
                     <span className="flex items-center gap-2">
                       <StatusDot kind={kind} />
                       <Link href={withYear(ufPath(u.uf), year, initialYear)} className="font-medium whitespace-nowrap hover:underline hover:underline-offset-2">

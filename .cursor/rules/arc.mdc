@@ -1,0 +1,37 @@
+---
+description: Arc UI rules for the Radar MDE panel (web/), React components and CSS modules
+globs: ["web/src/**/*.tsx", "web/src/**/*.module.css", "web/src/app/globals.css"]
+alwaysApply: false
+---
+
+# Arc in Radar MDE
+
+The panel's UI kit is Arc (uiarc.dev). Read `.cursor/skills/arc/SKILL.md` before building or changing UI. The Arc MCP server is configured in `.cursor/mcp.json` (`search_components`, `get_component`, `get_install_command`, `get_skill`); the first connection opens a browser sign-in with a free account. Without it, use `https://uiarc.dev/llms.txt` and `https://uiarc.dev/components/<id>/markdown`.
+
+## This repository
+
+- Install from `web/`: `npx shadcn@latest add @uiarc/<id>`. Files land in `web/src/components/arc/<id>/`. Then run `node scripts/arc-patches.mjs` (from `web/`). It translates Arc's built-in copy to Portuguese and re-applies the local props. `npm test` fails while a patch is missing.
+- Tokens come from `web/src/components/arc/foundation.css`. `web/src/app/globals.css` maps Tailwind colors onto those tokens and adds the data colors (`--bin-*`, `--seq-*`, `--red-*`, `--series-*`) and status inks (`--good-ink`, `--warning-ink`, `--critical-ink`). Use those for data and status; never raw hex in components.
+- Dark mode: next-themes writes both `class="dark"` (Tailwind `dark:`) and `data-theme="dark"` (Arc).
+- Tailwind stays for layout and page composition. Arc components are styled by their CSS modules; pass `className` for layout only.
+- Copy is Brazilian Portuguese, sentence case. Accessible names are a contract with `.cursor/skills/verify-radar-mde/features/*.md`. Change a name and the recipe in the same commit.
+- No Arc equivalent: tables (`components/ui/table.tsx`), `Kbd`, and the Recharts charts (`components/ui/chart.tsx`). Keep them on the tokens.
+- Navigation is a link. For a link that looks like a button use `ButtonLink` from `components/kit/button-link.tsx`, not `Button` with a router push.
+- `Tooltip` renders its own trigger button. Pass an icon or text, not another button.
+
+## Always (from Arc)
+
+1. Use an existing Arc component before writing UI. Follow its "When not to use".
+2. Use only documented props. Wrap Arc components; do not restyle their internals.
+3. One `h1` and one primary button per surface (`Button` defaults to `variant="primary"`).
+4. Weights 400 and 500 only, `tabular-nums` (`tnum`) for changing numbers.
+5. Motion from `@/components/arc/lib/motion-tokens`, transform and opacity only, with a reduced-motion branch.
+6. First render is server-safe: no `window`, `localStorage`, `Date.now()`, or `Math.random()` output.
+7. Every data region has loading, empty, error, and success states.
+8. Check 390, 768, 1024, and 1440px: no sideways scroll, touch targets at least 44px on phones.
+
+## Never
+
+- Hand-made focus rings. `foundation.css` draws the keyboard `:focus-visible` outline (tuned with `--focus-outline`).
+- Eyebrows, uppercase transforms, em dashes in UI copy.
+- Decorative gradients, glows, or colored shadows.

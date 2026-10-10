@@ -1,18 +1,19 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Newsreader } from "next/font/google";
+import { Geist, Geist_Mono, Inter, Newsreader } from "next/font/google";
 import Link from "next/link";
 import SearchPalette from "@/components/SearchPalette";
 import { ChromeGate } from "@/components/kit/chrome-gate";
 import { Logo } from "@/components/kit/logo";
 import { NavLinks } from "@/components/kit/nav";
 import { NAV } from "@/components/kit/nav-items";
-import { ThemeProvider, ThemeSwitcher, ThemeToggle } from "@/components/kit/theme";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { Providers } from "@/components/kit/providers";
+import { ThemeSwitcher, ThemeToggle } from "@/components/kit/theme";
 import { META, dateBR } from "@/lib/data";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
-const geistSans = Geist({ subsets: ["latin"], variable: "--font-geist-sans" });
+const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
 /** display serif for the immersive /mapa view */
 const serif = Newsreader({ subsets: ["latin"], variable: "--font-serif" });
@@ -35,16 +36,15 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+    { media: "(prefers-color-scheme: dark)", color: "#262626" },
   ],
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} ${serif.variable} h-full antialiased`}>
+    <html lang="pt-BR" suppressHydrationWarning className={`${geist.variable} ${inter.variable} ${geistMono.variable} ${serif.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
-        <ThemeProvider>
-          <TooltipProvider delay={150}>
+        <Providers>
             <a
               href="#conteudo"
               className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:shadow-pop"
@@ -54,7 +54,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <ChromeGate>
             <header className="sticky top-0 z-40 border-b bg-(--header-bg) backdrop-blur-md backdrop-saturate-150">
               <div className="mx-auto flex h-14 max-w-7xl items-center gap-3 px-4 sm:gap-5 sm:px-6">
-                <Link href="/" className="flex shrink-0 items-center gap-2 rounded-md text-[0.9375rem] font-semibold tracking-[-0.02em]">
+                <Link href="/" className="flex shrink-0 items-center gap-2 rounded-md text-[0.9375rem] font-medium tracking-[-0.02em]">
                   <Logo className="size-6 text-foreground" />
                   <span>Radar MDE</span>
                   <span className="hidden rounded-full border px-1.5 py-px font-mono text-[0.6875rem] font-normal text-muted-foreground sm:inline">BR</span>
@@ -79,10 +79,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <footer className="border-t bg-background">
               <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-[1.4fr_1fr]">
                 <div className="space-y-3">
-                  <Link href="/" className="flex items-center gap-2 text-sm font-semibold">
+                  <Link href="/" className="flex items-center gap-2 text-sm font-medium">
                     <Logo className="size-5 text-foreground" /> Radar MDE · Brasil
                   </Link>
-                  <p className="max-w-xl text-[0.8125rem] leading-5 text-muted-foreground">
+                  <p className="max-w-xl text-sm leading-6 text-muted-foreground">
                     Dados: FNDE/SIOPE (indicadores e receitas declarados pelos municípios e estados, 2008 em diante), Tesouro
                     Nacional/SICONFI (RREO, Anexo 14, municípios de SP) e IBGE (territórios, malhas e população). Inspirado em Silva,
                     A. Z. (2021), <em>O financiamento da Educação Básica no Brasil contemporâneo</em>, UNINOVE. Ferramenta
@@ -97,10 +97,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                   </p>
                 </div>
                 <div className="flex flex-col justify-between gap-6 md:items-end">
-                  <ul className="flex flex-wrap gap-x-5 gap-y-2 text-[0.8125rem] text-muted-foreground">
+                  <ul className="flex flex-wrap gap-x-5 text-sm text-muted-foreground sm:gap-y-2">
                     {NAV.map((n) => (
                       <li key={n.href}>
-                        <Link href={n.href} prefetch={false} className="inline-flex min-h-6 items-center transition-colors hover:text-foreground">
+                        <Link href={n.href} prefetch={false} className="inline-flex min-h-11 items-center transition-colors hover:text-foreground sm:min-h-6">
                           {n.label}
                         </Link>
                       </li>
@@ -111,8 +111,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               </div>
             </footer>
             </ChromeGate>
-          </TooltipProvider>
-        </ThemeProvider>
+        </Providers>
       </body>
     </html>
   );

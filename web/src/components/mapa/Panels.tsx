@@ -1,11 +1,14 @@
 "use client";
 
-import { ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight, Link2, Maximize2, Minimize2, Moon, Sun, X } from "lucide-react";
-import { useTheme } from "next-themes";
+import { ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight, Link2, Maximize2, Minimize2, X } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Button } from "@/components/arc/button/button";
+import SegmentedControl from "@/components/arc/segmented-control/segmented-control";
 import SearchPalette from "@/components/SearchPalette";
+import { ButtonLink } from "@/components/kit/button-link";
 import { Logo } from "@/components/kit/logo";
+import { ThemeToggle } from "@/components/kit/theme";
 import WatchButton from "@/components/WatchButton";
 import { MDE_MIN, brlShort, funMin, int, pct } from "@/lib/format";
 import { binColor, colorOf, funBins } from "@/lib/bins";
@@ -15,16 +18,12 @@ import { cn } from "@/lib/utils";
 import { ALUNO_UNIT, INDS, PANDEMIC, UF_VARS, alunoReal, pandemicIdx, timesBelowUntil, ufName, type Ind, type Layer, type Level, type Scope, type UfVar } from "./model";
 import { LineChart, Num, Row as FactRow } from "./ui";
 
-/** Arrow-key navigation for tablists and radiogroups (one tab stop per group, ARIA APG). Selects as it moves. */
-export function roving(e: React.KeyboardEvent<HTMLElement>, n: number, cur: number, pick: (i: number) => void) {
-  const d = e.key === "ArrowRight" || e.key === "ArrowDown" ? 1 : e.key === "ArrowLeft" || e.key === "ArrowUp" ? -1 : 0;
-  const to = e.key === "Home" ? 0 : e.key === "End" ? n - 1 : d ? (Math.max(0, cur) + d + n) % n : -1;
-  if (to < 0) return;
-  e.preventDefault();
-  pick(to);
-  const items = e.currentTarget.querySelectorAll<HTMLElement>('[role="tab"],[role="radio"]');
-  requestAnimationFrame(() => items[to]?.focus());
-}
+const IND_OPTIONS = INDS.map((i) => ({ value: i.key, label: i.label }));
+const LEVEL_OPTIONS = [
+  { value: "mun", label: "Municípios" },
+  { value: "uf", label: "Estados" },
+];
+const UF_VAR_OPTIONS = UF_VARS.map((v) => ({ value: v.key, label: v.label }));
 
 /* ====================================================================================== top bar */
 
@@ -46,58 +45,28 @@ export function TopBar({
         <span className="hidden text-[0.75rem] text-(--m-ink)/40 2xl:inline">Educação · 5.570 municípios</span>
       </Link>
 
-      <div className="hidden justify-center lg:flex">
-        <div role="tablist" aria-label="Indicador do mapa" className="m-panel flex items-center gap-0.5 rounded-full p-1" onKeyDown={(e) => roving(e, INDS.length, INDS.findIndex((i) => i.key === ind), (k) => onInd(INDS[k].key))}>
-          {INDS.map((i) => (
-            <button key={i.key} role="tab" type="button" aria-selected={ind === i.key} tabIndex={ind === i.key ? 0 : -1} className="m-pill h-8 px-4" title={i.long} onClick={() => onInd(i.key)}>
-              {i.label}
-            </button>
-          ))}
-        </div>
+      {/* below lg the indicator wraps onto its own row under the bar */}
+      <div className="flex justify-center max-lg:order-last max-lg:w-full max-lg:justify-start">
+        <SegmentedControl label="Indicador do mapa" options={IND_OPTIONS} value={ind} onValueChange={(v) => onInd(v as Ind)} />
       </div>
 
       <div className="ml-auto flex items-center gap-2">
         <SearchPalette compact />
-        <button type="button" className="m-ctl h-10! w-10!" onClick={onShare} aria-label="Copiar o link desta visão" title="Copiar o link desta visão">
-          {copied ? <span className="text-[0.6875rem] font-medium text-(--m-blue)">Copiado</span> : <Link2 className="size-4" />}
-        </button>
-        <ThemeButton />
-        <button type="button" className="m-ctl h-10! w-10! max-sm:hidden" onClick={onFullscreen} aria-label={fullscreen ? "Sair da tela cheia" : "Tela cheia"} title={fullscreen ? "Sair da tela cheia" : "Tela cheia"}>
-          {fullscreen ? <Minimize2 className="size-4" /> : <Maximize2 className="size-4" />}
-        </button>
-        <Link href="/" className="m-ctl hidden h-10! w-auto! gap-1.5 px-3 text-[0.8125rem] xl:inline-flex xl:items-center" title="Painel completo">
-          Painel completo
-          <ArrowUpRight className="size-3.5" />
-        </Link>
-        <Link href="/" className="m-ctl h-10! w-10! max-xl:grid xl:hidden" aria-label="Painel completo" title="Painel completo">
+        <Button variant="secondary" size="sm" className="h-10 min-w-10" onClick={onShare} aria-label="Copiar o link desta visão">
+          {copied ? <span className="text-(--m-blue)">Copiado</span> : <Link2 className="size-4" />}
+        </Button>
+        <ThemeToggle />
+        <span className="flex max-sm:hidden">
+          <Button variant="secondary" size="sm" className="size-10" onClick={onFullscreen} aria-label={fullscreen ? "Sair da tela cheia" : "Tela cheia"}>
+            {fullscreen ? <Minimize2 className="size-4" /> : <Maximize2 className="size-4" />}
+          </Button>
+        </span>
+        <ButtonLink href="/" className="h-10 max-xl:w-10">
+          <span className="max-xl:sr-only">Painel completo</span>
           <ArrowUpRight className="size-4" />
-        </Link>
-      </div>
-
-      {/* indicator tabs on small screens: a row below the bar */}
-      <div className="m-panel flex w-full items-center gap-0.5 overflow-x-auto rounded-full p-1 lg:hidden" role="tablist" aria-label="Indicador do mapa" onKeyDown={(e) => roving(e, INDS.length, INDS.findIndex((i) => i.key === ind), (k) => onInd(INDS[k].key))}>
-        {INDS.map((i) => (
-          <button key={i.key} role="tab" type="button" aria-selected={ind === i.key} tabIndex={ind === i.key ? 0 : -1} className="m-pill h-10 flex-1 justify-center px-2 text-[0.75rem] sm:px-3 sm:text-[0.8125rem]" onClick={() => onInd(i.key)}>
-            {i.label}
-          </button>
-        ))}
+        </ButtonLink>
       </div>
     </header>
-  );
-}
-
-const noop = () => () => {};
-
-/** Light ↔ dark, same preference as the site header (next-themes); the map palette follows via .dark on <html>. */
-function ThemeButton() {
-  const { resolvedTheme, setTheme } = useTheme();
-  const mounted = useSyncExternalStore(noop, () => true, () => false);
-  const dark = mounted && resolvedTheme === "dark";
-  const label = dark ? "Usar tema claro" : "Usar tema escuro";
-  return (
-    <button type="button" className="m-ctl h-10! w-10!" onClick={() => setTheme(dark ? "light" : "dark")} aria-label={label} title={label}>
-      {dark ? <Sun className="size-4" /> : <Moon className="size-4" />}
-    </button>
   );
 }
 
@@ -121,7 +90,7 @@ export function SubBar({
   const crumb = "rounded-md px-1.5 py-0.5 text-[0.8125rem] transition-colors max-lg:py-2.5";
   return (
     <div data-ui className="absolute z-20 flex flex-wrap items-center gap-2 max-lg:top-[7.5rem]! max-lg:left-4!" style={{ left, top: 64 }}>
-      <nav aria-label="Navegação no mapa" className="m-panel flex h-9 items-center gap-0.5 rounded-full px-2 max-lg:h-11">
+      <nav aria-label="Navegação no mapa" className="m-panel flex h-11 items-center gap-0.5 rounded-full px-2">
         <button type="button" className={cn(crumb, !scope.uf ? "font-medium text-(--m-ink)" : "text-(--m-ink)/55 hover:text-(--m-ink)")} onClick={() => onScope({ uf: null, city: null })} aria-current={!scope.uf ? "page" : undefined}>
           Brasil
         </button>
@@ -142,37 +111,25 @@ export function SubBar({
           </>
         )}
       </nav>
-      {!scope.uf && (
-        <div role="radiogroup" aria-label="Ver o mapa por" className="m-panel flex h-9 items-center gap-0.5 rounded-full p-1 max-lg:h-11" onKeyDown={(e) => roving(e, 2, level === "mun" ? 0 : 1, (k) => onLevel(k ? "uf" : "mun"))}>
-          <span className="pr-1 pl-2 text-[0.6875rem] text-(--m-ink)/60" aria-hidden>Ver por</span>
-          {(["mun", "uf"] as const).map((l) => (
-            <button key={l} type="button" role="radio" aria-checked={level === l} tabIndex={level === l ? 0 : -1} className="m-pill h-7 max-lg:h-9" onClick={() => onLevel(l)}>
-              {l === "mun" ? "Municípios" : "Estados"}
-            </button>
-          ))}
-        </div>
-      )}
+      {!scope.uf && <SegmentedControl label="Ver o mapa por" options={LEVEL_OPTIONS} value={level} onValueChange={(v) => onLevel(v as Level)} />}
       {level === "uf" && !scope.uf && ind === "mde" && (
-        <div key="medida" role="radiogroup" aria-label="Medida por estado" className="m-panel flex h-9 items-center gap-0.5 rounded-full p-1 m-rise max-lg:h-11" onKeyDown={(e) => roving(e, UF_VARS.length, UF_VARS.findIndex((v) => v.key === ufVar), (k) => onUfVar(UF_VARS[k].key))}>
-          <span className="pr-1 pl-2 text-[0.6875rem] text-(--m-ink)/60" aria-hidden>Medida</span>
-          {UF_VARS.map((v) => (
-            <button key={v.key} type="button" role="radio" aria-checked={ufVar === v.key} tabIndex={ufVar === v.key ? 0 : -1} className="m-pill h-7 max-lg:h-9" title={v.long} onClick={() => onUfVar(v.key)}>
-              {v.label}
-            </button>
-          ))}
+        <div key="medida" className="m-rise flex">
+          <SegmentedControl label="Medida por estado" options={UF_VAR_OPTIONS} value={ufVar} onValueChange={(v) => onUfVar(v as UfVar)} />
         </div>
       )}
       {ind === "rec" && (
-        <button
-          type="button"
-          aria-pressed={!skipPand}
-          onClick={() => onSkipPand(!skipPand)}
-          className="m-panel m-rise flex h-9 items-center gap-2 rounded-full pr-3 pl-2 text-[0.75rem] text-(--m-ink)/80 transition-colors hover:text-(--m-ink) max-lg:h-11"
-          title="Pela EC 119/2022, quem ficou abaixo de 25% em 2020–21 e compensou até 2023 não é punido"
-        >
-          <span className={cn("grid size-4 place-items-center rounded-[4px] border text-[0.625rem]", !skipPand ? "border-(--m-ink) bg-(--m-ink) text-(--m-bg)" : "border-(--m-ink)/40")}>{!skipPand ? "✓" : ""}</span>
-          Contar 2020–21 (pandemia)
-        </button>
+        <div className="m-rise flex">
+          <Button
+            variant="secondary"
+            aria-pressed={!skipPand}
+            onClick={() => onSkipPand(!skipPand)}
+            title="Pela EC 119/2022, quem ficou abaixo de 25% em 2020–21 e compensou até 2023 não é punido"
+          >
+            {/* the tick is always rendered (only its colour changes), so toggling never crossfades the label */}
+            <span className={cn("grid size-4 place-items-center rounded-[4px] border text-[0.625rem]", !skipPand ? "border-(--m-ink) bg-(--m-ink) text-(--m-bg)" : "border-(--m-ink)/40 text-transparent")}>✓</span>
+            Contar 2020–21 (pandemia)
+          </Button>
+        </div>
       )}
     </div>
   );
@@ -221,7 +178,7 @@ export function Legend({
         aria-label={`Legenda: ${layer.title}`}
       >
         {layer.bins.map((b) => (
-          <button key={b.key} type="button" className={cn("flex shrink-0 items-center gap-1.5 rounded-full text-[0.6875rem] whitespace-nowrap text-(--m-ink)/80 transition-opacity hover:text-(--m-ink)", mobile && "h-8 px-1", pinned === b.key && "font-semibold text-(--m-ink)", hot && hot !== b.key && "opacity-40")} {...bind(b.key)}>
+          <button key={b.key} type="button" className={cn("flex shrink-0 items-center gap-1.5 rounded-full text-[0.6875rem] whitespace-nowrap text-(--m-ink)/80 transition-opacity hover:text-(--m-ink)", mobile && "h-8 px-1", pinned === b.key && "font-medium text-(--m-ink)", hot && hot !== b.key && "opacity-40")} {...bind(b.key)}>
             <span className="size-2.5 rounded-[3px]" style={{ background: b.color }} />
             {b.label}
           </button>
@@ -627,16 +584,16 @@ export function LeftPanel({
             {ranks.length === 1 ? (
               <h3 className="mb-2 text-[0.8125rem] font-medium text-(--m-ink)/85">{rank.label}</h3>
             ) : (
-              <div className="mb-2 flex flex-wrap items-center gap-1" role="tablist" aria-label="Rankings" onKeyDown={(e) => roving(e, ranks.length, Math.min(tab, ranks.length - 1), (i) => { setTab(i); setMore(false); })}>
-                {ranks.map((r, i) => {
-                  const on = i === Math.min(tab, ranks.length - 1);
-                  return (
-                    <button key={r.key} role="tab" type="button" aria-selected={on} tabIndex={on ? 0 : -1} className="m-pill h-7 px-2.5 text-[0.75rem] max-lg:h-9" onClick={() => { setTab(i); setMore(false); }}>
-                      {r.label}
-                    </button>
-                  );
-                })}
-              </div>
+              <SegmentedControl
+                className="mb-2"
+                label="Rankings"
+                options={ranks.map((r) => ({ value: r.key, label: r.label }))}
+                value={rank.key}
+                onValueChange={(k) => {
+                  setTab(ranks.findIndex((r) => r.key === k));
+                  setMore(false);
+                }}
+              />
             )}
             <ol className="divide-y divide-(--m-ink)/6">
               {shown.map((it, i) => (
@@ -845,18 +802,18 @@ export function Drawer({
           <div className="flex shrink-0 items-center gap-1">
             {nav && (
               <div className="flex items-center rounded-full border border-(--m-line) text-[0.6875rem] text-(--m-ink)/65 tnum">
-                <button type="button" className="m-ctl m-ctl-flat size-8! disabled:opacity-30" disabled={nav.prev == null} onClick={() => nav.prev != null && onCity?.(nav.prev)} aria-label="Município anterior no ranking do estado" title="Anterior no ranking do estado">
+                <Button variant="ghost" size="sm" className="size-9" disabled={nav.prev == null} onClick={() => nav.prev != null && onCity?.(nav.prev)} aria-label="Município anterior no ranking do estado">
                   <ChevronLeft className="size-4" />
-                </button>
+                </Button>
                 <span className="px-0.5" title={`Posição em ${row.uf} (${metricLabel})`}>{nav.pos}/{nav.of}</span>
-                <button type="button" className="m-ctl m-ctl-flat size-8! disabled:opacity-30" disabled={nav.next == null} onClick={() => nav.next != null && onCity?.(nav.next)} aria-label="Próximo município no ranking do estado" title="Próximo no ranking do estado">
+                <Button variant="ghost" size="sm" className="size-9" disabled={nav.next == null} onClick={() => nav.next != null && onCity?.(nav.next)} aria-label="Próximo município no ranking do estado">
                   <ChevronRight className="size-4" />
-                </button>
+                </Button>
               </div>
             )}
-            <button type="button" onClick={onClose} className="m-ctl size-9!" aria-label="Fechar detalhes" title="Fechar (Esc)">
+            <Button variant="secondary" size="sm" className="size-9" onClick={onClose} aria-label="Fechar detalhes" title="Fechar (Esc)">
               <X className="size-4" />
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -951,16 +908,16 @@ export function Drawer({
         </dl>
       </div>
       <div className="flex items-center gap-2 border-t border-(--m-ink)/8 p-3">
-        <Link href={href} className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-lg bg-(--m-ink) text-[0.8125rem] font-medium text-(--m-bg) transition-colors hover:bg-(--m-ink)/90">
+        <ButtonLink href={href} variant="primary" className="flex-1">
           Ficha completa
           <ArrowRight className="size-3.5" />
-        </Link>
-        <WatchButton id={`${row.uf.toLowerCase()}/${row.slug}`} className="h-9 rounded-lg border-(--m-line-2) bg-transparent px-3 text-[0.8125rem] text-(--m-ink) hover:bg-(--m-ink)/8" />
-        <button
-          type="button"
-          className="m-ctl h-9! w-9!"
+        </ButtonLink>
+        <WatchButton id={`${row.uf.toLowerCase()}/${row.slug}`} />
+        <Button
+          variant="secondary"
+          size="sm"
+          className="size-9"
           aria-label="Copiar o link"
-          title="Copiar o link"
           onClick={() => {
             navigator.clipboard?.writeText(location.href).then(() => {
               setCopied(true);
@@ -968,8 +925,8 @@ export function Drawer({
             });
           }}
         >
-          {copied ? <span className="text-[0.6875rem] text-(--m-blue)">ok</span> : <Link2 className="size-4" />}
-        </button>
+          {copied ? <span className="text-(--m-blue)">ok</span> : <Link2 className="size-4" />}
+        </Button>
       </div>
     </aside>
   );
@@ -978,7 +935,7 @@ export function Drawer({
 const Fact = ({ k, v, sub, warn, className }: { k: string; v: string; sub?: string; warn?: boolean; className?: string }) => (
   <div className={className}>
     <dt className="text-[0.6875rem] text-(--m-ink)/60">{k}</dt>
-    <dd className={cn("mt-0.5 text-[1.0625rem] font-semibold tnum", warn ? "text-(--m-red)" : "text-(--m-ink)")}>
+    <dd className={cn("mt-0.5 text-[1.0625rem] font-medium tnum", warn ? "text-(--m-red)" : "text-(--m-ink)")}>
       {v}
       {sub && <span className="mt-0.5 block text-[0.6875rem] font-normal text-(--m-ink)/55">{sub}</span>}
     </dd>

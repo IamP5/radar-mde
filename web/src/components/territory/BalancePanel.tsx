@@ -4,14 +4,24 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { InfoTip } from "./InfoTip";
 import { useUrlParam } from "./useUrlParam";
+import SegmentedControl from "@/components/arc/segmented-control/segmented-control";
 import { Panel } from "@/components/kit/panel";
-import { Segmented } from "@/components/kit/segmented";
 import { brlShort, brlSigned } from "@/lib/format";
 import { IPCA_BASE, netBalance, type BalanceItem, type PeriodBalance } from "@/lib/rows";
 import { cn } from "@/lib/utils";
 
 type Sort = "worst" | "best" | "name";
 export type BalanceGroup = { key: string; label: string; /** column header and listbox noun, e.g. "Estado" */ noun: string; items: BalanceItem[] };
+
+const VALUE_OPTIONS = [
+  { value: "nom", label: "Nominal" },
+  { value: "real", label: "Corrigido (IPCA)" },
+];
+const SORT_OPTIONS = [
+  { value: "worst", label: "Pior saldo" },
+  { value: "best", label: "Maior saldo" },
+  { value: "name", label: "A–Z" },
+];
 
 const tone = (v: number) => (v < 0 ? "text-critical-ink" : v > 0 ? "text-good-ink" : "text-muted-foreground");
 
@@ -52,20 +62,12 @@ export function BalancePanel({
       title={title}
       description={description}
       action={
-        <Segmented
-          ariaLabel="Valores do saldo"
-          value={mode}
-          onChange={setMode}
-          options={[
-            { value: "nom", label: "Nominal", title: "Valores da época, sem correção" },
-            { value: "real", label: "Corrigido (IPCA)", title: `R$ de ${IPCA_BASE}, corrigidos pelo IPCA` },
-          ]}
-        />
+        <SegmentedControl label="Valores do saldo" value={mode} onValueChange={(v) => setMode(v as typeof mode)} options={VALUE_OPTIONS} />
       }
     >
       <dl className="grid grid-cols-1 divide-y border-b sm:grid-cols-3 sm:divide-x sm:divide-y-0">
         <div className="px-4 py-3 sm:px-5">
-          <dt className="flex items-center gap-1 text-[0.8125rem] text-muted-foreground">
+          <dt className="flex items-center gap-1 text-sm text-muted-foreground">
             Saldo {totalLabel}, {span}
             <InfoTip label="Como o saldo é calculado">
               <p>
@@ -79,34 +81,25 @@ export function BalancePanel({
               </p>
             </InfoTip>
           </dt>
-          <dd className={cn("mt-1 text-[1.375rem] leading-7 font-semibold tracking-[-0.04em] tnum sm:text-[1.75rem] sm:leading-8", tone(tn))}>{brlSigned(tn)}</dd>
+          <dd className={cn("mt-1 text-xl leading-7 font-medium tracking-[-0.04em] tnum sm:text-2xl sm:leading-8", tone(tn))}>{brlSigned(tn)}</dd>
         </div>
         <div className="px-4 py-3 sm:px-5">
-          <dt className="text-[0.8125rem] text-muted-foreground">Aplicado acima do mínimo</dt>
-          <dd className="mt-1 text-lg leading-7 font-semibold tracking-[-0.03em] tnum text-good-ink">{ov ? `+${brlShort(ov)}` : "R$ 0"}</dd>
+          <dt className="text-sm text-muted-foreground">Aplicado acima do mínimo</dt>
+          <dd className="mt-1 text-lg leading-7 font-medium tracking-[-0.03em] tnum text-good-ink">{ov ? `+${brlShort(ov)}` : "R$ 0"}</dd>
         </div>
         <div className="px-4 py-3 sm:px-5">
-          <dt className="text-[0.8125rem] text-muted-foreground">Faltou para chegar a 25%</dt>
-          <dd className={cn("mt-1 text-lg leading-7 font-semibold tracking-[-0.03em] tnum", sh ? "text-critical-ink" : "text-muted-foreground")}>{sh ? `−${brlShort(sh)}` : "R$ 0"}</dd>
+          <dt className="text-sm text-muted-foreground">Faltou para chegar a 25%</dt>
+          <dd className={cn("mt-1 text-lg leading-7 font-medium tracking-[-0.03em] tnum", sh ? "text-critical-ink" : "text-muted-foreground")}>{sh ? `−${brlShort(sh)}` : "R$ 0"}</dd>
         </div>
       </dl>
 
       <div className="flex flex-wrap items-center justify-between gap-2 border-b px-4 py-2 sm:px-5">
         {groups.length > 1 ? (
-          <Segmented ariaLabel="Nível" value={group.key} onChange={setGk} options={groups.map((g) => ({ value: g.key, label: g.label }))} />
+          <SegmentedControl label="Nível" value={group.key} onValueChange={setGk} options={groups.map((g) => ({ value: g.key, label: g.label }))} />
         ) : (
-          <span className="text-[0.8125rem] text-muted-foreground">{group.items.length} {group.label.toLowerCase()}</span>
+          <span className="text-sm text-muted-foreground">{group.items.length} {group.label.toLowerCase()}</span>
         )}
-        <Segmented
-          ariaLabel="Ordem"
-          value={sort}
-          onChange={setSort}
-          options={[
-            { value: "worst", label: "Pior saldo", title: "Do maior saldo negativo ao positivo" },
-            { value: "best", label: "Maior saldo", title: "Do maior saldo positivo ao negativo" },
-            { value: "name", label: "A–Z" },
-          ]}
-        />
+        <SegmentedControl label="Ordem" value={sort} onValueChange={(v) => setSort(v as Sort)} options={SORT_OPTIONS} />
       </div>
 
       <ol className={cn("scroll-thin fade-b max-h-[28rem] divide-y overflow-y-auto pb-6", listClassName)} aria-label={`${group.label}: saldo ${span}, ${real ? `R$ de ${IPCA_BASE} corrigidos pelo IPCA` : "valores nominais"}`}>
@@ -134,7 +127,7 @@ export function BalancePanel({
                     style={v < 0 ? { right: "50%", width: `${w}%` } : { left: "50%", width: `${w}%` }}
                   />
                 </span>
-                <span className={cn("w-24 shrink-0 text-right text-sm font-semibold tnum", tone(v))}>{b.years ? brlSigned(v) : "—"}</span>
+                <span className={cn("w-24 shrink-0 text-right text-sm font-medium tnum", tone(v))}>{b.years ? brlSigned(v) : "—"}</span>
               </Link>
             </li>
           );

@@ -37,7 +37,7 @@ export function yearTicks(years: number[], plotWidth: number, minGap = 40) {
   return years.filter((_, i) => (n - 1 - i) % step === 0);
 }
 
-/** X tick for year axes: the selected year in foreground and semibold. */
+/** X tick for year axes: the selected year in foreground and medium weight. */
 export function YearTick(props: XAxisTickContentProps & { selected?: number; short?: boolean }) {
   const { x, y, payload, selected, short } = props;
   const isSel = payload.value === selected;
@@ -49,7 +49,7 @@ export function YearTick(props: XAxisTickContentProps & { selected?: number; sho
       textAnchor="middle"
       fontSize={12}
       fill={isSel ? "var(--foreground)" : "var(--muted-foreground)"}
-      fontWeight={isSel ? 600 : 400}
+      fontWeight={isSel ? 500 : 400}
       className="tabular-nums"
     >
       {short ? `’${String(payload.value).slice(2)}` : payload.value}

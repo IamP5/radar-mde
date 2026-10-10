@@ -7,15 +7,15 @@
  */
 import { ExternalLink, Info, Loader2, TriangleAlert } from "lucide-react";
 import Link from "next/link";
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
 import CityMap, { type CityMapValue } from "@/components/CityMap";
 import Histogram from "@/components/Histogram";
 import ShareButton from "@/components/ShareButton";
 import YearPicker, { useYear, withYear } from "@/components/YearPicker";
 import { EmptyState, Panel } from "@/components/kit/panel";
 import { Stat } from "@/components/kit/stat";
-import { StatusBadge } from "@/components/kit/status";
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/arc/badge/badge";
+import { ButtonLink } from "@/components/kit/button-link";
 import { MDE_MIN, brl, brlShort, brlSigned, pct, siconfiUrl, siopeUrl } from "@/lib/format";
 import { cityPath } from "@/lib/geo";
 import { ATIP_IMPL_LABEL, ATIP_LABEL, IPCA_BASE } from "@/lib/rows";
@@ -74,6 +74,9 @@ export function CityYearProvider({ data: d, children }: { data: CityYearData; ch
   return <CityCtx.Provider value={value}>{children}</CityCtx.Provider>;
 }
 
+/** Arc reads `--warning` as an ink; the app token of that name is a fill. */
+const WARNING_INK = { "--warning": "var(--warning-ink)" } as CSSProperties;
+
 const plural = (n: number, one: string, many: string) => `${n.toLocaleString("pt-BR")} ${n === 1 ? one : many}`;
 
 /* ---------------------------------------------------------------- header */
@@ -84,10 +87,10 @@ export function HeaderStatus({ belowCount }: { belowCount: number }) {
   return (
     <div className="space-y-2">
       <div className="flex flex-wrap items-center gap-2">
-        {s.badges.map((b) => (
-          <StatusBadge key={b.text} kind={b.kind}>
+        {s.badges.map((b, i) => (
+          <Badge key={i} tone={b.tone} size="sm" style={b.tone === "warning" ? WARNING_INK : undefined}>
             {b.text}
-          </StatusBadge>
+          </Badge>
         ))}
         {belowCount > 0 && (
           <span className="text-[0.8125rem] text-muted-foreground">
@@ -113,14 +116,18 @@ export function HeaderSource() {
   const href = p.src === "siconfi" ? siconfiUrl(d.id, p.y) : siopeUrl(d.id, d.uf, p.y);
   const name = p.src === "siconfi" ? "Tesouro" : "SIOPE";
   return (
-    <Button
+    <ButtonLink
+      external
       variant="ghost"
-      className="text-muted-foreground print:hidden"
-      render={<a href={href} target="_blank" rel="noreferrer" aria-label={`Dados brutos de ${p.y} no ${name} (arquivo JSON, abre em nova aba)`} />}
-      nativeButton={false}
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      aria-label={`Dados brutos de ${p.y} no ${name} (arquivo JSON, abre em nova aba)`}
+      className="print:hidden"
     >
-      {name} <ExternalLink className="size-3.5" />
-    </Button>
+      {name}
+      <ExternalLink aria-hidden className="size-3.5" />
+    </ButtonLink>
   );
 }
 
@@ -319,8 +326,8 @@ function RankBlock({ scope, r, name }: { scope: string; r: Rank; name: string })
         {scope} com dados ({r.of.toLocaleString("pt-BR")})
       </div>
       <p className="mt-1 text-[0.9375rem] leading-6 text-pretty">
-        <strong className="font-semibold tnum">{plural(r.less, "aplicou", "aplicaram")}</strong> menos e{" "}
-        <strong className="font-semibold tnum">{plural(more, "aplicou", "aplicaram")}</strong> mais que {name}
+        <strong className="font-medium tnum">{plural(r.less, "aplicou", "aplicaram")}</strong> menos e{" "}
+        <strong className="font-medium tnum">{plural(more, "aplicou", "aplicaram")}</strong> mais que {name}
         {same > 0 && `; ${plural(same, "aplicou", "aplicaram")} o mesmo`}.
       </p>
       {/* forced colors: keep track (outline), fill (Highlight) and marker visible (A11Y-05) */}
@@ -346,16 +353,10 @@ function Compare({ label, value, diff }: { label: string; value: number; diff: n
       <dt className="text-muted-foreground">{label}</dt>
       <dd className="flex items-center gap-2 tnum">
         <span>{pct(value, 1)}</span>
-        <span
-          className={cn(
-            "inline-flex h-5 items-center rounded-full px-1.5 text-xs font-medium whitespace-nowrap",
-            same ? "bg-muted text-muted-foreground" : diff > 0 ? "bg-good-soft text-good-ink" : "bg-critical-soft text-critical-ink",
-          )}
-          title={same ? "igual" : `${pts(diff)} pontos percentuais ${diff > 0 ? "acima" : "abaixo"}`}
-        >
+        <Badge size="sm" tone={same ? "neutral" : diff > 0 ? "success" : "danger"} title={same ? "igual" : `${pts(diff)} pontos percentuais ${diff > 0 ? "acima" : "abaixo"}`}>
           {same ? "igual" : `${diff > 0 ? "+" : "−"}${pts(diff)} p.p.`}
           <span className="sr-only">{same ? "" : diff > 0 ? " acima" : " abaixo"}</span>
-        </span>
+        </Badge>
       </dd>
     </div>
   );

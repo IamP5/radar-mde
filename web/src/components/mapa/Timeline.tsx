@@ -2,6 +2,7 @@
 
 import { Pause, Play } from "lucide-react";
 import { useRef, useState } from "react";
+import { Button } from "@/components/arc/button/button";
 import { cn } from "@/lib/utils";
 
 /** Bottom scrubber over the published years. Drag, click, arrow keys, or play to watch the map change year by year. */
@@ -32,20 +33,18 @@ export default function Timeline({
   };
   return (
     <div data-ui className={cn("m-panel flex items-center gap-3 px-3.5 py-2 sm:gap-4 sm:px-4", className)} style={style}>
-      <button
-        type="button"
-        onClick={onToggle}
-        aria-label={playing ? "Pausar a animação dos anos" : "Reproduzir a evolução ano a ano"}
-        className="relative grid size-11 shrink-0 place-items-center rounded-full bg-(--m-ink) text-(--m-bg) transition-transform hover:scale-105 active:scale-95 lg:size-9"
-      >
-        {playing ? <Pause className="size-4 fill-current" /> : <Play className="ml-0.5 size-4 fill-current" />}
+      {/* the beat ring is a sibling: inside Arc's Button it would be positioned against the label, not the button */}
+      <div className="relative grid shrink-0">
+        <Button variant="primary" className="size-11" onClick={onToggle} aria-label={playing ? "Pausar a animação dos anos" : "Reproduzir a evolução ano a ano"}>
+          {playing ? <Pause className="size-4 fill-current" /> : <Play className="ml-0.5 size-4 fill-current" />}
+        </Button>
         {playing && yi < n - 1 && (
-          <svg key={yi} className="m-beat" viewBox="0 0 44 44" aria-hidden style={{ "--beat": `${beat}ms` } as React.CSSProperties}>
-            <circle className="is-track" cx="22" cy="22" r="21" />
-            <circle className="is-run" cx="22" cy="22" r="21" pathLength={100} />
+          <svg key={yi} className="m-beat" viewBox="0 0 51 51" aria-hidden style={{ "--beat": `${beat}ms` } as React.CSSProperties}>
+            <rect className="is-track" x="1" y="1" width="49" height="49" rx="20.5" />
+            <rect className="is-run" x="1" y="1" width="49" height="49" rx="20.5" pathLength={100} />
           </svg>
         )}
-      </button>
+      </div>
       <div className="font-display h-[1.375rem] w-[3.6rem] shrink-0 overflow-hidden text-[1.375rem] leading-none tnum text-(--m-ink)">
         <span key={years[yi]} className="m-year">{years[yi]}</span>
       </div>
@@ -86,7 +85,7 @@ export default function Timeline({
             aria-valuemax={years[n - 1]}
             aria-valuenow={years[yi]}
             aria-valuetext={String(years[yi])}
-            className="m-thumb outline-none focus-visible:ring-2 focus-visible:ring-(--m-blue)"
+            className="m-thumb"
             style={{ left: `${pct(yi)}%` }}
             onKeyDown={(e) => {
               const d = e.key === "ArrowRight" || e.key === "ArrowUp" ? 1 : e.key === "ArrowLeft" || e.key === "ArrowDown" ? -1 : 0;
@@ -110,15 +109,10 @@ export default function Timeline({
         </div>
       </div>
       <div className="hidden shrink-0 items-center gap-2 text-[0.75rem] text-(--m-ink)/60 md:flex">
-        <button
-          type="button"
-          onClick={() => onPick(n - 1)}
-          className={cn("inline-flex items-center gap-1.5 rounded-full px-2 py-1 transition-colors hover:text-(--m-ink)", latest && "text-(--m-ink)")}
-          title="Ir ao ano mais recente"
-        >
+        <Button variant="ghost" size="sm" onClick={() => onPick(n - 1)} title="Ir ao ano mais recente">
           <span className={cn("size-1.5 rounded-full", latest ? "bg-(--m-blue)" : "bg-(--m-ink)/35")} />
           Mais recente
-        </button>
+        </Button>
         <span className="hidden text-(--m-ink)/60 xl:inline tnum">{coverage}</span>
       </div>
     </div>
