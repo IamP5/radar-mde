@@ -78,7 +78,7 @@ export default function CityMap({
               <>
                 <div className="text-base font-medium tnum">
                   {v?.nd ? (
-                    <span className="text-critical">Não declarou</span>
+                    <span className="text-critical-ink">Não declarou</span>
                   ) : v?.v == null ? (
                     "Sem dados"
                   ) : (
