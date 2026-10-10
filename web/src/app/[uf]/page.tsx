@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { Compass, Download } from "lucide-react";
-import Link from "next/link";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import { ButtonLink } from "@/components/kit/button-link";
 import { PageHeader } from "@/components/kit/page-header";
-import { Button } from "@/components/ui/button";
 import UfDashboard from "@/components/UfDashboard";
 import { YEARS, brStats, cityBalances, scopeBalance, citiesOf, defaultYear, int, regionStats, rowsIn, stateGov, topDeficits, ufStats } from "@/lib/data";
 import { UFS, getRegion, getUf, ofUf } from "@/lib/geo";
@@ -57,12 +56,12 @@ export default async function Page({ params }: PageProps<"/[uf]">) {
         }
         actions={
           <>
-            <Button variant="outline" render={<a href={`/dados/csv/${u.uf.toLowerCase()}`} download />} nativeButton={false}>
-              <Download className="text-muted-foreground" /> Baixar CSV
-            </Button>
-            <Button variant="outline" render={<Link href={`/explorar?uf=${u.uf}`} />} nativeButton={false}>
-              <Compass className="text-muted-foreground" /> Explorar
-            </Button>
+            <ButtonLink href={`/dados/csv/${u.uf.toLowerCase()}`} download external>
+              <Download size={16} aria-hidden /> Baixar CSV
+            </ButtonLink>
+            <ButtonLink href={`/explorar?uf=${u.uf}`}>
+              <Compass size={16} aria-hidden /> Explorar
+            </ButtonLink>
           </>
         }
       />

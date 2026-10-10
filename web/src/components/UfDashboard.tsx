@@ -2,7 +2,7 @@
 
 import { BalancePanel } from "./territory/BalancePanel";
 import { DeficitPanel } from "./territory/DeficitPanel";
-import { ArrowDown, ArrowRight, ArrowUp, ChevronsUpDown, Info, Search, TriangleAlert, X } from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUp, ChevronsUpDown, Info, SearchX, TriangleAlert, X } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useDeferredValue, useEffect, useMemo, useState, type ReactNode } from "react";
 import { flushSync } from "react-dom";
@@ -11,15 +11,16 @@ import Histogram from "./Histogram";
 import MultiLine from "./MultiLine";
 import YearBars from "./YearBars";
 import YearPicker, { useYear, withYear } from "./YearPicker";
+import { Button } from "@/components/arc/button/button";
+import { EmptyState } from "@/components/arc/empty-state/empty-state";
+import { SearchField } from "@/components/arc/search-field/search-field";
+import SegmentedControl from "@/components/arc/segmented-control/segmented-control";
+import { Select } from "@/components/arc/select/select";
+import { Tooltip } from "@/components/arc/tooltip/tooltip";
 import { Panel } from "@/components/kit/panel";
-import { Segmented } from "@/components/kit/segmented";
 import { Stat } from "@/components/kit/stat";
 import { StatusBadge, type StatusKind } from "@/components/kit/status";
-import { Button } from "@/components/ui/button";
-import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { ChartActions } from "@/components/kit/chart-actions";
 import { BINS, METRICS, binColor, colorOf, funBins, histCounts, histLabel, isBelowBin, quintileBins, type Bin, type MetricKey } from "@/lib/bins";
 import { MDE_MIN, PANDEMIC_YEARS, POP_BANDS, brlShort, funMin, int, normKey, pct, share } from "@/lib/format";
@@ -77,7 +78,7 @@ const REINC: Record<ReincFilter, { label: string; min: number; col: string }> = 
   s2: { label: "2+ anos seguidos", min: 2, col: "Anos seguidos < 25%" },
   s3: { label: "3+ anos seguidos", min: 3, col: "Anos seguidos < 25%" },
 };
-const REINCS = Object.fromEntries(Object.entries(REINC).map(([k, v]) => [k, v.label])) as Record<ReincFilter, string>;
+const toOptions = (m: Record<string, string>) => Object.entries(m).map(([value, label]) => ({ value, label }));
 /** Longest run of consecutive years below 25% up to index `upTo`. */
 const longestRun = (r: Row, upTo: number) => {
   let best = 0, cur = 0;
@@ -132,7 +133,7 @@ export default function UfDashboard({ uf, years, initialYear, rows: packed, stat
     if (STATUSES.includes(has("situacao") as StatusFilter)) setStatus(has("situacao") as StatusFilter);
     // old links used reinc=2|3|5
     const rc = /^[235]$/.test(has("reinc")) ? `n${has("reinc")}` : has("reinc");
-    if (rc in REINCS) setRec(rc as ReincFilter);
+    if (rc in REINC) setRec(rc as ReincFilter);
     const [k, d] = has("ordem").split("-");
     if (SORTS.includes(k as SortKey)) setSort({ key: k as SortKey, dir: d === "desc" ? -1 : 1 });
     /* eslint-enable react-hooks/set-state-in-effect */
@@ -433,11 +434,11 @@ export default function UfDashboard({ uf, years, initialYear, rows: packed, stat
             }
           >
             <div className="mb-3">
-              <Segmented
-                ariaLabel="Indicador do mapa"
+              <SegmentedControl
+                label="Indicador do mapa"
                 value={metric}
-                onChange={setMetric}
-                options={METRICS.map((x) => ({ value: x.key, label: x.key === "mde" ? "MDE" : x.key === "fun" ? "Fundeb" : "Por aluno", title: x.label }))}
+                onValueChange={(v) => setMetric(v as MetricKey)}
+                options={METRICS.map((x) => ({ value: x.key, label: x.key === "mde" ? "MDE" : x.key === "fun" ? "Fundeb" : "Por aluno" }))}
               />
             </div>
             <Choropleth
@@ -570,81 +571,83 @@ export default function UfDashboard({ uf, years, initialYear, rows: packed, stat
           <p className="hidden border-b px-4 py-2 text-xs print:block">
             {printSummary} · {int(filtered.length)} {filtered.length === 1 ? "município" : "municípios"}
           </p>
-          <div className="flex flex-wrap items-center gap-2 border-b px-4 py-3 sm:px-5 print:hidden">
-            <InputGroup className="w-full sm:w-64">
-              <InputGroupAddon>
-                <Search className="text-muted-foreground" />
-              </InputGroupAddon>
-              <InputGroupInput
-                value={q}
-                onChange={(e) => { setQ(e.target.value); setLimit(PAGE); }}
-                placeholder={`Buscar, ex.: ${biggest.name}`}
-                aria-label="Buscar município"
+          <div className="space-y-3 border-b px-4 py-4 sm:px-5 print:hidden">
+            <div className="grid grid-cols-2 items-end gap-3 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1.2fr)_repeat(3,minmax(0,1fr))]">
+              <div className="col-span-2 lg:col-span-1">
+                <SearchField
+                  label="Buscar município"
+                  value={q}
+                  onValueChange={(v) => { setQ(v); setLimit(PAGE); }}
+                  placeholder={`Ex.: ${biggest.name}`}
+                />
+              </div>
+              <div className="col-span-2 lg:col-span-1">
+                <Select
+                  label="Região intermediária (IBGE)"
+                  value={inter}
+                  onValueChange={(v) => { setInter(v); setLimit(PAGE); }}
+                  options={toOptions({ all: "Todas as regiões", ...Object.fromEntries(inters.map((r) => [r, r])) })}
+                />
+              </div>
+              <Select
+                label="População"
+                value={band}
+                onValueChange={(v) => { setBand(v); setLimit(PAGE); }}
+                options={toOptions({ all: "Qualquer população", ...Object.fromEntries(POP_BANDS.map((b) => [b.key, b.label])) })}
               />
-              {q && (
-                <InputGroupAddon align="inline-end">
-                  <InputGroupButton size="icon-xs" aria-label="Limpar busca" onClick={() => setQ("")}>
-                    <X />
-                  </InputGroupButton>
-                </InputGroupAddon>
-              )}
-            </InputGroup>
-            <FilterSelect
-              label="Região intermediária (IBGE)"
-              value={inter}
-              onChange={(v) => { setInter(v); setLimit(PAGE); }}
-              items={{ all: "Todas as regiões", ...Object.fromEntries(inters.map((r) => [r, r])) }}
-              className="w-full sm:w-auto sm:max-w-60"
-            />
-            <FilterSelect
-              label="População"
-              value={band}
-              onChange={(v) => { setBand(v); setLimit(PAGE); }}
-              items={{ all: "Qualquer população", ...Object.fromEntries(POP_BANDS.map((b) => [b.key, b.label])) }}
-            />
-            <FilterSelect
-              label={`Situação em ${year}`}
-              value={status}
-              onChange={(v) => { setStatus(v as StatusFilter); setLimit(PAGE); }}
-              items={hasAlt ? STATUS_LABELS : Object.fromEntries(Object.entries(STATUS_LABELS).filter(([k]) => k !== "div"))}
-            />
-            <FilterSelect
-              label={`Reincidência (anos abaixo de 25%; janelas e sequências até ${year})`}
-              value={rec}
-              onChange={(v) => { setRec(v as ReincFilter); setLimit(PAGE); }}
-              items={REINCS}
-            />
-            {filtering && (
-              <Button variant="ghost" size="sm" onClick={reset} className="text-muted-foreground">
-                <X /> Limpar
-              </Button>
-            )}
-            <div className="ml-auto flex items-center gap-3">
-            <UfTableExport
-              uf={uf}
-              rows={filtered}
-              years={years}
-              year={year}
-              nameParts={[
-                status !== "all" && status,
-                band !== "all" && POP_BANDS.find((b) => b.key === band)?.label,
-                inter !== "all" && normKey(inter).replace(/ /g, "-"),
-                rec !== "all" && `reinc-${rec}`,
-                q.trim() && normKey(q).replace(/ /g, "-"),
-              ]}
-            />
-            <div className="text-[13px] text-muted-foreground tnum" role="status" aria-live="polite">
-              {filtered.length === rows.length ? `${int(rows.length)} municípios` : `${int(filtered.length)} de ${int(rows.length)}`}
+              <Select
+                label={`Situação em ${year}`}
+                value={status}
+                onValueChange={(v) => { setStatus(v as StatusFilter); setLimit(PAGE); }}
+                options={toOptions(hasAlt ? STATUS_LABELS : Object.fromEntries(Object.entries(STATUS_LABELS).filter(([k]) => k !== "div")))}
+              />
+              <div className="col-span-2 lg:col-span-1">
+                <Select
+                  label="Reincidência"
+                  value={rec}
+                  onValueChange={(v) => { setRec(v as ReincFilter); setLimit(PAGE); }}
+                  options={(Object.keys(REINC) as ReincFilter[]).map((k) => ({
+                    value: k,
+                    label: k === "u5" ? `2+ anos abaixo em ${year - 4}–${year}` : k === "s2" || k === "s3" ? `${REINC[k].label} (até ${year})` : REINC[k].label,
+                  }))}
+                />
+              </div>
             </div>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex min-h-9 items-center gap-2">
+                <div className="text-[13px] text-muted-foreground tnum" role="status" aria-live="polite">
+                  {filtered.length === rows.length ? `${int(rows.length)} municípios` : `${int(filtered.length)} de ${int(rows.length)}`}
+                </div>
+                {filtering && (
+                  <Button variant="ghost" size="sm" onClick={reset}>
+                    <X size={16} aria-hidden />
+                    Limpar
+                  </Button>
+                )}
+              </div>
+              <UfTableExport
+                uf={uf}
+                rows={filtered}
+                years={years}
+                year={year}
+                nameParts={[
+                  status !== "all" && status,
+                  band !== "all" && POP_BANDS.find((b) => b.key === band)?.label,
+                  inter !== "all" && normKey(inter).replace(/ /g, "-"),
+                  rec !== "all" && `reinc-${rec}`,
+                  q.trim() && normKey(q).replace(/ /g, "-"),
+                ]}
+              />
             </div>
           </div>
 
           {filtered.length === 0 ? (
-            <div className="px-6 py-14 text-center">
-              <div className="text-sm font-medium">Nenhum município encontrado</div>
-              <p className="mt-1 text-[13px] text-muted-foreground">Ajuste a busca ou os filtros.</p>
-              <Button variant="outline" size="sm" className="mt-4" onClick={reset}>Limpar filtros</Button>
-            </div>
+            <EmptyState
+              title="Nenhum município encontrado"
+              description="Ajuste a busca ou os filtros."
+              icon={<SearchX size={24} strokeWidth={1.5} />}
+              action={<Button variant="secondary" size="sm" onClick={reset}>Limpar filtros</Button>}
+            />
           ) : (
             <div id="municipios-tabela" className="scroll-thin relative max-h-[42rem] overflow-auto">
               <table className="w-full caption-bottom text-sm">
@@ -726,7 +729,7 @@ export default function UfDashboard({ uf, years, initialYear, rows: packed, stat
                   <Button variant="ghost" size="sm" onClick={() => setLimit(PAGE)}>Mostrar menos</Button>
                 )}
                 {filtered.length > limit && (
-                  <Button variant="outline" size="sm" onClick={() => setLimit((l) => l + 100)}>
+                  <Button variant="secondary" size="sm" onClick={() => setLimit((l) => l + 100)}>
                     Mostrar mais {int(Math.min(100, filtered.length - limit))}
                   </Button>
                 )}
@@ -739,30 +742,13 @@ export default function UfDashboard({ uf, years, initialYear, rows: packed, stat
   );
 }
 
-function FilterSelect({
-  label, value, onChange, items, className,
-}: { label: string; value: string; onChange: (v: string) => void; items: Record<string, string>; className?: string }) {
-  return (
-    <Select value={value} onValueChange={(v) => onChange((v as string | null) ?? "all")} items={items}>
-      <SelectTrigger aria-label={label} title={label} className={cn("min-w-0 max-w-full", value !== "all" && "border-foreground/30 text-foreground", className)}>
-        <SelectValue className="truncate" />
-      </SelectTrigger>
-      <SelectContent alignItemWithTrigger={false} align="start" className="w-auto max-w-[min(22rem,calc(100vw-2rem))]">
-        {Object.entries(items).map(([k, l]) => (
-          <SelectItem key={k} value={k}>
-            {l}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  );
-}
-
 function Hint({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <Tooltip>
-      <TooltipTrigger render={<span role="img" tabIndex={0} aria-label={label} className="-m-1 inline-flex min-h-6 min-w-6 cursor-help items-center justify-center p-1" />}>{children}</TooltipTrigger>
-      <TooltipContent>{label}</TooltipContent>
+    <Tooltip content={label}>
+      <span className="-m-1 inline-flex min-h-6 min-w-6 cursor-help items-center justify-center p-1">
+        <span aria-hidden className="inline-flex">{children}</span>
+        <span className="sr-only">{label}</span>
+      </span>
     </Tooltip>
   );
 }
