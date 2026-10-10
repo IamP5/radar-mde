@@ -10,7 +10,8 @@ import { NAV } from "./nav-items";
 const SECTIONS = ["/explorar", "/acompanhar", "/dados", "/sobre"];
 
 /**
- * Header nav: gray text, active item foreground with a hover pill, Vercel-style. On phones the labels are
+ * Header nav: gray text; the current section sits in a filled pill. One weight for every item, so moving between
+ * sections never shifts the row. On phones each link's hit area grows to 44px, the labels are
  * shortened and, if the row still overflows, the cut edge fades out to show that it scrolls (CIT-12).
  */
 export function NavLinks() {
@@ -56,7 +57,8 @@ export function NavLinks() {
     <nav
       ref={ref}
       aria-label="Principal"
-      className={cn("-mx-1 flex min-w-0 [scrollbar-width:none] items-center gap-0.5 overflow-x-auto", fade)}
+      // The padding keeps Arc's focus outline and the phone hit area inside the scroll container, which clips both.
+      className={cn("-m-1 flex min-w-0 [scrollbar-width:none] items-center gap-1 overflow-x-auto p-1", fade)}
     >
       {NAV.map((n) => (
         <Link
@@ -69,8 +71,8 @@ export function NavLinks() {
           onTouchStart={() => router.prefetch(n.href)}
           aria-current={active(n.href) ? "page" : undefined}
           className={cn(
-            "inline-flex min-h-9 shrink-0 items-center rounded-md px-2.5 text-sm transition-colors duration-150 hover:bg-accent hover:text-foreground md:min-h-8",
-            active(n.href) ? "text-foreground" : "text-muted-foreground",
+            "relative inline-flex min-h-9 shrink-0 items-center rounded-[calc(var(--radius-control)-6px)] px-3 text-sm transition-colors duration-150 max-md:after:absolute max-md:after:inset-x-0 max-md:after:-inset-y-1 md:min-h-8 md:px-2.5",
+            active(n.href) ? "bg-accent text-foreground" : "text-muted-foreground hover:text-foreground",
           )}
         >
           {n.short !== n.label ? (

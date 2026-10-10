@@ -1,13 +1,15 @@
 "use client";
 
-import { Eye, RotateCcw, Table2, X } from "lucide-react";
+import { Eye, RotateCcw, Table2, TriangleAlert, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { EmptyState, Panel } from "@/components/kit/panel";
+import { Button } from "@/components/arc/button/button";
+import { EmptyState } from "@/components/arc/empty-state/empty-state";
+import { Skeleton } from "@/components/arc/skeleton/skeleton";
+import { ButtonLink } from "@/components/kit/button-link";
+import { Panel } from "@/components/kit/panel";
 import { StatusBadge, type StatusKind } from "@/components/kit/status";
 import { SearchButton } from "@/components/SearchPalette";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { binColor } from "@/lib/bins";
 import { MDE_MIN, int } from "@/lib/format";
@@ -141,62 +143,59 @@ export default function Watchlist() {
   // Until the browser's list is read, reserve the space of a loaded list instead of flashing the empty state
   if (!ready)
     return (
-      <div className="overflow-hidden rounded-xl border bg-card" aria-busy="true">
-        <div className="border-b px-5 py-4">
-          <Skeleton className="h-4 w-40" />
-          <Skeleton className="mt-2 h-3 w-64" />
-        </div>
+      <div className="overflow-hidden rounded-xl border bg-card px-5 py-4 shadow-card">
+        <Skeleton lines={2} label="Carregando municípios salvos" className="max-w-sm" />
       </div>
     );
 
   if (!list.length)
     return (
-      <EmptyState
-        title="Nenhum município salvo"
-        className="bg-card py-16"
-        icon={
-          <span className="mx-auto flex size-10 items-center justify-center rounded-full border bg-background">
-            <Eye className="size-4" />
-          </span>
-        }
-      >
-        <p>
-          Abra a página de um município e toque em <span className="font-medium text-foreground">Salvar</span>. Ele aparece aqui com a
-          série completa, ano a ano. Volte aqui quando sair um novo ano de dados.
-        </p>
-        <div className="mt-5 flex flex-wrap justify-center gap-2">
-          <SearchButton variant="default">Buscar município</SearchButton>
-          <Button variant="outline" nativeButton={false} render={<Link href="/explorar" />}>
-            <Table2 data-icon="inline-start" />
-            Explorar a lista
-          </Button>
-        </div>
-      </EmptyState>
+      <div className="rounded-xl border bg-card shadow-card">
+        <EmptyState
+          title="Nenhum município salvo"
+          description="Abra a página de um município e toque em Salvar. Ele aparece aqui com a série completa, ano a ano. Volte aqui quando sair um novo ano de dados."
+          icon={<Eye aria-hidden className="size-5" />}
+          action={
+            <>
+              <SearchButton variant="primary">Buscar município</SearchButton>
+              <ButtonLink href="/explorar">
+                <Table2 aria-hidden className="size-4" />
+                Explorar a lista
+              </ButtonLink>
+            </>
+          }
+        />
+      </div>
     );
 
   if (failed)
     return (
-      <EmptyState live title="Não foi possível carregar os dados" className="bg-card py-16">
-        <p>Verifique a conexão e tente de novo.</p>
-        <Button variant="outline" size="sm" className="mt-4" onClick={() => { setFailed(false); setAttempt((a) => a + 1); }}>
-          <RotateCcw data-icon="inline-start" />
-          Tentar de novo
-        </Button>
-      </EmptyState>
+      <div role="status" className="rounded-xl border bg-card shadow-card">
+        <EmptyState
+          title="Não foi possível carregar os dados"
+          description="Verifique a conexão e tente de novo."
+          icon={<TriangleAlert aria-hidden className="size-5" />}
+          action={
+            <Button variant="secondary" size="sm" onClick={() => { setFailed(false); setAttempt((a) => a + 1); }}>
+              <RotateCcw aria-hidden className="size-4" />
+              Tentar de novo
+            </Button>
+          }
+        />
+      </div>
     );
 
   if (!data)
     return (
-      <div className="overflow-hidden rounded-xl border bg-card" role="status" aria-label="Carregando">
+      <div className="overflow-hidden rounded-xl border bg-card shadow-card">
         <div className="border-b px-5 py-4">
-          <Skeleton className="h-4 w-40" />
-          <Skeleton className="mt-2 h-3 w-64" />
+          <Skeleton lines={2} label="Carregando municípios salvos" className="max-w-sm" />
         </div>
         {Array.from({ length: Math.min(list.length, 6) }, (_, i) => (
-          <div key={i} className="flex items-center gap-4 border-b px-5 py-3 last:border-0">
-            <Skeleton className="h-4 w-40" />
-            <Skeleton className="h-5 w-20 rounded-full" />
-            <Skeleton className="ml-auto h-6 w-1/2" />
+          <div key={i} aria-hidden className="flex items-center gap-4 border-b px-5 py-3 last:border-0 motion-safe:animate-pulse">
+            <span className="h-4 w-40 rounded-md bg-muted" />
+            <span className="h-5 w-20 rounded-full bg-muted" />
+            <span className="ml-auto h-6 w-1/2 rounded-md bg-muted" />
           </div>
         ))}
       </div>
@@ -213,7 +212,7 @@ export default function Watchlist() {
       divided
       title={`${int(items.length)} ${items.length === 1 ? "município" : "municípios"}`}
       description={<>Percentual aplicado em MDE por ano, {years[0]}–{years[last]}. Em vermelho, abaixo do mínimo de 25%.</>}
-      action={<SearchButton className="h-7 px-2.5 text-[13px]">Adicionar</SearchButton>}
+      action={<SearchButton>Adicionar</SearchButton>}
       footer={missing > 0 ? `${missing} ${missing === 1 ? "item salvo não foi encontrado" : "itens salvos não foram encontrados"} na base atual.` : undefined}
     >
       {/* Phones: one card per municipality, the whole series visible in two rows (CIT-14) */}
@@ -241,14 +240,8 @@ export default function Watchlist() {
                     </span>
                   </div>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => toggle(key)}
-                  aria-label={`Remover ${r.name} dos salvos`}
-                  className="-mt-1 -mr-2 text-muted-foreground hover:text-critical"
-                >
-                  <X />
+                <Button variant="ghost" size="md" onClick={() => toggle(key)} aria-label={`Remover ${r.name} dos salvos`} className="-mt-2 -mr-3">
+                  <X aria-hidden className="size-4" />
                 </Button>
               </div>
               <div className="mt-3 grid grid-cols-9 gap-1 md:grid-cols-18">
@@ -309,15 +302,8 @@ export default function Watchlist() {
                     </TableCell>
                   ))}
                   <TableCell className="pr-3 pl-2 text-right sm:pr-4">
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      onClick={() => toggle(key)}
-                      aria-label={`Remover ${r.name} dos salvos`}
-                      title="Remover dos salvos"
-                      className="text-muted-foreground hover:text-critical"
-                    >
-                      <X />
+                    <Button variant="ghost" size="sm" onClick={() => toggle(key)} aria-label={`Remover ${r.name} dos salvos`} title="Remover dos salvos">
+                      <X aria-hidden className="size-4" />
                     </Button>
                   </TableCell>
                 </TableRow>

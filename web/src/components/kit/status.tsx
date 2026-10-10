@@ -1,4 +1,5 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
+import { Badge, type BadgeTone } from "@/components/arc/badge/badge";
 import { cn } from "@/lib/utils";
 
 export type StatusKind = "ok" | "edge" | "below" | "nd" | "info";
@@ -10,25 +11,20 @@ const DOT: Record<StatusKind, string> = {
   nd: "bg-subtle",
   info: "bg-brand",
 };
-const TINT: Record<StatusKind, string> = {
-  ok: "bg-good-soft text-good-ink",
-  edge: "bg-warning-soft text-warning-ink",
-  below: "bg-critical-soft text-critical-ink",
-  nd: "bg-muted text-muted-foreground",
-  info: "bg-brand-soft text-brand-ink",
-};
+const TONE: Record<StatusKind, BadgeTone> = { ok: "success", edge: "warning", below: "danger", nd: "neutral", info: "info" };
+/** The app's --warning is a fill; Arc's warning badge needs the ink to stay legible. */
+const WARNING_INK = { "--warning": "var(--warning-ink)" } as CSSProperties;
 
 /** 8px status dot (Vercel deployments style). Always paired with a text label. */
 export function StatusDot({ kind, className }: { kind: StatusKind; className?: string }) {
   return <span aria-hidden className={cn("inline-block size-2 shrink-0 rounded-full forced-color-adjust-none", DOT[kind], className)} />;
 }
 
-/** Tinted pill: color-100 background, color-900 text, with the dot. */
+/** Arc badge in the status tone, led by the dot. */
 export function StatusBadge({ kind, children, className, dot = true }: { kind: StatusKind; children: ReactNode; className?: string; dot?: boolean }) {
   return (
-    <span className={cn("inline-flex min-h-5 items-center gap-1.5 rounded-full px-2 text-xs font-medium whitespace-nowrap", TINT[kind], className)}>
-      {dot && <StatusDot kind={kind} />}
+    <Badge tone={TONE[kind]} size="sm" icon={dot ? <StatusDot kind={kind} /> : undefined} className={className} style={kind === "edge" ? WARNING_INK : undefined}>
       {children}
-    </span>
+    </Badge>
   );
 }

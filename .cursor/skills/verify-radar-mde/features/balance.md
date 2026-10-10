@@ -24,9 +24,9 @@ Preconditions:
 - Start from the national panel so the groups are Regiões and Estados.
 
 - **Open the block.** Run `./scripts/control-radar-mde browser open /`. Run `./scripts/control-radar-mde browser wait --role heading --name-regex "Saldo no período"`.
-- **Corrected reais.** Run `./scripts/control-radar-mde browser click --role radio --name "Corrigido (IPCA)" --within-role radiogroup --within-name "Valores do saldo"`. The URL contains `valores=ipca`.
-- **States, then back to regions.** Run `./scripts/control-radar-mde browser click --role radio --name "Estados" --within-role radiogroup --within-name "Nível" --within-exact`. Run `./scripts/control-radar-mde browser click --role radio --name "Regiões" --within-role radiogroup --within-name "Nível" --within-exact`.
-- **Sort A–Z.** Run `./scripts/control-radar-mde browser click --role radio --name "A–Z" --within-role radiogroup --within-name "Ordem"`.
+- **Corrected reais.** Run `./scripts/control-radar-mde browser click --role button --name "Corrigido (IPCA)" --within-role group --within-name "Valores do saldo"`. The URL contains `valores=ipca`.
+- **States, then back to regions.** Run `./scripts/control-radar-mde browser click --role button --name "Estados" --within-role group --within-name "Nível" --within-exact`. Run `./scripts/control-radar-mde browser click --role button --name "Regiões" --within-role group --within-name "Nível" --within-exact`.
+- **Sort A–Z.** Run `./scripts/control-radar-mde browser click --role button --name "A–Z" --within-role group --within-name "Ordem"`.
 - **Read the explanation.** Run `./scripts/control-radar-mde browser click --role button --name "Como o saldo é calculado"`. Run `./scripts/control-radar-mde browser wait --text "Para cada município e cada ano"`. Run `./scripts/control-radar-mde browser press --key Escape`.
 - **Open Nordeste.** Run `./scripts/control-radar-mde browser click --role link --name "Nordeste" --within-role list --within-name "Regiões: saldo" --timeout 90000`. The click's JSON `url` path is `/regiao/nordeste` and `navigated` is true. Run `./scripts/control-radar-mde browser wait --role heading --name "Região Nordeste" --exact --level 1`.
 - **Proof.** Run `./scripts/control-radar-mde browser screenshot --path balance/nordeste.png` and `./scripts/control-radar-mde browser snapshot --aria --path balance/nordeste.aria.txt`. The screenshot shows the Radar MDE header and `Região Nordeste`.
@@ -34,8 +34,8 @@ Preconditions:
 ## Gotchas
 
 - Region cards higher on the panel are links whose names start with `Nordeste:`. The balance row is a link named `Nordeste` inside the list whose name starts with `Regiões: saldo`. Scope the click to that list.
-- The map also has a radiogroup whose name starts with `Nível` (`Nível do mapa`) and a radio named `Estados`. `--within-name "Nível"` matches both. `--within-exact` keeps the balance group, whose whole name is `Nível`.
+- The map also has a group whose name starts with `Nível` (`Nível do mapa`) and a button named `Estados`. `--within-name "Nível"` matches both. `--within-exact` keeps the balance group, whose whole name is `Nível`.
 - `Corrigido (IPCA)` writes `valores=ipca` into the address. `Nominal` removes it.
 - On a state page the rows are municipalities and there is no Regiões / Estados switch. This recipe uses the national panel.
-- The sort and the group are not written into the address. The proof is the selected radio and the list that follows.
+- The sort and the group are not written into the address. The proof is the pressed button and the list that follows.
 - A heading named `Região Nordeste` also appears as `Mapa · Região Nordeste`. The page title is the level-1 heading. Use `--exact --level 1`.

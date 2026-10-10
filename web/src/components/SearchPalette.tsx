@@ -1,14 +1,16 @@
 "use client";
 
 /**
- * Header search trigger + global shortcuts (⌘K / Ctrl+K, "/"). The dialog (cmdk, Base UI Dialog, matching) is
+ * Header search trigger + global shortcuts (⌘K / Ctrl+K, "/"). The dialog (cmdk, Arc Dialog, matching) is
  * code-split and only downloaded on intent (hover/focus/touch on the trigger) or on first open, so it stays out of
  * the initial bundle of every page. Keyboard shortcuts work immediately because the listeners live here.
  */
 import { Search } from "lucide-react";
 import { useCallback, useEffect, useState, useSyncExternalStore, type ComponentType, type ReactNode } from "react";
-import { Button } from "@/components/ui/button";
+import { Button, type ButtonSize, type ButtonVariant } from "@/components/arc/button/button";
+import arc from "@/components/arc/button/button.module.css";
 import { Kbd } from "@/components/ui/kbd";
+import { cn } from "@/lib/utils";
 
 type DialogProps = { open: boolean; onOpenChange: (v: boolean) => void };
 type DialogModule = typeof import("./SearchPaletteDialog");
@@ -46,12 +48,33 @@ export function openSearch() {
 }
 
 /** Button that opens the search palette; for CTAs outside the header. */
-export function SearchButton({ children = "Buscar município", className, variant = "outline" }: { children?: ReactNode; className?: string; variant?: "outline" | "default" | "secondary" }) {
+export function SearchButton({
+  children = "Buscar município", className, variant = "secondary", size = "sm",
+}: { children?: ReactNode; className?: string; variant?: ButtonVariant; size?: ButtonSize }) {
   return (
-    <Button type="button" variant={variant} className={className} onClick={openSearch} onPointerEnter={preload} onFocus={preload}>
-      <Search data-icon="inline-start" />
+    <Button type="button" variant={variant} size={size} className={className} aria-haspopup="dialog" onClick={openSearch} onPointerEnter={preload} onFocus={preload}>
+      <Search aria-hidden className="size-4" />
       {children}
     </Button>
+  );
+}
+
+/** A button drawn as a search field (Arc's secondary button, text to the left): the home page's first action. */
+export function SearchFieldButton({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <button
+      type="button"
+      aria-haspopup="dialog"
+      onClick={openSearch}
+      onPointerEnter={preload}
+      onFocus={preload}
+      onTouchStart={preload}
+      className={cn(arc.button, arc.secondary, arc.md, "w-full", className)}
+    >
+      <Search aria-hidden className="size-4 shrink-0 text-muted-foreground" />
+      <span className="min-w-0 flex-1 truncate text-left font-normal text-muted-foreground">{children}</span>
+      <Kbd aria-hidden className="border bg-background font-mono text-[11px] pointer-coarse:hidden">/</Kbd>
+    </button>
   );
 }
 
@@ -117,14 +140,15 @@ export default function SearchPalette({ compact = false }: { compact?: boolean }
         onTouchStart={preload}
         aria-label="Buscar município, estado ou região"
         aria-haspopup="dialog"
-        className={compact ? "m-ctl size-10!" : "inline-flex size-9 items-center justify-center gap-2 rounded-md border bg-background text-sm text-muted-foreground transition-colors duration-150 hover:bg-accent hover:text-foreground sm:h-8 sm:w-56 sm:justify-start sm:pr-1 sm:pl-2.5 md:w-8 md:justify-center md:px-0 lg:w-60 lg:justify-start lg:pr-1 lg:pl-2.5 dark:bg-muted/40"}
+        // Phones get a 44px hit area around the 36px control.
+        className={compact ? "m-ctl size-10!" : cn(arc.button, arc.secondary, arc.sm, "max-sm:after:absolute max-sm:after:-inset-1")}
       >
-        <Search className="size-4 shrink-0" />
+        <Search aria-hidden className={cn("size-4 shrink-0", !compact && "text-muted-foreground")} />
         {!compact && (
-          <>
-            <span className="hidden flex-1 truncate text-left sm:inline md:hidden lg:inline">Buscar município…</span>
-            <Kbd className="hidden h-5 border bg-background font-mono text-[11px] sm:inline-flex md:hidden lg:inline-flex">{isMac ? "⌘K" : "Ctrl K"}</Kbd>
-          </>
+          <span className="hidden items-center gap-3 sm:flex md:hidden lg:flex">
+            <span className="w-36 truncate text-left font-normal text-muted-foreground">Buscar município…</span>
+            <Kbd className="border bg-background font-mono text-[11px]">{isMac ? "⌘K" : "Ctrl K"}</Kbd>
+          </span>
         )}
       </button>
       {session > 0 && Dialog && <Dialog key={session} open={open} onOpenChange={setOpen} />}

@@ -3,8 +3,8 @@
 import { TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { useUrlParam } from "./useUrlParam";
+import SegmentedControl from "@/components/arc/segmented-control/segmented-control";
 import { Panel } from "@/components/kit/panel";
-import { Segmented } from "@/components/kit/segmented";
 import { withYear } from "@/components/YearPicker";
 import { brlShort } from "@/lib/format";
 import { cityPath } from "@/lib/geo";
@@ -37,13 +37,13 @@ export function DeficitPanel({
       }
     >
       <div className="flex items-center justify-between gap-2 border-b px-4 py-2 sm:px-5">
-        <Segmented
-          ariaLabel="Valores do déficit"
+        <SegmentedControl
+          label="Valores do déficit"
           value={mode}
-          onChange={setMode}
+          onValueChange={(v) => setMode(v as typeof mode)}
           options={[
-            { value: "nom", label: "Nominal", title: "Valores da época, sem correção" },
-            { value: "real", label: "Corrigido (IPCA)", title: `R$ de ${IPCA_BASE}, corrigidos pelo IPCA` },
+            { value: "nom", label: "Nominal" },
+            { value: "real", label: "Corrigido (IPCA)" },
           ]}
         />
       </div>

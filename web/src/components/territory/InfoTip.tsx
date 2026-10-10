@@ -3,20 +3,20 @@
 import { Info } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/arc/popover/popover";
 
-/** Tap-able (not hover-only) "what is this?" popover for KPI labels. 24px target, muted icon. */
+/** Tap-able (not hover-only) "what is this?" popover for KPI labels. A 24px icon with a 40px hit area. */
 export function InfoTip({ label, children }: { label: string; children: ReactNode }) {
   return (
     <Popover>
       <PopoverTrigger
         aria-label={label}
-        className="-my-1 inline-flex size-6 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors duration-150 hover:bg-accent hover:text-foreground print:hidden"
+        className="relative -my-1 inline-flex size-6 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors duration-150 after:absolute after:-inset-2 hover:bg-accent hover:text-foreground data-[state=open]:bg-accent data-[state=open]:text-foreground print:hidden"
       >
         <Info aria-hidden className="size-3.5" />
       </PopoverTrigger>
-      <PopoverContent side="bottom" align="start" className="w-80 max-w-[calc(100vw-2rem)] text-[13px] leading-5">
-        {children}
+      <PopoverContent side="bottom" className="w-80">
+        <div className="space-y-2 text-sm leading-5 text-foreground">{children}</div>
       </PopoverContent>
     </Popover>
   );

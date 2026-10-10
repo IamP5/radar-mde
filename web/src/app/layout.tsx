@@ -84,7 +84,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                   <Link href="/" className="flex items-center gap-2 text-sm font-medium">
                     <Logo className="size-5 text-foreground" /> Radar MDE · Brasil
                   </Link>
-                  <p className="max-w-xl text-[0.8125rem] leading-5 text-muted-foreground">
+                  <p className="max-w-xl text-sm leading-6 text-muted-foreground">
                     Dados: FNDE/SIOPE (indicadores e receitas declarados pelos municípios e estados, 2008 em diante), Tesouro
                     Nacional/SICONFI (RREO, Anexo 14, municípios de SP) e IBGE (territórios, malhas e população). Inspirado em Silva,
                     A. Z. (2021), <em>O financiamento da Educação Básica no Brasil contemporâneo</em>, UNINOVE. Ferramenta
@@ -99,10 +99,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                   </p>
                 </div>
                 <div className="flex flex-col justify-between gap-6 md:items-end">
-                  <ul className="flex flex-wrap gap-x-5 gap-y-2 text-[0.8125rem] text-muted-foreground">
+                  <ul className="flex flex-wrap gap-x-5 text-sm text-muted-foreground sm:gap-y-2">
                     {NAV.map((n) => (
                       <li key={n.href}>
-                        <Link href={n.href} prefetch={false} className="inline-flex min-h-6 items-center transition-colors hover:text-foreground">
+                        <Link href={n.href} prefetch={false} className="inline-flex min-h-11 items-center transition-colors hover:text-foreground sm:min-h-6">
                           {n.label}
                         </Link>
                       </li>

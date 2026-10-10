@@ -1,11 +1,11 @@
 import { Braces, Download, FileSpreadsheet, Info } from "lucide-react";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { Progress } from "@/components/arc/progress/progress";
+import { ButtonLink } from "@/components/kit/button-link";
 import { PageBody, PageHeader } from "@/components/kit/page-header";
 import { Panel } from "@/components/kit/panel";
 import { Stat } from "@/components/kit/stat";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { CSV_COLUMNS, csvHref } from "@/lib/csv";
 import { SITE_URL } from "@/lib/site";
@@ -98,18 +98,18 @@ export default function Page() {
         }
         actions={
           <>
-            <Button nativeButton={false} render={<a href={csvHref("brasil")} download />}>
-              <Download data-icon="inline-start" />
+            <ButtonLink href={csvHref("brasil")} download external variant="primary">
+              <Download aria-hidden className="size-4" />
               CSV · Brasil inteiro
-            </Button>
-            <Button variant="outline" nativeButton={false} render={<a href={csvHref("brasil", true)} download />}>
-              <FileSpreadsheet data-icon="inline-start" />
+            </ButtonLink>
+            <ButtonLink href={csvHref("brasil", true)} download external>
+              <FileSpreadsheet aria-hidden className="size-4" />
               Excel Brasil
-            </Button>
-            <Button variant="outline" nativeButton={false} render={<a href="/data/municipios.json" />}>
-              <Braces data-icon="inline-start" />
+            </ButtonLink>
+            <ButtonLink href="/data/municipios.json" external>
+              <Braces aria-hidden className="size-4" />
               JSON compacto
-            </Button>
+            </ButtonLink>
           </>
         }
       />
@@ -185,8 +185,9 @@ d = pandas.read_csv("radar-mde-brasil.csv", encoding="utf-8-sig")`}</Code>
                           <span className="sr-only">Baixar CSV</span>
                         </span>
                         <span className="flex items-center gap-3 text-xs text-muted-foreground">
-                          <Progress value={c} aria-label={`Cobertura ${pctFmt(c)}`} className="flex-1" />
-                          <span className="shrink-0 tnum">
+                          <Progress value={c} aria-labelledby={`cobertura-${uf}`} className="flex-1" />
+                          <span id={`cobertura-${uf}`} className="shrink-0 tnum">
+                            <span className="sr-only">Cobertura: </span>
                             {int(s.n)} mun. · {pctFmt(c)}
                           </span>
                         </span>
@@ -226,8 +227,11 @@ d = pandas.read_csv("radar-mde-brasil.csv", encoding="utf-8-sig")`}</Code>
                     <TableCell className="px-4 text-right text-muted-foreground">{int(s.nd + s.missing)}</TableCell>
                     <TableCell className="px-4">
                       <span className="flex items-center gap-3">
-                        <Progress value={c} aria-label={`Cobertura ${pctFmt(c)}`} className="flex-1" />
-                        <span className="w-12 text-right">{pctFmt(c)}</span>
+                        <Progress value={c} aria-labelledby={`cobertura-${y}`} className="flex-1" />
+                        <span id={`cobertura-${y}`} className="w-12 text-right">
+                          <span className="sr-only">Cobertura </span>
+                          {pctFmt(c)}
+                        </span>
                       </span>
                     </TableCell>
                   </TableRow>

@@ -1,15 +1,15 @@
 "use client";
 
 /**
- * The ⌘K dialog itself (cmdk + Base UI Dialog). Loaded on first open by SearchPalette, so none of this is in
+ * The ⌘K dialog itself (cmdk inside Arc Dialog). Loaded on first open by SearchPalette, so none of this is in
  * the initial bundle of every page.
  */
 import { Command as CommandPrimitive } from "cmdk";
 import { ChevronDown, Clock, Globe2, Landmark, ListFilter, Loader2, MapPin, Search, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Dialog, DialogContent } from "@/components/arc/dialog/dialog";
 import { Command, CommandGroup, CommandItem, CommandList } from "@/components/ui/command";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Kbd } from "@/components/ui/kbd";
 import { int } from "@/lib/format";
 import { loadIndex as loadCityIndex } from "@/lib/indice";
@@ -82,9 +82,9 @@ function Row({ o, onSelect, recent }: { o: Option; onSelect: (o: Option) => void
     <CommandItem
       value={recent ? `recent:${o.id}` : o.id}
       onSelect={() => onSelect(o)}
-      className="h-10 cursor-pointer gap-3 px-2.5 [&>svg:last-child]:hidden"
+      className="h-11 cursor-pointer gap-3 px-2.5 sm:h-10 [&>svg:last-child]:hidden"
     >
-      <Icon className="size-4 text-muted-foreground" />
+      <Icon aria-hidden className="size-4 text-muted-foreground" />
       <span className="min-w-0 flex-1 truncate">
         <span className="text-foreground">
           <Highlighted text={o.label} range={o.hl} />
@@ -100,6 +100,9 @@ function Row({ o, onSelect, recent }: { o: Option; onSelect: (o: Option) => void
     </CommandItem>
   );
 }
+
+const HELP_ID = "busca-ajuda";
+const DIALOG_LAYOUT = { width: "min(calc(100vw - 2rem), 560px)", margin: "max(1rem, 10vh) auto auto" };
 
 const LIMIT = 8;
 const LIMIT_ALL = 400;
@@ -182,18 +185,24 @@ export default function SearchPaletteDialog({ open, onOpenChange }: { open: bool
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        showCloseButton={false}
-        initialFocus={inputRef}
-        className="top-[12vh] block max-w-[calc(100%-2rem)] translate-y-0 overflow-hidden rounded-xl! p-0 shadow-pop ring-0 max-sm:top-3 sm:max-w-[560px]"
+        title="Buscar município, estado ou região"
+        aria-describedby={HELP_ID}
+        onOpenAutoFocus={(e) => {
+          e.preventDefault();
+          inputRef.current?.focus();
+        }}
+        // Anchored near the top instead of centered, so the panel does not move while results change the list.
+        style={DIALOG_LAYOUT}
       >
-        <DialogTitle className="sr-only">Buscar município, estado ou região</DialogTitle>
-        <DialogDescription className="sr-only">Digite para filtrar; use as setas para navegar e Enter para abrir.</DialogDescription>
-        <Command shouldFilter={false} loop value={selected} onValueChange={setValue} label="Buscar" className="rounded-none! p-0">
-          <div className="flex h-12 items-center gap-2.5 border-b pr-2 pl-4">
+        <p id={HELP_ID} className="sr-only">
+          Digite para filtrar; use as setas para navegar e Enter para abrir.
+        </p>
+        <Command shouldFilter={false} loop value={selected} onValueChange={setValue} label="Buscar" className="rounded-none bg-transparent p-0">
+          <div className="flex h-11 items-center gap-2.5 rounded-xl border bg-background pr-2 pl-3.5 transition-colors duration-150 focus-within:border-(--border-strong)">
             {loading ? (
-              <Loader2 className="size-4 shrink-0 animate-spin text-muted-foreground" />
+              <Loader2 aria-hidden className="size-4 shrink-0 animate-spin text-muted-foreground" />
             ) : (
-              <Search className="size-4 shrink-0 text-muted-foreground" />
+              <Search aria-hidden className="size-4 shrink-0 text-muted-foreground" />
             )}
             <CommandPrimitive.Input
               ref={inputRef}
@@ -203,19 +212,15 @@ export default function SearchPaletteDialog({ open, onOpenChange }: { open: bool
                 setValue("");
                 setExpanded(false);
               }}
-              placeholder="Buscar município, estado ou região…"
+              placeholder="Nome da cidade, do estado ou da região"
               autoComplete="off"
               spellCheck={false}
               className="h-full min-w-0 flex-1 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground sm:text-[15px]"
             />
-            <Kbd className="mr-2 h-5 border bg-background font-mono text-[11px] max-sm:hidden pointer-coarse:hidden">Esc</Kbd>
-            {/* Touch screens have no Esc key: a real close button (CIT-13) */}
-            <DialogClose className="hidden h-9 shrink-0 items-center rounded-md px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground max-sm:inline-flex pointer-coarse:inline-flex">
-              Fechar
-            </DialogClose>
+            <Kbd className="border bg-muted font-mono text-[11px] max-sm:hidden pointer-coarse:hidden">Esc</Kbd>
           </div>
 
-          <CommandList className="max-h-[min(60vh,440px)] scroll-py-2 p-1.5">
+          <CommandList className="-mx-1.5 mt-2 h-[min(50vh,420px)] max-h-none scroll-py-2 px-0.5">
             {shownRecent.length > 0 && (
               <CommandGroup heading="Recentes">
                 {shownRecent.map((o) => <Row key={o.id} o={o} onSelect={go} recent />)}
@@ -317,14 +322,14 @@ export default function SearchPaletteDialog({ open, onOpenChange }: { open: bool
           <span role="status" className="sr-only">
             {status}
           </span>
-          <div aria-hidden className="flex items-center gap-4 border-t bg-muted/40 px-4 py-2 text-xs text-muted-foreground max-sm:hidden">
+          <div aria-hidden className="mt-3 flex items-center gap-4 border-t pt-3 text-xs text-muted-foreground max-sm:hidden pointer-coarse:hidden">
             <span className="inline-flex items-center gap-1.5">
-              <Kbd className="border bg-background">↑</Kbd>
-              <Kbd className="border bg-background">↓</Kbd>
+              <Kbd className="border bg-muted">↑</Kbd>
+              <Kbd className="border bg-muted">↓</Kbd>
               navegar
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <Kbd className="border bg-background">↵</Kbd>
+              <Kbd className="border bg-muted">↵</Kbd>
               abrir
             </span>
             <span className={cn("ml-auto", loading && "animate-pulse")}>{hasQuery ? status : "Dica: “campinas sp”, “nordeste”, “capitais”"}</span>

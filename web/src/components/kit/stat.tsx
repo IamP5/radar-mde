@@ -15,14 +15,14 @@ export function Stat({
 }) {
   return (
     <div className={cn("relative flex min-w-0 flex-col overflow-hidden rounded-xl border bg-card p-4 shadow-card", className)}>
-      <div className="flex items-center gap-1.5 text-[0.8125rem] leading-5 text-muted-foreground">
+      <div className="flex items-center gap-1.5 text-sm leading-5 text-muted-foreground">
         {icon}
         <span className="min-w-0">{label}</span>
       </div>
       <div className="mt-1.5 flex flex-wrap items-baseline gap-x-2 gap-y-1">
         <span
           className={cn(
-            "text-[1.375rem] leading-7 font-medium tracking-[-0.04em] tnum whitespace-nowrap sm:text-[1.75rem] sm:leading-8",
+            "text-xl leading-7 font-medium tracking-[-0.04em] tnum whitespace-nowrap sm:text-2xl sm:leading-8",
             tone === "bad" && "text-critical",
             tone === "good" && "text-good-ink",
           )}
