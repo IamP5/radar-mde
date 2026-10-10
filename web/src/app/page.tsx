@@ -1,10 +1,9 @@
 import { ArrowRight, Download } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { PageHeader } from "@/components/kit/page-header";
-import { SearchButton } from "@/components/SearchPalette";
+import { ButtonLink } from "@/components/kit/button-link";
+import { SearchFieldButton } from "@/components/SearchPalette";
 import TerritoryDashboard from "@/components/territory/TerritoryDashboard";
-import { buttonVariants } from "@/components/ui/button";
 import { YEARS, brBalance, brStats, regionBalances, ufBalances, defaultYear, int, regionSummaries, rowsIn, topDeficits, ufSummaries } from "@/lib/data";
 import { histCounts } from "@/lib/bins";
 
@@ -30,27 +29,22 @@ export default function Home() {
         {/* CIT-01: the first thing most visitors want is their own city; secondary actions share its row (VIS-13) */}
         <div className="mt-6 flex flex-col gap-3 md:flex-row md:items-start md:justify-between print:hidden">
           <div className="w-full max-w-xl">
-            <SearchButton
-              variant="outline"
-              className="h-11 w-full justify-start gap-2.5 rounded-lg bg-background px-3.5 text-[0.9375rem] font-normal text-muted-foreground shadow-xs hover:text-foreground"
-            >
-              Digite o nome da sua cidade
-            </SearchButton>
-            <p className="mt-2 text-[13px] text-muted-foreground">Veja quanto a sua prefeitura aplica em educação, ano a ano.</p>
+            <SearchFieldButton>Digite o nome da sua cidade</SearchFieldButton>
+            <p className="mt-2 text-sm text-muted-foreground">Veja quanto a sua prefeitura aplica em educação, ano a ano.</p>
           </div>
           <div className="flex shrink-0 flex-wrap items-center gap-2 md:h-11">
-            <a href="/dados/csv/brasil" download className={buttonVariants({ variant: "ghost", size: "sm" })}>
-              <Download aria-hidden />
+            <ButtonLink href="/dados/csv/brasil" download external variant="ghost">
+              <Download aria-hidden className="size-4" />
               Baixar CSV
-            </a>
-            <Link href="/mapa" className={buttonVariants({ variant: "default", size: "sm" })}>
+            </ButtonLink>
+            <ButtonLink href="/mapa" variant="primary">
               Mapa interativo
-              <ArrowRight aria-hidden />
-            </Link>
-            <Link href="/explorar" className={buttonVariants({ variant: "outline", size: "sm" })}>
+              <ArrowRight aria-hidden className="size-4" />
+            </ButtonLink>
+            <ButtonLink href="/explorar">
               Explorar municípios
-              <ArrowRight aria-hidden />
-            </Link>
+              <ArrowRight aria-hidden className="size-4" />
+            </ButtonLink>
           </div>
         </div>
       </PageHeader>

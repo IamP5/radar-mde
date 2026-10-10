@@ -3,9 +3,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import { ButtonLink } from "@/components/kit/button-link";
 import { PageHeader } from "@/components/kit/page-header";
 import TerritoryDashboard from "@/components/territory/TerritoryDashboard";
-import { buttonVariants } from "@/components/ui/button";
 import { histCounts } from "@/lib/bins";
 import { csvHref } from "@/lib/csv";
 import { YEARS, brStats, scopeBalance, ufBalances, citiesIn, defaultYear, int, regionStats, rowsIn, topDeficits, ufSummaries } from "@/lib/data";
@@ -52,19 +52,19 @@ export default async function Page({ params }: PageProps<"/regiao/[slug]">) {
         }
         actions={
           <>
-            <a href={csvHref(`regiao-${r.slug}`)} download className={buttonVariants({ variant: "ghost", size: "sm" })}>
-              <Download aria-hidden />
+            <ButtonLink href={csvHref(`regiao-${r.slug}`)} download external variant="ghost">
+              <Download aria-hidden className="size-4" />
               Baixar CSV da região
-            </a>
-            <Link href={`/explorar?regiao=${r.slug}`} className={buttonVariants({ variant: "outline", size: "sm" })}>
+            </ButtonLink>
+            <ButtonLink href={`/explorar?regiao=${r.slug}`}>
               Explorar municípios
-              <ArrowRight aria-hidden />
-            </Link>
+              <ArrowRight aria-hidden className="size-4" />
+            </ButtonLink>
           </>
         }
       >
         <nav aria-label="Regiões" className="mt-5 -mb-1">
-          <ul className="inline-flex max-w-full items-center gap-0.5 overflow-x-auto rounded-lg bg-muted p-0.5 [scrollbar-width:none]">
+          <ul className="inline-flex max-w-full items-center gap-0.5 overflow-x-auto rounded-xl border bg-accent p-[3px] [scrollbar-width:none]">
             {REGIONS.map((x) => {
               const on = x.key === r.key;
               return (
@@ -73,8 +73,8 @@ export default async function Page({ params }: PageProps<"/regiao/[slug]">) {
                     href={regionPath(x.key)}
                     aria-current={on ? "page" : undefined}
                     className={cn(
-                      "inline-flex h-7 items-center rounded-md px-2.5 text-[13px] font-medium whitespace-nowrap transition-colors duration-150",
-                      on ? "bg-background text-foreground shadow-[0_0_0_1px_var(--border),0_1px_2px_rgba(0,0,0,0.06)]" : "text-muted-foreground hover:text-foreground",
+                      "inline-flex min-h-9 items-center rounded-[calc(var(--radius-control)-4px)] px-3 text-sm font-medium whitespace-nowrap transition-colors duration-150",
+                      on ? "bg-card text-foreground shadow-[0_0_0_1px_var(--border),var(--shadow-resting)]" : "text-muted-foreground hover:text-foreground",
                     )}
                   >
                     {x.name}
