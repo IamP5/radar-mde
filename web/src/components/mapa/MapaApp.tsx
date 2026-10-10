@@ -2,6 +2,7 @@
 
 import { startTransition, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MDE_MIN, funMin, int, pct } from "@/lib/format";
+import { Button } from "@/components/arc/button/button";
 import { UFS, cityPath } from "@/lib/geo";
 import { alignRows, isAtip, loadAllRows, type Row, type Stats, type UfSummary } from "@/lib/rows";
 import { cn } from "@/lib/utils";
@@ -533,13 +534,15 @@ export default function MapaApp({ years, initialYear, brStats, ufs }: Props) {
       )}
 
       {!desktop && !drawerOpen && (
-        <button type="button" data-ui className="m-panel absolute right-3 bottom-[136px] z-30 h-10 rounded-full px-4 text-[0.8125rem] font-medium text-(--m-ink)" aria-expanded={sheet} onClick={() => setSheet((s) => !s)}>
-          {sheet ? "Fechar painel" : "Ver dados"}
-        </button>
+        <div data-ui className="absolute right-3 bottom-[136px] z-30">
+          <Button variant="secondary" aria-expanded={sheet} onClick={() => setSheet((s) => !s)}>
+            {sheet ? "Fechar painel" : "Ver dados"}
+          </Button>
+        </div>
       )}
 
       {desktop && !scope.uf && geo && (
-        <p className="m-hint absolute top-[108px] z-10 -translate-x-1/2 rounded-full bg-(--m-bg)/60 px-3 py-1 text-[0.75rem] text-(--m-ink)/70" style={{ left: `calc(${insets.left}px + (100% - ${insets.left + R}px) / 2)` }}>
+        <p className="m-hint absolute top-[116px] z-10 -translate-x-1/2 rounded-full bg-(--m-bg)/60 px-3 py-1 text-[0.75rem] text-(--m-ink)/70" style={{ left: `calc(${insets.left}px + (100% - ${insets.left + R}px) / 2)` }}>
           Clique em um estado para aproximar · arraste para mover · role para o zoom
         </p>
       )}
