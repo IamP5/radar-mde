@@ -67,7 +67,7 @@ export function BalancePanel({
     >
       <dl className="grid grid-cols-1 divide-y border-b sm:grid-cols-3 sm:divide-x sm:divide-y-0">
         <div className="px-4 py-3 sm:px-5">
-          <dt className="flex items-center gap-1 text-[0.8125rem] text-muted-foreground">
+          <dt className="flex items-center gap-1 text-sm text-muted-foreground">
             Saldo {totalLabel}, {span}
             <InfoTip label="Como o saldo é calculado">
               <p>
@@ -81,14 +81,14 @@ export function BalancePanel({
               </p>
             </InfoTip>
           </dt>
-          <dd className={cn("mt-1 text-[1.375rem] leading-7 font-medium tracking-[-0.04em] tnum sm:text-[1.75rem] sm:leading-8", tone(tn))}>{brlSigned(tn)}</dd>
+          <dd className={cn("mt-1 text-xl leading-7 font-medium tracking-[-0.04em] tnum sm:text-2xl sm:leading-8", tone(tn))}>{brlSigned(tn)}</dd>
         </div>
         <div className="px-4 py-3 sm:px-5">
-          <dt className="text-[0.8125rem] text-muted-foreground">Aplicado acima do mínimo</dt>
+          <dt className="text-sm text-muted-foreground">Aplicado acima do mínimo</dt>
           <dd className="mt-1 text-lg leading-7 font-medium tracking-[-0.03em] tnum text-good-ink">{ov ? `+${brlShort(ov)}` : "R$ 0"}</dd>
         </div>
         <div className="px-4 py-3 sm:px-5">
-          <dt className="text-[0.8125rem] text-muted-foreground">Faltou para chegar a 25%</dt>
+          <dt className="text-sm text-muted-foreground">Faltou para chegar a 25%</dt>
           <dd className={cn("mt-1 text-lg leading-7 font-medium tracking-[-0.03em] tnum", sh ? "text-critical-ink" : "text-muted-foreground")}>{sh ? `−${brlShort(sh)}` : "R$ 0"}</dd>
         </div>
       </dl>
@@ -97,7 +97,7 @@ export function BalancePanel({
         {groups.length > 1 ? (
           <SegmentedControl label="Nível" value={group.key} onValueChange={setGk} options={groups.map((g) => ({ value: g.key, label: g.label }))} />
         ) : (
-          <span className="text-[0.8125rem] text-muted-foreground">{group.items.length} {group.label.toLowerCase()}</span>
+          <span className="text-sm text-muted-foreground">{group.items.length} {group.label.toLowerCase()}</span>
         )}
         <SegmentedControl label="Ordem" value={sort} onValueChange={(v) => setSort(v as Sort)} options={SORT_OPTIONS} />
       </div>
