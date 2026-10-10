@@ -1,10 +1,12 @@
 "use client";
 
 import { Check, Copy, ExternalLink, Mail, MessageCircle, RotateCcw, Send } from "lucide-react";
-import { useEffect, useId, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/arc/button/button";
+import { Input } from "@/components/arc/input/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/arc/tabs/tabs";
+import { Textarea } from "@/components/arc/textarea/textarea";
+import { ButtonLink } from "@/components/kit/button-link";
 import type { Template } from "@/lib/templates";
 
 const STEP = ["Pedir dados", "Conselho", "Câmara", "Fiscalização"];
@@ -14,52 +16,36 @@ const sign = (text: string, name: string, contact: string) =>
   text.replaceAll("[Seu nome]", name.trim() || "[Seu nome]").replaceAll("[Contato]", contact.trim() || "[Contato]");
 
 /**
- * Ready-to-send letters as a chooser of plain-language options (a grid of cards, so nothing is cut off at 375px),
- * each with the letter (editable in place), where to send it, and copy / WhatsApp / e-mail actions.
+ * Ready-to-send letters as tabs of plain-language options (the list scrolls sideways on phones), each with the letter (editable in place), where to send it, and copy / WhatsApp / e-mail actions.
  * Edits, name and contact live here (not in the tab panels, which unmount), so switching letters keeps them.
  */
 export default function ActionKit({ templates }: { templates: Template[] }) {
   const [edits, setEdits] = useState<Record<string, string>>({});
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
-  const nameId = useId();
-  const contactId = useId();
   return (
-    <Tabs defaultValue={templates[0].id} className="gap-0">
-      <TabsList
-        aria-label="Escolha o que fazer"
-        className="grid h-auto! w-full grid-cols-1 gap-2 rounded-none border-b bg-transparent p-3 sm:grid-cols-2 sm:p-4 lg:grid-cols-4"
-      >
-        {templates.map((t, i) => (
-          <TabsTrigger
-            key={t.id}
-            value={t.id}
-            className="h-auto! flex-col items-start justify-start gap-0.5 rounded-lg border border-border bg-card px-3 py-2.5 text-left whitespace-normal text-foreground after:hidden hover:bg-accent/60 data-active:border-foreground/60 data-active:bg-accent/60 data-active:shadow-[inset_0_0_0_1px_var(--foreground)] dark:data-active:border-foreground/60 dark:data-active:bg-accent/60"
-          >
-            <span className="text-xs font-normal text-muted-foreground">
-              {i + 1}. {STEP[i] ?? ""}
-              {edits[t.id] != null && edits[t.id] !== t.body && " · editado"}
-            </span>
-            <span className="text-[0.8125rem] leading-5 font-medium">{t.title}</span>
-          </TabsTrigger>
-        ))}
-      </TabsList>
-      <div className="grid gap-3 border-b px-4 py-3 sm:grid-cols-2 sm:px-5">
-        <div className="grid gap-1">
-          <label htmlFor={nameId} className="text-xs text-muted-foreground">
-            Seu nome (opcional, entra em todas as cartas)
-          </label>
-          <Input id={nameId} value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" placeholder="[Seu nome]" />
-        </div>
-        <div className="grid gap-1">
-          <label htmlFor={contactId} className="text-xs text-muted-foreground">
-            Contato (e-mail ou telefone, opcional)
-          </label>
-          <Input id={contactId} value={contact} onChange={(e) => setContact(e.target.value)} autoComplete="email" placeholder="[Contato]" />
-        </div>
+    <Tabs defaultValue={templates[0].id}>
+      <div className="border-b p-3 sm:p-4">
+        <TabsList aria-label="Escolha o que fazer">
+          {templates.map((t, i) => (
+            <TabsTrigger key={t.id} value={t.id}>
+              <span className="block py-2 text-left">
+                <span className="block text-xs font-normal text-muted-foreground">
+                  {i + 1}. {STEP[i] ?? ""}
+                  {edits[t.id] != null && edits[t.id] !== t.body && " · editado"}
+                </span>
+                <span className="block">{t.title}</span>
+              </span>
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </div>
+      <div className="grid gap-4 border-b px-4 py-4 sm:grid-cols-2 sm:px-5">
+        <Input label="Seu nome" description="Opcional, entra em todas as cartas." value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" placeholder="[Seu nome]" />
+        <Input label="Contato" description="E-mail ou telefone, opcional." value={contact} onChange={(e) => setContact(e.target.value)} autoComplete="email" placeholder="[Contato]" />
       </div>
       {templates.map((t) => (
-        <TabsContent key={t.id} value={t.id} className="p-4 sm:p-5">
+        <TabsContent key={t.id} value={t.id} className="px-4 pb-4 sm:px-5 sm:pb-5">
           <Letter
             t={t}
             text={sign(edits[t.id] ?? t.body, name, contact)}
@@ -139,45 +125,48 @@ function Letter({ t, text, edited, onChange, onReset }: { t: Template; text: str
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <Button variant={status === "copied" ? "outline" : "default"} onClick={async () => {
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={async () => {
             setTouch(isTouch());
             setStatus((await copy()) ? "copied" : "manual");
-          }}>
-          {status === "copied" ? <Check className="text-good-ink" /> : <Copy />}
+          }}
+        >
+          {status === "copied" ? <Check className="size-4" /> : <Copy className="size-4" />}
           {status === "copied" ? "Copiado" : "Copiar texto"}
         </Button>
-        <Button variant="outline" render={<a href={wa} target="_blank" rel="noreferrer" />} nativeButton={false}>
-          <MessageCircle className="text-muted-foreground" />
+        <ButtonLink external href={wa} target="_blank" rel="noreferrer">
+          <MessageCircle aria-hidden className="size-4 text-muted-foreground" />
           WhatsApp
-        </Button>
-        <Button
-          variant="outline"
-          render={<a href={mail} />}
-          nativeButton={false}
+        </ButtonLink>
+        <ButtonLink
+          external
+          href={mail}
           onClick={() => {
             setTouch(isTouch());
             void copy().then((ok) => setStatus(ok ? "mail" : "manual"));
           }}
         >
-          <Mail className="text-muted-foreground" />
+          <Mail aria-hidden className="size-4 text-muted-foreground" />
           E-mail
-        </Button>
+        </ButtonLink>
         {edited && (
-          <Button variant="ghost" onClick={onReset} className="text-muted-foreground">
-            <RotateCcw />
+          <Button variant="ghost" size="sm" onClick={onReset}>
+            <RotateCcw className="size-4" />
             Desfazer edições
           </Button>
         )}
       </div>
 
-      <textarea
+      <Textarea
         ref={area}
+        label="Texto do modelo (pode ser editado)"
         value={text}
         onChange={(e) => onChange(e.target.value)}
         spellCheck={false}
-        aria-label={`Texto do modelo “${t.title}” (pode ser editado)`}
         aria-describedby={`${t.id}-hint`}
-        className="scroll-thin block h-80 w-full resize-y rounded-lg border bg-muted/40 p-3 font-mono text-xs leading-relaxed text-foreground outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+        className="scroll-thin h-80"
       />
       <p id={`${t.id}-hint`} className="text-xs text-muted-foreground" role="status" aria-live="polite">
         {status === "manual"
