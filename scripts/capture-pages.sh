@@ -45,7 +45,7 @@ sleep 0.5
 shot glossary-popover
 b press --key Escape
 
-b click --role button --name "O que posso fazer?"
+b click --role link --name "O que posso fazer?"
 sleep 0.5
 b click --role tab --name-regex "Fiscaliza"
 sleep 0.5
