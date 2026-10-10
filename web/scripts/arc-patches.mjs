@@ -44,7 +44,8 @@ export function missingPatches() {
     for (const [, to] of pairs) if (!src.includes(to)) missing.push(`${file}: ${to}`);
   }
   for (const file of RENDER_FILES) {
-    if (readFileSync(path.join(root, file), "utf8").includes("render={<motion.")) missing.push(`${file}: render prop on a Radix primitive`);
+    const src = readFileSync(path.join(root, file), "utf8");
+    if (src.includes("render={<motion.") || !src.includes(" asChild><motion.div ")) missing.push(`${file}: render prop on a Radix primitive`);
   }
   return missing;
 }
