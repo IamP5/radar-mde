@@ -2,13 +2,9 @@
 
 import { Check, Download, FileCode2, FileSpreadsheet, ImageDown, Quote, Share2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenu, type DropdownItem } from "@/components/arc/dropdown-menu/dropdown-menu";
 import { csvFilename, downloadCsv, toCsv, type CsvRecord } from "@/lib/csv";
 import { currentPageUrl } from "@/lib/site";
-import { cn } from "@/lib/utils";
 
 export type ChartCsv = {
   /** Column keys, in order (header row). */
@@ -35,7 +31,7 @@ export type ChartLegendItem = {
  * See qa/fixes/CONTRACT-design.md.
  */
 export function ChartActions({
-  title, filename, csv, legend, svgSelector, getSvg, source = "FNDE/SIOPE", note, className,
+  title, filename, csv, legend, svgSelector, getSvg, source = "FNDE/SIOPE", note,
 }: {
   /** Chart title: drawn on the image and used in the citation. Name the metric, place and years. */
   title: string;
@@ -53,9 +49,8 @@ export function ChartActions({
   source?: string;
   /** Extra footer line on the image (e.g. "Valores nominais"). */
   note?: string;
-  className?: string;
 }) {
-  const ref = useRef<HTMLButtonElement>(null);
+  const ref = useRef<HTMLSpanElement>(null);
   const [status, setStatus] = useState("");
   const [canShare, setCanShare] = useState(false);
   useEffect(() => {
@@ -117,61 +112,30 @@ export function ChartActions({
   };
 
   const ok = status && !status.startsWith("Não");
+  const items: DropdownItem[] = [
+    ...(canShare ? [{ label: "Compartilhar imagem…", icon: <Share2 />, onSelect: shareImage }] : []),
+    { label: "Imagem PNG", icon: <ImageDown />, onSelect: () => exportImage("png"), separatorBefore: canShare },
+    { label: "Imagem SVG (editável)", icon: <FileCode2 />, onSelect: () => exportImage("svg") },
+    ...(csv
+      ? [
+          { label: "Dados em CSV", icon: <FileSpreadsheet />, onSelect: () => downloadCsv(`${base}.csv`, toCsv(csv.columns, roundRows(csv.rows))) },
+          {
+            label: "Dados em CSV (Excel Brasil)",
+            icon: <FileSpreadsheet />,
+            onSelect: () => downloadCsv(`${base}_excel.csv`, toCsv(csv.columns, roundRows(csv.rows), { excel: true })),
+          },
+        ]
+      : []),
+    { label: "Copiar citação", icon: <Quote />, onSelect: copyCitation, separatorBefore: true },
+  ];
 
   return (
-    <>
-      <DropdownMenu>
-        <DropdownMenuTrigger
-          render={
-            <Button ref={ref} variant="ghost" size="icon" aria-label={`Exportar: ${title}`} title="Baixar, compartilhar ou citar" className={cn("text-muted-foreground print:hidden", className)}>
-              {ok ? <Check className="text-good-ink" /> : <Download />}
-            </Button>
-          }
-        />
-        <DropdownMenuContent align="end" className="w-60">
-          {canShare && (
-            <>
-              <DropdownMenuItem onClick={shareImage}>
-                <Share2 className="text-muted-foreground" />
-                Compartilhar imagem…
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-            </>
-          )}
-          <DropdownMenuGroup>
-            <DropdownMenuLabel>Baixar gráfico</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => exportImage("png")}>
-              <ImageDown className="text-muted-foreground" />
-              Imagem PNG
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => exportImage("svg")}>
-              <FileCode2 className="text-muted-foreground" />
-              Imagem SVG (editável)
-            </DropdownMenuItem>
-            {csv && (
-              <DropdownMenuItem onClick={() => downloadCsv(`${base}.csv`, toCsv(csv.columns, roundRows(csv.rows)))}>
-                <FileSpreadsheet className="text-muted-foreground" />
-                Dados em CSV
-              </DropdownMenuItem>
-            )}
-            {csv && (
-              <DropdownMenuItem onClick={() => downloadCsv(`${base}_excel.csv`, toCsv(csv.columns, roundRows(csv.rows), { excel: true }))}>
-                <FileSpreadsheet className="text-muted-foreground" />
-                Dados em CSV (Excel Brasil)
-              </DropdownMenuItem>
-            )}
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={copyCitation}>
-            <Quote className="text-muted-foreground" />
-            Copiar citação
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+    <span ref={ref} className="contents print:hidden">
+      <DropdownMenu label="Exportar" ariaLabel={`Exportar: ${title}`} icon={ok ? <Check className="size-4 text-good-ink" /> : <Download className="size-4" />} items={items} />
       <span role="status" className="sr-only">
         {status}
       </span>
-    </>
+    </span>
   );
 }
 
@@ -380,8 +344,8 @@ function buildExport(
 
   // title
   let y = pad;
-  for (const l of wrapPx(title, inner, (s) => measure(s, 16, 600))) {
-    parts.push(text(pad, y + 15, l, 16, ink, 600));
+  for (const l of wrapPx(title, inner, (s) => measure(s, 16, 500))) {
+    parts.push(text(pad, y + 15, l, 16, ink, 500));
     y += 22;
   }
   y += 10;
