@@ -18,8 +18,11 @@
  * and --ease-in-out, so `text-xl` follows Arc's scale. The aliases below keep the shadcn/Tailwind names
  * pointing at Arc tokens. Data colors (bins, series, ramps) are the validated dataviz palette; each mode has
  * its own selected steps, not an automatic flip. They and the status colors stay app tokens.
+ * The dark selector outranks Arc's dark --series-1..4, --success, --warning and --danger, so paper (where the
+ * screen-only :root.dark block is off) keeps the light palette; on screen :root.dark comes later and wins.
  */
-:root {
+:root,
+:root[data-theme="dark"] {
   --card: var(--surface);
   --card-foreground: var(--foreground);
   --popover: var(--surface-raised);
@@ -110,10 +113,14 @@
   --shadow-pop: var(--shadow-floating);
 }
 
-/* small Arc controls are 36px; touch screens get the 44px minimum target */
+/* small Arc controls and menu/select rows are 36px; touch screens get the 44px minimum target */
 @media (pointer: coarse) {
   :root {
     --control-height-sm: var(--control-height-md);
+  }
+  :root [role="menuitem"],
+  :root [role="option"] {
+    min-height: var(--control-height-md);
   }
 }
 
@@ -384,6 +391,14 @@ svg :focus:not(:focus-visible) {
     outline: 2px solid Highlight;
     outline-offset: -2px;
   }
+  /* Arc marks the active menu row by background and a focused field by border color, both flattened here, and its
+     foundation removes their outline with !important at (0,3,0); these selectors are (0,3,1) */
+  :root body [role="menuitem"][data-highlighted],
+  :root body [role="option"][data-highlighted],
+  :root :is(input, textarea):focus:focus-visible {
+    outline: 2px solid Highlight !important;
+    outline-offset: -2px;
+  }
   :focus-visible {
     outline-color: Highlight;
   }
@@ -448,8 +463,8 @@ svg :focus:not(:focus-visible) {
   a[href="#conteudo"],
   main ~ footer ul,
   [data-slot="button"],
-  [role="group"]:has(> * > button[aria-pressed]),
-  [role="group"]:has(> button[aria-pressed]),
+  /* Arc segmented controls; map legends are also groups of pressed buttons and must print */
+  [role="group"]:has(> * > button[aria-pressed][data-value]),
   [role="radiogroup"],
   [role="tablist"],
   textarea,
