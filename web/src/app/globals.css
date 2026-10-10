@@ -110,6 +110,13 @@
   --shadow-pop: var(--shadow-floating);
 }
 
+/* small Arc controls are 36px; touch screens get the 44px minimum target */
+@media (pointer: coarse) {
+  :root {
+    --control-height-sm: var(--control-height-md);
+  }
+}
+
 /* :root.dark ties Arc's :root[data-theme="dark"] on specificity and comes later, so the app's dark data colors win. */
 @media screen {
 :root.dark {

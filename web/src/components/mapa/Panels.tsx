@@ -912,7 +912,7 @@ export function Drawer({
           Ficha completa
           <ArrowRight className="size-3.5" />
         </ButtonLink>
-        <WatchButton id={`${row.uf.toLowerCase()}/${row.slug}`} className="h-9 rounded-lg border-(--m-line-2) bg-transparent px-3 text-[0.8125rem] text-(--m-ink) hover:bg-(--m-ink)/8" />
+        <WatchButton id={`${row.uf.toLowerCase()}/${row.slug}`} />
         <Button
           variant="secondary"
           size="sm"

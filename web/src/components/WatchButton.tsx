@@ -7,7 +7,7 @@ import { useWatchlist } from "@/lib/watchlist";
 import { cn } from "@/lib/utils";
 
 /** `id` is "uf/slug". Saved in this browser only (see /acompanhar, "Municípios salvos"). */
-export default function WatchButton({ id, className }: { id: string; className?: string }) {
+export default function WatchButton({ id }: { id: string }) {
   const [list, toggle] = useWatchlist();
   // hover preview ("remover") only for a real mouse: on touch, pointerenter fires on tap and never leaves
   const [hover, setHover] = useState(false);
@@ -32,7 +32,7 @@ export default function WatchButton({ id, className }: { id: string; className?:
         onPointerLeave={() => setHover(false)}
         aria-pressed={on}
         title={on ? "Remover dos salvos (salvo só neste navegador)" : "Salvar este município para ver depois (só neste navegador)"}
-        className={cn("print:hidden", className)}
+        className="print:hidden"
       >
         {on && hover ? (
           <StarOff className="size-4 text-muted-foreground" />
