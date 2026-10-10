@@ -206,7 +206,7 @@ export function Stat({ label, value, sub, className }: { label: string; value: R
   return (
     <div className={cn("min-w-0", className)}>
       <div className="text-[0.6875rem] text-(--m-ink)/50">{label}</div>
-      <div className="mt-0.5 text-[1.0625rem] leading-tight font-semibold tnum text-(--m-ink)">{value}</div>
+      <div className="mt-0.5 text-[1.0625rem] leading-tight font-medium tnum text-(--m-ink)">{value}</div>
       {sub && <div className="mt-0.5 text-[0.6875rem] text-(--m-ink)/45 tnum">{sub}</div>}
     </div>
   );

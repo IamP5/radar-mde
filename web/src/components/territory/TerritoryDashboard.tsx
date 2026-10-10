@@ -202,14 +202,14 @@ export default function TerritoryDashboard({ region, years, initialYear, stats, 
       <PageBody>
         <div className="space-y-3">
           <p className="max-w-4xl text-base leading-7 text-pretty text-muted-foreground sm:text-lg sm:leading-8">
-            Em <strong className="font-semibold text-foreground tnum">{year}</strong>,{" "}
+            Em <strong className="font-medium text-foreground tnum">{year}</strong>,{" "}
             {s.below === 0 ? (
               <>
-                <strong className="font-semibold text-foreground">nenhum município</strong> {scopeOf.replace(/s$/, "")} aplicou menos de 25% em educação
+                <strong className="font-medium text-foreground">nenhum município</strong> {scopeOf.replace(/s$/, "")} aplicou menos de 25% em educação
               </>
             ) : (
               <>
-                <strong className="font-semibold text-critical tnum">
+                <strong className="font-medium text-critical tnum">
                   {int(s.below)} {s.below === 1 ? "município" : "municípios"}
                 </strong>{" "}
                 {s.below === 1 ? scopeOf.replace(/s$/, "") : scopeOf} ({share(s.below, s.reported)} dos que declararam) {s.below === 1 ? "aplicou" : "aplicaram"} menos
@@ -219,7 +219,7 @@ export default function TerritoryDashboard({ region, years, initialYear, stats, 
             {s.shortfall > 0 && (
               <>
                 {" "}— faltaram {s.belowNoBase ? "ao menos " : "cerca de "}
-                <strong className="font-semibold text-foreground tnum">{brlShort(s.shortfall)}</strong> para atingir o mínimo (estimativa)
+                <strong className="font-medium text-foreground tnum">{brlShort(s.shortfall)}</strong> para atingir o mínimo (estimativa)
               </>
             )}
             .
@@ -251,7 +251,7 @@ export default function TerritoryDashboard({ region, years, initialYear, stats, 
             <p className="flex max-w-4xl items-start gap-2.5 rounded-lg border bg-warning-soft px-3 py-2 text-[13px] leading-5 text-warning-ink">
               <StatusDot kind="edge" className="mt-1.5" />
               <span>
-                <strong className="font-semibold">Atenção:</strong> pela EC 119/2022, quem ficou abaixo de 25% em 2020–2021 (pandemia) não é punido se compensar a
+                <strong className="font-medium">Atenção:</strong> pela EC 119/2022, quem ficou abaixo de 25% em 2020–2021 (pandemia) não é punido se compensar a
                 diferença até 2023.
               </span>
             </p>
@@ -419,7 +419,7 @@ export default function TerritoryDashboard({ region, years, initialYear, stats, 
                     <span className="sm:hidden">{x.tiny}</span>
                     <span className="hidden sm:inline">{x.label}</span>
                   </span>
-                  <span className={cn("mt-1 block truncate text-base leading-7 font-semibold tracking-[-0.03em] tnum sm:text-[22px]", !on && "text-muted-foreground")}>
+                  <span className={cn("mt-1 block truncate text-base leading-7 font-medium tracking-[-0.03em] tnum sm:text-[22px]", !on && "text-muted-foreground")}>
                     {v == null ? "—" : x.show(v)}
                   </span>
                 </button>

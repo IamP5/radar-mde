@@ -16,7 +16,7 @@ export default function NotFound() {
   return (
     <div className="mx-auto flex w-full max-w-xl flex-col items-center px-4 py-16 text-center sm:py-24">
       <span className="rounded-full border bg-background px-2.5 py-0.5 font-mono text-xs text-muted-foreground">404</span>
-      <h1 className="mt-4 text-2xl leading-8 font-semibold tracking-[-0.04em] md:text-[2rem] md:leading-10">Página não encontrada</h1>
+      <h1 className="mt-4 text-2xl leading-8 font-medium tracking-[-0.04em] md:text-[2rem] md:leading-10">Página não encontrada</h1>
       <p className="mt-2 max-w-md text-[15px] leading-6 text-pretty text-muted-foreground">
         O endereço pode ter mudado ou o município foi digitado de outro jeito. Busque pelo nome ou volte por um dos atalhos abaixo.
       </p>

@@ -71,7 +71,7 @@ export default function Histogram({ values, counts: pre, mark, height = 220, ari
                 hideIndicator
                 formatter={(_, __, item) => (
                   <div className="grid gap-0.5">
-                    <div className="text-sm font-semibold text-foreground tabular-nums">{int(item.payload.count)} municípios</div>
+                    <div className="text-sm font-medium text-foreground tabular-nums">{int(item.payload.count)} municípios</div>
                     <div className="text-muted-foreground">aplicaram {item.payload.label} em MDE</div>
                   </div>
                 )}
@@ -100,7 +100,7 @@ export default function Histogram({ values, counts: pre, mark, height = 220, ari
               stroke="var(--ink)"
               strokeWidth={2}
               label={({ viewBox }: { viewBox?: { x?: number; y?: number } }) => (
-                <text x={(viewBox?.x ?? 0) + 6} y={(viewBox?.y ?? 0) + 12} fontSize={12} fontWeight={600} fill="var(--foreground)">
+                <text x={(viewBox?.x ?? 0) + 6} y={(viewBox?.y ?? 0) + 12} fontSize={12} fontWeight={500} fill="var(--foreground)">
                   {mark.label}
                 </text>
               )}

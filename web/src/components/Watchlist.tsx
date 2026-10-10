@@ -65,7 +65,7 @@ function YearCell({
         "relative inline-flex h-7 items-center justify-center rounded-[5px] text-[11px] tnum",
         // CIT-22: atypical value — dashed outline plus a corner mark, like the city page's ⚠
         atip && "outline-2 outline-offset-1 outline-dashed outline-warning after:absolute after:-top-1 after:-right-1 after:size-2 after:rounded-full after:bg-warning",
-        v != null && v < MDE_MIN && "font-semibold",
+        v != null && v < MDE_MIN && "font-medium",
         nd && "border border-dashed border-critical text-critical-ink",
         v == null && !nd && "text-muted-foreground",
         na && "bg-muted/60",

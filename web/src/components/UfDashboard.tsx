@@ -456,7 +456,7 @@ export default function UfDashboard({ uf, years, initialYear, rows: packed, stat
                 const v = r[metric][yi];
                 return (
                   <>
-                    <div className="text-base font-semibold tnum">
+                    <div className="text-base font-medium tnum">
                       {metric === "mde" && r.nd[yi] ? <span className="text-critical">Não declarou</span> : v == null ? (r.since != null && year < r.since ? "Não existia" : "Sem dados") : m.fmt(v)}
                     </div>
                     {metric !== "fun" && isAtip(r, yi, metric === "aluno" ? "aluno" : "mde") && (

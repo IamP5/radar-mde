@@ -221,7 +221,7 @@ export function Legend({
         aria-label={`Legenda: ${layer.title}`}
       >
         {layer.bins.map((b) => (
-          <button key={b.key} type="button" className={cn("flex shrink-0 items-center gap-1.5 rounded-full text-[0.6875rem] whitespace-nowrap text-(--m-ink)/80 transition-opacity hover:text-(--m-ink)", mobile && "h-8 px-1", pinned === b.key && "font-semibold text-(--m-ink)", hot && hot !== b.key && "opacity-40")} {...bind(b.key)}>
+          <button key={b.key} type="button" className={cn("flex shrink-0 items-center gap-1.5 rounded-full text-[0.6875rem] whitespace-nowrap text-(--m-ink)/80 transition-opacity hover:text-(--m-ink)", mobile && "h-8 px-1", pinned === b.key && "font-medium text-(--m-ink)", hot && hot !== b.key && "opacity-40")} {...bind(b.key)}>
             <span className="size-2.5 rounded-[3px]" style={{ background: b.color }} />
             {b.label}
           </button>
@@ -978,7 +978,7 @@ export function Drawer({
 const Fact = ({ k, v, sub, warn, className }: { k: string; v: string; sub?: string; warn?: boolean; className?: string }) => (
   <div className={className}>
     <dt className="text-[0.6875rem] text-(--m-ink)/60">{k}</dt>
-    <dd className={cn("mt-0.5 text-[1.0625rem] font-semibold tnum", warn ? "text-(--m-red)" : "text-(--m-ink)")}>
+    <dd className={cn("mt-0.5 text-[1.0625rem] font-medium tnum", warn ? "text-(--m-red)" : "text-(--m-ink)")}>
       {v}
       {sub && <span className="mt-0.5 block text-[0.6875rem] font-normal text-(--m-ink)/55">{sub}</span>}
     </dd>

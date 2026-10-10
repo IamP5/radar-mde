@@ -1,13 +1,14 @@
 "use client";
 
-import { Monitor, Moon, Sun } from "lucide-react";
 import { ThemeProvider as NextThemes, useTheme } from "next-themes";
 import { useSyncExternalStore, type ReactNode } from "react";
-import { cn } from "@/lib/utils";
+import SegmentedControl from "@/components/arc/segmented-control/segmented-control";
+import { ThemeSwitch, type Theme } from "@/components/arc/theme-switch/theme-switch";
 
+/** `class` drives Tailwind's `dark:` variant, `data-theme` drives Arc's tokens. */
 export function ThemeProvider({ children }: { children: ReactNode }) {
   return (
-    <NextThemes attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+    <NextThemes attribute={["class", "data-theme"]} defaultTheme="system" enableSystem disableTransitionOnChange>
       {children}
     </NextThemes>
   );
@@ -17,54 +18,31 @@ const noop = () => () => {};
 const useMounted = () => useSyncExternalStore(noop, () => true, () => false);
 
 const OPTIONS = [
-  { value: "system", label: "Sistema", Icon: Monitor },
-  { value: "light", label: "Claro", Icon: Sun },
-  { value: "dark", label: "Escuro", Icon: Moon },
-] as const;
+  { value: "system", label: "Sistema" },
+  { value: "light", label: "Claro" },
+  { value: "dark", label: "Escuro" },
+];
 
-/** Vercel footer switcher: three icon buttons in a pill. */
 export function ThemeSwitcher({ className }: { className?: string }) {
   const { theme, setTheme } = useTheme();
   const mounted = useMounted();
-  return (
-    <div role="radiogroup" aria-label="Tema" className={cn("inline-flex items-center gap-0.5 rounded-full border bg-background p-0.5", className)}>
-      {OPTIONS.map(({ value, label, Icon }) => {
-        const on = mounted && theme === value;
-        return (
-          <button
-            key={value}
-            type="button"
-            role="radio"
-            aria-checked={on}
-            aria-label={label}
-            title={label}
-            onClick={() => setTheme(value)}
-            className={cn(
-              "inline-flex size-7 items-center justify-center rounded-full transition-colors",
-              on ? "bg-accent text-foreground" : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            <Icon className="size-3.5" />
-          </button>
-        );
-      })}
-    </div>
-  );
+  return <SegmentedControl label="Tema" options={OPTIONS} value={mounted ? (theme ?? "system") : ""} onValueChange={setTheme} className={className} />;
 }
 
-/** Compact header toggle (light ↔ dark). */
+/** Header toggle (light ↔ dark). The page crossfades through a view transition unless motion is reduced. */
 export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
   const mounted = useMounted();
-  const dark = mounted && resolvedTheme === "dark";
-  return (
-    <button
-      type="button"
-      onClick={() => setTheme(dark ? "light" : "dark")}
-      aria-label={dark ? "Usar tema claro" : "Usar tema escuro"}
-      className="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-    >
-      {dark ? <Sun className="size-4" /> : <Moon className="size-4" />}
-    </button>
-  );
+  const theme: Theme = mounted && resolvedTheme === "dark" ? "dark" : "light";
+  const change = (next: Theme) => {
+    const apply = () => {
+      const root = document.documentElement;
+      root.classList.toggle("dark", next === "dark");
+      root.dataset.theme = next;
+      setTheme(next);
+    };
+    if (!document.startViewTransition || matchMedia("(prefers-reduced-motion: reduce)").matches) return apply();
+    document.startViewTransition(apply);
+  };
+  return <ThemeSwitch theme={theme} iconOnly variant="rise" onThemeChange={change} label={theme === "dark" ? "Usar tema claro" : "Usar tema escuro"} />;
 }

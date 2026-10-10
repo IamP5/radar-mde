@@ -127,7 +127,7 @@ export default function TerritoryMap({ ufs, years, year, initialYear, rows, rows
       const kind: StatusKind = sh == null ? "nd" : s.below === 0 ? "ok" : "below";
       return (
         <>
-          <div className="flex items-center gap-2 font-semibold">
+          <div className="flex items-center gap-2 font-medium">
             <StatusDot kind={kind} />
             <span className="truncate">{u.name}</span>
             <span className="ml-auto font-mono text-[11px] font-normal text-muted-foreground">{u.uf}</span>
@@ -153,12 +153,12 @@ export default function TerritoryMap({ ufs, years, year, initialYear, rows, rows
       <>
         <div className="flex items-center gap-2">
           {kind && <StatusDot kind={kind} />}
-          <span className="truncate font-semibold">{r.name}</span>
+          <span className="truncate font-medium">{r.name}</span>
           <span className="ml-auto font-mono text-[11px] text-muted-foreground">{r.uf}</span>
         </div>
         <div className="mt-1 flex items-baseline justify-between gap-4">
           <span className="text-xs text-muted-foreground">{m.short}</span>
-          <span className="text-[15px] font-semibold tnum">
+          <span className="text-[15px] font-medium tnum">
             {nd ? <span className="text-critical">Não declarou</span> : v == null ? <span className="text-muted-foreground">{r.since != null && year < r.since ? "Não existia" : "Sem dados"}</span> : m.fmt(v)}
           </span>
         </div>

@@ -17,7 +17,7 @@ export function Panel({
       {hasHeader && (
         <header className={cn("flex flex-wrap items-start justify-between gap-x-4 gap-y-3 px-4 pt-4 sm:px-5", divided ? "border-b pb-4" : "pb-1")}>
           <div className="min-w-0 flex-1">
-            {title && <h2 className="text-[0.9375rem] leading-6 font-semibold tracking-[-0.01em]">{title}</h2>}
+            {title && <h2 className="text-[0.9375rem] leading-6 font-medium tracking-[-0.01em]">{title}</h2>}
             {description && <div className="mt-0.5 text-[0.8125rem] leading-5 text-pretty text-muted-foreground">{description}</div>}
           </div>
           {action && <div className="flex max-w-full min-w-0 flex-wrap items-center gap-2">{action}</div>}
@@ -34,7 +34,7 @@ export function SectionTitle({ children, description, action }: { children: Reac
   return (
     <div className="flex flex-wrap items-end justify-between gap-3 pt-2">
       <div>
-        <h2 className="text-xl font-semibold tracking-[-0.02em]">{children}</h2>
+        <h2 className="text-xl font-medium tracking-[-0.02em]">{children}</h2>
         {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
       </div>
       {action}

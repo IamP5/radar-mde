@@ -778,7 +778,7 @@ function Mini({ label, value, sub, tone }: { label: string; value: string; sub?:
   return (
     <div className="px-4 py-3.5 sm:px-5">
       <div className="text-[0.8125rem] text-muted-foreground">{label}</div>
-      <div className={cn("mt-1 text-[1.0625rem] font-semibold tracking-[-0.02em] tnum", tone === "bad" && "text-critical-ink")}>{value}</div>
+      <div className={cn("mt-1 text-[1.0625rem] font-medium tracking-[-0.02em] tnum", tone === "bad" && "text-critical-ink")}>{value}</div>
       {sub && <div className="mt-0.5 text-xs text-muted-foreground">{sub}</div>}
     </div>
   );

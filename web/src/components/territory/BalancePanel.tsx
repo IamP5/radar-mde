@@ -79,15 +79,15 @@ export function BalancePanel({
               </p>
             </InfoTip>
           </dt>
-          <dd className={cn("mt-1 text-[1.375rem] leading-7 font-semibold tracking-[-0.04em] tnum sm:text-[1.75rem] sm:leading-8", tone(tn))}>{brlSigned(tn)}</dd>
+          <dd className={cn("mt-1 text-[1.375rem] leading-7 font-medium tracking-[-0.04em] tnum sm:text-[1.75rem] sm:leading-8", tone(tn))}>{brlSigned(tn)}</dd>
         </div>
         <div className="px-4 py-3 sm:px-5">
           <dt className="text-[0.8125rem] text-muted-foreground">Aplicado acima do mínimo</dt>
-          <dd className="mt-1 text-lg leading-7 font-semibold tracking-[-0.03em] tnum text-good-ink">{ov ? `+${brlShort(ov)}` : "R$ 0"}</dd>
+          <dd className="mt-1 text-lg leading-7 font-medium tracking-[-0.03em] tnum text-good-ink">{ov ? `+${brlShort(ov)}` : "R$ 0"}</dd>
         </div>
         <div className="px-4 py-3 sm:px-5">
           <dt className="text-[0.8125rem] text-muted-foreground">Faltou para chegar a 25%</dt>
-          <dd className={cn("mt-1 text-lg leading-7 font-semibold tracking-[-0.03em] tnum", sh ? "text-critical-ink" : "text-muted-foreground")}>{sh ? `−${brlShort(sh)}` : "R$ 0"}</dd>
+          <dd className={cn("mt-1 text-lg leading-7 font-medium tracking-[-0.03em] tnum", sh ? "text-critical-ink" : "text-muted-foreground")}>{sh ? `−${brlShort(sh)}` : "R$ 0"}</dd>
         </div>
       </dl>
 
@@ -134,7 +134,7 @@ export function BalancePanel({
                     style={v < 0 ? { right: "50%", width: `${w}%` } : { left: "50%", width: `${w}%` }}
                   />
                 </span>
-                <span className={cn("w-24 shrink-0 text-right text-sm font-semibold tnum", tone(v))}>{b.years ? brlSigned(v) : "—"}</span>
+                <span className={cn("w-24 shrink-0 text-right text-sm font-medium tnum", tone(v))}>{b.years ? brlSigned(v) : "—"}</span>
               </Link>
             </li>
           );

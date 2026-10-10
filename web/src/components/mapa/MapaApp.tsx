@@ -303,7 +303,7 @@ export default function MapaApp({ years, initialYear, brStats, ufs }: Props) {
         const sub = lv === "mun" ? byId?.get(id) : null;
         return (
           <>
-            <div className="flex items-center gap-2 font-semibold text-(--m-ink)">
+            <div className="flex items-center gap-2 font-medium text-(--m-ink)">
               {dot(ufLayer.binOf(uf)?.color)}
               <span className="truncate">{u.name}</span>
               <span className="ml-auto font-mono text-[0.6875rem] font-normal text-(--m-ink)/45">{u.uf}</span>
@@ -342,7 +342,7 @@ export default function MapaApp({ years, initialYear, brStats, ufs }: Props) {
       const pv = yi > 0 && (ind === "mde" || ind === "fun") ? r[ind][yi - 1] : null;
       return (
         <>
-          <div className="flex items-center gap-2 font-semibold text-(--m-ink)">
+          <div className="flex items-center gap-2 font-medium text-(--m-ink)">
             {dot(b?.color)}
             <span className="truncate">{r.name}</span>
             <span className="ml-auto font-mono text-[0.6875rem] font-normal text-(--m-ink)/45">{r.uf}</span>

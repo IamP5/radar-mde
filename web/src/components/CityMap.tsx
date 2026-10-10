@@ -76,7 +76,7 @@ export default function CityMap({
             const v = map.get(id);
             return (
               <>
-                <div className="text-base font-semibold tnum">
+                <div className="text-base font-medium tnum">
                   {v?.nd ? (
                     <span className="text-critical">Não declarou</span>
                   ) : v?.v == null ? (

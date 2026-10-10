@@ -63,7 +63,7 @@ function Callout({ title, children }: { title: ReactNode; children: ReactNode })
 function H2({ id, children, description }: { id: string; children: ReactNode; description?: ReactNode }) {
   return (
     <div className="max-w-3xl pt-4">
-      <h2 id={id} className="scroll-mt-24 text-xl font-semibold tracking-[-0.02em]">{children}</h2>
+      <h2 id={id} className="scroll-mt-24 text-xl font-medium tracking-[-0.02em]">{children}</h2>
       {description && <p className="mt-1.5 text-[15px] leading-[26px] text-muted-foreground">{description}</p>}
     </div>
   );

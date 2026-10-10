@@ -22,7 +22,7 @@ export function Stat({
       <div className="mt-1.5 flex flex-wrap items-baseline gap-x-2 gap-y-1">
         <span
           className={cn(
-            "text-[1.375rem] leading-7 font-semibold tracking-[-0.04em] tnum whitespace-nowrap sm:text-[1.75rem] sm:leading-8",
+            "text-[1.375rem] leading-7 font-medium tracking-[-0.04em] tnum whitespace-nowrap sm:text-[1.75rem] sm:leading-8",
             tone === "bad" && "text-critical",
             tone === "good" && "text-good-ink",
           )}

@@ -319,8 +319,8 @@ function RankBlock({ scope, r, name }: { scope: string; r: Rank; name: string })
         {scope} com dados ({r.of.toLocaleString("pt-BR")})
       </div>
       <p className="mt-1 text-[0.9375rem] leading-6 text-pretty">
-        <strong className="font-semibold tnum">{plural(r.less, "aplicou", "aplicaram")}</strong> menos e{" "}
-        <strong className="font-semibold tnum">{plural(more, "aplicou", "aplicaram")}</strong> mais que {name}
+        <strong className="font-medium tnum">{plural(r.less, "aplicou", "aplicaram")}</strong> menos e{" "}
+        <strong className="font-medium tnum">{plural(more, "aplicou", "aplicaram")}</strong> mais que {name}
         {same > 0 && `; ${plural(same, "aplicou", "aplicaram")} o mesmo`}.
       </p>
       {/* forced colors: keep track (outline), fill (Highlight) and marker visible (A11Y-05) */}

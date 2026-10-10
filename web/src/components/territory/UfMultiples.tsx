@@ -56,7 +56,7 @@ export default function UfMultiples({ items, years, year, cols = "sm:grid-cols-3
             >
               <div className="flex items-baseline justify-between gap-2">
                 <span className="truncate text-[13px] font-medium">{it.title}</span>
-                <span className={cn("text-[13px] font-semibold tnum", cur ? "text-critical" : "text-muted-foreground")}>{pctLabel(cur)}</span>
+                <span className={cn("text-[13px] font-medium tnum", cur ? "text-critical" : "text-muted-foreground")}>{pctLabel(cur)}</span>
               </div>
               <div className="flex items-baseline justify-between gap-2 text-xs text-muted-foreground">
                 <span className="truncate">{it.subtitle}</span>

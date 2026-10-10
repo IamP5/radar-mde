@@ -68,7 +68,7 @@ function Highlighted({ text, range }: { text: string; range?: [number, number] }
   return (
     <>
       {text.slice(0, a)}
-      <mark className="bg-transparent font-semibold text-foreground">{text.slice(a, b)}</mark>
+      <mark className="bg-transparent font-medium text-foreground">{text.slice(a, b)}</mark>
       {text.slice(b)}
     </>
   );

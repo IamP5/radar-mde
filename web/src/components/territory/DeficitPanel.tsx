@@ -78,7 +78,7 @@ export function DeficitPanel({
                       {d.below.length} {d.below.length === 1 ? "ano" : "anos"} abaixo: {lastYears(d.below)}
                     </span>
                   </span>
-                  <span className="shrink-0 text-sm font-semibold text-critical-ink tnum">{brlShort(mode === "real" ? d.carryReal : d.carry)}</span>
+                  <span className="shrink-0 text-sm font-medium text-critical-ink tnum">{brlShort(mode === "real" ? d.carryReal : d.carry)}</span>
                 </Link>
               </li>
             );

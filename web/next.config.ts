@@ -28,6 +28,8 @@ const nextConfig: NextConfig = {
   turbopack: {
     rules: {
       "*.css": {
+        // `as: "*.css"` would turn CSS modules (Arc components) into global CSS and drop their class names
+        condition: { not: { path: /\.module\.css$/ } },
         loaders: ["@tailwindcss/turbopack"],
         as: "*.css",
       },
