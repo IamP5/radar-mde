@@ -674,7 +674,7 @@ export default function UfDashboard({ uf, years, initialYear, rows: packed, stat
                     const funLow = r.fun[yi] != null && r.fun[yi]! < funMin(year);
                     return (
                       <TableRow key={r.id} className="group hover:bg-accent/60">
-                        <TableCell className="sticky left-0 z-[1] max-w-56 bg-card py-2 pr-3 pl-4 transition-colors group-hover:bg-[color-mix(in_oklab,var(--accent)_60%,var(--card))] sm:pl-5">
+                        <TableCell className="sticky left-0 z-[1] max-w-56 bg-card py-2 pr-3 pl-4 transition-colors group-hover:bg-[color-mix(in_oklab,var(--surface-muted)_60%,var(--card))] sm:pl-5">
                           <Link href={withYear(cityPath(r.uf, r.slug), year, initialYear)} className="block truncate font-medium hover:underline">
                             {r.name}
                           </Link>

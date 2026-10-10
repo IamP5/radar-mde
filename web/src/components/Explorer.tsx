@@ -821,7 +821,7 @@ function ExplorerRow({
   const impl = isImplausible(r, yi);
   return (
     <TableRow ref={ref} aria-rowindex={index} className="group h-[57px] hover:bg-accent/60">
-      <TableCell className="sticky left-0 z-[1] max-w-[280px] bg-card py-2 pr-3 pl-4 group-hover:bg-[color-mix(in_oklab,var(--card),var(--accent)_60%)] max-sm:max-w-[150px]">
+      <TableCell className="sticky left-0 z-[1] max-w-[280px] bg-card py-2 pr-3 pl-4 group-hover:bg-[color-mix(in_oklab,var(--surface-muted)_60%,var(--card))] max-sm:max-w-[150px]">
         <Link
           href={withYear(cityPath(r.uf, r.slug), year, initialYear)}
           prefetch={false}
