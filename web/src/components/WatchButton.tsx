@@ -2,7 +2,7 @@
 
 import { Star, StarOff } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/arc/button/button";
 import { useWatchlist } from "@/lib/watchlist";
 import { cn } from "@/lib/utils";
 
@@ -21,7 +21,8 @@ export default function WatchButton({ id, className }: { id: string; className?:
   return (
     <>
       <Button
-        variant="outline"
+        variant="secondary"
+        size="sm"
         onClick={() => {
           toggle(id);
           setHover(false);
@@ -31,12 +32,12 @@ export default function WatchButton({ id, className }: { id: string; className?:
         onPointerLeave={() => setHover(false)}
         aria-pressed={on}
         title={on ? "Remover dos salvos (salvo só neste navegador)" : "Salvar este município para ver depois (só neste navegador)"}
-        className={cn(on ? "text-foreground print:hidden" : "print:hidden", className)}
+        className={cn("print:hidden", className)}
       >
         {on && hover ? (
-          <StarOff className="text-muted-foreground" />
+          <StarOff className="size-4 text-muted-foreground" />
         ) : (
-          <Star className={on ? "fill-warning text-warning" : "text-muted-foreground"} />
+          <Star className={cn("size-4", on ? "fill-warning text-warning" : "text-muted-foreground")} />
         )}
         {on ? (hover ? "Remover" : "Salvo") : "Salvar"}
       </Button>

@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/arc/popover/popover";
 import { cn } from "@/lib/utils";
 
 /** Plain-language definitions for the jargon on the city page (CIT-05). Tap or click to open; no hover needed. */
@@ -64,15 +64,15 @@ export function Term({ k, children, className }: { k: GlossaryKey; children?: Re
     <Popover>
       <PopoverTrigger
         className={cn(
-          "-my-0.5 cursor-help rounded-sm py-0.5 underline decoration-current/40 decoration-dotted underline-offset-[3px] outline-none hover:decoration-current focus-visible:ring-2 focus-visible:ring-ring/60 print:no-underline",
+          "-my-0.5 cursor-help rounded-sm py-0.5 underline decoration-current/40 decoration-dotted underline-offset-[3px] hover:decoration-current print:no-underline",
           className,
         )}
         aria-label={`${typeof children === "string" ? children : g.term}: o que é?`}
       >
         {children ?? g.term}
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-[min(20rem,calc(100vw-2rem))] gap-1 text-[0.8125rem] leading-5">
-        <div className="font-medium text-foreground">{g.term}</div>
+      <PopoverContent className="w-80 space-y-1 text-sm">
+        <p className="font-medium">{g.term}</p>
         <p className="text-muted-foreground">{g.text}</p>
       </PopoverContent>
     </Popover>

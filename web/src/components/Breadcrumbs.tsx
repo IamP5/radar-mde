@@ -4,10 +4,9 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/arc/button/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/arc/popover/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cityPath, getRegion, getUf, REGIONS, regionPath, UFS, ufPath, type RegionKey } from "@/lib/geo";
 import { normKey } from "@/lib/format";
 import { loadIndex, type IndexEntry } from "@/lib/indice";
@@ -102,35 +101,48 @@ function useAnoQuery() {
   return [q, refresh] as const;
 }
 
+function SwitchTrigger({ label }: { label: string }) {
+  return (
+    <PopoverTrigger asChild>
+      <Button variant="ghost" size="sm" aria-label={label} className="print:hidden">
+        <ChevronsUpDown className="size-3.5" />
+      </Button>
+    </PopoverTrigger>
+  );
+}
+
 type Item = { key: string; label: string; hint?: string; href: string; on: boolean };
 
 function SiblingMenu({ label, heading, items }: { label: string; heading: string; items: Item[] }) {
+  // the trail survives a client navigation between pages of the same route, so a chosen link closes the list itself
+  const [open, setOpen] = useState(false);
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
-        render={
-          <Button variant="ghost" size="icon-xs" aria-label={label} title={label} className="text-muted-foreground hover:text-foreground print:hidden">
-            <ChevronsUpDown className="size-3.5" />
-          </Button>
-        }
-      />
-      <DropdownMenuContent align="start" className="w-60">
-        <DropdownMenuGroup>
-          <DropdownMenuLabel>{heading}</DropdownMenuLabel>
+    <Popover open={open} onOpenChange={setOpen}>
+      <SwitchTrigger label={label} />
+      <PopoverContent aria-label={heading} className="w-64 space-y-1">
+        <p className="px-2 pb-1 text-xs text-muted-foreground">{heading}</p>
+        <ul>
           {items.map((it) => (
-            <DropdownMenuItem
-              key={it.key}
-              render={<Link href={it.href} prefetch={false} aria-current={it.on ? "page" : undefined} />}
-              className={cn("py-1.5", it.on ? "font-medium text-foreground" : "text-muted-foreground")}
-            >
-              <span className="flex-1 truncate">{it.label}</span>
-              {it.hint && <span className="font-mono text-[0.6875rem] text-muted-foreground">{it.hint}</span>}
-              <Check className={cn("size-3.5", it.on ? "opacity-100" : "opacity-0")} />
-            </DropdownMenuItem>
+            <li key={it.key}>
+              <Link
+                href={it.href}
+                prefetch={false}
+                aria-current={it.on ? "page" : undefined}
+                onClick={() => setOpen(false)}
+                className={cn(
+                  "flex min-h-11 items-center gap-2 rounded-md px-2 text-sm transition-colors duration-150 hover:bg-accent sm:min-h-9",
+                  it.on ? "font-medium text-foreground" : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                <span className="flex-1 truncate">{it.label}</span>
+                {it.hint && <span className="text-xs text-muted-foreground tnum">{it.hint}</span>}
+                <Check aria-hidden className={cn("size-3.5", it.on ? "opacity-100" : "opacity-0")} />
+              </Link>
+            </li>
           ))}
-        </DropdownMenuGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
+        </ul>
+      </PopoverContent>
+    </Popover>
   );
 }
 
@@ -156,25 +168,19 @@ function CityPicker({ uf, current, query }: { uf: string; current: string; query
   const name = getUf(uf)?.name ?? uf;
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger
-        render={
-          <Button variant="ghost" size="icon-xs" aria-label={`Trocar de município (${name})`} title="Trocar de município" className="text-muted-foreground hover:text-foreground print:hidden">
-            <ChevronsUpDown className="size-3.5" />
-          </Button>
-        }
-      />
-      <PopoverContent align="start" className="w-[min(18rem,calc(100vw-2rem))] gap-0 p-0">
+      <SwitchTrigger label={`Trocar de município (${name})`} />
+      <PopoverContent aria-label={`Municípios de ${name}`} className="w-72">
         {/* match on the name only (the value carries the IBGE code to stay unique), punctuation- and accent-insensitive */}
-        <Command loop filter={(value, search) => (normKey(value.replace(/\s\d+$/, "")).includes(normKey(search)) ? 1 : 0)}>
+        <Command loop className="bg-transparent p-0" filter={(value, search) => (normKey(value.replace(/\s\d+$/, "")).includes(normKey(search)) ? 1 : 0)}>
           <CommandInput placeholder={`Buscar em ${name}…`} aria-label={`Buscar município em ${name}`} />
           <CommandList className="scroll-thin">
             {!list ? (
-              <div className="py-6 text-center text-[0.8125rem] text-muted-foreground" role="status">
+              <div className="py-6 text-center text-sm text-muted-foreground" role="status">
                 {failed ? "Não foi possível carregar a lista." : "Carregando municípios…"}
               </div>
             ) : (
               <>
-                <CommandEmpty className="text-[0.8125rem] text-muted-foreground">Nenhum município encontrado.</CommandEmpty>
+                <CommandEmpty className="text-sm text-muted-foreground">Nenhum município encontrado.</CommandEmpty>
                 <CommandGroup heading={`${list.length.toLocaleString("pt-BR")} municípios`}>
                   {list.map((c) => (
                     <CommandItem
